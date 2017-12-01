@@ -16,6 +16,26 @@ var config = {
     messagingSenderId: "268279710428"
   };
 firebase.initializeApp(config);
+var provider = new firebase.auth.FacebookAuthProvider();
+firebase.auth().useDeviceLanguage();
+firebase.auth().getRedirectResult().then(function(result) {
+  if (result.credential) {
+    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+    var token = result.credential.accessToken;
+    // ...
+  }
+  // The signed-in user info.
+  var user = result.user;
+}).catch(function(error) {
+  // Handle Errors here.
+  var errorCode = error.code;
+  var errorMessage = error.message;
+  // The email of the user's account used.
+  var email = error.email;
+  // The firebase.auth.AuthCredential type that was used.
+  var credential = error.credential;
+  // ...
+});
 //設定資料的程式如下：
 // var db = firebase.database();
 // var ref = db.ref("/www");
@@ -27,22 +47,20 @@ firebase.initializeApp(config);
 //取得的資料程式如下：
 var database = firebase.database();
 
-var catdata ;
-database.ref("/catdata").once("value",function (snapshot) {
-  catdata = snapshot.val() ;
-  // console.log(catdata);
+var catdata,
+    combodata,
+    enemydata ;
+database.ref("/").once("value",function (snapshot) {
+  catdata = snapshot.val().catdata ;
+  combodata = snapshot.val().combodata ;
+  enemydata = snapshot.val().enemydata ;
+  console.log('all data load complete!!') ;
 });
 
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  fs.stat('public/js/Catdata.txt', function(err,stats){
-    var mtime = Date.parse(stats.mtime),
-        today = Date.now();
-    timepass = today - mtime ;
-    console.log(timepass);
-    if(timepass > 86400000) loadcatData()
-  });
+  // loadcatData() ;
 
   socket.on("search cat",function (data) {
         console.log("searching cat....");
@@ -99,7 +117,7 @@ io.on('connection', function(socket){
           }
         } else buffer_2 = buffer_1 ;
         buffer_1 = [] ;
-        for(let i in buffer_2) console.log(buffer_2[i].全名) ;
+        // for(let i in buffer_2) console.log(buffer_2[i].全名) ;
         for(let i in buffer_2) {
           let obj = {
               id : buffer_2[i].id,
@@ -111,11 +129,88 @@ io.on('connection', function(socket){
         socket.emit("search result",buffer_1);
 
   });
-
-  socket.on('force_update_cat_data', (data,callback) =>{
-    console.log('Someone force me to load cat data ...QAQ') ;
-    loadcatData() ;
+  socket.on("display cat",function (id) {
+    let grossID = id.substring(0,3),
+        result = {"this":"","bro":[],"combo":[]} ;
+    console.log("client requir "+grossID+"'s data'");
+    let combo = [] ;
+    for(let i=1;i<4;i++){
+      let a = grossID+"-"+i ;
+      if(a == id) result.this = catdata[a] ;
+      else if(catdata[a]) result.bro.push(catdata[a].id) ;
+      for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j])
+    }
+    result.combo = combo ;
+    console.log(result);
+    socket.emit("display cat result",result);
   });
+  socket.on("text search cat",function (key) {
+    console.log("Text Search : "+key);
+    let buffer = [] ;
+    for(let id in catdata){
+      if(catdata[id].全名.indexOf(key) != -1) {
+        let simple = id.substring(0,3);
+        for(let j=1;j<4;j++){
+          let x = simple + '-' + j  ;
+          if(catdata[x]) {
+            let obj = {
+              name : catdata[x].全名,
+              id : catdata[x].id
+            };
+            buffer.push(obj) ;
+          }
+        }
+      }
+    }
+    // console.log(buffer);
+    socket.emit("search result",buffer);
+  });
+  socket.on("user login",function (user) {
+    console.log(user.uid+" user login");
+    let exist = false;
+    var timer = new Date().getTime();
+    console.log('login time : '+timer);
+    database.ref('/user').once('value',function (data) {
+      for(let uid in data.val()){
+        if(uid == user.uid){
+          console.log("find same user");
+          exist = true;
+          break;
+        }
+      }
+    }).then(function () {
+      if(exist){
+        console.log('user exist');
+        database.ref('/user/'+user.uid).update({"last_login" : timer});
+      } else {
+        console.log('new user');
+        let data = {
+          name : user.displayName,
+          first_login: timer
+        }
+        database.ref('/user/'+user.uid).set(data) ;
+      }
+    });
+
+  });
+  socket.on("user Search",function (obj) {
+    console.log("recording user history");
+    console.log(obj);
+    database.ref("/user/"+obj.uid+"/history")
+          .push({type : obj.type,id : obj.id});
+  });
+  socket.on("history",function (uid) {
+    console.log(uid+"'s history");
+    database.ref("/user/"+uid+"/history").once("value",function (snapshot) {
+      let data = snapshot.val() ;
+      console.log(data);
+      let buffer = [];
+      for (let i in data) buffer.push(catdata[data[i].id].全名);
+      console.log(buffer);
+      socket.emit("return history",buffer);
+    });
+  });
+
   socket.on('connet', (data,callback) => {
     console.log('connnnnnnet '+data);
     socket.emit('connet');
@@ -125,62 +220,41 @@ io.on('connection', function(socket){
     console.log('user disconnected');
   });
 
-  firebase.auth().onAuthStateChanged(function(user) {
-    var currentUser = firebase.auth().currentUser;
-    console.log(user);
-
-  });
-
-
 
 });
 
-function loadcatData(data) {
-
-  let cat = [] ;
+function loadcatData() {
+  console.log("staring load data from google sheet!!");
   gsjson({
     spreadsheetId: sheet_ID,
-    // worksheet: ['貓咪資料']
-    hash : 'id'
+    hash : 'id',
+    worksheet: ['貓咪資料','聯組','敵人資料']
   })
   .then(function(result) {
-    // console.log(result)
-    socket.emit('push cat data',JSON.stringify(result));
-    fs.writeFile('public/js/Catdata.txt', JSON.stringify(result), (err) => {
+    var obj = {} ;
+    for(let i in result[1]){
+      var bufferobj = {
+        id : result[1][i].id,
+        catagory : result[1][i].catagory,
+        name : result[1][i].name,
+        effect : result[1][i].effect,
+        amount : result[1][i].amount,
+        cat : [result[1][i].cat_1,result[1][i].cat_2,result[1][i].cat_3,result[1][i].cat_4,result[1][i].cat_5]
+      } ;
+      obj[i] = bufferobj;
+    }
+    database.ref("/catdata").set(result[0]) ;
+    database.ref("/combodata").set(obj) ;
+    database.ref("/enemydata").set(result[2]) ;
+    fs.writeFile('public/js/Catdata.txt', JSON.stringify(result[0]), (err) => {
       if (err) throw err;
       console.log('Catdata is saved!');
     });
-  })
-  .catch(function(err) {
-    console.log(err.message);
-    console.log(err.stack);
-  });
-  gsjson({
-    spreadsheetId: sheet_ID,
-    hash : 'id' ,
-    worksheet: ['聯組']
-  })
-  .then(function(result) {
-    // console.log(result)
-    socket.emit('push cat data',JSON.stringify(result));
-    fs.writeFile('public/js/Combo.txt', JSON.stringify(result), (err) => {
+    fs.writeFile('public/js/Combodata.txt', JSON.stringify(obj), (err) => {
       if (err) throw err;
-      console.log('Combo is saved!');
+      console.log('Combodata is saved!');
     });
-  })
-  .catch(function(err) {
-    console.log(err.message);
-    console.log(err.stack);
-  });
-  gsjson({
-    spreadsheetId: sheet_ID,
-    hash : 'id' ,
-    worksheet: ['敵人資料']
-  })
-  .then(function(result) {
-    // console.log(result)
-    socket.emit('push cat data',JSON.stringify(result));
-    fs.writeFile('public/js/Enemydata.txt', JSON.stringify(result), (err) => {
+    fs.writeFile('public/js/Enemydata.txt', JSON.stringify(result[2]), (err) => {
       if (err) throw err;
       console.log('Enemydata is saved!');
     });
@@ -189,6 +263,40 @@ function loadcatData(data) {
     console.log(err.message);
     console.log(err.stack);
   });
+  // gsjson({
+  //   spreadsheetId: sheet_ID,
+  //   hash : 'id' ,
+  //   worksheet: ['聯組']
+  // })
+  // .then(function(result) {
+  //   // console.log(result)
+  //   socket.emit('push cat data',JSON.stringify(result));
+  //   fs.writeFile('public/js/Combo.txt', JSON.stringify(result), (err) => {
+  //     if (err) throw err;
+  //     console.log('Combo is saved!');
+  //   });
+  // })
+  // .catch(function(err) {
+  //   console.log(err.message);
+  //   console.log(err.stack);
+  // });
+  // gsjson({
+  //   spreadsheetId: sheet_ID,
+  //   hash : 'id' ,
+  //   worksheet: ['敵人資料']
+  // })
+  // .then(function(result) {
+  //   // console.log(result)
+  //   socket.emit('push cat data',JSON.stringify(result));
+  //   fs.writeFile('public/js/Enemydata.txt', JSON.stringify(result), (err) => {
+  //     if (err) throw err;
+  //     console.log('Enemydata is saved!');
+  //   });
+  // })
+  // .catch(function(err) {
+  //   console.log(err.message);
+  //   console.log(err.stack);
+  // });
 }
 function levelToValue(origin,rarity,lv) {
   let limit ;

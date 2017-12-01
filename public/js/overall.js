@@ -1,6 +1,33 @@
 $(document).ready(function () {
-
   var socket = io.connect();
+  var facebook_provider = new firebase.auth.FacebookAuthProvider();
+  $(document).on('click', '#current_user_name', facebookLog); //Facebook登入
+  function facebookLog() {
+    auth.signInWithPopup(facebook_provider).then(function(result) {
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
+      console.log(user);
+
+      socket.emit("user login",result.user) ;
+
+      // window.location.assign("/");
+
+    }).catch(function(error) {
+      console.log(error);
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+  }
+
+
   socket.emit('connet',location.href) ;
 
   if(screen.width < 768){
@@ -47,10 +74,7 @@ $(document).ready(function () {
     }
   });
   $(document).on('click','#upper_table th',function () {
-    // let className = $(this).siblings('td').attr('class') ;
-    // clearSelected(className) ;
     let on = $(this).siblings().children('[value=1]') ;
-    // console.log(on.length);
     if(on.length > 0) on.each(function () {$(this).attr('value',0);});
     else $(this).siblings().children().each(function () {
       $(this).attr('value',1);
@@ -66,6 +90,22 @@ $(document).ready(function () {
   }
   $("nav .navLinkBox").html(nav_html) ;
   $(".m_navLinkBox").html(nav_html) ;
+
+  var setting_html = '<a id="current_user_name">登入</a>'+
+      '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
+      '<i class="material-icons" data-toggle="modal" data-target="#settingModal" id="setting">settings</i>' ;
+  $("nav .settingBox").html(setting_html);
+  $(".m_settingBox").html(setting_html);
+
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      $("#current_user_name").text("Hi,"+user.displayName.substring(1))
+      .attr({'id':'userdata','href':'userdata.html'}) ;
+      socket.emit("user login",user);
+    } else {
+      console.log('did not sign in');
+    }
+  });
 
   var xmlhttp = new XMLHttpRequest() ;
   var url = "public/update_dialog.txt";
@@ -92,7 +132,6 @@ $(document).ready(function () {
 
     }
   }
-
 
   socket.on("connet",function (data) {
     console.log("server ready")

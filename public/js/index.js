@@ -1,3 +1,4 @@
+// firebase.initializeApp(config);
 $(document).ready(function () {
   var catdata ;
   var combodata ;
@@ -12,25 +13,44 @@ $(document).ready(function () {
   const image_local =  "public/css/footage/cat/u" ;
   var socket = io.connect();
   // console.log(window) ;
-
+  var current_user = {
+    'name' : '',
+    'uid' : ''
+  };
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      current_user.name = user.displayName;
+      current_user.uid = user.uid;
+    } else {
+      console.log('did not sign in');
+    }
+  });
+  // console.log(current_user);
   $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
   $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
   $(document).on('click','.card',function () {
-    displayCatData($(this).attr('value'));
-    // console.log($(this).attr('value'));
-    // let cut =  ThisSite.indexOf(".html");
-    // location.search = $(this).attr('value');
+    // console.log(current_user.uid);
+    socket.emit("user Search",{
+      uid : current_user.uid,
+      type : 'cat',
+      id : $(this).attr('value')
+    });
+    socket.emit("display cat",$(this).attr('value'));
   });
   $(document).on('click',"#clear_all",function () {clearSelected('select');});
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   $(document).on('click','#compare',compareCat);
   $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
-  $(document).on('click','#searchBut',TextSearch);
+  $(document).on('click','#searchBut',function () {
+    let keyword = $(this).siblings().val();
+    socket.emit("text search cat",keyword);
+  });
   $(document).on('keypress','#searchBox',function (e) {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) {
-      TextSearch();
+      let keyword = $(this).val();
+      socket.emit("text search cat",keyword);
     }
   });
   $(document).on('click','#setting',showSetting) ;
@@ -78,81 +98,39 @@ $(document).ready(function () {
   var ThisSite = location.href,
       q_pos = ThisSite.indexOf("?q=");
 
-  // function clearSelected(className) {
-  //   if(className == 'select'){
-  //     $("#selected").empty();
-  //     $("#level").slider('option','value',30) ;
-  //     $(".dataTable").html('');
-  //     $(".compareTarget").children().remove();
-  //     $(".button_group").hide();
-  //     $("#searchBox").val('');
-  //   }
-  //   $("."+className).find(".button").each(function () {
-  //     $(this).attr('value','0');
-  //   });
-  //   // let This = $("."+className).children().slider('widget');
-  //   // let init = This.attr('init-val');
-  //   // This.slider('value',init);
-  // }
-  function condenseCatName(data) {
-    console.log('condensing....');
-    let now = '000' ;
 
-    let html = '<span class="card-group" hidden>' ;
-    for(let i in data){
-      let name = data[i].name;
-      let id = data[i].id ;
-      let current = id.substring(0,3) ;
-      if(current == now){
-        html += '<span class="card" value="'+id+'" '+
-                'style="background-image:url('+
-                (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
-                +');display:none">'+
-                name+'</span>' ;
-      }
-      else{
-        html += '</span>' ;
-        html += '<span class="card-group" value="'+current+'">'+
-                '<span class="glyphicon glyphicon-refresh"></span>'+
-                '<span class="card" value="'+id+'" '+
-                'style="background-image:url('+
-                (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
-                +')">'+
-                name+'</span>' ;
-        now = current ;
-      }
-    }
-    return html ;
-  }
-  function displayCatData(id) {
-    let data = catdata[id] ;
-    let inclu_com = [] ;
-    grossID = id.substring(0,3) ;
-    // console.log(grossID) ;
-    for(let i in combodata){
-      for(let j=1;j<4;j++){
-        let t = grossID + "-" + j ;
-        if(combodata[i].cat.indexOf(t) != -1) inclu_com.push(combodata[i])
-      }
-    }
-    console.log(inclu_com) ;
-
-
+  socket.on("display cat result",function (result) {
+    console.log("recive cat data,starting display") ;
+    console.log(result) ;
+    let data = result.this,
+        arr = result.bro,
+        brr = result.combo ;
+    displayCatData(data,arr,brr) ;
+  });
+  socket.on("search result",function (data) {
+    console.log("recive search result");
+    console.log(data);
+    $("#selected").empty();
+    $("#selected").scrollTop(0);
+    $("#selected").append(condenseCatName(data));
+    $(".button_group").css('display','flex');
+  });
+  function displayCatData(data,arr,brr) {
     let html = "" ;
-    html += setting.display_id ? "<tr><th>Id</th><td id='id'>"+id+"</td></tr>" : "" ;
+    html += setting.display_id ? "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>" : "" ;
 
     html += screen.width > 768 ?
     "<tr>"+
     "<th style='height:80px;padding:0'><img src='"+
-    (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
+    (image_list.indexOf("u"+data.id+".png") != -1 ? image_local+data.id+".png" : image_url+data.id+'.png')
     +"' style='height:100%'></th>"+
     "<th colspan=3 rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
-    "<th colspan=2>"+Thisbro(grossID,id)+"</th>"+
+    "<th colspan=2>"+Thisbro(arr)+"</th>"+
     "</tr>" :
     "<tr>"+
     "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
-    +"' style='height:100%'>"+Thisbro(grossID,id)+"</th>"+
+    (image_list.indexOf("u"+data.id+".png") != -1 ? image_local+data.id+".png" : image_url+data.id+'.png')
+    +"' style='height:100%'>"+Thisbro(arr)+"</th>"+
     "</tr><tr>"+
     "<th colspan='6' rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
     "</tr>" ;
@@ -206,7 +184,7 @@ $(document).ready(function () {
       "</td>"+
       "</tr><tr>"+
       "<th colspan='6'>發動聯組</th>"+
-      AddCombo(inclu_com)+
+      AddCombo(brr)+
       "</tr>"
     );
     initialSlider(data);
@@ -254,18 +232,9 @@ $(document).ready(function () {
     // console.log(html);
     return html
   }
-  function Thisbro(grossID,id) {
-    let arr = [] ;
-    for(let i=1;i<4;i++){
-      let t = grossID + "-" + i ;
-      if(catdata[t]){
-        arr.push(catdata[t].id);
-      }
-    }
-    console.log(JSON.stringify(arr))
+  function Thisbro(arr) {
     let html = "<div style='display:flex;justify-content: center;"+(screen.width > 768 ? "" : "padding:10px")+"'>" ;
     for(let i in arr) {
-      if(arr[i] == id) continue ;
       html +=
       '<span class="card" value="'+arr[i]+'" '+
       'style="background-image:url('+
@@ -336,15 +305,36 @@ $(document).ready(function () {
     socket.emit("search cat",{rFilter,cFilter,aFilter,filterObj});
 
     scroll_to_div('selected');
-    socket.on("search result",function (data) {
-      console.log("recive search result");
-      console.log(data);
-      $("#selected").empty();
-      $("#selected").scrollTop(0);
-      $("#selected").append(condenseCatName(data));
-      $(".button_group").css('display','flex');
-    });
+  }
+  function condenseCatName(data) {
+    console.log('condensing....');
+    let now = '000' ;
 
+    let html = '<span class="card-group" hidden>' ;
+    for(let i in data){
+      let name = data[i].name;
+      let id = data[i].id ;
+      let current = id.substring(0,3) ;
+      if(current == now){
+        html += '<span class="card" value="'+id+'" '+
+        'style="background-image:url('+
+        (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
+        +');display:none">'+
+        name+'</span>' ;
+      }
+      else{
+        html += '</span>' ;
+        html += '<span class="card-group" value="'+current+'">'+
+        '<span class="glyphicon glyphicon-refresh"></span>'+
+        '<span class="card" value="'+id+'" '+
+        'style="background-image:url('+
+        (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
+        +')">'+
+        name+'</span>' ;
+        now = current ;
+      }
+    }
+    return html ;
   }
   function compareCat() {
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
@@ -550,28 +540,6 @@ $(document).ready(function () {
         }
       }
     }
-  }
-  function TextSearch() {
-    let keyword = $("#searchBox").val();
-    let buffer = [] ;
-    for(let id in catdata){
-      if(catdata[id].全名.indexOf(keyword) != -1) {
-        let simple = id.substring(0,3);
-        for(let j=1;j<4;j++){
-          let x = simple + '-' + j  ;
-          console.log(x);
-          if(catdata[x]) buffer.push(catdata[x]) ;
-        }
-
-      }
-    }
-
-    console.log(buffer);
-    scroll_to_div('selected');
-    $("#selected").empty();
-    $("#selected").scrollTop(0);
-    $("#selected").append(condenseCatName(buffer));
-    $(".button_group").css('display','flex');
   }
   function changeCompareLevel() {
       let level = Number($(this).val());
@@ -881,64 +849,28 @@ $(document).ready(function () {
   }
 
   var xmlhttp = new XMLHttpRequest() ;
-  var url = [];
-  url.push("public/js/Catdata.txt") ;
-  url.push("public/css/footage/cat/dir.txt") ;
-  url.push("public/js/Combo.txt") ;
+  var url = "public/css/footage/cat/dir.txt";
   var image_list ;
 
-    xmlhttp.open("GET", url[0], true);
+    xmlhttp.open("GET", url, true);
     xmlhttp.send();
 
   xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         console.log(this.responseURL);
-        // console.log(this.response);
-        if(this.responseURL.indexOf("Catdata.txt") != -1){
-          var data = JSON.parse(this.responseText) ;
-          console.log(data) ;
-          let nowtime =  new Date().getTime();
-          console.log(nowtime-timer) ;
-          catdata = data ;
-
-          xmlhttp.open("GET", url[1], true);
-          xmlhttp.send();
-        }
-        else if(this.responseURL.indexOf("cat/dir.txt") != -1){
+        if(this.responseURL.indexOf("cat/dir.txt") != -1){
               var data = this.responseText;
               // console.log(data.split("\n")) ;
               let nowtime =  new Date().getTime();
               console.log(nowtime-timer) ;
               image_list = data ;
-              xmlhttp.open("GET", url[2], true);
-              xmlhttp.send();
         }
-        else if(this.responseURL.indexOf("Combo.txt") != -1){
-          var data = JSON.parse(this.responseText) ;
-          // console.log(data[0]) ;
-          var obj = {} ;
-          for(let i in data[0]){
-            var bufferobj = {
-              id : data[0][i].id,
-              catagory : data[0][i].catagory,
-              name : data[0][i].name,
-              effect : data[0][i].effect,
-              amount : data[0][i].amount,
-              cat : [data[0][i].cat_1,data[0][i].cat_2,data[0][i].cat_3,data[0][i].cat_4,data[0][i].cat_5]
-            } ;
-            obj[i] = bufferobj;
-          }
-          console.log(obj)
-          combodata = obj ;
-          if(q_pos != -1){
-            var q_search = ThisSite.substring(q_pos+3);
-            console.log(q_search);
-            displayCatData(q_search);
-          }
+        if(q_pos != -1){
+          var q_search = ThisSite.substring(q_pos+3);
+          console.log(q_search);
+          displayCatData(q_search);
         }
       }
-  };
-
-
+    }
 
 });
