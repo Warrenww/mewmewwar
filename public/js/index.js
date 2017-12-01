@@ -10,7 +10,7 @@ $(document).ready(function () {
   var filter_name = '' ;
   const image_url = 'http://imgs-server.com/battlecats/u' ;
   const image_local =  "public/css/footage/cat/u" ;
-
+  var socket = io.connect();
   // console.log(window) ;
 
   $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
@@ -100,7 +100,7 @@ $(document).ready(function () {
 
     let html = '<span class="card-group" hidden>' ;
     for(let i in data){
-      let name = data[i].全名;
+      let name = data[i].name;
       let id = data[i].id ;
       let current = id.substring(0,3) ;
       if(current == now){
@@ -314,70 +314,36 @@ $(document).ready(function () {
     let rarity = $(".select_rarity [value=1]"),
     color = $(".select_color [value=1]"),
     ability = $(".select_ability [value=1]");
-    let rFilter = [], cFiliter = [], aFiliter = [] ;
+    let rFilter = [], cFilter = [], aFilter = [] ;
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
-    for(let i = 0;i<color.length;i++) cFiliter.push(color.eq(i).attr('name')) ;
-    for(let i = 0;i<ability.length;i++) aFiliter.push(ability.eq(i).attr('name')) ;
+    for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
+    for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
 
-    console.log(rFilter);
-    console.log(cFiliter);
-    console.log(aFiliter);
-    // console.log(color) ;
-
-    let buffer_1 = [],
-    buffer_2 = [],
-    buffer_3 = [];
-
-    if(color.length != 0){
-      for(let id in catdata){
-        for(let j in cFiliter){
-          // console.log(catdata[id].id)
-          if(catdata[id].tag == '[無]') break;
-          else if(catdata[id].tag.indexOf(cFiliter[j]) != -1) {buffer_1.push(catdata[id]);break;}
-        }
-      }
-    }
-    else buffer_1 = catdata ;
-    console.log(buffer_1) ;
-    if(ability.length != 0){
-      for(let id in buffer_1){
-        for(let j in aFiliter){
-          if(buffer_1[id].tag.indexOf(aFiliter[j]) != -1) {buffer_2.push(buffer_1[id]);break;}
-        }
-      }
-    }
-    else buffer_2 = buffer_1 ;
-    console.log(buffer_2) ;
-    if(rarity.length != 0) {
-      for(let id in buffer_2) if(rFilter.indexOf(buffer_2[id].稀有度) != -1) buffer_3.push(buffer_2[id]) ;
-    }
-    else buffer_3 = buffer_2 ;
-    console.log(buffer_3) ;
-
+    let  filterObj = [] ;
     $(".filter_option[active='true']").each(function () {
       let name = $(this).attr('id'),
           reverse = $(this).attr('reverse') == 'true' ? true : false ,
           limit = $(this).attr('value') ,
           level_bind = $(this).attr('lv-bind') == 'true' ? true : false ,
-          // lv = Number($("#level").slider( "option", "value" )) ;
-      buffer_1 = [];
-      buffer_1 = buffer_3;
-      buffer_3 = [];
-      for(let id in buffer_1){
-        let value = level_bind ? levelToValue(buffer_1[id][name],buffer_1[id].稀有度,30) : buffer_1[id][name];
-        if(value > limit && !reverse) buffer_3.push(buffer_1[id]);
-        else if (value < limit && reverse) buffer_3.push(buffer_1[id]);
-      }
+          bufferObj = {
+            "name" : name,
+            "reverse" : reverse,
+            "limit" : limit,
+            "level_bind" : level_bind
+          } ;
+      filterObj.push(bufferObj);
     });
+    socket.emit("search cat",{rFilter,cFilter,aFilter,filterObj});
 
-    console.log(buffer_3) ;
     scroll_to_div('selected');
-    // alert(buffer_3.length);
-    // generatePage(buffer_3.length);
-    $("#selected").empty();
-    $("#selected").scrollTop(0);
-    $("#selected").append(condenseCatName(buffer_3));
-    $(".button_group").css('display','flex');
+    socket.on("search result",function (data) {
+      console.log("recive search result");
+      console.log(data);
+      $("#selected").empty();
+      $("#selected").scrollTop(0);
+      $("#selected").append(condenseCatName(data));
+      $(".button_group").css('display','flex');
+    });
 
   }
   function compareCat() {
