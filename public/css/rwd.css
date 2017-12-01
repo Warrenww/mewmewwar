@@ -1,0 +1,103 @@
+nav .mobile,
+.m_nav_panel{
+  display: none;
+}
+#m_nav_menu{
+  font-size:32px;
+  color:white;
+  padding:0 20px;
+  height: 100%
+}
+.m_nav_panel{
+  flex-direction: column;
+  position: fixed;
+  right: -180px;
+  height: 100%;
+  width: 180px;
+  background-color: rgba(0,0,0,.8);
+  z-index: 10;
+  transition: .8s ease-in-out;
+}
+#m_nav_panel_BG{
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 9;
+}
+.m_navLinkBox{
+  display:flex;
+  flex-direction:
+  column;padding:20px;
+  margin-top:20px;
+  font-size: 24px;
+}
+.m_navLinkBox a{color: white;margin-bottom: 5px}
+.m_settingBox{
+  display: flex;
+  position: absolute;
+  bottom: 0px;
+  color: white;
+  padding:10px;
+  justify-content: space-around;
+  width: 100%;
+}
+@media screen and (max-width: 768px) {
+  nav{
+    height: 40px;
+    justify-content: space-between;
+  }
+  .page_1{
+    padding-top: 40px
+  }
+  .m_nav_panel{
+    display: flex;
+  }
+  nav .mobile{
+    flex:1 ;
+    display: flex;
+    justify-content: flex-end;
+  }
+  #start{
+    font-size: 30px;
+    padding: 6px 120px;
+  }
+  .select,
+  .display
+  {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  span.button{
+    font-size: 18px;
+    padding: 1px 15px;
+  }
+  .card{
+    height: 80px;
+    width: 120px;
+  }
+  .card-group{margin: 0}
+  #selected{height: 264px}
+  .glyphicon-refresh {
+    top: 100px;
+    right: -110px;
+    font-size: 20px;
+    padding: 4px;
+    border: 2px solid;
+  }
+  .navLinkBox,
+  .settingBox,
+  .level,
+  #slider_holder td[colspan~='6'] ,
+  .compareTarget
+  {display: none;}
+
+  nav a img{
+    width: 96px;
+    height: 50px;
+  }
+  .debugwindow h3{
+    font-size: 18px
+  }
+}

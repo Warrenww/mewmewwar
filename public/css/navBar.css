@@ -1,0 +1,51 @@
+nav{
+    display: flex;
+    position: fixed;
+    height: 40px ;
+    background-color: rgba(0,0,0,.7);
+    width: 100%;
+    z-index: 999
+}
+nav a img{
+   width:120px;
+   height:60px;
+   margin-left:20px;
+}
+.navLinkBox{
+  flex:3;
+  height: 100% ;
+  display: flex;
+  align-items: center;
+  padding-left: 50px
+}
+.navLinkBox a{
+  font-size: 20px;
+  color: white ;
+  margin:10px
+}
+.settingBox{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content: flex-end;
+}
+.settingBox i{
+  font-size:32px;
+  color:white;
+  margin-right:10px ;
+  cursor: pointer;
+  transition: .4s ease-in-out
+}
+.settingBox #setting:hover{
+  color:rgb(226, 152, 41) ;
+  animation-name: test ;
+  animation-duration: 2s
+}
+.settingBox #info:hover{
+  color:rgb(73, 215, 8) ;
+}
+
+@keyframes test {
+  from{transform: rotate(0deg);}
+  to{transform: rotate(180deg);}
+}
