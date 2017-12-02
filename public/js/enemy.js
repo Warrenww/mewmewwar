@@ -1,9 +1,20 @@
 $(document).ready(function () {
-  var enemydata ;
-  var enemydata ;
+  var socket = io.connect();
   var timer = new Date().getTime();
   const image_url = "http://imgs-server.com/battlecats/e"
-
+  var current_user_data = {};
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      socket.emit("user connet",user);
+    } else {
+      console.log('did not sign in');
+    }
+  });
+  socket.on("current_user_data",function (data) {
+    console.log(data);
+    current_user_data = data ;
+    if(data.last_enemy) socket.emit("display enemy",data.last_enemy) ;
+  });
 
   var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','不死敵','白敵','無屬性敵'];
   for(let i in color) $(".select_color").append("<span class='button' name='["+color[i]+"]' value='0'>"+color[i]+"</span>") ;
@@ -14,21 +25,27 @@ $(document).ready(function () {
   for(let i in ability) $(".select_ability").append("<span class='button' name='["+ability[i]+"]' value='0'>"+ability[i]+"</span>") ;
 
   $(document).on('click','.filter_option',filterSlider);
-  $(document).on('click','#searchBut',TextSearch);
+  $(document).on('click','#searchBut',function () {
+    let keyword = $(this).siblings().val();
+    socket.emit("text search",{key:keyword,type:'enemy'});
+  });
   $(document).on('keypress','#searchBox',function (e) {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) {
-      TextSearch();
+      let keyword = $(this).val();
+      socket.emit("text search",{key:keyword,type:'enemy'});
     }
   });
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
   $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
   $(document).on('click','.card',function () {
-    displayEnemyData($(this).attr('value'));
-    // console.log($(this).attr('value'));
-    // let cut =  ThisSite.indexOf(".html");
-    // location.search = $(this).attr('value');
+    socket.emit("user Search",{
+      uid : current_user_data.uid,
+      type : 'enemy',
+      id : $(this).attr('value')
+    });
+    socket.emit("display enemy",$(this).attr('value'));
   });
 
 
@@ -48,7 +65,7 @@ $(document).ready(function () {
   function condenseEnemyName(data) {
     let html = '' ;
     for(let i in data){
-      let name = data[i].全名;
+      let name = data[i].name;
       let id = data[i].id ;
       html += '<span class="card" value="'+id+'" '+
       'style="background-image:url('+
@@ -61,66 +78,42 @@ $(document).ready(function () {
   function search() {
     let color = $(".select_color [value=1]"),
         ability = $(".select_ability [value=1]");
-    let cFiliter = [], aFiliter = [] ;
-    for(let i = 0;i<color.length;i++) cFiliter.push(color.eq(i).attr('name')) ;
-    for(let i = 0;i<ability.length;i++) aFiliter.push(ability.eq(i).attr('name')) ;
+    let cFilter = [], aFilter = [], rFilter = [], filterObj = [] ;
+    for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
+    for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
 
-    console.log(cFiliter);
-    console.log(aFiliter);
-
-    let buffer_1 = [],
-        buffer_2 = [],
-        buffer_3 = [];
-
-    if(color.length != 0){
-      for(let id in enemydata){
-        for(let j in cFiliter){
-          // console.log(enemydata[id].id)
-          if(enemydata[id]['分類'] == '[無]') break;
-          else if(enemydata[id]['分類'].indexOf(cFiliter[j]) != -1) {buffer_1.push(enemydata[id]);break;}
-        }
-      }
-    }
-    else buffer_1 = enemydata ;
-    console.log(buffer_1) ;
-    if(ability.length != 0){
-      for(let id in buffer_1){
-        for(let j in aFiliter){
-          if(buffer_1[id].tag.indexOf(aFiliter[j]) != -1) {buffer_2.push(buffer_1[id]);break;}
-        }
-      }
-    }
-    else buffer_2 = buffer_1 ;
-    console.log(buffer_2) ;
+    console.log(cFilter);
+    console.log(aFilter);
 
     $(".filter_option[active='true']").each(function () {
       let name = $(this).attr('id'),
           reverse = $(this).attr('reverse') == 'true' ? true : false ,
           limit = $(this).attr('value') ,
           level_bind = $(this).attr('lv-bind') == 'true' ? true : false ,
-          // lv = Number($("#level").slider( "option", "value" )) ;
-      buffer_1 = [];
-      buffer_1 = buffer_2;
-      buffer_2 = [];
-      for(let id in buffer_1){
-        let value = level_bind ? levelToValue(buffer_1[id][name],buffer_1[id].稀有度,30) : buffer_1[id][name];
-        if(value > limit && !reverse) buffer_2.push(buffer_1[id]);
-        else if (value < limit && reverse) buffer_2.push(buffer_1[id]);
-      }
+          bufferObj = {
+            "name" : name,
+            "reverse" : reverse,
+            "limit" : limit,
+            "level_bind" : level_bind
+          } ;
+      filterObj.push(bufferObj);
     });
 
-    console.log(buffer_2) ;
+    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:'enemy'});
     scroll_to_div('selected');
-    // alert(buffer_3.length);
-    // generatePage(buffer_3.length);
+  }
+  socket.on("search result",function (result) {
+    console.log(result)
     $("#selected").empty();
     $("#selected").scrollTop(0);
-    $("#selected").append(condenseEnemyName(buffer_2));
+    $("#selected").append(condenseEnemyName(result));
     $(".button_group").css('display','flex');
+  });
+  socket.on('display enemy result',function (data) {
+    displayEnemyData(data) ;
+  });
 
-  }
-  function displayEnemyData(id) {
-    let data = enemydata[id] ;
+  function displayEnemyData(data) {
     $("#selected").height(280);
     let html = "" ;
     // html += setting.display_id ? "<tr><th>Id</th><td id='id'>"+id+"</td></tr>" : "" ;
@@ -128,13 +121,13 @@ $(document).ready(function () {
     html += screen.width > 768 ?
     "<tr>"+
     "<th style='height:80px;padding:0'><img src='"+
-    image_url+id+'.png'
+    image_url+data.id+'.png'
     +"' style='height:100%'></th>"+
     "<th colspan=5 id='全名'>"+data.全名+"</th>"+
     "</tr>" :
     "<tr>"+
     "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    image_url+id+'.png'
+    image_url+data.id+'.png'
     +"</tr><tr>"+
     "<th colspan='6' id='全名'>"+data.全名+"</th>"+
     "</tr>" ;
@@ -322,43 +315,6 @@ $(document).ready(function () {
       {scrollTop: $("."+class_name).eq(n).offset().top},
       1000,'easeInOutCubic');
   }
-
-  var xmlhttp = new XMLHttpRequest() ;
-  var url = [];
-  url.push("public/js/Enemydata.txt") ;
-  // url.push("public/css/footage/cat/dir.txt") ;
-  // url.push("public/js/Enemydata.txt") ;
-  var image_list ;
-
-    xmlhttp.open("GET", url[0], true);
-    xmlhttp.send();
-
-  xmlhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        console.log(this.responseURL);
-        // console.log(this.response);
-        if(this.responseURL.indexOf("Catdata.txt") != -1){
-          var data = JSON.parse(this.responseText) ;
-          console.log(data) ;
-          let nowtime =  new Date().getTime();
-          console.log(nowtime-timer) ;
-          enemydata = data ;
-
-          xmlhttp.open("GET", url[1], true);
-          xmlhttp.send();
-        }
-        else if(this.responseURL.indexOf("Enemydata.txt") != -1){
-          var data = JSON.parse(this.responseText) ;
-          console.log(data[0]) ;
-          enemydata = data[0] ;
-          // if(q_pos != -1){
-          //   var q_search = ThisSite.substring(q_pos+3);
-          //   console.log(q_search);
-          //   displayenemydata(q_search);
-          // }
-        }
-      }
-  };
 
 
 

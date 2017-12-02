@@ -1,7 +1,4 @@
-// firebase.initializeApp(config);
 $(document).ready(function () {
-  var catdata ;
-  var combodata ;
   var timer = new Date().getTime();
   var compare = [] ;
   var setting = {
@@ -12,26 +9,26 @@ $(document).ready(function () {
   const image_url = 'http://imgs-server.com/battlecats/u' ;
   const image_local =  "public/css/footage/cat/u" ;
   var socket = io.connect();
-  // console.log(window) ;
-  var current_user = {
-    'name' : '',
-    'uid' : ''
-  };
+  var current_user_data = {};
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      current_user.name = user.displayName;
-      current_user.uid = user.uid;
+      socket.emit("user connet",user);
     } else {
       console.log('did not sign in');
     }
   });
-  // console.log(current_user);
+  socket.on("current_user_data",function (data) {
+    console.log(data);
+    current_user_data = data ;
+    if(data.last_cat) socket.emit("display cat",data.last_cat) ;
+  });
+
   $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
   $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
   $(document).on('click','.card',function () {
     // console.log(current_user.uid);
     socket.emit("user Search",{
-      uid : current_user.uid,
+      uid : current_user_data.uid,
       type : 'cat',
       id : $(this).attr('value')
     });
@@ -44,13 +41,13 @@ $(document).ready(function () {
   $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
   $(document).on('click','#searchBut',function () {
     let keyword = $(this).siblings().val();
-    socket.emit("text search cat",keyword);
+    socket.emit("text search",{key:keyword,type:'cat'});
   });
   $(document).on('keypress','#searchBox',function (e) {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) {
       let keyword = $(this).val();
-      socket.emit("text search cat",keyword);
+      socket.emit("text search",{key:keyword,type:'cat'});
     }
   });
   $(document).on('click','#setting',showSetting) ;
@@ -78,10 +75,13 @@ $(document).ready(function () {
     $('#level').slider('option','value',val);
   });
   $(document).on('click','.searchCombo',function () {
-    let r = confirm("要轉移到聯組查詢畫面嗎?");
-    if (!r) return
-    let goto = $(this).attr('val');
-    location.href = "combo.html?q="+goto;
+    console.log()
+    socket.emit("user Search",{
+      uid : current_user_data.uid,
+      type : 'combo',
+      id : [$(this).attr('val')]
+    });
+    location.assign('combo.html')
   }) ;
 
   var rarity = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'] ;
@@ -94,10 +94,6 @@ $(document).ready(function () {
                 '緩速','免疫緩速','暫停','免疫暫停','遠方攻擊','復活','波動','抵銷波動','免疫波動','2倍金錢','只能攻撃',
                 '攻城','鋼鐵','免疫傳送','破盾'];
   for(let i in ability) $(".select_ability").append("<span class='button' name='["+ability[i]+"]' value='0'>"+ability[i]+"</span>") ;
-
-  var ThisSite = location.href,
-      q_pos = ThisSite.indexOf("?q=");
-
 
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
@@ -302,7 +298,7 @@ $(document).ready(function () {
           } ;
       filterObj.push(bufferObj);
     });
-    socket.emit("search cat",{rFilter,cFilter,aFilter,filterObj});
+    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:"cat"});
 
     scroll_to_div('selected');
   }
@@ -799,14 +795,6 @@ $(document).ready(function () {
     setting.display_id = modal.find("#display_id").text() == "yes" ? true : false ;
     modal.modal("hide");
   }
-  function sleep(milliseconds) {
-    var start = new Date().getTime();
-    while (true) {
-      if ((new Date().getTime() - start) > milliseconds){
-        break;
-      }
-    }
-  }
   function calculateLV() {
     let val = Number($(this).val()),
         rarity = $(this).parent().attr('rarity'),
@@ -864,11 +852,6 @@ $(document).ready(function () {
               let nowtime =  new Date().getTime();
               console.log(nowtime-timer) ;
               image_list = data ;
-        }
-        if(q_pos != -1){
-          var q_search = ThisSite.substring(q_pos+3);
-          console.log(q_search);
-          displayCatData(q_search);
         }
       }
     }

@@ -1,9 +1,22 @@
 $(document).ready(function () {
-  var catdata ;
-  var combodata ;
+  var socket = io.connect();
   const image_url = 'http://imgs-server.com/battlecats/u' ;
   const image_local =  "public/css/footage/cat/u" ;
-
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      socket.emit("user connet",user);
+    } else {
+      console.log('did not sign in');
+    }
+  });
+  socket.on("current_user_data",function (data) {
+    console.log(data);
+    current_user_data = data ;
+    if(data.last_combo)  socket.emit("search combo",data.last_combo) ;
+    for(let i in data.last_combo){
+      $(".button[name~='"+data.last_combo[i]+"']").attr('value',1);
+    }
+  });
 
   var effect = {
         '角色性能' : ['角色攻擊力UP','角色體力UP','角色移動速度UP'],
@@ -24,10 +37,6 @@ $(document).ready(function () {
     ) ;
     eff_count ++ ;
   }
-  var q_pos = location.href.indexOf("?q=");
-  var query = "";
-  if(q_pos != -1) query = location.href.substring(q_pos+3);
-  console.log(query);
 
   $(document).on('click','#search_combo',function () {
     let A_search = [] ;
@@ -37,30 +46,42 @@ $(document).ready(function () {
       });
     }) ;
     console.log(A_search);
+    socket.emit("user Search",{
+      uid : current_user_data.uid,
+      type : 'combo',
+      id : A_search
+    });
+    socket.emit("search combo",A_search) ;
     searchCombo(A_search);
   });
+  socket.on("combo result",function (arr) {
+    console.log(arr);
+    searchCombo(arr);
+  }) ;
+
   $(document).on('click','.card',function () {
-    let r = confirm("確定要轉移到貓咪查詢頁面?");
-    if (!r) return
     let id = $(this).attr('value');
-    let ThisSite = location.href ;
-    location.href = ThisSite.split("combo.html")[0]+"cat.html?q="+id ;
+    socket.emit("user Search",{
+      uid : current_user_data.uid,
+      type : 'cat',
+      id : id
+    });
+    location.assign("/cat.html");
   });
 
-  function searchCombo(A_search) {
+  function searchCombo(arr) {
     $(".dataTable").empty();
     let html = "" ;
-    for(let i in combodata){
-      if(A_search.indexOf(combodata[i].id.substring(0,4)) != -1){
-        // console.log(combodata[i].id);
+    for(let i in arr){
+        // console.log(arr[i].id);
         let pic_html = "<div style='display:flex'>" ;
-        for(let j in combodata[i].cat){
-          // console.log(combodata[i].cat[j])
-          if(combodata[i].cat[j] != "-"){
+        for(let j in arr[i].cat){
+          // console.log(arr[i].cat[j])
+          if(arr[i].cat[j] != "-"){
             pic_html +=
-            '<span class="card" value="'+combodata[i].cat[j]+'" '+
+            '<span class="card" value="'+arr[i].cat[j]+'" '+
             'style="background-image:url('+
-            (image_list.indexOf("u"+combodata[i].cat[j]+".png") != -1 ? image_local+combodata[i].cat[j]+".png" : image_url+combodata[i].cat[j]+'.png')
+            (image_list.indexOf("u"+arr[i].cat[j]+".png") != -1 ? image_local+arr[i].cat[j]+".png" : image_url+arr[i].cat[j]+'.png')
             +');'+
             (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
             +'">'+name+'</span>' ;
@@ -69,22 +90,22 @@ $(document).ready(function () {
         pic_html += "</div>" ;
         html = screen.width > 768 ?
                 ("</tr><tr>"+
-                "<th class='searchCombo' val='"+combodata[i].id.substring(0,2)+"'>"+combodata[i].catagory+"</th>"+
-                "<td>"+combodata[i].name+"</td>"+
+                "<th class='searchCombo' val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
+                "<td>"+arr[i].name+"</td>"+
                 "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
                 "</tr><tr>"+
-                "<td colspan=2 class='searchCombo' val='"+combodata[i].id.substring(0,4)+"'>"+combodata[i].effect+"</td>") :
+                "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
                 ("</tr><tr>"+
-                "<th colspan=2 class='searchCombo' val='"+combodata[i].id.substring(0,2)+"'>"+combodata[i].catagory+"</th>"+
-                "<td colspan=4 rowspan=2 class='searchCombo' val='"+combodata[i].id.substring(0,4)+"'>"+combodata[i].effect+"</td>"+
+                "<th colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
+                "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
                 "</tr><tr>"+
-                "<td colspan=2 >"+combodata[i].name+"</td>"+
+                "<td colspan=2 >"+arr[i].name+"</td>"+
                 "</tr><tr>"+
                 "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
                 "</tr><tr>"
               );
           $(".dataTable").append(html);
-      }
+
     }
 
     scroll_to_class("display",0) ;
@@ -97,49 +118,23 @@ $(document).ready(function () {
   }
 
   var xmlhttp = new XMLHttpRequest() ;
-  var url = [];
-  url.push("public/js/Catdata.txt") ;
-  url.push("public/css/footage/cat/dir.txt") ;
-  url.push("public/js/Combo.txt") ;
+  var url = "public/css/footage/cat/dir.txt";
   var image_list ;
 
-    xmlhttp.open("GET", url[0], true);
+    xmlhttp.open("GET", url, true);
     xmlhttp.send();
 
   xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
-        if(this.responseURL.indexOf("Catdata.txt") != -1){
-          var data = JSON.parse(this.responseText) ;
-          catdata = data ;
-          xmlhttp.open("GET", url[1], true);
-          xmlhttp.send();
-        }
-        else if(this.responseURL.indexOf("cat/dir.txt") != -1){
+        if(this.responseURL.indexOf("cat/dir.txt") != -1){
               var data = this.responseText;
               image_list = data ;
-              xmlhttp.open("GET", url[2], true);
-              xmlhttp.send();
         }
-        else if(this.responseURL.indexOf("Combo.txt") != -1){
-          var data = JSON.parse(this.responseText) ;
-          var obj = {} ;
-          for(let i in data[0]){
-            var bufferobj = {
-              id : data[0][i].id,
-              catagory : data[0][i].catagory,
-              name : data[0][i].name,
-              effect : data[0][i].effect,
-              amount : data[0][i].amount,
-              cat : [data[0][i].cat_1,data[0][i].cat_2,data[0][i].cat_3,data[0][i].cat_4,data[0][i].cat_5]
-            } ;
-            obj[i] = bufferobj;
-          }
-          combodata = obj ;
-          if(query){
-            searchCombo(query);
-            $(window).scrollTop(500);
-          }
+        if(query){
+          searchCombo(query);
+          $(window).scrollTop(500);
         }
+
       }
   }
 });

@@ -49,7 +49,8 @@ var database = firebase.database();
 
 var catdata,
     combodata,
-    enemydata ;
+    enemydata,
+    userdata ;
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().catdata ;
   combodata = snapshot.val().combodata ;
@@ -61,29 +62,77 @@ database.ref("/").once("value",function (snapshot) {
 io.on('connection', function(socket){
   console.log('a user connected');
   // loadcatData() ;
+  socket.emit("search enemy",function (data) {
+    console.log("searching enemy....");
+    console.log(data);
+    let cFilter = data.cFilter,
+        aFilter = data.aFilter,
+        otherFilter = data.filterObj,
+        buffer_1 = [],
+        buffer_2 = [];
+    if(cFilter.length != 0){
+      for(let id in enemydata){
+        for(let j in cFiliter){
+          // console.log(enemydata[id].id)
+          if(enemydata[id]['分類'] == '[無]') break;
+          else if(enemydata[id]['分類'].indexOf(cFiliter[j]) != -1) {buffer_1.push(enemydata[id]);break;}
+        }
+      }
+    }
+    else buffer_1 = enemydata ;
+    if(aFilter.length != 0){
+      for(let id in buffer_1){
+        for(let j in aFiliter){
+          if(buffer_1[id].tag.indexOf(aFiliter[j]) != -1) {buffer_2.push(buffer_1[id]);break;}
+        }
+      }
+    }
+    else buffer_2 = buffer_1 ;
+    buffer_1 = [] ;
 
-  socket.on("search cat",function (data) {
-        console.log("searching cat....");
+  });
+
+  socket.on("search",function (data) {
+        console.log("searching "+data.type+"....");
         console.log(data);
         let rFilter = data.rFilter,
             cFilter = data.cFilter,
             aFilter = data.aFilter,
             otherFilter = data.filterObj,
+            type = data.type,
             buffer_1 = [],
-            buffer_2 = [];
+            buffer_2 = [],
+            load_data = {};
+        switch (type) {
+          case 'cat':
+            load_data = catdata ;
+            break;
+          case 'enemy':
+            load_data = enemydata ;
+            break;
+          default:
+
+        } ;
 
         if(cFilter.length != 0){
-          for(let i in catdata){
+          for(let i in load_data){
             for(let j in cFilter){
-              if(catdata[i].tag == '[無]') break;
-              else if(catdata[i].tag.indexOf(cFilter[j]) != -1) {
-                buffer_1.push(catdata[i]);
+              if(type == 'cat' && load_data[i].tag == '[無]') break;
+              if(type == 'enemy' && load_data[i]['分類'] == '[無]') break;
+
+              if(type == 'cat' && load_data[i].tag.indexOf(cFilter[j]) != -1 ) {
+                buffer_1.push(load_data[i]);
+                break;
+              }
+              if(type == 'enemy' && load_data[i]['分類'].indexOf(cFilter[j]) != -1 ) {
+                buffer_1.push(load_data[i]);
                 break;
               }
             }
           }
         }
-        else buffer_1 = catdata ;
+        else buffer_1 = load_data ;
+        console.log(buffer_1)
         if(aFilter.length != 0){
           for(let i in buffer_1){
             for(let j in aFilter){
@@ -129,10 +178,45 @@ io.on('connection', function(socket){
         socket.emit("search result",buffer_1);
 
   });
+  socket.on("text search",function (obj) {
+    console.log("Text Search : "+obj.type+obj.key);
+    let key = obj.key ,
+    buffer = [],
+    data = {} ;
+    if(obj.type == 'cat'){
+      for(let id in catdata){
+        if(catdata[id].全名.indexOf(key) != -1) {
+          let simple = id.substring(0,3);
+          for(let j=1;j<4;j++){
+            let x = simple + '-' + j  ;
+            if(catdata[x]) {
+              let obj = {
+                name : catdata[x].全名,
+                id : catdata[x].id
+              };
+              buffer.push(obj) ;
+            }
+          }
+        }
+      }
+    } else if (obj.type == 'enemy'){
+      for(let i in enemydata){
+        if(enemydata[i].全名.indexOf(key) != -1){
+          let obj = {
+            name : enemydata[i].全名,
+            id : enemydata[i].id
+          };
+          buffer.push(obj) ;
+        }
+      }
+    }
+    // console.log(buffer);
+    socket.emit("search result",buffer);
+  });
   socket.on("display cat",function (id) {
     let grossID = id.substring(0,3),
         result = {"this":"","bro":[],"combo":[]} ;
-    console.log("client requir "+grossID+"'s data'");
+    console.log("client requir cat "+grossID+"'s data'");
     let combo = [] ;
     for(let i=1;i<4;i++){
       let a = grossID+"-"+i ;
@@ -144,31 +228,15 @@ io.on('connection', function(socket){
     console.log(result);
     socket.emit("display cat result",result);
   });
-  socket.on("text search cat",function (key) {
-    console.log("Text Search : "+key);
-    let buffer = [] ;
-    for(let id in catdata){
-      if(catdata[id].全名.indexOf(key) != -1) {
-        let simple = id.substring(0,3);
-        for(let j=1;j<4;j++){
-          let x = simple + '-' + j  ;
-          if(catdata[x]) {
-            let obj = {
-              name : catdata[x].全名,
-              id : catdata[x].id
-            };
-            buffer.push(obj) ;
-          }
-        }
-      }
-    }
-    // console.log(buffer);
-    socket.emit("search result",buffer);
+  socket.on("display enemy",function (id) {
+    console.log("client requir enemy "+id+"'s data'");
+    socket.emit('display enemy result',enemydata[id]);
   });
+
   socket.on("user login",function (user) {
     console.log(user.uid+" user login");
     let exist = false;
-    var timer = new Date().getTime();
+    let timer = new Date().getTime();
     console.log('login time : '+timer);
     database.ref('/user').once('value',function (data) {
       for(let uid in data.val()){
@@ -193,6 +261,41 @@ io.on('connection', function(socket){
     });
 
   });
+  socket.on("user connet",function (user){
+    let timer = new Date().getTime(),
+        last_cat = '',
+        last_combo = [],
+        last_enemy = '';
+    console.log("user "+user.uid+" connect");
+    database.ref('/user/'+user.uid).update({"last_login" : timer});
+    database.ref('/user/'+user.uid).once("value",function (snapshot) {
+      let history = snapshot.val().history ;
+      for(let i in history){
+        if(history[i].type == 'cat') last_cat = history[i].id ;
+        if(history[i].type == 'combo') last_combo = history[i].id ;
+        if(history[i].type == 'enemy') last_enemy = history[i].id ;
+      }
+      socket.emit("current_user_data",{
+        name : snapshot.val().name,
+        uid : user.uid,
+        last_cat : last_cat,
+        last_combo : last_combo,
+        last_enemy : last_enemy
+      });
+    });
+
+  });
+  socket.on("search combo",function (arr) {
+    console.log("searching combo......") ;
+    let buffer = [] ;
+    for(let i in combodata){
+      for(let j in arr){
+        if(arr[j] == (i.substring(0,4))) buffer.push(combodata[i]) ;
+      }
+    }
+    socket.emit("combo result",buffer) ;
+  }) ;
+
   socket.on("user Search",function (obj) {
     console.log("recording user history");
     console.log(obj);
@@ -243,9 +346,9 @@ function loadcatData() {
       } ;
       obj[i] = bufferobj;
     }
-    database.ref("/catdata").set(result[0]) ;
-    database.ref("/combodata").set(obj) ;
-    database.ref("/enemydata").set(result[2]) ;
+    database.ref("/catdata").update(result[0]) ;
+    database.ref("/combodata").update(obj) ;
+    database.ref("/enemydata").update(result[2]) ;
     fs.writeFile('public/js/Catdata.txt', JSON.stringify(result[0]), (err) => {
       if (err) throw err;
       console.log('Catdata is saved!');

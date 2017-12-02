@@ -101,7 +101,6 @@ $(document).ready(function () {
     if (user) {
       $("#current_user_name").text("Hi,"+user.displayName.substring(1))
       .attr({'id':'userdata','href':'userdata.html'}) ;
-      socket.emit("user login",user);
     } else {
       console.log('did not sign in');
     }
@@ -132,7 +131,6 @@ $(document).ready(function () {
 
     }
   }
-
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;

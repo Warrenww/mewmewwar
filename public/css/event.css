@@ -48,6 +48,17 @@ button,.button,.selected_cat{
   text-align: center;
   /*-webkit-text-stroke: 1px black;*/
 }
+#current_user_name,
+#userdata{
+  height: 100%;
+  color: white;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
 #retry{
   background-color: rgb(227, 81, 81) ;
   background: linear-gradient(rgb(255, 124, 85), rgb(219, 71, 71));
