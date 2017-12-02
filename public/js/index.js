@@ -21,10 +21,21 @@ $(document).ready(function () {
     console.log(data);
     current_user_data = data ;
     if(data.last_cat) socket.emit("display cat",data.last_cat) ;
+    if(data.compare_c2c) {
+      for(let i in data.compare_c2c){
+        let id = data.compare_c2c[i].id,
+            name = data.compare_c2c[i].name;
+        $(".compareTarget").append('<span class="card" value="'+id+
+        '" style="background-image:url('+
+        (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
+        +'">'+name+'</span>');
+      }
+    }
+    $('.compareTarget').css('top',0);
+    setTimeout(function () {
+      $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+    },3000);
   });
-
-  $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
-  $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
   $(document).on('click','.card',function () {
     // console.log(current_user.uid);
     socket.emit("user Search",{
@@ -37,6 +48,7 @@ $(document).ready(function () {
   $(document).on('click',"#clear_all",function () {clearSelected('select');});
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
+  $(document).on('click','.glyphicon-shopping-cart',addToCompare);
   $(document).on('click','#compare',compareCat);
   $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
   $(document).on('click','#searchBut',function () {
@@ -107,6 +119,7 @@ $(document).ready(function () {
     console.log("recive search result");
     console.log(data);
     $("#selected").empty();
+    $("#selected").css('display','flex');
     $("#selected").scrollTop(0);
     $("#selected").append(condenseCatName(data));
     $(".button_group").css('display','flex');
@@ -322,6 +335,7 @@ $(document).ready(function () {
         html += '</span>' ;
         html += '<span class="card-group" value="'+current+'">'+
         '<span class="glyphicon glyphicon-refresh"></span>'+
+        '<span class="glyphicon glyphicon-shopping-cart"></span>'+
         '<span class="card" value="'+id+'" '+
         'style="background-image:url('+
         (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
@@ -332,6 +346,7 @@ $(document).ready(function () {
     }
     return html ;
   }
+
   function compareCat() {
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     console.log(compare);
@@ -662,6 +677,26 @@ $(document).ready(function () {
   });
   $(".slider").slider();
 
+  $(".slider").on("slide", function(e,ui) {
+    $(this).parent().siblings('td.value_display').html(ui.value);
+  });
+  $(".slider").on("slidechange", function(e,ui) {
+    $(this).parent().siblings('td.value_display').html(ui.value);
+  });
+  $('.compareTable').on('sort',function (e,ui) {
+    $('.comparedatahead').find('th').css('border-left','0px solid');
+  });
+
+  function toggleCatStage() {
+    let current = $(this).parent().children(".card:visible").next('.card').attr('value');
+    if(current != undefined){
+      $(this).parent().children(".card:visible").hide().next('.card').show();
+    }
+    else{
+      $(this).parent().children(".card:visible").hide().parent().children('.card').eq(0).show();
+    }
+  }
+  var timeout,compare ;
   $('#selected').sortable('option',{
     item: '> .card-group',
     connectWith: ".compareTarget"
@@ -669,16 +704,14 @@ $(document).ready(function () {
   $('.compareTarget').sortable('option',{
     item: '> comparedata'
   });
-  $(".slider").on("slide", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
-  });
-  $(".slider").on("slidechange", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
+  $('#selected').on('sortstart',function (e,ui) {
+    $('.compareTarget').css('top',0);
+    timeout = setTimeout(function () {
+      $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+    },4000);
   });
   $('.compareTarget').on('sortover',function (e,ui) {
-    $("#compare").show();
-    // scroll_to_class('compareTarget',0);
-    let input = ui.item.children('.card:visible') ;
+    let input = ui.item.children('.card:visible');
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     if(compare.indexOf(input.attr('value')) != -1){
       let repeat = $(this).find('[value='+input.attr('value')+']') ;
@@ -688,57 +721,57 @@ $(document).ready(function () {
       },1000);
       $("#selected").sortable('cancel');
     }
-    else if(compare.length > setting.compare_max-1){
-      alert('啊 塞滿了') ;
-      $("#selected").sortable('cancel');
-    }
     else if(ui.sender.is('#selected')){
       input.clone().appendTo(this);
       $("#selected").sortable('cancel');
+      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     }
     else $("#selected").sortable('cancel');
   });
   $('.compareTarget').on('sortout',function (e,ui) {
-    let x1 = $(this).position().left,
-        x2 = x1 + $(this).width(),
-        y1 = $(this).position().top,
-        y2 = y1 + $(this).height(),
-        x = ui.position.left,
+    let x = ui.position.left,
         y = ui.position.top ;
-    if(x<x1||x>x2||y<y1||y>y2) if(ui.sender.is('.compareTarget')) ui.item.remove();
-
+    if(y>120) if(ui.sender.is('.compareTarget')) ui.item.remove();
+    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
-  $('.compareTable').on('sort',function (e,ui) {
-    $('.comparedatahead').find('th').css('border-left','0px solid');
+  function addToCompare() {
+    $('.compareTarget').css('top',0);
+    let target = $(this).parent().children(".card:visible");
+    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    if(compare.indexOf(target.attr('value')) != -1) {
+      let repeat = $('.compareTarget').find('[value='+target.attr('value')+']') ;
+      repeat.css('border-color','rgb(237, 179, 66)');
+      setTimeout(function () {
+        repeat.css('border-color','white');
+      },1000);
+    } else {
+      target.clone().appendTo(".compareTarget");
+      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+    }
+    timeout = setTimeout(function () {
+      $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+    },4000);
+  }
+  $("#clear_compare").click(function () {
+    $(this).siblings().remove();
+    compare = [];
+    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+  });
+  $('.compareTarget').hover(function () {
+    clearTimeout(timeout) ;
+    },function () {
+    $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+  });
+  $('#a_compareCat ').bind('click',function () {
+    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+    location.assign('/compareCat.html');
   });
 
-  function scroll_to_div(div_id){
-    $('html,body').animate(
-      {scrollTop: $("#"+div_id).offset().top},
-      1000,'easeInOutCubic');
-  }
-  function scroll_to_class(class_name,n) {
-    $('html,body').animate(
-      {scrollTop: $("."+class_name).eq(n).offset().top},
-      1000,'easeInOutCubic');
-  }
 
-  function toggleCatStage() {
-    let current = $(this).parent().children(".card:visible").next().attr('value');
-    if(current != undefined){
-      $(this).parent().children(".card:visible").hide().next().show();
-    }
-    else{
-      $(this).parent().children(".card:visible").hide().parent().children().eq(1).show();
-    }
-  }
-  function turnPage(n) {
-    let current = $("#selected").scrollTop();
-    let offset = screen.width > 768 ? 348 : 264 ;
-    $("#selected").animate(
-      {scrollTop: current+offset*n},
-      100,'easeInOutCubic');
-  }
   function levelToValue(origin,rarity,lv) {
     let limit ;
     switch (rarity) {
@@ -834,6 +867,16 @@ $(document).ready(function () {
       $(this).parent().html(levelToValue(ori,rarity,lv));
     }
 
+  }
+  function scroll_to_div(div_id){
+    $('html,body').animate(
+      {scrollTop: $("#"+div_id).offset().top},
+      1000,'easeInOutCubic');
+  }
+  function scroll_to_class(class_name,n) {
+    $('html,body').animate(
+      {scrollTop: $("."+class_name).eq(n).offset().top},
+      1000,'easeInOutCubic');
   }
 
   var xmlhttp = new XMLHttpRequest() ;

@@ -37,8 +37,6 @@ $(document).ready(function () {
     }
   });
   $(document).on('click','#search_ability',search) ;
-  $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
-  $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
   $(document).on('click','.card',function () {
     socket.emit("user Search",{
       uid : current_user_data.uid,
@@ -103,8 +101,10 @@ $(document).ready(function () {
     scroll_to_div('selected');
   }
   socket.on("search result",function (result) {
+    $("#selected").height(screen.width > 768 ?280:200);
     console.log(result)
     $("#selected").empty();
+    $("#selected").css('display','flex');
     $("#selected").scrollTop(0);
     $("#selected").append(condenseEnemyName(result));
     $(".button_group").css('display','flex');
@@ -114,7 +114,6 @@ $(document).ready(function () {
   });
 
   function displayEnemyData(data) {
-    $("#selected").height(280);
     let html = "" ;
     // html += setting.display_id ? "<tr><th>Id</th><td id='id'>"+id+"</td></tr>" : "" ;
 
@@ -256,13 +255,6 @@ $(document).ready(function () {
     $('.page_1').animate(
       {scrollTop: $("#"+div_id).offset().top},
       1000);
-  }
-  function turnPage(n) {
-    let current = $("#selected").scrollTop();
-    let offset = screen.width > 768 ? 280 : 264 ;
-    $("#selected").animate(
-      {scrollTop: current+offset*n},
-      100,'easeInOutCubic');
   }
   function levelToValue(value,m) {
     return value*m

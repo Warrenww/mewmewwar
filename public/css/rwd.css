@@ -77,8 +77,20 @@ nav .mobile,
     height: 80px;
     width: 120px;
   }
+  .compareTarget .card,
+  #clear_compare {
+    height: 50px;
+    width: 75px;
+    margin: 2px;
+    font-size: 12px;
+  }
+  .compareTarget{height: 100;top: -100px}
   .card-group{margin: 0}
-  #selected{height: 264px}
+  #selected{
+    width: 100%;
+    margin: 2% 0;
+    height: 270px;
+  }
   .glyphicon-refresh {
     top: 100px;
     right: -110px;
@@ -86,11 +98,13 @@ nav .mobile,
     padding: 4px;
     border: 2px solid;
   }
+  .glyphicon-shopping-cart{
+    right: -79px;
+  }
   .navLinkBox,
   .settingBox,
   .level,
-  #slider_holder td[colspan~='6'] ,
-  .compareTarget
+  #slider_holder td[colspan~='6']
   {display: none;}
 
   nav a img{

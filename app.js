@@ -60,7 +60,7 @@ database.ref("/").once("value",function (snapshot) {
 
 
 io.on('connection', function(socket){
-  console.log('a user connected');
+  // console.log('a user connected');
   // loadcatData() ;
   socket.emit("search enemy",function (data) {
     console.log("searching enemy....");
@@ -275,12 +275,21 @@ io.on('connection', function(socket){
         if(history[i].type == 'combo') last_combo = history[i].id ;
         if(history[i].type == 'enemy') last_enemy = history[i].id ;
       }
+      let compareCat = snapshot.val().compare.cat2cat ;
+      let obj , arr = [] ;
+      for(let i in compareCat){
+        obj = {};
+        if(!catdata[compareCat[i]]) continue
+        obj = {id:compareCat[i],name:catdata[compareCat[i]].全名};
+        arr.push(obj);
+      }
       socket.emit("current_user_data",{
         name : snapshot.val().name,
         uid : user.uid,
         last_cat : last_cat,
         last_combo : last_combo,
-        last_enemy : last_enemy
+        last_enemy : last_enemy,
+        compare_c2c: arr
       });
     });
 
@@ -295,6 +304,11 @@ io.on('connection', function(socket){
     }
     socket.emit("combo result",buffer) ;
   }) ;
+  socket.on("compare cat",function (data) {
+    console.log("compare cat!!");
+    console.log(data);
+    database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
+  });
 
   socket.on("user Search",function (obj) {
     console.log("recording user history");
@@ -306,21 +320,47 @@ io.on('connection', function(socket){
     console.log(uid+"'s history");
     database.ref("/user/"+uid+"/history").once("value",function (snapshot) {
       let data = snapshot.val() ;
-      console.log(data);
+      // console.log(data);
       let buffer = [];
-      for (let i in data) buffer.push(catdata[data[i].id].全名);
-      console.log(buffer);
+      for (let i in data) {
+        if(data[i].type == 'cat') buffer.push({name:catdata[data[i].id].全名,color:"#851b1b"});
+        if(data[i].type == 'enemy') buffer.push({name:enemydata[data[i].id].全名,color:"#01295d"});
+      }
+      // console.log(buffer);
       socket.emit("return history",buffer);
     });
   });
 
-  socket.on('connet', (data,callback) => {
-    console.log('connnnnnnet '+data);
-    socket.emit('connet');
+  socket.on('get event date',function () {
+    let dd = new Date().getDate(),
+        mm = new Date().getMonth()+1,
+        yy = new Date().getFullYear() ;
+    let today = Date.parse(mm+" "+dd+","+yy);
+    console.log(today);
+    database.ref('/event_date').once('value',function (snapshot) {
+      let last = snapshot.val().system
+      console.log(last);
+      let diff = today - last ;
+      if(diff == 86400000*3) {
+        socket.emit('true event date',today);
+        database.ref('/event_date/system').set(today) ;
+        database.ref('/event_date/correct').set('') ;
+      } else if(diff > 86400000*3) {
+        let corr = last + 86400000*3 ;
+        socket.emit('true event date',corr);
+        database.ref('/event_date/system').set(corr) ;
+        database.ref('/event_date/correct').set('') ;
+      } else {
+        socket.emit('true event date',last);
+      }
+    });
+  });
+  socket.on("test",function () {
+    console.log("This is a test string")
   });
 
   socket.on('disconnect', function(){
-    console.log('user disconnected');
+    // console.log('user disconnected');
   });
 
 

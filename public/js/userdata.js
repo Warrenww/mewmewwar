@@ -15,7 +15,9 @@ $(document).ready(function () {
     }
   });
   socket.on("return history",function (arr) {
-    for(let i in arr)   $("#history").append(arr[i]+"</br>");
+    console.log(arr);
+    for(let i in arr)
+      $("#history").append("<b style='color:"+arr[i].color+"'>"+arr[i].name+"</b></br>");
   });
 
 
