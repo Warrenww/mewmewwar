@@ -101,7 +101,7 @@ $(document).ready(function () {
     }else {
       if($(this).scrollTop() == 0) return true
       turnPage(-1);
-        //scroll up 
+        //scroll up
         // alert('Up');
     }
     //prevent page fom scrolling
@@ -124,7 +124,13 @@ $(document).ready(function () {
       '<i class="material-icons" data-toggle="modal" data-target="#settingModal" id="setting">settings</i>' ;
   $("nav .settingBox").html(setting_html);
   $(".m_settingBox").html(setting_html);
-
+  $("i[data-target='#helpModal']").click(function () {
+    let dialog = $("#helpModal").find(".modal-header"),
+        ending = dialog[0].scrollHeight ;
+        console.log(ending)
+        $("#helpModal .modal-header").scrollTop(100)
+    dialog.scrollTop(ending);
+  })
   auth.onAuthStateChanged(function(user) {
     if (user) {
       $("#current_user_name").text("Hi, "+user.displayName)
