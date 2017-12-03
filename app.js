@@ -254,7 +254,9 @@ io.on('connection', function(socket){
         console.log('new user');
         let data = {
           name : user.displayName,
-          first_login: timer
+          first_login: timer,
+          history : "",
+          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""}
         }
         database.ref('/user/'+user.uid).set(data) ;
       }
@@ -275,7 +277,7 @@ io.on('connection', function(socket){
         if(history[i].type == 'combo') last_combo = history[i].id ;
         if(history[i].type == 'enemy') last_enemy = history[i].id ;
       }
-      let compareCat = snapshot.val().compare.cat2cat ;
+      let compareCat = snapshot.val().compare.cat2cat  ;
       let obj , arr = [] ;
       for(let i in compareCat){
         obj = {};

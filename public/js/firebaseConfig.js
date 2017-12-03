@@ -17,7 +17,7 @@ auth.onAuthStateChanged(user => {
   if(user){
     console.log('firebase signed in');
   } else {
-    alert('登入來啟用更多功能!!');
+    console.log('firebase signed in');
   }
 });
 

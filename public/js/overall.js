@@ -137,6 +137,8 @@ $(document).ready(function () {
       .attr({'id':'userdata','href':'userdata.html'}) ;
     } else {
       console.log('did not sign in');
+      r= confirm('登入來啟用更多功能!!');
+      if (r) facebookLog();
     }
   });
 
