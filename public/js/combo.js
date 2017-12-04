@@ -1,7 +1,6 @@
 $(document).ready(function () {
   var socket = io.connect();
-  const image_url = 'http://imgs-server.com/battlecats/u' ;
-  const image_local =  "public/css/footage/cat/u" ;
+  const image_url =  "public/css/footage/cat/u" ;
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connet",user);
@@ -81,8 +80,7 @@ $(document).ready(function () {
             pic_html +=
             '<span class="card" value="'+arr[i].cat[j]+'" '+
             'style="background-image:url('+
-            (image_list.indexOf("u"+arr[i].cat[j]+".png") != -1 ? image_local+arr[i].cat[j]+".png" : image_url+arr[i].cat[j]+'.png')
-            +');'+
+            image_url+arr[i].cat[j]+'.png);'+
             (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
             +'">'+name+'</span>' ;
           }
@@ -116,25 +114,3 @@ $(document).ready(function () {
       {scrollTop: $("."+class_name).eq(n).offset().top},
       1000,'easeInOutCubic');
   }
-
-  var xmlhttp = new XMLHttpRequest() ;
-  var url = "public/css/footage/cat/dir.txt";
-  var image_list ;
-
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
-
-  xmlhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        if(this.responseURL.indexOf("cat/dir.txt") != -1){
-              var data = this.responseText;
-              image_list = data ;
-        }
-        if(query){
-          searchCombo(query);
-          $(window).scrollTop(500);
-        }
-
-      }
-  }
-});

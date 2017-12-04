@@ -77,14 +77,6 @@ nav .mobile,
     height: 80px;
     width: 120px;
   }
-  .compareTarget .card,
-  #clear_compare {
-    height: 50px;
-    width: 75px;
-    margin: 2px;
-    font-size: 12px;
-  }
-  .compareTarget{height: 100;top: -100px}
   .card-group{margin: 0}
   #selected{
     width: 100%;

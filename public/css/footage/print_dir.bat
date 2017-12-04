@@ -1,2 +1,2 @@
-cd cat
+cd enemy
 dir /b > dir.txt

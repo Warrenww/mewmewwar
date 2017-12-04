@@ -33,7 +33,6 @@ $(document).ready(function () {
   if(screen.width < 768){
     $("#lower_table .value_display").attr("colspan",7);
   }
-  $(document).on('click','#updateCatData',function () {io().emit('force_update_cat_data');});
   $(document).on('keypress', 'input', function(e) {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) {

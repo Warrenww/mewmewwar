@@ -6,10 +6,10 @@ $(document).ready(function () {
         display_id : false
       } ;
   var filter_name = '' ;
-  const image_url = 'http://imgs-server.com/battlecats/u' ;
-  const image_local =  "public/css/footage/cat/u" ;
+  const image_url =  "public/css/footage/cat/u" ;
   var socket = io.connect();
   var current_user_data = {};
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connet",user);
@@ -25,19 +25,19 @@ $(document).ready(function () {
       for(let i in data.compare_c2c){
         let id = data.compare_c2c[i].id,
             name = data.compare_c2c[i].name;
-        $(".compareTarget").append('<span class="card" value="'+id+
+        $(".compareTarget").append('<div class="compareTarget_child" value='+id+'>'+
+        '<i class="fa fa-trash"></i>'+
+        '<span class="card" value="'+id+
         '" style="background-image:url('+
-        (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
-        +'">'+name+'</span>');
+        image_url+id+'.png'+
+        '">'+name+'</span></div>');
       }
     }
-    $('.compareTarget').css('top',0);
-    setTimeout(function () {
-      $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
-    },3000);
+
   });
+
   $(document).on('click','.card',function () {
-    // console.log(current_user.uid);
+    if($(this).parent().attr("class")=='compareTarget_child') return
     socket.emit("user Search",{
       uid : current_user_data.uid,
       type : 'cat',
@@ -45,7 +45,6 @@ $(document).ready(function () {
     });
     socket.emit("display cat",$(this).attr('value'));
   });
-  $(document).on('click',"#clear_all",function () {clearSelected('select');});
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   $(document).on('click','.glyphicon-shopping-cart',addToCompare);
@@ -62,8 +61,6 @@ $(document).ready(function () {
       socket.emit("text search",{key:keyword,type:'cat'});
     }
   });
-  $(document).on('click','#setting',showSetting) ;
-  $(document).on('click','#setting-submit',changeSetting) ;
 
   var input_org ;
   $(document).on('click','.comparedata #level,.editable',function () {
@@ -131,15 +128,15 @@ $(document).ready(function () {
     html += screen.width > 768 ?
     "<tr>"+
     "<th style='height:80px;padding:0'><img src='"+
-    (image_list.indexOf("u"+data.id+".png") != -1 ? image_local+data.id+".png" : image_url+data.id+'.png')
-    +"' style='height:100%'></th>"+
+    image_url+data.id+'.png'+
+    "' style='height:100%'></th>"+
     "<th colspan=3 rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
     "<th colspan=2>"+Thisbro(arr)+"</th>"+
     "</tr>" :
     "<tr>"+
     "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    (image_list.indexOf("u"+data.id+".png") != -1 ? image_local+data.id+".png" : image_url+data.id+'.png')
-    +"' style='height:100%'>"+Thisbro(arr)+"</th>"+
+    image_url+data.id+'.png'+
+    "' style='height:100%'>"+Thisbro(arr)+"</th>"+
     "</tr><tr>"+
     "<th colspan='6' rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
     "</tr>" ;
@@ -213,8 +210,7 @@ $(document).ready(function () {
           pic_html +=
           '<span class="card" value="'+arr[i].cat[j]+'" '+
           'style="background-image:url('+
-          (image_list.indexOf("u"+arr[i].cat[j]+".png") != -1 ? image_local+arr[i].cat[j]+".png" : image_url+arr[i].cat[j]+'.png')
-          +');'+
+          image_url+arr[i].cat[j]+'.png);'+
           (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
           +'">'+name+'</span>' ;
         }
@@ -247,8 +243,7 @@ $(document).ready(function () {
       html +=
       '<span class="card" value="'+arr[i]+'" '+
       'style="background-image:url('+
-      (image_list.indexOf("u"+arr[i]+".png") != -1 ? image_local+arr[i]+".png" : image_url+arr[i]+'.png')
-      +');'+
+      image_url+arr[i]+'.png);'+
       (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
       +'">'+name+'</span>'  ;
     }
@@ -327,8 +322,7 @@ $(document).ready(function () {
       if(current == now){
         html += '<span class="card" value="'+id+'" '+
         'style="background-image:url('+
-        (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
-        +');display:none">'+
+        image_url+id+'.png);display:none">'+
         name+'</span>' ;
       }
       else{
@@ -338,8 +332,7 @@ $(document).ready(function () {
         '<span class="glyphicon glyphicon-shopping-cart"></span>'+
         '<span class="card" value="'+id+'" '+
         'style="background-image:url('+
-        (image_list.indexOf("u"+id+".png") != -1 ? image_local+id+".png" : image_url+id+'.png')
-        +')">'+
+        image_url+id+'.png)">'+
         name+'</span>' ;
         now = current ;
       }
@@ -405,8 +398,8 @@ $(document).ready(function () {
           "<th id='level' rarity='"+data.稀有度+"'>30</th>"+
           "</tr><tr>"+
           "<th style='height:80px;padding:0'><img src='"+
-          (image_list.indexOf("u"+compare[i]+".png") != -1 ? image_local+compare[i]+".png" : image_url+compare[i]+'.png')
-          +"' style='height:100%'></th>"+
+          image_url+compare[i]+'.png'+
+          "' style='height:100%'></th>"+
           "</tr><tr>"+
           "<th id='全名'>"+data.全名+"</th>"+
           "</tr><tr>"+
@@ -704,72 +697,98 @@ $(document).ready(function () {
   $('.compareTarget').sortable('option',{
     item: '> comparedata'
   });
-  $('#selected').on('sortstart',function (e,ui) {
-    $('.compareTarget').css('top',0);
-    timeout = setTimeout(function () {
-      $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
-    },4000);
-  });
-  $('.compareTarget').on('sortover',function (e,ui) {
-    let input = ui.item.children('.card:visible');
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    if(compare.indexOf(input.attr('value')) != -1){
-      let repeat = $(this).find('[value='+input.attr('value')+']') ;
-      repeat.css('border-color','rgb(237, 179, 66)');
-      setTimeout(function () {
-        repeat.css('border-color','white');
-      },1000);
-      $("#selected").sortable('cancel');
-    }
-    else if(ui.sender.is('#selected')){
-      input.clone().appendTo(this);
-      $("#selected").sortable('cancel');
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-    }
-    else $("#selected").sortable('cancel');
-  });
-  $('.compareTarget').on('sortout',function (e,ui) {
-    let x = ui.position.left,
-        y = ui.position.top ;
-    if(y>120) if(ui.sender.is('.compareTarget')) ui.item.remove();
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-  });
+  // $('#selected').on('sortstart',function (e,ui) {
+  //   $('.compareTarget').css('top',0);
+  //   timeout = setTimeout(function () {
+  //     $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+  //   },4000);
+  // });
+  // $('.compareTarget').on('sortover',function (e,ui) {
+  //   let input = ui.item.children('.card:visible');
+  //   compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+  //   if(compare.indexOf(input.attr('value')) != -1){
+  //     let repeat = $(this).find('[value='+input.attr('value')+']') ;
+  //     repeat.css('border-color','rgb(237, 179, 66)');
+  //     setTimeout(function () {
+  //       repeat.css('border-color','white');
+  //     },1000);
+  //     $("#selected").sortable('cancel');
+  //   }
+  //   else if(ui.sender.is('#selected')){
+  //     input.clone().appendTo(this);
+  //     $("#selected").sortable('cancel');
+  //     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+  //     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+  //   }
+  //   else $("#selected").sortable('cancel');
+  // });
+  // $('.compareTarget').on('sortout',function (e,ui) {
+  //   let x = ui.position.left,
+  //       y = ui.position.top ;
+  //   if(x>180) if(ui.sender.is('.compareTarget')) ui.item.remove();
+  //   compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+  //   socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+  // });
   function addToCompare() {
-    $('.compareTarget').css('top',0);
+    clearTimeout(timeout);
+    $('.compareTarget_holder').css('left',0);
+    $('#compareTarget_tag').fadeOut();
     let target = $(this).parent().children(".card:visible");
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     if(compare.indexOf(target.attr('value')) != -1) {
       let repeat = $('.compareTarget').find('[value='+target.attr('value')+']') ;
       repeat.css('border-color','rgb(237, 179, 66)');
+      $('.compareTarget_holder').animate({
+        scrollTop : repeat.offset().top
+      },500,'easeInOutCubic');
       setTimeout(function () {
         repeat.css('border-color','white');
       },1000);
     } else {
-      target.clone().appendTo(".compareTarget");
+      $(".compareTarget").append("<div class='compareTarget_child' value='"+
+      target.attr('value')+"'><i class='fa fa-trash'></i></div>");
+      target.clone().appendTo(".compareTarget_child[value~="+target.attr('value')+"]");
+      $('.compareTarget_holder').animate({
+        scrollTop : $('.compareTarget').height()
+      },500,'easeInOutCubic');
       compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
       socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     }
     timeout = setTimeout(function () {
-      $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+      $('.compareTarget_holder').css('left',-180);
+      $('#compareTarget_tag').fadeIn();
     },4000);
   }
   $("#clear_compare").click(function () {
-    $(this).siblings().remove();
+    $(this).siblings().html("");
     compare = [];
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
-  $('.compareTarget').hover(function () {
+  $('.compareTarget_holder').hover(function () {
     clearTimeout(timeout) ;
     },function () {
-    $('.compareTarget').css('top',screen.width > 768 ?-160:-100);
+      $('.compareTarget_holder').css('left',-180);
+      $('#compareTarget_tag').fadeIn();
   });
   $('#a_compareCat ').bind('click',function () {
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     location.assign('/compareCat.html');
   });
+  $(document).on('click','.compareTarget_child',function () {
+    $(this).remove();
+    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+  });
+  $(document).on('click','#compareTarget_tag',function () {
+    $('.compareTarget_holder').css('left',0);
+    $(this).fadeOut();
+    timeout = setTimeout(function () {
+      $('.compareTarget_holder').css('left',-180);
+      $('#compareTarget_tag').fadeIn();
+    },4000)
+  });
+
 
 
   function levelToValue(origin,rarity,lv) {
@@ -805,28 +824,6 @@ $(document).ready(function () {
       for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
       return b+"（"+arr.join(' ')+"）"+c ;
 
-  }
-  function showSetting() {
-    let modal = $("#settingModal") ;
-    modal.find("#compare_max").children('#value').text(setting.compare_max);
-    modal.find("#display_id").text(setting.display_id?"yes":"no");
-
-    let val = Number(modal.find("#compare_max").children('#value').text()) ;
-    modal.find("#compare_max").children('.glyphicon').click(function () {
-      if(val>3 && $(this).is('.glyphicon-minus')) val -- ;
-      else if(val<7 && $(this).is('.glyphicon-plus')) val++ ;
-      $(this).siblings("#value").text(val) ;
-    });
-    modal.find("#display_id").click(function () {
-      let val = $(this).text();
-      $(this).text(val == "yes"?"no":"yes");
-    });
-  }
-  function changeSetting() {
-    let modal = $("#settingModal") ;
-    setting.compare_max = Number(modal.find("#compare_max").children('#value').text());
-    setting.display_id = modal.find("#display_id").text() == "yes" ? true : false ;
-    modal.modal("hide");
   }
   function calculateLV() {
     let val = Number($(this).val()),
@@ -878,25 +875,4 @@ $(document).ready(function () {
       {scrollTop: $("."+class_name).eq(n).offset().top},
       1000,'easeInOutCubic');
   }
-
-  var xmlhttp = new XMLHttpRequest() ;
-  var url = "public/css/footage/cat/dir.txt";
-  var image_list ;
-
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
-
-  xmlhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        console.log(this.responseURL);
-        if(this.responseURL.indexOf("cat/dir.txt") != -1){
-              var data = this.responseText;
-              // console.log(data.split("\n")) ;
-              let nowtime =  new Date().getTime();
-              console.log(nowtime-timer) ;
-              image_list = data ;
-        }
-      }
-    }
-
 });
