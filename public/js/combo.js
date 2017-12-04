@@ -100,8 +100,7 @@ $(document).ready(function () {
                 "<td colspan=2 >"+arr[i].name+"</td>"+
                 "</tr><tr>"+
                 "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
-                "</tr><tr>"
-              );
+                "</tr><tr>");
           $(".dataTable").append(html);
 
     }
@@ -114,3 +113,4 @@ $(document).ready(function () {
       {scrollTop: $("."+class_name).eq(n).offset().top},
       1000,'easeInOutCubic');
   }
+});
