@@ -27,9 +27,6 @@ $(document).ready(function () {
     });
   }
 
-
-  socket.emit('connet',location.href) ;
-
   if(screen.width < 768){
     $("#lower_table .value_display").attr("colspan",7);
   }
@@ -108,8 +105,8 @@ $(document).ready(function () {
   };
   $('#selected').bind('mousewheel', scroll_select);
 
-  var nav_site = ["cat","enemy","combo","calender","event","compareCat"],
-      nav_text = ["貓咪資料","敵人資料","查詢聯組","活動日程","最新消息","比較貓咪"];
+  var nav_site = ["cat","enemy","combo","calender","compareCat","event"],
+      nav_text = ["貓咪資料","敵人資料","查詢聯組","活動日程","比較貓咪","最新消息"];
 
   var nav_html = "" ;
   for (let i in nav_site){
@@ -171,3 +168,27 @@ $(document).ready(function () {
   }) ;
 
 });
+
+function levelToValue(origin,rarity,lv) {
+  let limit ;
+  switch (rarity) {
+    case '稀有':
+    limit = 70 ;
+    break;
+    case '激稀有狂亂':
+    limit = 20 ;
+    break;
+    default:
+    limit = 60 ;
+  }
+  return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
+}
+function serialATK(prop,atk) {
+    let b = prop.split("（")[0];
+    let arr = prop.split("（")[1].split("）")[0].split(","),
+        c = prop.split("（")[1].split("）")[1];
+    // console.log(b+"("+arr.join()+")")
+    for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
+    return b+"（"+arr.join(' ')+"）"+c ;
+
+}

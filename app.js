@@ -58,6 +58,8 @@ database.ref("/").once("value",function (snapshot) {
   console.log('all data load complete!!') ;
 });
 
+arrangeUserData();
+
 
 io.on('connection', function(socket){
   // console.log('a user connected');
@@ -294,7 +296,7 @@ io.on('connection', function(socket){
         compare_c2c: arr
       });
     });
-
+    console.log('user data send');  
   });
   socket.on("search combo",function (arr) {
     console.log("searching combo......") ;
@@ -310,6 +312,12 @@ io.on('connection', function(socket){
     console.log("compare cat!!");
     console.log(data);
     database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
+  });
+  socket.on("start compare c2c",function (arr) {
+    console.log('start compare c2c');
+    let compare = [];
+    for(let i in arr) compare.push(catdata[arr[i]]);
+    socket.emit("c2c compare",compare);
   });
 
   socket.on("user Search",function (obj) {
@@ -368,6 +376,19 @@ io.on('connection', function(socket){
 
 });
 
+function  arrangeUserData() {
+  console.log('arrange user data');
+  let buffer = {};
+  database.ref('/user').once('value',function (snapshot) {
+    userdata = snapshot.val();
+    for(let i in userdata){
+      // console.log(i);
+      if(i != "undefined") buffer[i] = userdata[i]
+    }
+    // console.log(buffer);
+    database.ref('/user').set(buffer);
+  });
+}
 function loadcatData() {
   console.log("staring load data from google sheet!!");
   gsjson({
@@ -408,40 +429,6 @@ function loadcatData() {
     console.log(err.message);
     console.log(err.stack);
   });
-  // gsjson({
-  //   spreadsheetId: sheet_ID,
-  //   hash : 'id' ,
-  //   worksheet: ['聯組']
-  // })
-  // .then(function(result) {
-  //   // console.log(result)
-  //   socket.emit('push cat data',JSON.stringify(result));
-  //   fs.writeFile('public/js/Combo.txt', JSON.stringify(result), (err) => {
-  //     if (err) throw err;
-  //     console.log('Combo is saved!');
-  //   });
-  // })
-  // .catch(function(err) {
-  //   console.log(err.message);
-  //   console.log(err.stack);
-  // });
-  // gsjson({
-  //   spreadsheetId: sheet_ID,
-  //   hash : 'id' ,
-  //   worksheet: ['敵人資料']
-  // })
-  // .then(function(result) {
-  //   // console.log(result)
-  //   socket.emit('push cat data',JSON.stringify(result));
-  //   fs.writeFile('public/js/Enemydata.txt', JSON.stringify(result), (err) => {
-  //     if (err) throw err;
-  //     console.log('Enemydata is saved!');
-  //   });
-  // })
-  // .catch(function(err) {
-  //   console.log(err.message);
-  //   console.log(err.stack);
-  // });
 }
 function levelToValue(origin,rarity,lv) {
   let limit ;

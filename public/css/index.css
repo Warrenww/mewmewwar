@@ -128,10 +128,10 @@ td, th {
   width:100%;
   justify-content: center
 }
-.dataTable th,.select th{
+.dataTable th,.select th,.compareTable th{
   background-color: rgba(242, 213, 167, 0.93);
 }
-.dataTable td,.select td{
+.dataTable td,.select td,.compareTable td{
     background-color: rgba(255, 255, 255, 0.9);
 }
 .card{
@@ -231,7 +231,9 @@ table {
   display: flex;
   align-items: flex-end;
 }
-.compareTarget_holder::-webkit-scrollbar {
+.compareTarget_holder::-webkit-scrollbar,
+.comparedataholder::-webkit-scrollbar
+ {
     width: 0px;
 }
 .compareTarget_child{
@@ -272,7 +274,6 @@ table {
   width: 120px;
 }
 .compareTable{display: flex;}
-.compareTable table{flex:1}
 .best{
   color:rgb(247, 175, 67);
   font-weight: bolder;
@@ -312,25 +313,27 @@ table {
   border-bottom-color:transparent;
 
 }
-/*.best::after{
-  font-family: Glyphicons Halflings;
-    content: " \e125";
-    position: absolute;
-    margin: -7px -46px;
-    font-size: 25px;
-    transform: rotate(-15deg);
-    border: 5px solid;
-    border-radius: 50%;
-    height: 50px;
-    width: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}*/
 .glyphicon-minus,.glyphicon-plus,
 #display_id,.searchCombo,.active,
-.reverse,.compareTarget_child i{cursor: pointer;}
+.reverse,.compareTarget_child i,
+.compareTable th{cursor: pointer;}
 #helpModal .modal-header{
   height: 40% ;
   overflow-y: scroll;
+}
+.compareDisplay{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 5%;
+  padding-bottom: 0;
+  padding-right: 0;
+}
+.compareTable{width: 100%}
+.comparedataholder{
+  display: flex;
+  flex: 3;
+  overflow-x: visible;
+  overflow-y: scroll;
+  width: 90%;
 }
