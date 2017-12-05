@@ -340,18 +340,6 @@ $(document).ready(function () {
     return html ;
   }
 
-  function compareCat() {
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    console.log(compare);
-    scroll_to_class("display",0);
-    $(".compareTable").empty();
-    $(".dataTable").empty();
-    if(compare.length == 1) displayCatData(compare[0]);
-    else{
-
-    }
-    highlightTheBest();
-  }
   function highlightTheBest() {
     $('.comparedata').find('td').removeClass('best');
     $('.comparedatahead tbody').children().each(function () {
@@ -483,6 +471,7 @@ $(document).ready(function () {
       }
       else $(this).parent().html(input_org);
   }
+
   function filterSlider() {
     $("#slider_holder").show();
     $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
@@ -602,13 +591,13 @@ $(document).ready(function () {
     }
   }
   var timeout,compare ;
-  $('#selected').sortable('option',{
-    item: '> .card-group',
-    connectWith: ".compareTarget"
-  });
-  $('.compareTarget').sortable('option',{
-    item: '> comparedata'
-  });
+  // $('#selected').sortable('option',{
+  //   item: '> .card-group',
+  //   connectWith: ".compareTarget"
+  // });
+  // $('.compareTarget').sortable('option',{
+  //   item: '> comparedata'
+  // });
   // $('#selected').on('sortstart',function (e,ui) {
   //   $('.compareTarget').css('top',0);
   //   timeout = setTimeout(function () {
@@ -676,29 +665,34 @@ $(document).ready(function () {
     compare = [];
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
-  $('.compareTarget_holder').hover(function () {
-    clearTimeout(timeout) ;
-    },function () {
-      $('.compareTarget_holder').css('left',-180);
-      $('#compareTarget_tag').fadeIn();
-  });
+  // $('.compareTarget_holder').hover(function () {
+  //   clearTimeout(timeout) ;
+  //   },function () {
+  //     $('.compareTarget_holder').css('left',-180);
+  //     $('#compareTarget_tag').fadeIn();
+  // });
   $('#a_compareCat ').bind('click',function () {
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     location.assign('/compareCat.html');
   });
   $(document).on('click','.compareTarget_child',function () {
+    let r = confirm("確定要將"+$(this).children(".card").text()+"從比較列中移除?") ;
+    if(!r) return
     $(this).remove();
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
+  var showcomparetarget = 1 ;
   $(document).on('click','#compareTarget_tag',function () {
-    $('.compareTarget_holder').css('left',0);
-    $(this).fadeOut();
-    timeout = setTimeout(function () {
+    if(showcomparetarget){
+      $('.compareTarget_holder').css('left',0);
+      $(this).css('left',180).children('i').css({"transform":"rotate(180deg)"});
+    } else {
       $('.compareTarget_holder').css('left',-180);
-      $('#compareTarget_tag').fadeIn();
-    },4000)
+      $(this).css('left',0).children('i').css({"transform":"rotate(0deg)"});
+    }
+    showcomparetarget = showcomparetarget ? 0 : 1 ;
   });
 
 
@@ -752,15 +746,5 @@ $(document).ready(function () {
       $(this).parent().html(levelToValue(ori,rarity,lv));
     }
 
-  }
-  function scroll_to_div(div_id){
-    $('html,body').animate(
-      {scrollTop: $("#"+div_id).offset().top},
-      1000,'easeInOutCubic');
-  }
-  function scroll_to_class(class_name,n) {
-    $('html,body').animate(
-      {scrollTop: $("."+class_name).eq(n).offset().top},
-      1000,'easeInOutCubic');
   }
 });

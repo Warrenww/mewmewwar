@@ -95,7 +95,6 @@ button:active{
 .page_1,.page_2{
   background-color: white ;
   position: relative;
-  z-index: 2;
   overflow-x: hidden;
   background-image: url("footage/search_BG.png");
 }
@@ -248,14 +247,17 @@ table {
   font-size: 20px;
   font-weight: bolder;
   width: 40px;
-  height: 160px;
+  height: 180px;
   position: fixed;
-  top: 70%;
+  top: 65%;
   left: 0;
-  background-color: rgba(255,255,255,.5);
+  background-color: rgba(255,255,255,.64);
   z-index: 3;
   cursor: pointer;
+  transition: .8s ease-in-out;
 }
+#compareTarget_tag i {transition: .8s ease-in-out;}
+
 #clear_compare{
   cursor: pointer;
   height: 80px;
@@ -317,17 +319,17 @@ table {
 #display_id,.searchCombo,.active,
 .reverse,.compareTarget_child i,
 .compareTable th{cursor: pointer;}
-#helpModal .modal-header{
+#helpModal .modal-body{
   height: 40% ;
   overflow-y: scroll;
 }
+#helpModal .title{font-size: 20px;font-weight: bold;}
 .compareDisplay{
   display: flex;
   width: 100%;
   height: 100%;
-  padding: 5%;
-  padding-bottom: 0;
-  padding-right: 0;
+  padding: 0;
+  padding-top: 70px
 }
 .compareTable{width: 100%}
 .comparedataholder{

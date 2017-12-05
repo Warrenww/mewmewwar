@@ -105,8 +105,8 @@ $(document).ready(function () {
   };
   $('#selected').bind('mousewheel', scroll_select);
 
-  var nav_site = ["cat","enemy","combo","calender","compareCat","event"],
-      nav_text = ["貓咪資料","敵人資料","查詢聯組","活動日程","比較貓咪","最新消息"];
+  var nav_site = ["cat","enemy","combo","compareCat","calender","event"],
+      nav_text = ["貓咪資料","敵人資料","查詢聯組","比較貓咪","活動日程","最新消息"];
 
   var nav_html = "" ;
   for (let i in nav_site){
@@ -147,20 +147,8 @@ $(document).ready(function () {
   xmlhttp.onreadystatechange = function(){
     if (this.readyState == 4 && this.status == 200){
       update_dialog = this.responseText ;
-      $("#helpModal").find(".update_dialog").html(update_dialog)
-      .parent().siblings(".modal-body").html(
-        "<h4>常見問題</h4>"+
-        "<b>圖片無法顯示</b></br>"+
-        "<p>因部分圖片是由超絕攻略網抓取，受限於domain問題，"+
-        "請開啟<a href='http:"+"//battlecats-db.com/unit/status_r_all.html'>"+
-        "超絕攻略網</a>待圖片讀取完畢後"+
-        "本網站即可顯示圖片</p>"+
-        "<b>最新消息沒有顯示</b></br>"+
-        "<p>最新消息發布的日期若與今天日期不同，"+
-        "則會抓取到空白頁面，受限於domain問題，無法自動偵測有無顯示，"+
-        "煩請手動點按頁面下方retry調整至最近的發布日期</p>"
-      );
-
+      $("#helpModal").find(".modal-body").html(update_dialog);
+      $("#helpModal").find(".modal-header .title").text("更新紀錄");
     }
   }
   socket.on("connet",function (data) {
@@ -191,4 +179,14 @@ function serialATK(prop,atk) {
     for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
     return b+"（"+arr.join(' ')+"）"+c ;
 
+}
+function scroll_to_div(div_id){
+  $('html,body').animate(
+    {scrollTop: $("#"+div_id).offset().top},
+    1000,'easeInOutCubic');
+}
+function scroll_to_class(class_name,n) {
+  $('html,body').animate(
+    {scrollTop: $("."+class_name).eq(n).offset().top},
+    1000,'easeInOutCubic');
 }

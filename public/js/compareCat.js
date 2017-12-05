@@ -24,7 +24,6 @@ $(document).ready(function () {
     }
   });
 
-
   socket.on("c2c compare", function (compare){
     $(".compareTable").append(
       "<div class='comparedatahead'>"+
@@ -100,8 +99,6 @@ $(document).ready(function () {
       );
     }
   });
-
-
 
 
 });

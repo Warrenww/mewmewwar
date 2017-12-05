@@ -302,11 +302,6 @@ $(document).ready(function () {
       }
     }
   }
-  function scroll_to_class(class_name,n) {
-    $('.page_1').animate(
-      {scrollTop: $("."+class_name).eq(n).offset().top},
-      1000,'easeInOutCubic');
-  }
 
 
 
