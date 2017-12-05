@@ -23,6 +23,7 @@ $(document).ready(function () {
     current_user_data = data ;
     if(data.last_cat) socket.emit("display cat",data.last_cat) ;
     if(data.compare_c2c) {
+      $(".compareTarget").empty();
       for(let i in data.compare_c2c){
         let id = data.compare_c2c[i].id,
             name = data.compare_c2c[i].name;
