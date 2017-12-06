@@ -5,6 +5,9 @@ $(document).ready(function () {
   $(document).on('click','#test_2',function () {
     for(let i = 0;i < 11;i++) www()
   });
+  $(document).on('click','#test_3',function () {
+    $(".result").empty();
+  });
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connet",user);
@@ -19,7 +22,6 @@ $(document).ready(function () {
 
   function www() {
     let result = Math.random();
-    console.log(result);
     if(result<0.05)socket.emit("lucky","SSR");
     if(0.05<result&&result<0.3)socket.emit("lucky","SR");
     if(0.3<result)socket.emit("lucky","R");

@@ -372,7 +372,6 @@ io.on('connection', function(socket){
     // console.log('user disconnected');
   });
   socket.on("lucky",function(result){
-    console.log("Are you lucky?");
     let rarity = "";
     if(result == 'SSR') rarity = "超激稀有" ;
     if(result == 'SR') rarity = "激稀有" ;
@@ -388,8 +387,9 @@ io.on('connection', function(socket){
         exist = current;
       }
     }
-    let choose = buffer[(Math.random()*buffer.length).toFixed(0)],
+    let choose = buffer[Math.floor((Math.random()*buffer.length))],
         choooose = choose+"-1" ;
+        console.log(choooose);
     socket.emit("choose",{id:choooose,name:catdata[choooose].全名,rarity:result});
   });
 
