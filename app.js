@@ -257,7 +257,7 @@ io.on('connection', function(socket){
         let data = {
           name : user.displayName,
           first_login: timer,
-          history : "",
+          history : {cat:"",enemy:"",combo:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""}
         }
         database.ref('/user/'+user.uid).set(data) ;
@@ -273,12 +273,11 @@ io.on('connection', function(socket){
     console.log("user "+user.uid+" connect");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
-      let history = snapshot.val().history ;
-      for(let i in history){
-        if(history[i].type == 'cat') last_cat = history[i].id ;
-        if(history[i].type == 'combo') last_combo = history[i].id ;
-        if(history[i].type == 'enemy') last_enemy = history[i].id ;
-      }
+    let history = snapshot.val().history ;
+    for(let i in history.cat) last_cat = history.cat[i].id ;
+    for(let i in history.combo) last_combo = history.combo[i].id ;
+    for(let i in history.enemy) last_enemy = history.enemy[i].id ;
+
       let compareCat = snapshot.val().compare.cat2cat  ;
       let obj , arr = [] ;
       for(let i in compareCat){
@@ -296,7 +295,7 @@ io.on('connection', function(socket){
         compare_c2c: arr
       });
     });
-    console.log('user data send');  
+    console.log('user data send');
   });
   socket.on("search combo",function (arr) {
     console.log("searching combo......") ;
