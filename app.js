@@ -389,7 +389,7 @@ io.on('connection', function(socket){
     }
     let choose = buffer[Math.floor((Math.random()*buffer.length))],
         choooose = choose+"-1" ;
-        console.log(choooose);
+        // console.log(choooose);
     socket.emit("choose",{id:choooose,name:catdata[choooose].全名,rarity:result});
   });
 
