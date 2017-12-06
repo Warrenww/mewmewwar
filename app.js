@@ -322,7 +322,7 @@ io.on('connection', function(socket){
   socket.on("user Search",function (obj) {
     console.log("recording user history");
     console.log(obj);
-    database.ref("/user/"+obj.uid+"/history")
+    database.ref("/user/"+obj.uid+"/history/"+obj.type)
           .push({type : obj.type,id : obj.id});
   });
   socket.on("history",function (uid) {
