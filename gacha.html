@@ -21,21 +21,24 @@
         <i class="material-icons" id="m_nav_menu">menu</i>
       </div>
     </nav>
-    <div id="m_nav_panel_BG">
-    </div>
+    <div id="m_nav_panel_BG"></div>
     <div class="m_nav_panel">
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
     </div>
+    <style>
+      #test,#test_2{
+        margin: 100px;
+        font-size: 40px;
+      }
+    </style>
 
     <div class="page_1" style="height:100%;width:100%">
-      <div style="margin:5% 10%">
-        <h1>搜尋紀錄</h1>
-        <p id='history' style="margin:20px;font-size:20px">
-
-        </p>
-      </div>
+      <button id='test' >轉蛋</button>
+      <button id='test_2' >11抽</button>
+      <div class="result" style="width:100%;padding:5%;display:flex;flex-wrap: wrap;"></div>
     </div>
+
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">
@@ -55,7 +58,6 @@
     </div>
 
 
-
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
@@ -63,7 +65,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="public/js/html2canvas.min.js"></script>
     <script src="public/js/overall.js"></script>
-    <script src="public/js/userdata.js"></script>
+    <script src="public/js/test.js"></script>
     <script src="public/js/firebaseConfig.js"></script>
     <script src="public/js/jquery.easing.1.3.js"></script>
     <script src="/socket.io/socket.io.js"></script>

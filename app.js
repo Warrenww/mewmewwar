@@ -371,6 +371,27 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     // console.log('user disconnected');
   });
+  socket.on("lucky",function(result){
+    console.log("Are you lucky?");
+    let rarity = "";
+    if(result == 'SSR') rarity = "超激稀有" ;
+    if(result == 'SR') rarity = "激稀有" ;
+    if(result == 'R') rarity = "稀有" ;
+
+    let buffer = [];
+    let exist = '000' ;
+    for(let i in catdata) {
+      if(catdata[i].稀有度 == rarity) {
+        let current = i.substring(0,3);
+        if(current == exist) continue
+        buffer.push(current);
+        exist = current;
+      }
+    }
+    let choose = buffer[(Math.random()*buffer.length).toFixed(0)],
+        choooose = choose+"-1" ;
+    socket.emit("choose",{id:choooose,name:catdata[choooose].全名,rarity:result});
+  });
 
 
 });

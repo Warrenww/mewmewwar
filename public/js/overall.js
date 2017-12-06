@@ -105,8 +105,8 @@ $(document).ready(function () {
   };
   $('#selected').bind('mousewheel', scroll_select);
 
-  var nav_site = ["cat","enemy","combo","compareCat","calender","event"],
-      nav_text = ["貓咪資料","敵人資料","查詢聯組","比較貓咪","活動日程","最新消息"];
+  var nav_site = ["cat","enemy","combo","compareCat","calender","event","gacha"],
+      nav_text = ["貓咪資料","敵人資料","查詢聯組","比較貓咪","活動日程","最新消息","轉蛋"];
 
   var nav_html = "" ;
   for (let i in nav_site){
