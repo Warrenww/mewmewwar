@@ -229,6 +229,7 @@ table {
   flex-direction: column;
   display: flex;
   align-items: flex-end;
+  min-height: 100%
 }
 .compareTarget_holder::-webkit-scrollbar,
 .comparedataholder::-webkit-scrollbar
