@@ -120,7 +120,9 @@ $(document).ready(function () {
   });
   function displayCatData(data,arr,brr) {
     let html = "" ;
-    html += setting.display_id ? "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>" : "" ;
+    // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
+    html += "<tr><td style='background-color:transparent' colspan=5></td>"+
+            "<td style='background-color:transparent'><button id='addcart'>加到購物車</button></td>";
 
     html += screen.width > 768 ?
     "<tr>"+
@@ -141,7 +143,7 @@ $(document).ready(function () {
 
     $(".dataTable").empty();
     $('.compareTable').empty();
-    $(".dataTable").append(
+    $(".dataTable").attr('id',data.id).append(
       html+
       "<tr>"+
       "<th colspan='1'>等級</th>"+
@@ -448,6 +450,37 @@ $(document).ready(function () {
 
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   $(document).on('click','.glyphicon-shopping-cart',addToCompare);
+  $(document).on('click',"#addcart", function () {
+    $('.compareTarget_holder').css('left',0);
+    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
+    showcomparetarget = 0 ;
+    let id = $(".dataTable").attr('id'),
+        name = $(".dataTable").find("#全名").text();
+    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    if(compare.indexOf(id) != -1) {
+      let repeat = $('.compareTarget').find('[value='+id+']') ;
+      repeat.css('border-color','rgb(237, 179, 66)');
+      $(".compareTarget_holder").animate({
+        scrollTop : repeat[0].offsetTop-100
+      },800,'easeInOutCubic');
+      setTimeout(function () {
+        repeat.css('border-color','white');
+      },1000);
+    } else {
+      $(".compareTarget").append('<div class="compareTarget_child" value='+id+'>'+
+      '<i class="fa fa-trash"></i>'+
+      '<span class="card" value="'+id+
+      '" style="background-image:url('+
+      image_url+id+'.png'+
+      '">'+name+'</span></div>')
+      $('.compareTarget_holder').animate({
+        scrollTop : $('.compareTarget').height()
+      },500,'easeInOutCubic');
+      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+    }
+
+  });
   $(document).on('click','.compareTarget_child',function () {
     let r = confirm("確定要將"+$(this).children(".card").text()+"從比較列中移除?") ;
     if(!r) return

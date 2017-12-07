@@ -1,0 +1,135 @@
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="public/css/index.css" />
+    <link rel="stylesheet" href="public/css/navBar.css" />
+    <link rel="stylesheet" href="public/css/rwd.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="\">
+        <img src="public/css/footage/title.png"/>
+      </a>
+      <div class="navLinkBox"></div>
+      <div class="settingBox"></div>
+      <div class="mobile">
+        <i class="material-icons" id="m_nav_menu">menu</i>
+      </div>
+    </nav>
+    <div id="m_nav_panel_BG"></div>
+    <div class="m_nav_panel">
+      <div class="m_navLinkBox"></div>
+      <div class="m_settingBox"></div>
+    </div>
+    <style>
+      h1{margin: 5%}
+      p{font-size: 20px}
+      h1,h3{font-weight: bold;}
+      del{color:gray}
+      img{padding: 0 2%;height: 200px}
+      button{font-size: 30px}
+    </style>
+
+    <div class="page_1">
+      <h1>這是一個沒有廣告的網站，但...</h1>
+      <div style="padding:10%;padding-top:0">
+        <ul>
+          <li>
+            <h3>為什麼沒有廣告</h3>
+            <p>
+              因為網站開發者<del>不會做</del>也常常深受廣告所擾
+              ，所以希望一個網站可以乾乾淨淨的不要有醜醜的廣告
+            </p>
+          </li>
+        </br>
+          <li>
+            <h3>那他要怎麼賺錢</h3>
+            <div style="display:flex">
+              <p>
+                只要版面漂亮  <del>我可以不賺錢</del></br>
+                我改用CoinHive的專案，利用你電腦空出來的計算能力幫我挖礦
+                賺取微薄的收入，所以在開著本網站的同時，電腦一部份的資源會
+                借給我用，希望你不要介意>_O
+              </p>
+              <img src="https://3mgj4y44nc15fnv8d303d8zb-wpengine.netdna-ssl.com/wp-content/uploads/2017/09/coinhive-696x449.jpg" />
+            </div>
+          </li>
+        </br>
+          <li>
+            <h3>這樣很賺嗎</h3>
+            <p>
+              <del>我知道其實沒人關心但我只是想抱怨</del></br>不!一點都不!
+              我自己測試過，就算CPU滿載，開著網站1小時都還賺不到台幣0.1元，
+              更不用說我只會占用你們CPU效能的30%左右惹，所以只是賺好玩的，
+              <del>連寫網頁時花的電費都賺不回來QQ</del>
+            </p>
+          </li>
+        </br>
+          <li>
+            <h3>我可以拒絕嗎</h3>
+            <div style="display:flex">
+              <p>
+                <del>(對我來說)</del>很遺憾的，你可以也有權利這麼做</br>
+                可是你忍心嗎，這麼好的攻略網站，這麼精美的排版，這麼廉價的爆肝coding製作者</br>
+                好啦....如果你電腦快燒起來我也是可以大發慈悲讓你暫停一下下啦
+              </p>
+              <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Tsundere.jpg/200px-Tsundere.jpg' />
+            </div>
+          </li>
+        </br>
+          <li>
+            <h3>好吧我接受，那我要怎麼做</h3>
+            <p>
+              按下本頁最底端的按鈕，待彈出以下視窗後，點選
+              <b style="background-color:rgb(89, 187, 245);padding:10px;color:white">Allow for this session</b>
+              即可，感謝你的施捨QAQ
+            </p>
+            <img src="public/css/footage/alert_demo.png" style="width:400px;height:auto"/>
+          </li>
+        </br>
+        </ul>
+        <div style="display:flex;justify-content: center;">
+          <button id="fine">施捨你一點錢</button>
+          <button id='nooo' style="background:gray">我還是不要</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="helpModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <div class='title'></div>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <!-- <button id="setting-submit" class="btn btn-default" >Confirm</button> -->
+            <button id="setting-cancel" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script src="https://authedmine.com/lib/authedmine.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="public/js/html2canvas.min.js"></script>
+    <script src="public/js/overall.js"></script>
+    <script src="public/js/mine.js"></script>
+    <script src="public/js/firebaseConfig.js"></script>
+    <script src="../js/jquery.easing.1.3.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </body>
+</html>

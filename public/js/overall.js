@@ -9,11 +9,8 @@ $(document).ready(function () {
       // The signed-in user info.
       var user = result.user;
       console.log(user);
-
       socket.emit("user login",result.user) ;
-
       // window.location.assign("/");
-
     }).catch(function(error) {
       console.log(error);
       // Handle Errors here.
@@ -154,7 +151,6 @@ $(document).ready(function () {
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
-
 });
 
 function levelToValue(origin,rarity,lv) {

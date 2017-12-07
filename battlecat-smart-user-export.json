@@ -1,0 +1,609 @@
+{
+  "5caK6iJwFQRHUdzeJMpolTMieOs2" : {
+    "compare" : {
+      "cat2cat" : "",
+      "cat2enemy" : "",
+      "enemy2enemy" : ""
+    },
+    "first_login" : 1512302753603,
+    "history" : "",
+    "last_login" : 1512303206421,
+    "name" : "方平雄"
+  },
+  "WpuTiJHzlNPcvzeRQKuwkAv0kxB3" : {
+    "compare" : {
+      "cat2cat" : 0,
+      "cat2enemy" : 0,
+      "enemy2enemy" : 0
+    },
+    "first_login" : 1512301075111,
+    "history" : {
+      "-L-RI8k9ed03wzeRDKOt" : {
+        "id" : "032-1",
+        "type" : "cat"
+      },
+      "-L-RIJsHbIlPobMwxUdW" : {
+        "id" : "160-1",
+        "type" : "cat"
+      },
+      "-L-RImAvPaZ2HrDqHdo1" : {
+        "id" : "160-2",
+        "type" : "cat"
+      },
+      "-L-RImg8FqDViY7lr4H8" : {
+        "id" : "160-3",
+        "type" : "cat"
+      },
+      "-L-RIrMxM0muN1M_U-vJ" : {
+        "id" : "042-1",
+        "type" : "cat"
+      },
+      "-L-RItSOL4TAUqtuHJ1U" : {
+        "id" : "042-2",
+        "type" : "cat"
+      },
+      "-L-RIym0_d2Z7-mAcdtQ" : {
+        "id" : "133-1",
+        "type" : "cat"
+      },
+      "-L-RJ0opyVyYITKjtrDt" : {
+        "id" : "133-3",
+        "type" : "cat"
+      },
+      "-L-RJ0x_dZz166X47th2" : {
+        "id" : "133-2",
+        "type" : "cat"
+      },
+      "-L-RJ1qt5jcpP0p-8F1w" : {
+        "id" : "133-3",
+        "type" : "cat"
+      },
+      "-L-RJ1ve0Xki5b53An0N" : {
+        "id" : "133-3",
+        "type" : "cat"
+      },
+      "-L-RJ7f_aaDclkxsaTPn" : {
+        "id" : "199-1",
+        "type" : "cat"
+      },
+      "-L-RJ8S0eGh5G5nVKiyr" : {
+        "id" : "199-2",
+        "type" : "cat"
+      },
+      "-L-RJ9VuRxPocthDsoYj" : {
+        "id" : "199-1",
+        "type" : "cat"
+      },
+      "-L-RJAqCKU9Lelh8PjE3" : {
+        "id" : "199-2",
+        "type" : "cat"
+      },
+      "-L-RJBf8XabULSROZwv1" : {
+        "id" : "199-1",
+        "type" : "cat"
+      },
+      "-L-RJDfCx1MFOac59gc6" : {
+        "id" : "199-2",
+        "type" : "cat"
+      },
+      "-L-RJGUp50MhkXatd_rP" : {
+        "id" : "216-1",
+        "type" : "cat"
+      },
+      "-L-RJMCK3zhzlsiHuzwx" : {
+        "id" : "129-1",
+        "type" : "cat"
+      },
+      "-L-RJMZ4vgzrZK2f95XA" : {
+        "id" : "129-1",
+        "type" : "cat"
+      },
+      "-L-RJMoSg55lPr5dJ7Yy" : {
+        "id" : "129-1",
+        "type" : "cat"
+      },
+      "-L-RJSMWaqMwlpTY3fz_" : {
+        "id" : "081-1",
+        "type" : "cat"
+      },
+      "-L-RJSySscnakAckbChE" : {
+        "id" : "081-1",
+        "type" : "cat"
+      },
+      "-L-RJSyU2xeOz_2xiNfZ" : {
+        "id" : "081-1",
+        "type" : "cat"
+      },
+      "-L-RJT79VxdA33ZI6PeA" : {
+        "id" : "081-1",
+        "type" : "cat"
+      },
+      "-L-RJYUtPeMoVzX-Fcus" : {
+        "id" : "039-1",
+        "type" : "cat"
+      },
+      "-L-RJYpCiEni8GZM30Mb" : {
+        "id" : "039-1",
+        "type" : "cat"
+      },
+      "-L-RJZLydxeOsDbGhi9T" : {
+        "id" : "039-1",
+        "type" : "cat"
+      },
+      "-L-RJZM0ysis2Atf-HT4" : {
+        "id" : "039-1",
+        "type" : "cat"
+      },
+      "-L-RJZM2IW0w6UJzDYfJ" : {
+        "id" : "039-1",
+        "type" : "cat"
+      },
+      "-L-RJZN8tmuwEBadnQ5z" : {
+        "id" : "039-1",
+        "type" : "cat"
+      },
+      "-L-RJhoxB1F7c0FNLaFs" : {
+        "id" : "309-1",
+        "type" : "cat"
+      },
+      "-L-RJi7Ad6E8NYJ568jm" : {
+        "id" : "309-1",
+        "type" : "cat"
+      },
+      "-L-RJiJWx0xS3KkeIGZy" : {
+        "id" : "309-1",
+        "type" : "cat"
+      },
+      "-L-RJldGZrvjarjDTmFi" : {
+        "id" : "128-1",
+        "type" : "cat"
+      },
+      "-L-UlFR--rTx-2dka2Ei" : {
+        "id" : "042-1",
+        "type" : "cat"
+      },
+      "-L-UlFsgm-uo7Su-0pFH" : {
+        "id" : "042-2",
+        "type" : "cat"
+      },
+      "-L-UlIa_q9t1iPi-JXy-" : {
+        "id" : "042-2",
+        "type" : "cat"
+      },
+      "-L-UlIhgiHP1aoweC5mP" : {
+        "id" : "010-1",
+        "type" : "cat"
+      },
+      "-L-UlJuBNwN2ZUu5qb6t" : {
+        "id" : "010-2",
+        "type" : "cat"
+      },
+      "-L-UlKXwObmHgSkP75od" : {
+        "id" : "010-3",
+        "type" : "cat"
+      },
+      "-L-UlLvJ2sdQ44Per6mT" : {
+        "id" : "154-2",
+        "type" : "cat"
+      },
+      "-L-UlMyNecugwyTnyClN" : {
+        "id" : "042-1",
+        "type" : "cat"
+      }
+    },
+    "last_login" : 1512360455365,
+    "name" : "陳靖萱"
+  },
+  "iK24QRyTbxbZ59xuWlRegdrkEl32" : {
+    "compare" : {
+      "cat2cat" : [ "138-1", "323-1", "261-2", "270-1" ],
+      "cat2enemy" : 0,
+      "enemy2enemy" : 0
+    },
+    "first_login" : 1512210066561,
+    "history" : {
+      "-L-LjrUh9EBJWbukxD-k" : {
+        "id" : "018",
+        "type" : "enemy"
+      },
+      "-L-Lk1TrvDooklg3DtEj" : {
+        "id" : "270-1",
+        "type" : "cat"
+      },
+      "-L-Lk2uM_Si_tEFAkcPJ" : {
+        "id" : "323-1",
+        "type" : "cat"
+      },
+      "-L-Lk5Kjtqyo6zscKOIZ" : {
+        "id" : "261-1",
+        "type" : "cat"
+      },
+      "-L-Lk9fW4m2Ic8NQNx9N" : {
+        "id" : [ "C1E0" ],
+        "type" : "combo"
+      },
+      "-L-LkBrMsppnKha4wAma" : {
+        "id" : "131-1",
+        "type" : "cat"
+      },
+      "-L-Lwi2hjEEC2yHmxXpj" : {
+        "id" : [ "C4E0" ],
+        "type" : "combo"
+      },
+      "-L-ZMJ1YrLd_KSe8pCGm" : {
+        "id" : "138-1",
+        "type" : "cat"
+      },
+      "-L-ZMpNWmw02TP9ncZZa" : {
+        "id" : "270-1",
+        "type" : "cat"
+      },
+      "-L-ZN-CY3N0xqrfxY5dF" : {
+        "id" : "261-1",
+        "type" : "cat"
+      },
+      "-L-ZN-yXA0Kf8KMrNjJD" : {
+        "id" : "261-2",
+        "type" : "cat"
+      },
+      "-L-ZN5cB_C1xqelgDANK" : {
+        "id" : "270-1",
+        "type" : "cat"
+      },
+      "-L-ZNBZjag2UG644Q4Rs" : {
+        "id" : "261-1",
+        "type" : "cat"
+      }
+    },
+    "last_login" : 1512438893793,
+    "name" : "Hsu Chieh"
+  },
+  "zB56cQVSuOdBEdCZmn6bl4AA8wx1" : {
+    "compare" : {
+      "cat2cat" : [ "319-2", "379-2" ],
+      "cat2enemy" : 0,
+      "enemy2enemy" : 0
+    },
+    "first_login" : 1512153981570,
+    "history" : {
+      "-L-MqD2bYoU0pEWAAh9t" : {
+        "id" : "024-1",
+        "type" : "cat"
+      },
+      "-L-MqEdATIHxkzEpSjNQ" : {
+        "id" : [ "C1E3" ],
+        "type" : "combo"
+      },
+      "-L-MqHWOMSFgRdhNkmEx" : {
+        "id" : "089",
+        "type" : "enemy"
+      },
+      "-L-MrI2UWUFB52bZTYIM" : {
+        "id" : "016-1",
+        "type" : "cat"
+      },
+      "-L-MtKu5hsSlPKPCGy-g" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-MtLHm6TuRBpLltP5S" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Myg8EqQd7IedM3loQ" : {
+        "id" : "379-1",
+        "type" : "cat"
+      },
+      "-L-MygWJXqU4uUlYvUmf" : {
+        "id" : "379-2",
+        "type" : "cat"
+      },
+      "-L-WD9iJVz1Q2LVdLPyX" : {
+        "id" : "160-1",
+        "type" : "cat"
+      },
+      "-L-WDewoSlOxH70BBzZa" : {
+        "id" : "160-3",
+        "type" : "cat"
+      },
+      "-L-WDfAMkqGHbP5PV_hd" : {
+        "id" : "160-1",
+        "type" : "cat"
+      },
+      "-L-WDfQhvZUWg1_R-V5n" : {
+        "id" : "160-3",
+        "type" : "cat"
+      },
+      "-L-WDfVc_ec5ccxBokJ7" : {
+        "id" : "160-1",
+        "type" : "cat"
+      },
+      "-L-WDfqgmasPn_bTlRRS" : {
+        "id" : "160-2",
+        "type" : "cat"
+      },
+      "-L-WDfuKV36Ax7um2xsc" : {
+        "id" : "160-3",
+        "type" : "cat"
+      },
+      "-L-WDg09lFbYq2mlBxwQ" : {
+        "id" : "160-1",
+        "type" : "cat"
+      },
+      "-L-WDg5nSQOYSGOYru1M" : {
+        "id" : "160-3",
+        "type" : "cat"
+      },
+      "-L-WDg9fKdMLREmNdof1" : {
+        "id" : "160-1",
+        "type" : "cat"
+      },
+      "-L-WDjIEgw7igu6aNBI8" : {
+        "id" : "045-1",
+        "type" : "cat"
+      },
+      "-L-WHroqFP1_r9Cu7CK1" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WepM6uyDiDMe_LNVm" : {
+        "id" : "043-3",
+        "type" : "cat"
+      },
+      "-L-WmvwcMJObuexlsmqN" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wnr8KWViaqd30mzVB" : {
+        "id" : "002-1",
+        "type" : "cat"
+      },
+      "-L-WoG01gS4ZEhFiJb_l" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WoW3VsswxDi17xfAf" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WoW_XNxiHas_d_0q3" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WoWg2Ua5oGA3s4jX9" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WoZdsJkpUzLQ80FZS" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WoZsIht_V4Rfi38xL" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wo_0n3o77irKZCVBG" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wo_8giE6H-lcWGLQM" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wo_DbFsm2mGrOfD9x" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wo_I030OcCnOmN7FO" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WobpFA13xOLpSVkTM" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WolQr4M71h1OYV37S" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WoldBxM8pdtgJIrE1" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Woll5hGLQA53Mjfh7" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WolqY1VE-sJ_6Kzga" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wolv6c-jHs95VyQlU" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WoqK1bK7tbTU5e1BS" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WozBY95pbO9QjejG_" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WozNot4l0ukiKkJ_5" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WozSZOdPwE9ihOHOB" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WozXTfUlL21z3pvIf" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wozc5p0uHnJiXoTHi" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WozfmWL8Aixr0BP7s" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wozjd4AjsbVoW6_uk" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WoznAtnU0fFqQDnEf" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WozrPjvZAywB9syL0" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WozuYkS0z246uodZu" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wp44ER6HhXW2IMFB2" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wp4DCYMbt5OCkiIaM" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wp4IGlf4mJk2PMJYv" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wp4LmYYD6m3f1O76X" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wp4QA6HNLFk98cJTn" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-Wp4Trj7Y2WXEtkbvR" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-Wp5HY0OyVeub5i2Jm" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WpASbBIdg1GwNmB_K" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WpAZEveQkigIAN7ce" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-WpAcJP19eR_M3b35d" : {
+        "id" : "003-1",
+        "type" : "cat"
+      },
+      "-L-WpAfR0i3ItMyMZtXL" : {
+        "id" : "004-1",
+        "type" : "cat"
+      },
+      "-L-X1Lc0l8rj2rKFeU5o" : {
+        "id" : [ "C1E5" ],
+        "type" : "combo"
+      },
+      "-L-X1cQ8K_l4EP_ah1Y8" : {
+        "id" : "095-1",
+        "type" : "cat"
+      },
+      "-L-X1wXkKwuRWvjHdo3C" : {
+        "id" : "095-3",
+        "type" : "cat"
+      },
+      "-L-X2fWtQfLQnBnHqnKb" : {
+        "id" : [ "C3E0" ],
+        "type" : "combo"
+      },
+      "-L-X2gv_lSa8lvDluP4A" : {
+        "id" : "130-1",
+        "type" : "cat"
+      },
+      "-L-X2hi1CSg2lXDt7pyu" : {
+        "id" : "130-2",
+        "type" : "cat"
+      },
+      "-L-X32C8MLlWxP1_lWbp" : {
+        "id" : "361",
+        "type" : "enemy"
+      },
+      "-L-X32ZhJWy_hD9TSq6M" : {
+        "id" : "060",
+        "type" : "enemy"
+      },
+      "-L-X33EFwbtJPKpYqS0c" : {
+        "id" : "056",
+        "type" : "enemy"
+      },
+      "-L-X33qcVr3GIQqm-tYp" : {
+        "id" : "060",
+        "type" : "enemy"
+      },
+      "-L-X36S4SVjBbfrOFTLy" : {
+        "id" : "056",
+        "type" : "enemy"
+      },
+      "-L-XK4ZQJi10PVmrlr8u" : {
+        "id" : "014-3",
+        "type" : "cat"
+      },
+      "-L-XK92xKxD0TSh0wRlW" : {
+        "id" : "041-3",
+        "type" : "cat"
+      },
+      "-L-XKD2mnk_NUlUVeyxr" : {
+        "id" : "098-3",
+        "type" : "cat"
+      },
+      "-L-XLZn2CgX4JkiLZs1B" : {
+        "id" : "094-3",
+        "type" : "cat"
+      },
+      "-L-XLdJjLgbXDmFhclGR" : {
+        "id" : "041-3",
+        "type" : "cat"
+      },
+      "-L-XPmn5pnH1mvGU7YDQ" : {
+        "id" : [ "C1E0" ],
+        "type" : "combo"
+      },
+      "-L-XPorhmSR5GpJ4TA3p" : {
+        "id" : "101-1",
+        "type" : "cat"
+      },
+      "-L-XPt9ri4BF3lOP2Ptv" : {
+        "id" : "110-1",
+        "type" : "cat"
+      },
+      "-L-a8YjjFmtdd_dUjw0h" : {
+        "id" : "026-3",
+        "type" : "cat"
+      },
+      "-L-biDpM-UrGpFEYZhip" : {
+        "id" : "026-1",
+        "type" : "cat"
+      },
+      "-L-biEWlE_vEYpHIHnxE" : {
+        "id" : "026-2",
+        "type" : "cat"
+      },
+      "-L-dGlShNHbnWnlJdlBq" : {
+        "id" : "379-2",
+        "type" : "cat"
+      }
+    },
+    "last_login" : 1512525246330,
+    "name" : "方偉綸"
+  }
+}
