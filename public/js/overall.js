@@ -107,7 +107,8 @@ $(document).ready(function () {
 
   var nav_html = "" ;
   for (let i in nav_site){
-    nav_html += "<a href='"+nav_site[i]+".html' id='a_"+nav_site[i]+"'>"+nav_text[i]+"</a>"
+    nav_html += "<a href='"+(location.pathname == "/"?"/view/":"")+
+    nav_site[i]+".html' id='a_"+nav_site[i]+"'>"+nav_text[i]+"</a>";
   }
   $("nav .navLinkBox").html(nav_html) ;
   $(".m_navLinkBox").html(nav_html) ;

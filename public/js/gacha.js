@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  const image_url =  "public/css/footage/cat/u" ;
+  const image_url =  "../public/css/footage/cat/u" ;
   var socket = io.connect();
   $(document).on('click','#test',www);
   $(document).on('click','#test_2',function () {

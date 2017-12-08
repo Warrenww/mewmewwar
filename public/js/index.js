@@ -6,7 +6,7 @@ $(document).ready(function () {
         display_id : false
       } ;
   var filter_name = '' ;
-  const image_url =  "public/css/footage/cat/u" ;
+  const image_url =  "../public/css/footage/cat/u" ;
   var socket = io.connect();
   var current_user_data = {};
 

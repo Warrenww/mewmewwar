@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  const image_url =  "public/css/footage/cat/u" ;
+  const image_url =  "../public/css/footage/cat/u" ;
   var compare = [] ;
   var socket = io.connect();
   var current_user_data = {};

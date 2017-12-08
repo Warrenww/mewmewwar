@@ -6,14 +6,15 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="public/css/index.css" />
-    <link rel="stylesheet" href="public/css/navBar.css" />
-    <link rel="stylesheet" href="public/css/rwd.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../public/css/index.css" />
+    <link rel="stylesheet" href="../public/css/navBar.css" />
+    <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
     <nav>
       <a href="\">
-        <img src="public/css/footage/title.png" />
+        <img src="../public/css/footage/title.png"/>
       </a>
       <div class="navLinkBox"></div>
       <div class="settingBox"></div>
@@ -28,13 +29,18 @@
     </div>
 
 
-    <div class="page_1" >
+    <div class="page_1">
+
       <div class="select">
         <div class="search" >
-          <input type="text" id="searchBox" placeholder="Search for enemies...">
+          <input type="text" id="searchBox" placeholder="Search for Cats...">
           <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
         </div>
         <table id="upper_table">
+            <tr>
+                <th colspan="2">稀有度</th>
+                <td colspan="4" class="select_rarity"></td>
+            </tr>
             <tr>
                 <th colspan="2">屬性</th>
                 <td colspan="4" class="select_color"></td>
@@ -43,6 +49,7 @@
                 <th colspan="2" rowspan="2">能力</th>
                 <td colspan="4" rowspan="2" class="select_ability"></td>
             </tr>
+
         </table>
         <table id="lower_table">
           <tbody>
@@ -78,36 +85,39 @@
         <div style="display:flex;margin:1%">
           <button id="search_ability" >GO</button>
         </div>
-
         <div style="display:flex;width:100%">
           <div class="compareSorce">
-            <div id="selected" class="sortable">
-            </div>
-            <div class="page_group">
-
-            </div>
+            <div id="selected" class="sortable"></div>
+            <div class="page_group"></div>
             <div class="button_group" >
               <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
-              <button id="compare" hidden>compare</span></button>
               <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
             </div>
           </div>
-          <!-- <div class="compareTarget sortable" >
-          </div> -->
 
         </div>
 
         <div class="display">
-          <table class="dataTable">
-          </table>
-
+          <table class="dataTable"></table>
+          <div class="compareTable sortable"></div>
         </div>
+
       </div>
     </div>
+    <div id="compareTarget_tag">
+      <i class="material-icons">&#xe315;</i>貓咪購物車
+    </div>
+    <div class="compareTarget_holder">
+      <span id='clear_compare'>Clear All</span>
+      <div class="compareTarget sortable">
+      </div>
+    </div>
+
     <div class="page_2" >
       <!-- <button id="test">test</button>
       <button><a href="test.html">test</a></button> -->
     </div>
+
     <div id="TOOLTIP">This is a tool tip</div>
 
     <div class="modal fade" id="helpModal" role="dialog">
@@ -132,12 +142,12 @@
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="public/js/html2canvas.min.js"></script>
-    <script src="public/js/overall.js"></script>
-    <script src="public/js/enemy.js"></script>
-    <script src="public/js/jquery.easing.1.3.js"></script>
+    <script src="../public/js/html2canvas.min.js"></script>
+    <script src="../public/js/overall.js"></script>
+    <script src="../public/js/jquery.easing.1.3.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
-    <script src="public/js/firebaseConfig.js"></script>
+    <script src="../public/js/firebaseConfig.js"></script>
+    <script src="../public/js/index.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

@@ -6,14 +6,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="public/css/index.css" />
-    <link rel="stylesheet" href="public/css/navBar.css" />
-    <link rel="stylesheet" href="public/css/rwd.css" />
+    <link rel="stylesheet" href="../public/css/index.css" />
+    <link rel="stylesheet" href="../public/css/navBar.css" />
+    <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
     <nav>
       <a href="\">
-        <img src="public/css/footage/title.png"/>
+        <img src="../public/css/footage/title.png"/>
       </a>
       <div class="navLinkBox"></div>
       <div class="settingBox"></div>
@@ -26,20 +26,14 @@
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
     </div>
-    <style>
-      #test,#test_2,#test_3{
-        margin: 100px;
-        font-size: 40px;
-      }
-    </style>
 
-    <div class="page_1" style="height:100%;width:100%">
-      <button id='test' >轉蛋</button>
-      <button id='test_2' >11抽</button>
-      <button id='test_3' >清空</button>
-      <div class="result" style="width:100%;padding:5%;display:flex;flex-wrap: wrap;"></div>
+    <div class="page_1">
+      <div class="compareDisplay">
+        <div class="compareTable">
+
+        </div>
+      </div>
     </div>
-
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">
@@ -58,17 +52,19 @@
       </div>
     </div>
 
+
+
     <script src="https://authedmine.com/lib/authedmine.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="public/js/html2canvas.min.js"></script>
-    <script src="public/js/overall.js"></script>
-    <script src="public/js/gacha.js"></script>
-    <script src="public/js/firebaseConfig.js"></script>
-    <script src="public/js/jquery.easing.1.3.js"></script>
+    <script src="../public/js/html2canvas.min.js"></script>
+    <script src="../public/js/overall.js"></script>
+    <script src="../public/js/compareCat.js"></script>
+    <script src="../public/js/firebaseConfig.js"></script>
+    <script src="../public/js/jquery.easing.1.3.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

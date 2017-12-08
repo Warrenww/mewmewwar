@@ -473,6 +473,6 @@ http.listen(process.env.PORT || port, function(){
 });
 
 app.get('/', function(req, res){
-res.sendFile(__dirname + '/index.html');
+res.sendFile(__dirname + '/view/index.html');
 });
 app.use(express.static(path.join(__dirname, '/')));// to import css and javascript

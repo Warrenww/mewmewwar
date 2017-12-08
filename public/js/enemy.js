@@ -1,7 +1,7 @@
 $(document).ready(function () {
   var socket = io.connect();
   var timer = new Date().getTime();
-  const image_url =  "public/css/footage/enemy/e" ;
+  const image_url =  "../public/css/footage/enemy/e" ;
   var current_user_data = {};
   auth.onAuthStateChanged(function(user) {
     if (user) {

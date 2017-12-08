@@ -1,6 +1,6 @@
 $(document).ready(function () {
   var socket = io.connect();
-  const image_url =  "public/css/footage/cat/u" ;
+  const image_url =  "../public/css/footage/cat/u" ;
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connet",user);
