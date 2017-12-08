@@ -57,42 +57,11 @@ database.ref("/").once("value",function (snapshot) {
   enemydata = snapshot.val().enemydata ;
   console.log('all data load complete!!') ;
 });
-
 arrangeUserData();
-
 
 io.on('connection', function(socket){
   // console.log('a user connected');
   // loadcatData() ;
-  socket.emit("search enemy",function (data) {
-    console.log("searching enemy....");
-    console.log(data);
-    let cFilter = data.cFilter,
-        aFilter = data.aFilter,
-        otherFilter = data.filterObj,
-        buffer_1 = [],
-        buffer_2 = [];
-    if(cFilter.length != 0){
-      for(let id in enemydata){
-        for(let j in cFiliter){
-          // console.log(enemydata[id].id)
-          if(enemydata[id]['分類'] == '[無]') break;
-          else if(enemydata[id]['分類'].indexOf(cFiliter[j]) != -1) {buffer_1.push(enemydata[id]);break;}
-        }
-      }
-    }
-    else buffer_1 = enemydata ;
-    if(aFilter.length != 0){
-      for(let id in buffer_1){
-        for(let j in aFiliter){
-          if(buffer_1[id].tag.indexOf(aFiliter[j]) != -1) {buffer_2.push(buffer_1[id]);break;}
-        }
-      }
-    }
-    else buffer_2 = buffer_1 ;
-    buffer_1 = [] ;
-
-  });
 
   socket.on("search",function (data) {
         console.log("searching "+data.type+"....");
@@ -330,11 +299,10 @@ io.on('connection', function(socket){
     database.ref("/user/"+uid+"/history").once("value",function (snapshot) {
       let data = snapshot.val() ;
       // console.log(data);
-      let buffer = [];
-      for (let i in data) {
-        if(data[i].type == 'cat') buffer.push({name:catdata[data[i].id].全名,color:"#851b1b"});
-        if(data[i].type == 'enemy') buffer.push({name:enemydata[data[i].id].全名,color:"#01295d"});
-      }
+      let buffer = {cat:[],enemy:[]};
+      for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].全名,id :data.cat[i].id});
+      for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].全名,id :data.enemy[i].id});
+
       // console.log(buffer);
       socket.emit("return history",buffer);
     });
@@ -396,7 +364,7 @@ io.on('connection', function(socket){
 
 });
 
-function  arrangeUserData() {
+function arrangeUserData() {
   console.log('arrange user data');
   let buffer = {};
   database.ref('/user').once('value',function (snapshot) {
@@ -406,6 +374,48 @@ function  arrangeUserData() {
       if(i != "undefined") buffer[i] = userdata[i]
     }
     // console.log(buffer);
+    for (let i in buffer){
+      let arr=[],
+          h_cat = {},
+          h_ene = {},
+          h_com = {};
+      for(let j in buffer[i].history.cat) arr.push(buffer[i].history.cat[j]);
+      if (arr.length > 20){
+        console.log(i+" too many cat");
+        let k=0 ;
+        for(let j in buffer[i].history.cat){
+          k++;
+          if(k < (arr.length-19)) continue
+          h_cat[j] = buffer[i].history.cat[j]
+        }
+      } else h_cat = buffer[i].history.cat;
+      buffer[i].history.cat = h_cat ;
+      arr = [];
+      for(let j in buffer[i].history.enemy) arr.push(buffer[i].history.enemy[j]);
+      if (arr.length > 20){
+        console.log(i+" too many enemy");
+        let k=0 ;
+        for(let j in buffer[i].history.enemy){
+          k++;
+          if(k < (arr.length-19)) continue
+          h_ene[j] = buffer[i].history.enemy[j]
+        }
+      } else h_ene = buffer[i].history.enemy;
+      buffer[i].history.enemy = h_ene ;
+      arr = [];
+      for(let j in buffer[i].history.combo) arr.push(buffer[i].history.combo[j]);
+      if (arr.length > 20){
+        console.log(i+" too many enemy");
+        let k=0 ;
+        for(let j in buffer[i].history.combo){
+          k++;
+          if(k < (arr.length-19)) continue
+          h_com[j] = buffer[i].history.combo[j]
+        }
+      } else h_com = buffer[i].history.combo;
+      buffer[i].history.combo = h_com ;
+
+    }
     database.ref('/user').set(buffer);
   });
 }

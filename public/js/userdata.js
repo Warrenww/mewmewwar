@@ -14,10 +14,20 @@ $(document).ready(function () {
       console.log('did not sign in');
     }
   });
-  socket.on("return history",function (arr) {
-    console.log(arr);
-    for(let i in arr)
-      $("#history").append("<b style='color:"+arr[i].color+"'>"+arr[i].name+"</b></br>");
+  socket.on("return history",function (history) {
+    console.log(history);
+    for(let i in history.cat)
+      $("#history_cat").append(
+        '<span class="card" value="'+history.cat[i].id+'" '+
+        'style="background-image:url('+
+        image_url_cat+history.cat[i].id+'.png);">'+
+        history.cat[i].name+'</span>');
+    for(let i in history.enemy)
+      $("#history_ene").append(
+        '<span class="card" value="'+history.enemy[i].id+'" '+
+        'style="background-image:url('+
+        image_url_enemy+history.enemy[i].id+'.png);">'+
+        history.enemy[i].name+'</span>');
   });
 
 

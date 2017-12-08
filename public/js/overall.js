@@ -1,3 +1,5 @@
+const image_url_cat =  "../public/css/footage/cat/u" ;
+const image_url_enemy =  "../public/css/footage/enemy/e" ;
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
@@ -137,7 +139,7 @@ $(document).ready(function () {
   });
 
   var xmlhttp = new XMLHttpRequest() ;
-  var url = "public/update_dialog.txt";
+  var url = "../public/update_dialog.txt";
   var update_dialog ;
 
   xmlhttp.open("GET", url, true);
