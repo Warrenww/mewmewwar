@@ -19,9 +19,11 @@ $(document).ready(function () {
   $("iframe").load(function () {
     $(".debugwindow h3").text("如果沒有東西出現請按重試按鈕");
   });
+  var i = 0  ;
   $(document).on('click','#retry',function () {
+    dd = new Date().getDate();
     $(".debugwindow h3").text("重新抓取資料中...");
-    dd -- ;
+    dd -= i ;
     if( dd < 1){
       dd = mm-1 != 2 ? (d_31.indexOf(mm-1) != -1 ? 31 :30) : 29 ;
       mm -- ;
@@ -33,10 +35,11 @@ $(document).ready(function () {
       site = url+yy+addZero(mm)+addZero(dd)+".html";
       console.log(site);
       $("iframe").attr("src",site);
+      i++ ;
     }
     else{
       $(".debugwindow h3").text("如果沒有東西出現請按重試按鈕");
-      dd += 1 ;
+      dd += i ;
     }
 
   });

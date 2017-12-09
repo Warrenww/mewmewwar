@@ -121,8 +121,8 @@ $(document).ready(function () {
   function displayCatData(data,arr,brr) {
     let html = "" ;
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
-    html += "<tr><td style='background-color:transparent' colspan=5></td>"+
-            "<td style='background-color:transparent'><button id='addcart'>加到購物車</button></td>";
+    html += "<tr><td style='background-color:transparent' colspan=4></td>"+
+            "<td style='background-color:transparent' colspan=2><button id='addcart'>加到購物車</button></td>";
 
     html += screen.width > 768 ?
     "<tr>"+

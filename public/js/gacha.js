@@ -42,7 +42,7 @@ $(document).ready(function () {
       type : 'cat',
       id : id
     });
-    location.assign("/cat.html");
+    location.assign("/view/cat.html");
   });
 
 });
