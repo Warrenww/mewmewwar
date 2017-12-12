@@ -24,6 +24,7 @@ $(document).ready(function () {
     if(data.last_cat) socket.emit("display cat",data.last_cat) ;
     if(data.compare_c2c) {
       $(".compareTarget").empty();
+      $("#compare_number").text(data.compare_c2c.length)
       for(let i in data.compare_c2c){
         let id = data.compare_c2c[i].id,
             name = data.compare_c2c[i].name;
@@ -477,6 +478,7 @@ $(document).ready(function () {
         scrollTop : $('.compareTarget').height()
       },500,'easeInOutCubic');
       compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      $("#compare_number").text(compare.length);
       socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     }
 
@@ -486,6 +488,7 @@ $(document).ready(function () {
     if(!r) return
     $(this).remove();
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    $("#compare_number").text(compare.length);
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
   var showcomparetarget = 1 ;
@@ -546,7 +549,11 @@ $(document).ready(function () {
       image_url+id+'.png'+
       '">'+name+'</span></div>');
       $("#selected").sortable('cancel');
+      $('.compareTarget_holder').animate({
+        scrollTop : $('.compareTarget').height()
+      },500,'easeInOutCubic');
       compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      $("#compare_number").text(compare.length);
       socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     }
     else $("#selected").sortable('cancel');
@@ -559,6 +566,7 @@ $(document).ready(function () {
       if(!r) return
       ui.item.remove();
       compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      $("#compare_number").text(compare.length);
       socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     }
   });
@@ -585,6 +593,7 @@ $(document).ready(function () {
         scrollTop : $('.compareTarget').height()
       },500,'easeInOutCubic');
       compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      $("#compare_number").text(compare.length);
       socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     }
   }
@@ -593,6 +602,7 @@ $(document).ready(function () {
     if(!r)return
     $(this).siblings().html("");
     compare = [];
+    $("#compare_number").text(compare.length);
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
   $('#a_compareCat ').bind('click',function () {

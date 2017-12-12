@@ -348,3 +348,15 @@ table {
   overflow-y: scroll;
   width: 90%;
 }
+#compare_number{
+  position: relative;
+  top: -40px;
+  left: 20px;
+  background-color: rgba(228, 100, 100, 0.9);
+  display: flex;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  color: white
+}
