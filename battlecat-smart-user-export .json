@@ -1,0 +1,431 @@
+{
+  "WpuTiJHzlNPcvzeRQKuwkAv0kxB3" : {
+    "compare" : {
+      "cat2cat" : 0,
+      "cat2enemy" : 0,
+      "enemy2enemy" : 0
+    },
+    "first_login" : 1512301075111,
+    "history" : {
+      "cat" : {
+        "-L-gdrRJn-Qtwa4g0eYF" : {
+          "id" : "099-1",
+          "type" : "cat"
+        },
+        "-L-gdsD_lx6U_R5DXgDb" : {
+          "id" : "099-3",
+          "type" : "cat"
+        },
+        "-L-gdsnhsvTbDprTKDqp" : {
+          "id" : "099-1",
+          "type" : "cat"
+        },
+        "-L-gdtUFizTqdTDnE73E" : {
+          "id" : "099-3",
+          "type" : "cat"
+        },
+        "-L-gdtzSaOFVpImIrYtY" : {
+          "id" : "099-2",
+          "type" : "cat"
+        },
+        "-L-gduYKOxUhfStd__8k" : {
+          "id" : "099-3",
+          "type" : "cat"
+        },
+        "-L-ge06htdphPBqDL10n" : {
+          "id" : "025-3",
+          "type" : "cat"
+        },
+        "-L-ge1UkeWgZu3rdY3yY" : {
+          "id" : "025-2",
+          "type" : "cat"
+        },
+        "-L-ge1sFL2E3rtFf-oLA" : {
+          "id" : "025-3",
+          "type" : "cat"
+        },
+        "-L-ge91pAHRcXA0KJVGw" : {
+          "id" : "035-2",
+          "type" : "cat"
+        },
+        "-L-geDHPLOdjd7cop2mj" : {
+          "id" : "044-1",
+          "type" : "cat"
+        },
+        "-L-geEhfdP1BJXIS09FB" : {
+          "id" : "045-1",
+          "type" : "cat"
+        },
+        "-L-geI2cOAVR21WN1Sg6" : {
+          "id" : "085-1",
+          "type" : "cat"
+        },
+        "-L-geIgWrAqpTJR1XbAI" : {
+          "id" : "085-3",
+          "type" : "cat"
+        },
+        "-L-geJiN9chz4GN0fGe3" : {
+          "id" : "086-1",
+          "type" : "cat"
+        },
+        "-L-geKJMP0bxbfCYFe28" : {
+          "id" : "086-3",
+          "type" : "cat"
+        },
+        "-L-geLWWP6GoaVSjwJwh" : {
+          "id" : "084-1",
+          "type" : "cat"
+        },
+        "-L-geM2i_owKI8uv31v6" : {
+          "id" : "084-3",
+          "type" : "cat"
+        },
+        "-L-geNFdYbul6bjVEe4k" : {
+          "id" : "091-1",
+          "type" : "cat"
+        },
+        "-L-geNqVWdqrxatKkQbW" : {
+          "id" : "091-2",
+          "type" : "cat"
+        }
+      },
+      "combo" : {
+        "jsdifjsod" : 0
+      },
+      "enemy" : {
+        "sdfas" : 0
+      }
+    },
+    "last_login" : 1512577487262,
+    "name" : "陳靖萱",
+    "setting" : {
+      "cat_lv" : "0"
+    }
+  },
+  "iK24QRyTbxbZ59xuWlRegdrkEl32" : {
+    "compare" : {
+      "cat2cat" : [ "138-1", "323-1", "261-2", "270-1" ],
+      "cat2enemy" : 0,
+      "enemy2enemy" : 0
+    },
+    "first_login" : 1512210066561,
+    "history" : {
+      "cat" : {
+        "-L-Lk1TrvDooklg3DtEj" : {
+          "id" : "270-1",
+          "type" : "cat"
+        },
+        "-L-Lk2uM_Si_tEFAkcPJ" : {
+          "id" : "323-1",
+          "type" : "cat"
+        },
+        "-L-Lk5Kjtqyo6zscKOIZ" : {
+          "id" : "261-1",
+          "type" : "cat"
+        },
+        "-L-LkBrMsppnKha4wAma" : {
+          "id" : "131-1",
+          "type" : "cat"
+        },
+        "-L-ZMJ1YrLd_KSe8pCGm" : {
+          "id" : "138-1",
+          "type" : "cat"
+        },
+        "-L-ZMpNWmw02TP9ncZZa" : {
+          "id" : "270-1",
+          "type" : "cat"
+        },
+        "-L-ZN-CY3N0xqrfxY5dF" : {
+          "id" : "261-1",
+          "type" : "cat"
+        },
+        "-L-ZN-yXA0Kf8KMrNjJD" : {
+          "id" : "261-2",
+          "type" : "cat"
+        },
+        "-L-ZN5cB_C1xqelgDANK" : {
+          "id" : "270-1",
+          "type" : "cat"
+        },
+        "-L-ZNBZjag2UG644Q4Rs" : {
+          "id" : "261-1",
+          "type" : "cat"
+        },
+        "-L-gQMKrlHjxYikyytSa" : {
+          "id" : "119-1",
+          "type" : "cat"
+        },
+        "-L-gQPcqpBUWpE3gW3rw" : {
+          "id" : "119-2",
+          "type" : "cat"
+        }
+      },
+      "combo" : {
+        "-L-Lk9fW4m2Ic8NQNx9N" : {
+          "id" : [ "C1E0" ],
+          "type" : "combo"
+        },
+        "-L-Lwi2hjEEC2yHmxXpj" : {
+          "id" : [ "C4E0" ],
+          "type" : "combo"
+        },
+        "-L-tcAiXSrHg9UUaXz20" : {
+          "id" : [ "C1E0", "C4E0" ],
+          "type" : "combo"
+        },
+        "-L-tcAjDcHqCq-G3IbMa" : {
+          "id" : [ "C1E0" ],
+          "type" : "combo"
+        },
+        "-L-tcAmT-UFASYxAgydX" : {
+          "id" : [ "C1E0" ],
+          "type" : "combo"
+        },
+        "-L-tcAmUwwh8jZl660P4" : {
+          "id" : [ "C1E1" ],
+          "type" : "combo"
+        },
+        "-L-tcCNh8Q0-0_dbmMfs" : {
+          "id" : [ "C1E0" ],
+          "type" : "combo"
+        },
+        "-L-tcWYghxXisd8BsJ9T" : {
+          "id" : [ "C1E1" ],
+          "type" : "combo"
+        }
+      },
+      "enemy" : {
+        "-L-LjrUh9EBJWbukxD-k" : {
+          "id" : "018",
+          "type" : "enemy"
+        }
+      }
+    },
+    "last_login" : 1513181571694,
+    "name" : "Hsu Chieh",
+    "setting" : {
+      "cat_lv" : "0"
+    }
+  },
+  "zB56cQVSuOdBEdCZmn6bl4AA8wx1" : {
+    "compare" : {
+      "cat2cat" : [ "073-3", "074-2", "106-3", "138-1", "138-2", "159-2", "172-3", "272-2", "356-2", "352-2" ],
+      "cat2enemy" : 0,
+      "enemy2enemy" : 0
+    },
+    "first_login" : 1512153981570,
+    "history" : {
+      "cat" : {
+        "-L-tbTg7TezHs-jPo9sH" : {
+          "id" : "098-2",
+          "type" : "cat"
+        },
+        "-L-tb_poWBNw08H49J6I" : {
+          "id" : "011-3",
+          "type" : "cat"
+        },
+        "-L-uHP7ZEBIo4aZcu7FC" : {
+          "id" : "043-1",
+          "type" : "cat"
+        },
+        "-L-uHWl_6NwX7Fm1nbw2" : {
+          "id" : "226-1",
+          "type" : "cat"
+        },
+        "-L-uHYTODewL0oXe9C_f" : {
+          "id" : "227-1",
+          "type" : "cat"
+        },
+        "-L-uHa9fYgHDDU6vo1h-" : {
+          "id" : "307-1",
+          "type" : "cat"
+        },
+        "-L-uHcPdSYyHn3mhhbjF" : {
+          "id" : "335-1",
+          "type" : "cat"
+        },
+        "-L-uHd1BbEk2fn04kKb_" : {
+          "id" : "334-1",
+          "type" : "cat"
+        },
+        "-L-uHeD7hsaFAJqZ4ghM" : {
+          "id" : "339-1",
+          "type" : "cat"
+        },
+        "-L-uHh1egJXVXTNN8ByG" : {
+          "id" : "334-1",
+          "type" : "cat"
+        },
+        "-L-uHhNzsb17TWmVSdv1" : {
+          "id" : "334-2",
+          "type" : "cat"
+        },
+        "-L-uHhgKqM5PBoFJtwiN" : {
+          "id" : "334-1",
+          "type" : "cat"
+        },
+        "-L07pk4Ya6l6MVVZfwFJ" : {
+          "id" : "334-2",
+          "type" : "cat"
+        },
+        "-L07q3PyP4zQP6byLVnR" : {
+          "id" : "098-3",
+          "type" : "cat"
+        },
+        "-L07q6TxNoE7d9MfN2O2" : {
+          "id" : "098-1",
+          "type" : "cat"
+        },
+        "-L07q72OWQ70C5AgntbU" : {
+          "id" : "098-2",
+          "type" : "cat"
+        },
+        "-L0FExHiILpfIlUGf0X4" : {
+          "id" : "073-1",
+          "type" : "cat"
+        },
+        "-L0FExKp0zl9VIYwuEKQ" : {
+          "id" : "073-1",
+          "type" : "cat"
+        },
+        "-L0FExt00LACNuXZKIfU" : {
+          "id" : "073-3",
+          "type" : "cat"
+        },
+        "-L0Fq87EUqBn8AnZFqhF" : {
+          "id" : "379-2",
+          "type" : "cat"
+        },
+        "-L0FqSu6oFhLQZPs_u5I" : {
+          "id" : "334-2",
+          "type" : "cat"
+        },
+        "-L0FqqGw0QRmZGI5FhyZ" : {
+          "id" : "379-2",
+          "type" : "cat"
+        },
+        "-L0FrSx5qk3NOgE6Fdoa" : {
+          "id" : "334-2",
+          "type" : "cat"
+        },
+        "-L0FrZQV4QNW_xq2l0wo" : {
+          "id" : "073-3",
+          "type" : "cat"
+        }
+      },
+      "combo" : {
+        "-L-MqEdATIHxkzEpSjNQ" : {
+          "id" : [ "C1E3" ],
+          "type" : "combo"
+        },
+        "-L-X1Lc0l8rj2rKFeU5o" : {
+          "id" : [ "C1E5" ],
+          "type" : "combo"
+        },
+        "-L-X2fWtQfLQnBnHqnKb" : {
+          "id" : [ "C3E0" ],
+          "type" : "combo"
+        },
+        "-L-XPmn5pnH1mvGU7YDQ" : {
+          "id" : [ "C1E0" ],
+          "type" : "combo"
+        },
+        "-L-gVxyIxfPwnMvd62xo" : {
+          "id" : [ "C0E1" ],
+          "type" : "combo"
+        }
+      },
+      "enemy" : {
+        "-L-q_jbYtKGpwDyXqmxm" : {
+          "id" : "025",
+          "type" : "enemy"
+        },
+        "-L-q_jouoVrwkTDCbQTB" : {
+          "id" : "019",
+          "type" : "enemy"
+        },
+        "-L-q_k0u_25x5p7A2k-X" : {
+          "id" : "016",
+          "type" : "enemy"
+        },
+        "-L-q_k6-XOGuwhb2XwQd" : {
+          "id" : "013",
+          "type" : "enemy"
+        },
+        "-L-q_l2I3B4J-uT3PtcF" : {
+          "id" : "208",
+          "type" : "enemy"
+        },
+        "-L-q_lHGLlf3nu65_H7s" : {
+          "id" : "207",
+          "type" : "enemy"
+        },
+        "-L-q_lMshgb1MjYA12ka" : {
+          "id" : "187",
+          "type" : "enemy"
+        },
+        "-L-q_lTBQQEbc6oMyN2G" : {
+          "id" : "155",
+          "type" : "enemy"
+        },
+        "-L-q_mPqPN73nlFt5hld" : {
+          "id" : "150",
+          "type" : "enemy"
+        },
+        "-L-q_neeIvrZcWQDhWUo" : {
+          "id" : "066",
+          "type" : "enemy"
+        },
+        "-L-q_np_xzLBJLsLXhOK" : {
+          "id" : "065",
+          "type" : "enemy"
+        },
+        "-L-q_nuIRJ6YfozkpbJd" : {
+          "id" : "051",
+          "type" : "enemy"
+        },
+        "-L-q_o5QYNYtbV9uTB_w" : {
+          "id" : "050",
+          "type" : "enemy"
+        },
+        "-L-q_q3o2JZrTpEt26AS" : {
+          "id" : "125",
+          "type" : "enemy"
+        },
+        "-L-q_rK8VUQoveykSVKL" : {
+          "id" : "183",
+          "type" : "enemy"
+        },
+        "-L-q_rgMgKsvDbEGyG1X" : {
+          "id" : "189",
+          "type" : "enemy"
+        },
+        "-L-q_ruRV_vFV7rfecHh" : {
+          "id" : "190",
+          "type" : "enemy"
+        },
+        "-L-q_sQzOnUvbsLeHMxD" : {
+          "id" : "209",
+          "type" : "enemy"
+        },
+        "-L-q_wEdfXzvyuQBUDyL" : {
+          "id" : "310",
+          "type" : "enemy"
+        },
+        "-L-qa13eqyH6zP27XKfR" : {
+          "id" : "274",
+          "type" : "enemy"
+        }
+      }
+    },
+    "last_login" : 1513185322836,
+    "name" : "方偉綸",
+    "setting" : {
+      "cat_lv" : {
+        "073-3" : 40,
+        "334-2" : 40,
+        "379-2" : 40
+      }
+    }
+  }
+}

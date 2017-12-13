@@ -21,7 +21,10 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     console.log(data);
     current_user_data = data ;
-    if(data.last_cat) socket.emit("display cat",data.last_cat) ;
+    if(data.last_cat) socket.emit("display cat",{
+      uid : data.uid,
+      cat : data.last_cat
+    }) ;
     if(data.compare_c2c) {
       $(".compareTarget").empty();
       $("#compare_number").text(data.compare_c2c.length)
@@ -46,7 +49,10 @@ $(document).ready(function () {
       type : 'cat',
       id : $(this).attr('value')
     });
-    socket.emit("display cat",$(this).attr('value'));
+    socket.emit("display cat",{
+      uid : current_user_data.uid,
+      cat : $(this).attr('value')
+    });
   });
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','#searchBut',function () {
@@ -107,8 +113,9 @@ $(document).ready(function () {
     console.log(result) ;
     let data = result.this,
         arr = result.bro,
-        brr = result.combo ;
-    displayCatData(data,arr,brr) ;
+        brr = result.combo,
+        lv = result.lv ;
+    displayCatData(data,arr,brr,lv) ;
   });
   socket.on("search result",function (data) {
     console.log("recive search result");
@@ -119,7 +126,7 @@ $(document).ready(function () {
     $("#selected").append(condenseCatName(data));
     $(".button_group").css('display','flex');
   });
-  function displayCatData(data,arr,brr) {
+  function displayCatData(data,arr,brr,lv) {
     let html = "" ;
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
     html += "<tr><td style='background-color:transparent' colspan=4></td>"+
@@ -157,21 +164,21 @@ $(document).ready(function () {
       "<tr>"+
       "<th>體力</th><td id='體力' original='"+data.lv1體力+"'>"+
       "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1體力,data.稀有度,30).toFixed(0)+
+      levelToValue(data.lv1體力,data.稀有度,lv).toFixed(0)+
       "</span></td>"+
       "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
       "<th>硬度</th><td id='硬度' original='"+data.lv1硬度+"'>"+
       "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1硬度,data.稀有度,30).toFixed(0)+
+      levelToValue(data.lv1硬度,data.稀有度,lv).toFixed(0)+
       "</span></td>"+
       "</tr><tr>"+
       "<th>攻擊力</th><td id='攻擊力' original='"+data.lv1攻擊+"'>"+
       "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1攻擊,data.稀有度,30).toFixed(0)+
+      levelToValue(data.lv1攻擊,data.稀有度,lv).toFixed(0)+
       "</span></td>"+
       "<th>DPS</th><td id='DPS' original='"+data.lv1dps+"'>"+
       "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1dps,data.稀有度,30).toFixed(0)+
+      levelToValue(data.lv1dps,data.稀有度,lv).toFixed(0)+
       "</span></td>"+
       "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
       "</tr><tr>"+
@@ -185,7 +192,7 @@ $(document).ready(function () {
       "<td colspan='6' id='特性' "+(
       data.特性.indexOf("連續攻擊") != -1 ?
       "original='"+data.特性+"'>"+
-      serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,30)) :
+      serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,lv)) :
       ">"+data.特性)+
       "</td>"+
       "</tr><tr>"+
@@ -193,7 +200,7 @@ $(document).ready(function () {
       AddCombo(brr)+
       "</tr>"
     );
-    initialSlider(data);
+    initialSlider(data,lv);
     scroll_to_class("display",0) ;
   }
   function AddCombo(arr) {
@@ -250,12 +257,16 @@ $(document).ready(function () {
     html += "</div>" ;
     return html
   }
-  function initialSlider(data) {
+  function initialSlider(data,lv) {
+    console.log(lv);
     $("#level").slider({
       max: 100,
       min: 1,
       value: 30,
     });
+    setTimeout(function () {
+      $("#level").slider('option','value',lv)
+    },800);
     $("#level").on("slide", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
@@ -263,6 +274,11 @@ $(document).ready(function () {
     $("#level").on("slidechange", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
+      socket.emit("store cat level",{
+        uid : current_user_data.uid,
+        id : $(this).parents(".dataTable").attr("id"),
+        lv : ui.value
+      });
     });
     function updateState(level) {
       let rarity = data.稀有度;
@@ -448,6 +464,8 @@ $(document).ready(function () {
   $('.compareTable').on('sort',function (e,ui) {
     $('.comparedatahead').find('th').css('border-left','0px solid');
   });
+
+
 
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   $(document).on('click','.glyphicon-shopping-cart',addToCompare);

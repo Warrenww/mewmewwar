@@ -184,20 +184,31 @@ io.on('connection', function(socket){
     // console.log(buffer);
     socket.emit("search result",buffer);
   });
-  socket.on("display cat",function (id) {
-    let grossID = id.substring(0,3),
-        result = {"this":"","bro":[],"combo":[]} ;
+  socket.on("display cat",function (data) {
+    console.log("display cat");
+    console.log(data);
+    let uid = data.uid,
+        id = data.cat,
+        grossID = id.substring(0,3),
+        result = {"this":"","bro":[],"combo":[],"lv":""},
+        level ;
     console.log("client requir cat "+grossID+"'s data'");
     let combo = [] ;
     for(let i=1;i<4;i++){
       let a = grossID+"-"+i ;
       if(a == id) result.this = catdata[a] ;
       else if(catdata[a]) result.bro.push(catdata[a].id) ;
-      for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j])
+      for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
     }
     result.combo = combo ;
-    console.log(result);
-    socket.emit("display cat result",result);
+    database.ref("/user/"+uid+"/setting/cat_lv").once("value",function (snapshot) {
+      result.lv = snapshot.val()[id] != undefined ? snapshot.val()[id] : 30;
+      console.log(result);
+      socket.emit("display cat result",result);
+    });
+
+    // result.lv = level  ;
+
   });
   socket.on("display enemy",function (id) {
     console.log("client requir enemy "+id+"'s data'");
@@ -227,7 +238,8 @@ io.on('connection', function(socket){
           name : user.displayName,
           first_login: timer,
           history : {cat:"",enemy:"",combo:""},
-          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""}
+          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
+          setting : {cat_lv:""}
         }
         database.ref('/user/'+user.uid).set(data) ;
       }
@@ -306,6 +318,10 @@ io.on('connection', function(socket){
       // console.log(buffer);
       socket.emit("return history",buffer);
     });
+  });
+  socket.on("store cat level",function (data) {
+    console.log(data.uid+" change his/her "+data.id+"'s level to "+data.lv);
+    database.ref("/user/"+data.uid+"/setting/cat_lv/"+data.id).set(data.lv);
   });
 
   socket.on('get event date',function () {
