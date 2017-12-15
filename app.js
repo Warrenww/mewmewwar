@@ -202,8 +202,8 @@ io.on('connection', function(socket){
     }
     result.combo = combo ;
     database.ref("/user/"+uid+"/variable/cat/"+grossID).once("value",function (snapshot) {
-      result.lv = snapshot.val().lv ;
-      result.count = snapshot.val().count ;
+      result.lv = snapshot.val() ? snapshot.val().lv : 30 ;
+      result.count = snapshot.val()  ? snapshot.val().count : 0 ;
       socket.emit("display cat result",result);
     });
     // console.log(result);

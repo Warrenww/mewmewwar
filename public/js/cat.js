@@ -8,7 +8,9 @@ $(document).ready(function () {
   var filter_name = '' ;
   const image_url =  "../public/css/footage/cat/u" ;
   var socket = io.connect();
-  var current_user_data = {};
+  var current_user_data = {
+    setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
+  };
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
