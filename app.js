@@ -103,7 +103,7 @@ io.on('connection', function(socket){
           }
         }
         else buffer_1 = load_data ;
-        console.log(buffer_1)
+        // console.log(buffer_1)
         if(aFilter.length != 0){
           for(let i in buffer_1){
             for(let j in aFilter){
