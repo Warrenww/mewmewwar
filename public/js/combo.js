@@ -45,13 +45,13 @@ $(document).ready(function () {
       });
     }) ;
     console.log(A_search);
+    socket.emit("search combo",A_search) ;
+    searchCombo(A_search);
     socket.emit("user Search",{
       uid : current_user_data.uid,
       type : 'combo',
       id : A_search
     });
-    socket.emit("search combo",A_search) ;
-    searchCombo(A_search);
   });
   socket.on("combo result",function (arr) {
     console.log(arr);
