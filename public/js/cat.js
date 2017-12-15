@@ -260,7 +260,7 @@ $(document).ready(function () {
       'style="background-image:url('+
       image_url+arr[i]+'.png);'+
       (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
-      +'">'+name+'</span>'  ;
+      +'"></span>'  ;
     }
     html += "</div>" ;
     return html
