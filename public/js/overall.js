@@ -136,12 +136,12 @@ $(document).ready(function () {
       r = confirm('登入來啟用更多功能!!');
       if (r) facebookLog();
       else {
-        firebase.auth().signInAnonymously().catch(function(error) {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          // ...
-        });
+        // firebase.auth().signInAnonymously().catch(function(error) {
+        //   // Handle Errors here.
+        //   var errorCode = error.code;
+        //   var errorMessage = error.message;
+        //   // ...
+        // });
       }
     }
   });
