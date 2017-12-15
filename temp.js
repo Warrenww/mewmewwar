@@ -8,16 +8,21 @@ var config = {
     messagingSenderId: "268279710428"
   };
 var userdata;
-  firebase.initializeApp(config);
-  var database = firebase.database();
-  database.ref("/user").once("value",function (snapshot) {
-    console.log('loading') ;
-    userdata = snapshot.val() ;
-    // console.log(userdata);
-    console.log('load complete') ;
-    let buffer = {} ;
+var catdata;
+firebase.initializeApp(config);
+var database = firebase.database();
+database.ref("/catdata").once("value",function (snapshot) {
+  catdata = snapshot.val();
+});
+database.ref("/user").once("value",function (snapshot) {
+  console.log('loading') ;
+  userdata = snapshot.val() ;
+  // console.log(userdata);
+  console.log('load complete') ;
+  let buffer = {} ;
+  let current = ''
+  for(let i in userdata){
+    database.ref('/user/'+i+'/setting/show_cat_count').set(0);
 
-    for(let i in userdata){
-      database.ref('/user/'+i+'/setting/cat_lv').set("0");
-    }
-  });
+  }
+});

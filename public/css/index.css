@@ -69,11 +69,11 @@ button,.button,.selected_cat{
   padding: 2px 20px ;
   transition: .1s ease-in-out;
   text-align: center;
-  -webkit-text-stroke: 1px black;
+  /* -webkit-text-stroke: 1px black; */
 }
 button:active{
   background: linear-gradient(rgb(242, 205, 24), rgb(204, 124, 10));
-  font-size: 1.5em;
+  font-size: 1em;
 }
 .button,.selected_cat{
   display: inline-flex;
@@ -115,6 +115,7 @@ button:active{
   width: 100%
 }
 td, th {
+  font-size: 16px;
   border-collapse: collapse;
   margin: 2px 0 ;
   padding: 8px;

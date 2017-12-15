@@ -70,7 +70,7 @@ $(document).ready(function () {
   var input_org ;
   $(document).on('click','.editable',function () {
       input_org = $(this).text();
-      $(this).html('<input type="text" value="' +input_org+ '"></input>');
+      $(this).html('<input type="number" value="' +input_org+ '"></input>');
       $(this).find('input').select();
   });
   $(document).on('blur', '.editable input', calculateLV);
@@ -78,7 +78,7 @@ $(document).ready(function () {
   var filter_org ;
   $(document).on('click','.value_display,#level_num',function () {
       filter_org = Number($(this).text());
-      $(this).html('<input type="text" value="' +filter_org+ '"></input>');
+      $(this).html('<input type="number" value="' +filter_org+ '"></input>');
       $(this).find('input').select();
   });
   $(document).on('blur','.value_display input',changeSlider) ;
@@ -114,8 +114,8 @@ $(document).ready(function () {
     let data = result.this,
         arr = result.bro,
         brr = result.combo,
-        lv = result.lv ;
-    displayCatData(data,arr,brr,lv) ;
+        lv = result.lv == 'default' ? current_user_data.setting.default_cat_lv : result.lv;
+    displayCatData(data,arr,brr,lv,result.count) ;
   });
   socket.on("search result",function (data) {
     console.log("recive search result");
@@ -125,12 +125,20 @@ $(document).ready(function () {
     $("#selected").scrollTop(0);
     $("#selected").append(condenseCatName(data));
     $(".button_group").css('display','flex');
+    scroll_to_div("selected");
   });
-  function displayCatData(data,arr,brr,lv) {
-    let html = "" ;
+  function displayCatData(data,arr,brr,lv,count) {
+    let html = "",
+        showID = current_user_data.setting.show_cat_id,
+        showCount = current_user_data.setting.show_cat_count;
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
-    html += "<tr><td style='background-color:transparent' colspan=4></td>"+
-            "<td style='background-color:transparent' colspan=2><button id='addcart'>加到購物車</button></td>";
+    html += "<tr><td style='background-color:transparent' colspan="+
+            (screen.width > 768 ?4:3)+"></td>"+
+            "<td style='background-color:transparent' colspan="+
+            (screen.width > 768 ?2:3)+"><button id='addcart'>加到購物車</button></td>";
+
+    html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
+            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+count+"</td></tr>";
 
     html += screen.width > 768 ?
     "<tr>"+
@@ -258,7 +266,6 @@ $(document).ready(function () {
     return html
   }
   function initialSlider(data,lv) {
-    console.log(lv);
     $("#level").slider({
       max: 100,
       min: 1,
@@ -274,11 +281,13 @@ $(document).ready(function () {
     $("#level").on("slidechange", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
-      socket.emit("store cat level",{
-        uid : current_user_data.uid,
-        id : $(this).parents(".dataTable").attr("id"),
-        lv : ui.value
-      });
+      if(ui.value != current_user_data.setting.default_cat_lv){
+        socket.emit("store cat level",{
+          uid : current_user_data.uid,
+          id : $(this).parents(".dataTable").attr("id"),
+          lv : ui.value
+        });
+      }
     });
     function updateState(level) {
       let rarity = data.稀有度;

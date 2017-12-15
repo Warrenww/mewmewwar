@@ -1,0 +1,118 @@
+.setting_container{
+  padding: 5% 10%;
+
+}
+.setting_element{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: rgba(255,255,255,.9);
+  border-radius: 10px;
+  box-shadow: grey 5px 5px 10px;
+  min-height: 50px;
+}
+.setting_container h4 {
+  padding: 2px 20px;
+  margin: 0 ;
+  font-weight: bold;
+  font-size: 20px;
+  margin: 10px 0;
+}
+.setting_item{
+  width: 95%;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  padding: 10px ;
+  margin: 0 2.5%;
+  border-bottom: 1px solid rgb(222, 222, 222);
+}
+.setting_item span{
+  font-size: 20px;
+  flex: 3 ;
+}
+.setting_item input{
+  width: 120px;
+  background-color: transparent;
+  border: 0px;
+  border-bottom: 1px solid gray;
+  font-size: 20px;
+  text-align: center;
+}
+#reset_cat_lv{
+  background: linear-gradient(rgb(246, 154, 87),rgb(255, 74, 74))
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 20px;
+  margin: 0 20px;
+}
+.switch input {display:none;}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(129, 129, 129);
+  transition: .4s ease-in-out;
+  border-radius: 30px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: -2px;
+  bottom: -2px;
+  background-color: white;
+  transition: .4s ease-in-out;
+  border-radius: 50%;
+  box-shadow: gray 4px 0px 10px;
+}
+input:checked + .slider {
+  background-color: rgb(33, 150, 244);
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(32px);
+  -ms-transform: translateX(32px);
+  transform: translateX(32px);
+  box-shadow: gray -4px 0px 10px;
+}
+#cat_history,#ene_history{
+  font-size: 40px;
+  color:gray;
+  transform: rotate(-90deg);
+  cursor: pointer;
+  transition: .4s ease-in-out;
+}
+#cat_history:hover,
+#ene_history:hover{
+  background-color: rgba(200,200,200,.5);
+  border-radius: 50%
+}
+#history_cat,#history_ene{
+  width: 95%;
+  margin: 0 2.5%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  height: 0;
+  transition: .8s ease-in-out;
+  overflow-y: scroll;
+}
+#history_cat::-webkit-scrollbar {
+    width: 8px;
+}
+#history_cat::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+#history_cat::-webkit-scrollbar-thumb {
+  background-color: gray;
+  outline: 1px solid slategrey;
+  border-radius: 4px;
+
+}

@@ -190,7 +190,7 @@ io.on('connection', function(socket){
     let uid = data.uid,
         id = data.cat,
         grossID = id.substring(0,3),
-        result = {"this":"","bro":[],"combo":[],"lv":""},
+        result = {"this":"","bro":[],"combo":[]},
         level ;
     console.log("client requir cat "+grossID+"'s data'");
     let combo = [] ;
@@ -201,13 +201,12 @@ io.on('connection', function(socket){
       for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
     }
     result.combo = combo ;
-    database.ref("/user/"+uid+"/setting/cat_lv").once("value",function (snapshot) {
-      result.lv = snapshot.val()[id] != undefined ? snapshot.val()[id] : 30;
-      console.log(result);
+    database.ref("/user/"+uid+"/variable/cat/"+grossID).once("value",function (snapshot) {
+      result.lv = snapshot.val().lv ;
+      result.count = snapshot.val().count ;
       socket.emit("display cat result",result);
     });
-
-    // result.lv = level  ;
+    // console.log(result);
 
   });
   socket.on("display enemy",function (id) {
@@ -239,9 +238,16 @@ io.on('connection', function(socket){
           first_login: timer,
           history : {cat:"",enemy:"",combo:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
-          setting : {cat_lv:""}
+          setting : {default_cat_lv:30},
+          variable: {cat:{}}
         }
         database.ref('/user/'+user.uid).set(data) ;
+        let current = '',exist = '000';
+        for(let i in catdata){
+          current = i.substring(0,3) ;
+          if (current == exist) continue ;
+          else database.ref('/user/'+user.uid+'/variable/cat/'+current).set({count:0,lv:"default"});
+        }
       }
     });
 
@@ -273,7 +279,8 @@ io.on('connection', function(socket){
         last_cat : last_cat,
         last_combo : last_combo,
         last_enemy : last_enemy,
-        compare_c2c: arr
+        compare_c2c: arr,
+        setting : snapshot.val().setting
       });
     });
     console.log('user data send');
@@ -305,6 +312,15 @@ io.on('connection', function(socket){
     console.log(obj);
     database.ref("/user/"+obj.uid+"/history/"+obj.type)
           .push({type : obj.type,id : obj.id});
+    console.log("count cat search time");
+    if(obj.type == 'cat'){
+      let id = obj.id,
+          gross = id.substring(0,3);
+      database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").once('value',function (snapshot) {
+        let count = snapshot.val() + 1;
+        database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").set(count);
+      });
+    }
   });
   socket.on("history",function (uid) {
     console.log(uid+"'s history");
@@ -321,7 +337,37 @@ io.on('connection', function(socket){
   });
   socket.on("store cat level",function (data) {
     console.log(data.uid+" change his/her "+data.id+"'s level to "+data.lv);
-    database.ref("/user/"+data.uid+"/setting/cat_lv/"+data.id).set(data.lv);
+    let id = data.id,
+        gross = id.substring(0,3);
+    database.ref("/user/"+data.uid+"/variable/cat/"+gross).update({lv:data.lv});
+  });
+
+  socket.on("require setting",function (id) {
+    console.log("require "+id+"'s setting");
+    database.ref("/user/"+id+"/setting").once("value",function (snapshot) {
+      socket.emit("user setting",snapshot.val());
+    });
+  });
+  socket.on("set default cat level",function (data) {
+    console.log("set "+data.uid+"'s default_cat_lv to "+data.lv);
+    database.ref("/user/"+data.uid+"/setting/default_cat_lv").set(data.lv);
+
+  });
+  socket.on("reset cat level",function (id) {
+    console.log("reset all "+id+"'s cat lv to default");
+      database.ref("/user/"+id+"/variable/cat").once("value",function (snapshot) {
+        for(let i in snapshot.val()){
+          database.ref("/user/"+id+"/variable/cat/"+i+"/lv").set("default");
+        }
+      });
+  });
+  socket.on("show hide cat id",function (data) {
+    console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's cat id");
+    database.ref("/user/"+data.uid+"/setting/show_cat_id").set(data.state);
+  });
+  socket.on("show hide cat count",function (data) {
+    console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's cat count");
+    database.ref("/user/"+data.uid+"/setting/show_cat_count").set(data.state);
   });
 
   socket.on('get event date',function () {

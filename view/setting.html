@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="../public/css/index.css" />
+    <link rel="stylesheet" href="../public/css/setting.css" />
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
@@ -21,20 +22,60 @@
         <i class="material-icons" id="m_nav_menu">menu</i>
       </div>
     </nav>
-    <div id="m_nav_panel_BG">
-    </div>
+    <div id="m_nav_panel_BG"></div>
     <div class="m_nav_panel">
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
     </div>
 
     <div class="page_1">
-      <div style="margin:5% 10%">
-        <h1>搜尋紀錄</h1>
-        <h2>貓咪</h2>
-        <div id='history_cat' style="margin:20px;display:flex;flex-wrap: wrap;"></div>
-        <h2>敵人</h2>
-        <div id='history_ene' style="margin:20px;display:flex;flex-wrap: wrap;"></div>
+      <div class="setting_container">
+        <h4>貓咪查詢設定</h4>
+        <div class="setting_element">
+          <div class="setting_item">
+            <span>預設貓咪等級</span>
+            <input type="number" id="default_cat_lv"/>
+          </div>
+          <div class="setting_item">
+            <span>重設所有貓咪等級</span>
+            <button id="reset_cat_lv">重設</button>
+          </div>
+          <div class="setting_item">
+            <span>顯示貓咪ID</span>
+            <label class="switch">
+              <input type="checkbox" id="show_cat_id" >
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting_item">
+            <span>顯示貓咪查詢次數</span>
+            <label class="switch">
+              <input type="checkbox" id="show_cat_count" >
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting_item">
+            <span>我的貓咪查詢歷程記錄(最近20隻)</span>
+            <i class="material-icons" id="cat_history">arrow_drop_down</i>
+          </div>
+          <div id="history_cat"></div>
+          <div class="setting_item">
+            <span>more setting is coming</span>
+            <i class="material-icons">arrow_drop_down</i>
+          </div>
+        </div>
+        <h4>敵人查詢設定</h4>
+        <div class="setting_element">
+          <div class="setting_item">
+            <span>我的敵人查詢歷程記錄(最近20隻)</span>
+            <i class="material-icons" id="ene_history">arrow_drop_down</i>
+          </div>
+          <div id="history_ene"></div>
+          <div class="setting_item">
+            <span>more setting is coming</span>
+            <i class="material-icons">arrow_drop_down</i>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -66,7 +107,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../public/js/html2canvas.min.js"></script>
     <script src="../public/js/overall.js"></script>
-    <script src="../public/js/userdata.js"></script>
+    <script src="../public/js/setting.js"></script>
     <script src="../public/js/firebaseConfig.js"></script>
     <script src="../public/js/jquery.easing.1.3.js"></script>
     <script src="/socket.io/socket.io.js"></script>

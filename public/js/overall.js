@@ -117,7 +117,7 @@ $(document).ready(function () {
 
   var setting_html = '<a id="current_user_name">登入</a>'+
       '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
-      '<i class="material-icons" data-toggle="modal" data-target="#settingModal" id="setting">settings</i>' ;
+      '<a href="'+(location.pathname == "/"?"/view/":"")+'setting.html"><i class="material-icons" id="setting">settings</i></a>' ;
   $("nav .settingBox").html(setting_html);
   $(".m_settingBox").html(setting_html);
   $("i[data-target='#helpModal']").click(function () {
@@ -130,10 +130,10 @@ $(document).ready(function () {
   auth.onAuthStateChanged(function(user) {
     if (user) {
       $("#current_user_name").text("Hi, "+user.displayName)
-      .attr({'id':'userdata','href':'userdata.html'}) ;
+      .attr({'id':'userdata'}) ;
     } else {
       console.log('did not sign in');
-      r= confirm('登入來啟用更多功能!!');
+      r = confirm('登入來啟用更多功能!!');
       if (r) facebookLog();
     }
   });
@@ -181,7 +181,7 @@ function serialATK(prop,atk) {
 }
 function scroll_to_div(div_id){
   $('html,body').animate(
-    {scrollTop: $("#"+div_id).offset().top},
+    {scrollTop: $("#"+div_id).offset().top-100},
     1000,'easeInOutCubic');
 }
 function scroll_to_class(class_name,n) {
