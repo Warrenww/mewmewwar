@@ -7,6 +7,7 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
+
 var userdata;
 var catdata;
 firebase.initializeApp(config);
@@ -14,15 +15,15 @@ var database = firebase.database();
 database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
 });
-database.ref("/user").once("value",function (snapshot) {
-  console.log('loading') ;
-  userdata = snapshot.val() ;
-  // console.log(userdata);
-  console.log('load complete') ;
-  let buffer = {} ;
-  let current = ''
-  for(let i in userdata){
-    database.ref('/user/'+i+'/Anonymous').set(false);
-
-  }
-});
+// database.ref("/user").once("value",function (snapshot) {
+//   console.log('loading') ;
+//   userdata = snapshot.val() ;
+//   // console.log(userdata);
+//   console.log('load complete') ;
+//   let buffer = {} ;
+//   let current = ''
+//   for(let i in userdata){
+//     database.ref('/user/'+i+'/Anonymous').set(false);
+//
+//   }
+// });

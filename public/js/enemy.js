@@ -16,7 +16,7 @@ $(document).ready(function () {
     if(data.last_enemy) socket.emit("display enemy",data.last_enemy) ;
   });
 
-  var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','不死敵','白敵','無屬性敵'];
+  var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','外星敵(星)','不死敵','白敵','無屬性敵'];
   for(let i in color) $(".select_color").append("<span class='button' name='["+color[i]+"]' value='0'>"+color[i]+"</span>") ;
 
   var ability = ['增攻','降攻','免疫降攻','爆擊','擊退','免疫擊退','連續攻擊',
@@ -54,11 +54,11 @@ $(document).ready(function () {
       if(enemydata[id].全名.indexOf(keyword) != -1) buffer.push(enemydata[id]) ;
     }
     console.log(buffer);
-    scroll_to_div('selected');
     $("#selected").empty();
     $("#selected").scrollTop(0);
     $("#selected").append(condenseEnemyName(buffer));
     $(".button_group").css('display','flex');
+    scroll_to_div('selected');
   }
   function condenseEnemyName(data) {
     let html = '' ;
@@ -251,11 +251,6 @@ $(document).ready(function () {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
 
-  function scroll_to_div(div_id){
-    $('.page_1').animate(
-      {scrollTop: $("#"+div_id).offset().top},
-      1000);
-  }
   function levelToValue(value,m) {
     return value*m
   }
