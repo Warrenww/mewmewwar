@@ -444,16 +444,20 @@ io.on('connection', function(socket){
 
 function arrangeUserData() {
   console.log('arrange user data');
-  let buffer = {};
+  let buffer = {},count = 0;
   database.ref('/user').once('value',function (snapshot) {
     userdata = snapshot.val();
     for(let i in userdata){
-      // console.log(i);
+      count++ ;
+      console.log(i);
       if(i != "undefined") buffer[i] = userdata[i]
+      if(userdata[i].first_login == undefined || userdata[i].first_login == null)
+        database.ref('/user/'+i).remove();
     }
+    console.log("there are "+count+" users!!");
     // console.log(buffer);
     for (let i in buffer){
-      console.log(i);
+      // console.log(i);
       let arr=[],
           h_cat = {},
           h_ene = {},
