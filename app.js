@@ -60,7 +60,7 @@ database.ref("/").once("value",function (snapshot) {
 arrangeUserData();
 
 io.on('connection', function(socket){
-  // console.log('a user connected');
+
   // loadcatData() ;
 
   socket.on("search",function (data) {
