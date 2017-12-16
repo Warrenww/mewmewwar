@@ -109,6 +109,10 @@ nav .mobile,
     width: 100%;
     margin: 0;
   }
+  .login_box{
+    left: 15%;
+    width: 70%
+  }
 }
 @media screen and (max-width: 1024px) {
   nav a img{

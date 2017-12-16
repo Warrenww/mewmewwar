@@ -57,7 +57,7 @@ database.ref("/").once("value",function (snapshot) {
   enemydata = snapshot.val().enemydata ;
   console.log('all data load complete!!') ;
 });
-// arrangeUserData();
+arrangeUserData();
 
 io.on('connection', function(socket){
 
@@ -235,11 +235,19 @@ io.on('connection', function(socket){
         console.log('new user');
         let data = {
           name : user.displayName,
-          first_login: timer,
+          first_login : timer,
           history : {cat:"",enemy:"",combo:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
-          variable: {cat:{}}
+          variable : {cat:{}},
+          Anonymous : user.isAnonymous
+        }
+        if(user.isAnonymous){
+          let name_arr = [] ;
+          for(let i in catdata) name_arr.push(catdata[i].全名);
+          let anonymous = name_arr[Math.floor((Math.random()*name_arr.length))];
+          data.name = "匿名"+anonymous;
+          console.log("匿名"+anonymous);
         }
         database.ref('/user/'+user.uid).set(data) ;
         let current = '',exist = '000';
@@ -306,6 +314,15 @@ io.on('connection', function(socket){
     for(let i in arr) compare.push(catdata[arr[i]]);
     socket.emit("c2c compare",compare);
   });
+  socket.on("user name",function (id) {
+    database.ref("/user/"+id+"/name").once("value",function (snapshot) {
+      socket.emit("user name",snapshot.val());
+    });
+  });
+  socket.on("rename",function (data) {
+    database.ref("/user/"+data.uid+"/name").set(data.name);
+  });
+
 
   socket.on("user Search",function (obj) {
     console.log("recording user history");
@@ -437,6 +454,7 @@ function arrangeUserData() {
     }
     // console.log(buffer);
     for (let i in buffer){
+      console.log(i);
       let arr=[],
           h_cat = {},
           h_ene = {},

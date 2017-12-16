@@ -361,3 +361,47 @@ table {
   justify-content: center;
   color: white
 }
+#login{
+  display: none;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+}
+.login_box{
+  position: relative;
+  top: 40%;
+  left: 40%;
+  width: 20%;
+  background-color: rgba(252, 218, 170, 0.84);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px;
+}
+#fb_login,#guest_login{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  font-size: 30px;
+  text-align: center;
+  border-radius: 50%;
+  margin: 30px 10px;
+  cursor: pointer;
+  color: white;
+  border: 3px solid white;
+}
+#fb_login{background-color: rgb(81, 122, 237)}
+#guest_login{background-color: rgb(189, 189, 189)}
+#login h4{
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    position: relative;
+    top: 40%;
+    font-size: 30px;
+}

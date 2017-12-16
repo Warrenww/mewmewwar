@@ -3,7 +3,9 @@ const image_url_enemy =  "../public/css/footage/enemy/e" ;
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
-  $(document).on('click', '#current_user_name', facebookLog); //Facebook登入
+  // $(document).on('click', '#current_user_name', facebookLog); //Facebook登入
+  $(document).on("click","#fb_login",facebookLog)
+  $(document).on("click","#guest_login",guestLog)
   function facebookLog() {
     auth.signInWithPopup(facebook_provider).then(function(result) {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -12,6 +14,7 @@ $(document).ready(function () {
       var user = result.user;
       console.log(user);
       socket.emit("user login",result.user) ;
+      $("#login").fadeOut();
       // window.location.assign("/");
     }).catch(function(error) {
       console.log(error);
@@ -23,6 +26,30 @@ $(document).ready(function () {
       // The firebase.auth.AuthCredential type that was used.
       var credential = error.credential;
       // ...
+    });
+  }
+  function guestLog() {
+    firebase.auth().signInAnonymously().catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    })
+    .then(function () {
+      $("#login").fadeOut();
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // console.log(user);
+          socket.emit("user login",user) ;
+          var isAnonymous = user.isAnonymous;
+          var uid = user.uid;
+          // ...
+        } else {
+          // User is signed out.
+          // ...
+        }
+        // ...
+      });
     });
   }
 
@@ -115,7 +142,7 @@ $(document).ready(function () {
   $("nav .navLinkBox").html(nav_html) ;
   $(".m_navLinkBox").html(nav_html) ;
 
-  var setting_html = '<a id="current_user_name">登入</a>'+
+  var setting_html = '<a id="current_user_name"></a>'+
       '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
       '<a href="'+(location.pathname == "/"?"/view/":"")+'setting.html"><i class="material-icons" id="setting">settings</i></a>' ;
   $("nav .settingBox").html(setting_html);
@@ -129,22 +156,22 @@ $(document).ready(function () {
   })
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      $("#current_user_name").text("Hi, "+user.displayName)
-      .attr({'id':'userdata'}) ;
+      socket.emit("user name",user.uid);
     } else {
+      $("#login").fadeIn();
       console.log('did not sign in');
-      r = confirm('登入來啟用更多功能!!');
-      if (r) facebookLog();
-      else {
-        // firebase.auth().signInAnonymously().catch(function(error) {
-        //   // Handle Errors here.
-        //   var errorCode = error.code;
-        //   var errorMessage = error.message;
-        //   // ...
-        // });
+      if(location.pathname != '/') {
+        alert("登入以獲得更多功能!!!");
+        location.assign("/");
       }
     }
   });
+  socket.on("user name",function (name) {
+    $("#current_user_name").text("Hi, "+name);
+  });
+
+
+
 
   var xmlhttp = new XMLHttpRequest() ;
   var url = "../public/update_dialog.txt";

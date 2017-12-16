@@ -10,10 +10,23 @@ $(document).ready(function () {
      }
     socket.emit("set default cat level",{uid:current_user_data.uid,lv:val})
   });
+  $(document).on('blur','#userName',function () {
+    let val = $(this).val() ;
+    if(!confirm("確定要將名字改為"+val+"嗎?")) return
+    socket.emit("rename",{uid:current_user_data.uid,name:val});
+  });
   $(document).on("click","#reset_cat_lv",function () {
     let r = confirm("所有貓咪等級將重設為"+current_user_data.setting.default_cat_lv+"等");
     if(!r) return
     socket.emit("reset cat level",current_user_data.uid);
+  });
+  $(document).on("click","#logout",function () {
+    if(!confirm("確定要登出嗎")) return
+    firebase.auth().signOut().then(function() {
+      // Sign-out successful.
+    }, function(error) {
+      // An error happened.
+    });
   });
   $(document).on("click","#show_cat_id",function () {
     socket.emit("show hide cat id",{
@@ -84,6 +97,7 @@ $(document).ready(function () {
     console.log(data);
     current_user_data = data ;
     socket.emit("history",data.uid);
+    $("#userName").attr('value',data.name);
   });
   socket.on("user setting",function (data) {
     console.log(data);

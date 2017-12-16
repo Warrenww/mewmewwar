@@ -22,7 +22,7 @@ database.ref("/user").once("value",function (snapshot) {
   let buffer = {} ;
   let current = ''
   for(let i in userdata){
-    database.ref('/user/'+i+'/setting/show_cat_count').set(0);
+    database.ref('/user/'+i+'/Anonymous').set(false);
 
   }
 });
