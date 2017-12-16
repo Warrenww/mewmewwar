@@ -248,6 +248,7 @@ io.on('connection', function(socket){
           data.name = "匿名"+anonymous;
           console.log("匿名"+anonymous);
         }
+        console.log(data);
         database.ref('/user/'+user.uid).set(data) ;
         let current = '',exist = '000';
         for(let i in catdata){
@@ -256,6 +257,9 @@ io.on('connection', function(socket){
           else database.ref('/user/'+user.uid+'/variable/cat/'+current).set({count:0,lv:"default"});
         }
       }
+    }).then(function () {
+      clearTimeout(timeout);
+      arrangeUserData();
     });
 
   });
@@ -441,18 +445,26 @@ io.on('connection', function(socket){
 
 
 });
-
+var  timeout ;
 function arrangeUserData() {
+  timeout = setTimeout(function () {
+    arrangeUserData();
+  },3600000);
   console.log('arrange user data');
   let buffer = {},count = 0;
   database.ref('/user').once('value',function (snapshot) {
     userdata = snapshot.val();
     for(let i in userdata){
       count++ ;
-      console.log(i);
-      if(i != "undefined") buffer[i] = userdata[i]
-      if(userdata[i].first_login == undefined || userdata[i].first_login == null)
+      // console.log(i);
+      if(userdata[i].first_login == undefined || userdata[i].first_login == null || i == undefined){
         database.ref('/user/'+i).remove();
+        console.log("remove "+i);
+      }  else buffer[i] = userdata[i];
+      if(userdata[i].Anonymous){
+        let timer = new Date().getTime();
+        if((timer - userdata[i].last_login)>3*86400000) database.ref('/user/'+i).remove();
+      }
     }
     console.log("there are "+count+" users!!");
     // console.log(buffer);

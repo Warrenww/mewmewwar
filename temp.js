@@ -1,3 +1,4 @@
+var fs = require('fs');
 var firebase = require("firebase");
 var config = {
     apiKey: "AIzaSyC-SA6CeULoTRTN10EXqXdgYaoG1pqWhzM",
@@ -15,15 +16,16 @@ var database = firebase.database();
 database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
 });
-// database.ref("/user").once("value",function (snapshot) {
-//   console.log('loading') ;
-//   userdata = snapshot.val() ;
-//   // console.log(userdata);
-//   console.log('load complete') ;
-//   let buffer = {} ;
-//   let current = ''
-//   for(let i in userdata){
-//     database.ref('/user/'+i+'/Anonymous').set(false);
-//
-//   }
-// });
+database.ref("/user").once("value",function (snapshot) {
+  console.log('loading') ;
+  userdata = snapshot.val() ;
+  for(let i in userdata){
+    console.log(userdata[i].Anonymous);
+  }
+  // console.log(userdata);
+  // console.log('load complete') ;
+  // fs.writeFile('userdataBackup.json',JSON.stringify(userdata),(err) =>{
+  //   if (err) throw err;
+  //   console.log('It\'s saved!');
+  // });
+});
