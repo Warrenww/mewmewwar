@@ -57,7 +57,7 @@ database.ref("/").once("value",function (snapshot) {
   enemydata = snapshot.val().enemydata ;
   console.log('all data load complete!!') ;
 });
-arrangeUserData();
+// arrangeUserData();
 
 io.on('connection', function(socket){
 
