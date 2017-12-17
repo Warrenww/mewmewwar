@@ -238,6 +238,7 @@ io.on('connection', function(socket){
         console.log('new user');
         let data = {
           name : user.displayName,
+          nickname :user.displayName,
           first_login : timer,
           history : {cat:"",enemy:"",combo:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
@@ -250,6 +251,7 @@ io.on('connection', function(socket){
           for(let i in catdata) name_arr.push(catdata[i].全名);
           let anonymous = name_arr[Math.floor((Math.random()*name_arr.length))];
           data.name = "匿名"+anonymous;
+          data.nickname = "匿名"+anonymous;
           console.log("匿名"+anonymous);
         }
         console.log(data);
@@ -273,12 +275,16 @@ io.on('connection', function(socket){
         last_combo = [],
         last_enemy = '';
     console.log("user "+user.uid+" connect");
+    //temp
+    database.ref('/user/'+user.uid).update({name : user.displayName});
+    //temp
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
       if(snapshot.val().first_login == null){
         console.log('null user');
         let data = {
           name : "匿名貓咪",
+          nickname : "匿名貓咪",
           first_login : timer,
           history : {cat:"",enemy:"",combo:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
@@ -303,7 +309,7 @@ io.on('connection', function(socket){
         arr.push(obj);
       }
       socket.emit("current_user_data",{
-        name : snapshot.val().name,
+        name : snapshot.val().nickcname,
         uid : user.uid,
         last_cat : last_cat,
         last_combo : last_combo,
@@ -336,12 +342,12 @@ io.on('connection', function(socket){
     socket.emit("c2c compare",compare);
   });
   socket.on("user name",function (id) {
-    database.ref("/user/"+id+"/name").once("value",function (snapshot) {
+    database.ref("/user/"+id+"/nickname").once("value",function (snapshot) {
       socket.emit("user name",snapshot.val());
     });
   });
   socket.on("rename",function (data) {
-    database.ref("/user/"+data.uid+"/name").set(data.name);
+    database.ref("/user/"+data.uid+"/nickname").set(data.name);
   });
 
 
@@ -350,13 +356,19 @@ io.on('connection', function(socket){
     console.log(obj);
     database.ref("/user/"+obj.uid+"/history/"+obj.type)
           .push({type : obj.type,id : obj.id});
-    console.log("count cat search time");
     if(obj.type == 'cat'){
       let id = obj.id,
           gross = id.substring(0,3);
+
+      console.log("count cat search time(user)");
       database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").once('value',function (snapshot) {
         let count = snapshot.val() + 1;
         database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").set(count);
+      });
+      console.log("count cat search time(global)");
+      database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
+        let count = snapshot.val() + 1;
+        database.ref("/catdata/"+id+"/count").set(count);
       });
     }
   });
