@@ -132,7 +132,9 @@ $(document).ready(function () {
   function displayCatData(data,arr,brr,lv,count) {
     let html = "",
         showID = current_user_data.setting.show_cat_id,
-        showCount = current_user_data.setting.show_cat_count;
+        showCount = current_user_data.setting.show_cat_count,
+        id = data.id,
+        grossID = id.substring(0,3);
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
     html += "<tr><td style='background-color:transparent' colspan="+
             (screen.width > 768 ?4:3)+"></td>"+
@@ -140,7 +142,9 @@ $(document).ready(function () {
             (screen.width > 768 ?2:3)+"><button id='addcart'>加到購物車</button></td>";
 
     html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
-            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+count+"</td></tr>";
+            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+count+"</td>"+
+            "<td colspan=2><a target='blank' href='http://battlecats-db.com/unit/"+
+            grossID+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
 
     html += screen.width > 768 ?
     "<tr>"+

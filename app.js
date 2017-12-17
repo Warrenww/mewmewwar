@@ -271,10 +271,24 @@ io.on('connection', function(socket){
     console.log("user "+user.uid+" connect");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
-    let history = snapshot.val().history ;
-    for(let i in history.cat) last_cat = history.cat[i].id ;
-    for(let i in history.combo) last_combo = history.combo[i].id ;
-    for(let i in history.enemy) last_enemy = history.enemy[i].id ;
+      if(snapshot.val().first_login == null){
+        console.log('null user');
+        let data = {
+          name : "匿名貓咪",
+          first_login : timer,
+          history : {cat:"",enemy:"",combo:""},
+          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
+          setting : {default_cat_lv:30},
+          variable : {cat:{}},
+          Anonymous : true
+        }
+        database.ref('/user/'+user.uid).set(data) ;
+        return
+      }
+      let history = snapshot.val().history ;
+      for(let i in history.cat) last_cat = history.cat[i].id ;
+      for(let i in history.combo) last_combo = history.combo[i].id ;
+      for(let i in history.enemy) last_enemy = history.enemy[i].id ;
 
       let compareCat = snapshot.val().compare.cat2cat  ;
       let obj , arr = [] ;

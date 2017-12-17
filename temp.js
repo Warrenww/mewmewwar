@@ -19,13 +19,13 @@ database.ref("/catdata").once("value",function (snapshot) {
 database.ref("/user").once("value",function (snapshot) {
   console.log('loading') ;
   userdata = snapshot.val() ;
-  for(let i in userdata){
-    console.log(userdata[i].Anonymous);
-  }
+  // for(let i in userdata){
+  //   console.log(userdata[i].Anonymous);
+  // }
   // console.log(userdata);
-  // console.log('load complete') ;
-  // fs.writeFile('userdataBackup.json',JSON.stringify(userdata),(err) =>{
-  //   if (err) throw err;
-  //   console.log('It\'s saved!');
-  // });
+  console.log('load complete') ;
+  fs.writeFile('userdataBackup.json',JSON.stringify(userdata),(err) =>{
+    if (err) throw err;
+    console.log('It\'s saved!');
+  });
 });
