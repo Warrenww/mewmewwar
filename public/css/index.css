@@ -330,7 +330,7 @@ table {
 .reverse,.compareTarget_child i,
 .compareTable th{cursor: pointer;}
 #helpModal .modal-body{
-  height: 40% ;
+  height: 80% ;
   overflow-y: scroll;
 }
 #helpModal .title{font-size: 20px;font-weight: bold;}

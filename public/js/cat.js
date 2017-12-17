@@ -337,7 +337,11 @@ $(document).ready(function () {
           } ;
       filterObj.push(bufferObj);
     });
-    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:"cat"});
+    socket.emit("search",{
+      uid:current_user_data.uid,
+      rFilter,cFilter,aFilter,filterObj,
+      type:"cat"
+    });
 
     scroll_to_div('selected');
   }

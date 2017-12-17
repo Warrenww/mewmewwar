@@ -72,7 +72,8 @@ io.on('connection', function(socket){
             type = data.type,
             buffer_1 = [],
             buffer_2 = [],
-            load_data = {};
+            load_data = {},
+            user = data.uid;
         switch (type) {
           case 'cat':
             load_data = catdata ;
@@ -83,69 +84,72 @@ io.on('connection', function(socket){
           default:
 
         } ;
+        database.ref("/user/"+user+"/setting/default_cat_lv").once("value",function (snapshot) {
+          let level = snapshot.val() ;
+          if(cFilter.length != 0){
+            for(let i in load_data){
+              for(let j in cFilter){
+                if(type == 'cat' && load_data[i].tag == '[無]') break;
+                if(type == 'enemy' && load_data[i]['分類'] == '[無]') break;
 
-        if(cFilter.length != 0){
-          for(let i in load_data){
-            for(let j in cFilter){
-              if(type == 'cat' && load_data[i].tag == '[無]') break;
-              if(type == 'enemy' && load_data[i]['分類'] == '[無]') break;
-
-              if(type == 'cat' && load_data[i].tag.indexOf(cFilter[j]) != -1 ) {
-                buffer_1.push(load_data[i]);
-                break;
-              }
-              if(type == 'enemy' && load_data[i]['分類'].indexOf(cFilter[j]) != -1 ) {
-                buffer_1.push(load_data[i]);
-                break;
-              }
-            }
-          }
-        }
-        else buffer_1 = load_data ;
-        // console.log(buffer_1)
-        if(aFilter.length != 0){
-          for(let i in buffer_1){
-            for(let j in aFilter){
-              if(buffer_1[i].tag == '[無]') break;
-              else if(buffer_1[i].tag.indexOf(aFilter[j]) != -1) {
-                buffer_2.push(buffer_1[i]);
-                break;
+                if(type == 'cat' && load_data[i].tag.indexOf(cFilter[j]) != -1 ) {
+                  buffer_1.push(load_data[i]);
+                  break;
+                }
+                if(type == 'enemy' && load_data[i]['分類'].indexOf(cFilter[j]) != -1 ) {
+                  buffer_1.push(load_data[i]);
+                  break;
+                }
               }
             }
           }
-        }
-        else buffer_2 = buffer_1 ;
-        buffer_1 = [] ;
-        if(rFilter.length != 0) {
-          for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].稀有度) != -1) buffer_1.push(buffer_2[i]) ;
-        }
-        else buffer_1 = buffer_2 ;
-        buffer_2 = [] ;
-        if(otherFilter.length != 0){
-          for(let i in otherFilter){
-            let name = otherFilter[i].name,
-            reverse = otherFilter[i].reverse ,
-            limit = otherFilter[i].limit ,
-            level_bind = otherFilter[i].level_bind ;
-
-            for(let j in buffer_1){
-              let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].稀有度,30) : buffer_1[j][name];
-              if(value > limit && !reverse) buffer_2.push(buffer_1[j]);
-              else if (value < limit && reverse) buffer_2.push(buffer_1[j]);
+          else buffer_1 = load_data ;
+          // console.log(buffer_1)
+          if(aFilter.length != 0){
+            for(let i in buffer_1){
+              for(let j in aFilter){
+                if(buffer_1[i].tag == '[無]') break;
+                else if(buffer_1[i].tag.indexOf(aFilter[j]) != -1) {
+                  buffer_2.push(buffer_1[i]);
+                  break;
+                }
+              }
             }
           }
-        } else buffer_2 = buffer_1 ;
-        buffer_1 = [] ;
-        // for(let i in buffer_2) console.log(buffer_2[i].全名) ;
-        for(let i in buffer_2) {
-          let obj = {
+          else buffer_2 = buffer_1 ;
+          buffer_1 = [] ;
+          if(rFilter.length != 0) {
+            for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].稀有度) != -1) buffer_1.push(buffer_2[i]) ;
+          }
+          else buffer_1 = buffer_2 ;
+          buffer_2 = [] ;
+          if(otherFilter.length != 0){
+            for(let i in otherFilter){
+              let name = otherFilter[i].name,
+              reverse = otherFilter[i].reverse ,
+              limit = otherFilter[i].limit ,
+              level_bind = otherFilter[i].level_bind;
+
+              for(let j in buffer_1){
+                let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].稀有度,level) : buffer_1[j][name];
+                if(value > limit && !reverse) buffer_2.push(buffer_1[j]);
+                else if (value < limit && reverse) buffer_2.push(buffer_1[j]);
+              }
+            }
+          } else buffer_2 = buffer_1 ;
+          buffer_1 = [] ;
+
+          // for(let i in buffer_2) console.log(buffer_2[i].全名) ;
+          for(let i in buffer_2) {
+            let obj = {
               id : buffer_2[i].id,
               name : buffer_2[i].全名
-              }
-          buffer_1.push(obj) ;
-        }
+            }
+            buffer_1.push(obj) ;
+          }
 
-        socket.emit("search result",buffer_1);
+          socket.emit("search result",buffer_1);
+        });
 
   });
   socket.on("text search",function (obj) {
