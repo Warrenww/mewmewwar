@@ -116,7 +116,7 @@ $(document).ready(function () {
     let data = result.this,
         arr = result.bro,
         brr = result.combo,
-        lv = result.lv == 'default' ? current_user_data.setting.default_cat_lv : result.lv;
+        lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv;
     displayCatData(data,arr,brr,lv,result.count) ;
   });
   socket.on("search result",function (data) {

@@ -256,12 +256,6 @@ io.on('connection', function(socket){
         }
         console.log(data);
         database.ref('/user/'+user.uid).set(data) ;
-        let current = '',exist = '000';
-        for(let i in catdata){
-          current = i.substring(0,3) ;
-          if (current == exist) continue ;
-          else database.ref('/user/'+user.uid+'/variable/cat/'+current).set({count:0,lv:"default"});
-        }
       }
     }).then(function () {
       clearTimeout(timeout);
@@ -362,7 +356,7 @@ io.on('connection', function(socket){
 
       console.log("count cat search time(user)");
       database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").once('value',function (snapshot) {
-        let count = snapshot.val() + 1;
+        let count = (snapshot.val()?snapshot.val():0) + 1;
         database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").set(count);
       });
       console.log("count cat search time(global)");
