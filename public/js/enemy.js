@@ -70,6 +70,7 @@ $(document).ready(function () {
        image_url+id+'.png'
       +')">'+
       name+'</span>'
+      number_page ++ ;
     }
     return html ;
   }
@@ -100,14 +101,25 @@ $(document).ready(function () {
     socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:'enemy'});
     scroll_to_div('selected');
   }
+  var number_page,page_factor ;
   socket.on("search result",function (result) {
     $("#selected").height(screen.width > 768 ?280:200);
-    console.log(result)
+    console.log(result);
+    number_page = 0 ;
+    page_factor = 1 ;
     $("#selected").empty();
+    $("#page_dot").empty();
     $("#selected").css('display','flex');
     $("#selected").scrollTop(0);
     $("#selected").append(condenseEnemyName(result));
     $(".button_group").css('display','flex');
+    scroll_to_div("selected");
+    number_page /= 10 ;
+    if(number_page>25) page_factor = 2;
+    for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
+      $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
+    $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
+
   });
   socket.on('display enemy result',function (data) {
     displayEnemyData(data) ;

@@ -269,9 +269,6 @@ io.on('connection', function(socket){
         last_combo = [],
         last_enemy = '';
     console.log("user "+user.uid+" connect");
-    //temp
-    database.ref('/user/'+user.uid).update({name : user.displayName});
-    //temp
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
       if(snapshot.val().first_login == null){
@@ -473,7 +470,7 @@ var  timeout ;
 function arrangeUserData() {
   timeout = setTimeout(function () {
     arrangeUserData();
-  },3600000);
+  },3600000*3);
   console.log('arrange user data');
   let buffer = {},count = 0;
   database.ref('/user').once('value',function (snapshot) {
@@ -487,6 +484,7 @@ function arrangeUserData() {
       }  else buffer[i] = userdata[i];
       if(userdata[i].Anonymous){
         let timer = new Date().getTime();
+        console.log("remove "+i+" since didn't login for 3 days");
         if((timer - userdata[i].last_login)>3*86400000) database.ref('/user/'+i).remove();
       }
     }

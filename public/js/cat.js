@@ -119,15 +119,24 @@ $(document).ready(function () {
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv;
     displayCatData(data,arr,brr,lv,result.count) ;
   });
+  var number_page,page_factor ;
   socket.on("search result",function (data) {
     console.log("recive search result");
     console.log(data);
+    number_page = 0 ;
+    page_factor = 1 ;
     $("#selected").empty();
+    $("#page_dot").empty();
     $("#selected").css('display','flex');
     $("#selected").scrollTop(0);
     $("#selected").append(condenseCatName(data));
     $(".button_group").css('display','flex');
     scroll_to_div("selected");
+    number_page /= 8 ;
+    if(number_page>25) page_factor = 2;
+    for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
+      $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
+    $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
   });
   function displayCatData(data,arr,brr,lv,count) {
     let html = "",
@@ -370,6 +379,7 @@ $(document).ready(function () {
         image_url+id+'.png)">'+
         name+'</span>' ;
         now = current ;
+        number_page ++ ;
       }
     }
     return html ;

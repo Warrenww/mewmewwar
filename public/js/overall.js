@@ -105,11 +105,18 @@ $(document).ready(function () {
   function turnPage(n) {
     $('#selected').unbind('mousewheel', scroll_select);
     $(window).bind('mousewheel', false);
-    let current = $("#selected").scrollTop();
-    let offset = $("#selected").height(); ;
+    let current = $("#selected").scrollTop(),
+        offset = $("#selected").height(),
+        current_page = current/offset ;
+
     $("#selected").animate(
       {scrollTop: current+offset*n},
-      100,'easeInOutCubic');
+      100*Math.abs(n^0.5),'easeInOutCubic');
+
+    $("#page_dot").find("span[value='"+(current_page+n)+"']")
+      .css('background-color','rgb(254, 168, 74)')
+      .siblings().css('background-color','white')
+
     setTimeout(function(){
       $('#selected').bind('mousewheel', scroll_select);
       $(window).unbind('mousewheel', false);
@@ -130,7 +137,19 @@ $(document).ready(function () {
     return false;
   };
   $('#selected').bind('mousewheel', scroll_select);
-
+  $(document).on('click','#page_dot span',function () {
+    let current = $("#selected").scrollTop(),
+        offset = $("#selected").height(),
+        current_page = current/offset,
+        goto = $(this).attr('value') ;
+    // console.log(current_page+","+goto);
+    let n = current_page-goto;
+    // console.log(n);
+    turnPage(-n);
+    // $(this).css('background-color','rgb(254, 168, 74)')
+    //   .siblings().css('background-color','white');
+    // $(this).attr('active',true).siblings().attr('active',false);
+  });
   var nav_site = ["cat","enemy","combo","compareCat","calender","event","gacha"],
       nav_text = ["貓咪資料","敵人資料","查詢聯組","比較貓咪","活動日程","最新消息","轉蛋"];
 
