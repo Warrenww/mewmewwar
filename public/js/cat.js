@@ -118,6 +118,7 @@ $(document).ready(function () {
         brr = result.combo,
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv;
     displayCatData(data,arr,brr,lv,result.count) ;
+
   });
   var number_page,page_factor ;
   socket.on("search result",function (data) {
@@ -173,7 +174,6 @@ $(document).ready(function () {
 
 
     $(".dataTable").empty();
-    $('.compareTable').empty();
     $(".dataTable").attr('id',data.id).append(
       html+
       "<tr>"+
@@ -224,7 +224,17 @@ $(document).ready(function () {
       "</tr>"
     );
     initialSlider(data,lv);
-    scroll_to_class("display",0) ;
+    scroll_to_class("display",0);
+    if(data.id == "334-2"&&(Math.random()>0.5)) {
+      $(".dataTable").append('<img class="animate_cat" src="../public/css/footage/animate/u334-2.gif" />')
+      $(".animate_cat").fadeIn();
+      setTimeout(function () {
+        $(".animate_cat").fadeOut();
+      },30000);
+      $(".animate_cat").click(function () {
+        $(this).fadeOut();
+      });
+    }
   }
   function AddCombo(arr) {
     if(arr.length == 0){

@@ -477,7 +477,7 @@ function arrangeUserData() {
     let timer = new Date().getTime();
     userdata = snapshot.val();
     for(let i in userdata){
-      console.log(i);
+      // console.log(i);
       if(i == undefined|| i == "undefined"){
         console.log("remove "+i);
         database.ref('/user/'+i).remove();
