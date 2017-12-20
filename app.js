@@ -472,72 +472,57 @@ function arrangeUserData() {
     arrangeUserData();
   },3600000*3);
   console.log('arrange user data');
-  let buffer = {},count = 0;
+  let count = 0;
   database.ref('/user').once('value',function (snapshot) {
+    let timer = new Date().getTime();
     userdata = snapshot.val();
     for(let i in userdata){
-      count++ ;
-      // console.log(i);
-      if(i == undefined){
-        database.ref('/user/'+i).remove();
+      console.log(i);
+      if(i == undefined|| i == "undefined"){
         console.log("remove "+i);
-      }  else buffer[i] = userdata[i];
-      if(userdata[i].Anonymous){
-        let timer = new Date().getTime();
+        database.ref('/user/'+i).remove();
+        continue
+      } else if(userdata[i].Anonymous){
         if((timer - userdata[i].last_login)>3*86400000) {
           console.log("remove "+i+" since didn't login for 3 days");
-          delete buffer[i];
-          count -- ;
-          database.ref('/user/'+i+"/name").set(0);
+          database.ref('/user/'+i).remove();
+          continue
+        }
+      } else {
+        let arr=[];
+        count ++ ;
+        for(let j in userdata[i].history.cat) arr.push(userdata[i].history.cat[j]);
+        if (arr.length > 20){
+          console.log(i+" too many cat");
+          let k=0 ;
+          for(let j in userdata[i].history.cat){
+            k++;
+            if(k < (arr.length-19)) database.ref('/user/'+i+"/history/cat/"+j).remove();
+          }
+        }
+        arr = [];
+        for(let j in userdata[i].history.enemy) arr.push(userdata[i].history.enemy[j]);
+        if (arr.length > 20){
+          console.log(i+" too many enemy");
+          let k=0 ;
+          for(let j in userdata[i].history.enemy){
+            k++;
+            if(k < (arr.length-19)) database.ref('/user/'+i+"/history/enemy/"+j).remove();
+          }
+        }
+        arr = [];
+        for(let j in userdata[i].history.combo) arr.push(userdata[i].history.combo[j]);
+        if (arr.length > 20){
+          console.log(i+" too many combo");
+          let k=0 ;
+          for(let j in userdata[i].history.combo){
+            k++;
+            if(k < (arr.length-19)) database.ref('/user/'+i+"/history/combo/"+j).remove();
+          }
         }
       }
     }
     console.log("there are "+count+" users!!");
-    // console.log(buffer);
-    for (let i in buffer){
-      // console.log(i);
-      let arr=[],
-          h_cat = {},
-          h_ene = {},
-          h_com = {};
-      for(let j in buffer[i].history.cat) arr.push(buffer[i].history.cat[j]);
-      if (arr.length > 20){
-        console.log(i+" too many cat");
-        let k=0 ;
-        for(let j in buffer[i].history.cat){
-          k++;
-          if(k < (arr.length-19)) continue
-          h_cat[j] = buffer[i].history.cat[j]
-        }
-      } else h_cat = buffer[i].history.cat;
-      buffer[i].history.cat = h_cat ;
-      arr = [];
-      for(let j in buffer[i].history.enemy) arr.push(buffer[i].history.enemy[j]);
-      if (arr.length > 20){
-        console.log(i+" too many enemy");
-        let k=0 ;
-        for(let j in buffer[i].history.enemy){
-          k++;
-          if(k < (arr.length-19)) continue
-          h_ene[j] = buffer[i].history.enemy[j]
-        }
-      } else h_ene = buffer[i].history.enemy;
-      buffer[i].history.enemy = h_ene ;
-      arr = [];
-      for(let j in buffer[i].history.combo) arr.push(buffer[i].history.combo[j]);
-      if (arr.length > 20){
-        console.log(i+" too many enemy");
-        let k=0 ;
-        for(let j in buffer[i].history.combo){
-          k++;
-          if(k < (arr.length-19)) continue
-          h_com[j] = buffer[i].history.combo[j]
-        }
-      } else h_com = buffer[i].history.combo;
-      buffer[i].history.combo = h_com ;
-
-    }
-    database.ref('/user').set(buffer);
   });
 }
 
