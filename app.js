@@ -300,7 +300,7 @@ io.on('connection', function(socket){
         arr.push(obj);
       }
       socket.emit("current_user_data",{
-        name : snapshot.val().nickcname,
+        name : snapshot.val().nickname,
         uid : user.uid,
         last_cat : last_cat,
         last_combo : last_combo,
@@ -478,14 +478,18 @@ function arrangeUserData() {
     for(let i in userdata){
       count++ ;
       // console.log(i);
-      if(userdata[i].first_login == undefined || userdata[i].first_login == null || i == undefined){
+      if(i == undefined){
         database.ref('/user/'+i).remove();
         console.log("remove "+i);
       }  else buffer[i] = userdata[i];
       if(userdata[i].Anonymous){
         let timer = new Date().getTime();
-        console.log("remove "+i+" since didn't login for 3 days");
-        if((timer - userdata[i].last_login)>3*86400000) database.ref('/user/'+i).remove();
+        if((timer - userdata[i].last_login)>3*86400000) {
+          console.log("remove "+i+" since didn't login for 3 days");
+          delete buffer[i];
+          count -- ;
+          database.ref('/user/'+i+"/name").set(0);
+        }
       }
     }
     console.log("there are "+count+" users!!");

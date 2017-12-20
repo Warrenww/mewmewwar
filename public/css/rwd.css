@@ -96,7 +96,8 @@ nav .mobile,
   .navLinkBox,
   .settingBox,
   .level,
-  #slider_holder td[colspan~='6']
+  #slider_holder td[colspan~='6'],
+  #page_dot
   {display: none;}
 
   .debugwindow h3{
@@ -120,4 +121,9 @@ nav .mobile,
     height: 50px;
   }
   .navLinkBox a{font-size: 16px}
+  #page_dot span{
+    width: 7px;
+    height: 7px;
+    margin: 3px
+  }
 }

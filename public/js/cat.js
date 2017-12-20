@@ -132,7 +132,7 @@ $(document).ready(function () {
     $("#selected").append(condenseCatName(data));
     $(".button_group").css('display','flex');
     scroll_to_div("selected");
-    number_page /= 8 ;
+    number_page /= (screen.width > 1024?8:6) ;
     if(number_page>25) page_factor = 2;
     for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");

@@ -111,7 +111,7 @@ $(document).ready(function () {
 
     $("#selected").animate(
       {scrollTop: current+offset*n},
-      100*Math.abs(n^0.5),'easeInOutCubic');
+      100*Math.sqrt(Math.abs(n)),'easeInOutCubic');
 
     $("#page_dot").find("span[value='"+(current_page+n)+"']")
       .css('background-color','rgb(254, 168, 74)')
@@ -209,6 +209,12 @@ $(document).ready(function () {
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
+  //google Analytics
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111466284-1');
 });
 
 function levelToValue(origin,rarity,lv) {
