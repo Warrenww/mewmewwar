@@ -5,4 +5,22 @@
   top: 0;
   z-index: 10;
   display: none;
+  align-items: flex-end;
+}
+.glyphicon-refresh,
+.glyphicon-shopping-cart{
+  top: 140px;
+  position: relative;
+  right: -167px;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  background: linear-gradient(rgb(233, 197, 40), rgb(208, 141, 12));
+  border: 3px solid;
+}
+.glyphicon-shopping-cart{
+  top: 30px;
+  right: -134px;
 }

@@ -40,6 +40,12 @@ $(document).ready(function () {
       state:$(this).prop("checked")
     });
   });
+  $(document).on("click","#show_jp_cat",function () {
+    socket.emit("show hide jp cat",{
+      uid:current_user_data.uid,
+      state:$(this).prop("checked")
+    });
+  });
   let cat_history_show = 0;
   $(document).on("click","#cat_history",function () {
     if(!cat_history_show){
@@ -104,6 +110,7 @@ $(document).ready(function () {
     $("#default_cat_lv").attr('value',data.default_cat_lv);
     $("#show_cat_id").prop('checked',data.show_cat_id);
     $("#show_cat_count").prop('checked',data.show_cat_count);
+    $("#show_jp_cat").prop('checked',data.show_jp_cat);
   });
 
 

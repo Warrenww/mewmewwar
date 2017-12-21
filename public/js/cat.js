@@ -225,14 +225,19 @@ $(document).ready(function () {
     );
     initialSlider(data,lv);
     scroll_to_class("display",0);
-    if(data.id == "334-2"&&(Math.random()>0.5)) {
-      $(".dataTable").append('<img class="animate_cat" src="../public/css/footage/animate/u334-2.gif" />')
-      $(".animate_cat").fadeIn();
+    if(data.id == "334-2"&&(Math.random()<0.5)) {
+      $(".dataTable").append(
+        '<div class="animate_cat">'+
+        '<img src="../public/css/footage/animate/u334-2.gif" style="width:100%" />'+
+        '</div>'
+      );
+      $(".animate_cat").fadeIn().css("display","flex");
       setTimeout(function () {
         $(".animate_cat").fadeOut();
       },30000);
-      $(".animate_cat").click(function () {
+      $(".animate_cat").click(function (e) {
         $(this).fadeOut();
+        return false
       });
     }
   }

@@ -1,13 +1,25 @@
 var sheet_ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
 var gsjson = require('google-spreadsheet-to-json');
+var firebase = require("firebase");
+var config = {
+    apiKey: "AIzaSyC-SA6CeULoTRTN10EXqXdgYaoG1pqWhzM",
+    authDomain: "battlecat-smart.firebaseapp.com",
+    databaseURL: "https://battlecat-smart.firebaseio.com",
+    projectId: "battlecat-smart",
+    storageBucket: "battlecat-smart.appspot.com",
+    messagingSenderId: "268279710428"
+  };
+  firebase.initializeApp(config);
+  var database = firebase.database();
 
-console.log("staring load data from google sheet!!");
+console.log("download data from google sheet!!");
 gsjson({
   spreadsheetId: sheet_ID,
   hash : 'id',
   worksheet: ['貓咪資料','聯組','敵人資料']
 })
 .then(function(result) {
+  console.log("download complete!!");
   var obj = {} ;
   for(let i in result[1]){
     var bufferobj = {
@@ -20,7 +32,13 @@ gsjson({
     } ;
     obj[i] = bufferobj;
   }
-  database.ref("/catdata").update(result[0]) ;
+  var count = 0;
+  for(let i in result[0]){
+    process.stdout.clearLine();  // clear current text
+    process.stdout.cursorTo(0);  // move cursor to beginning of line
+    process.stdout.write("loading cat data "+i);  // write text
+    database.ref("/catdata/"+i).update(result[0][i]) ;
+  }
   database.ref("/combodata").update(obj) ;
   database.ref("/enemydata").update(result[2]) ;
   // fs.writeFile('public/js/Catdata.txt', JSON.stringify(result[0]), (err) => {

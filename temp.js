@@ -13,6 +13,8 @@ var userdata;
 var catdata;
 firebase.initializeApp(config);
 var database = firebase.database();
+// process.stdout.write("www");
+// process.stdin.setEncoding('utf8');
 database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
   // for(let i in catdata){
@@ -22,13 +24,13 @@ database.ref("/catdata").once("value",function (snapshot) {
 });
 database.ref("/user").once("value",function (snapshot) {
   // console.log('loading') ;
-  userdata = snapshot.val() ;
-  for(let i in userdata){
-    console.log(userdata[i].name);
-    if(userdata[i].name == undefined){
-      database.ref("/user/"+i).update({name : "匿名貓咪",nickname : "匿名貓咪"})
-    } else database.ref("/user/"+i).update({nickname : userdata[i].name})
-  }
+  // userdata = snapshot.val() ;
+  // for(let i in userdata){
+  //   console.log(userdata[i].name);
+  //   if(userdata[i].name == undefined){
+  //     database.ref("/user/"+i).update({name : "匿名貓咪",nickname : "匿名貓咪"})
+  //   } else database.ref("/user/"+i).update({nickname : userdata[i].name})
+  // }
   // console.log(userdata);
   // console.log('load complete') ;
   // fs.writeFile('userdataBackup.json',JSON.stringify(userdata),(err) =>{

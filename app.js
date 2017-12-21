@@ -84,8 +84,17 @@ io.on('connection', function(socket){
           default:
 
         } ;
-        database.ref("/user/"+user+"/setting/default_cat_lv").once("value",function (snapshot) {
-          let level = snapshot.val() ;
+        database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
+          let level = snapshot.val().default_cat_lv,
+              showJP = snapshot.val().show_jp_cat;
+
+          if(!showJP){
+            for(let i in load_data){
+              let region = load_data[i].region;
+              if(region.indexOf("[TW]") == -1) delete load_data[i]
+            }
+          }
+
           if(cFilter.length != 0){
             for(let i in load_data){
               for(let j in cFilter){
@@ -409,6 +418,10 @@ io.on('connection', function(socket){
   socket.on("show hide cat count",function (data) {
     console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's cat count");
     database.ref("/user/"+data.uid+"/setting/show_cat_count").set(data.state);
+  });
+  socket.on("show hide jp cat",function (data) {
+    console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's jp cat");
+    database.ref("/user/"+data.uid+"/setting/show_jp_cat").set(data.state);
   });
 
   socket.on('get event date',function () {
