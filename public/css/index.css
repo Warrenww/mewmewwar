@@ -42,3 +42,12 @@
     top: 40%;
     font-size: 30px;
 }
+.head{
+  background-image: url('https://lh3.googleusercontent.com/Oa9xD1RgEHQ6uugm0HRD3m1Rz5P2XPT9ENz_gLhR_Oy6-r4VaRZqB1VlZtbnptOdfT4=h900');
+  background-color: rgba(0, 0, 0, 0.5);
+  background-blend-mode:  multiply;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  height: 100%;
+}

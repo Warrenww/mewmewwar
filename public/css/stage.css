@@ -1,0 +1,45 @@
+.select_chapter button{
+  width: 120px;
+  height: 80px;
+  border-radius: 0;
+  margin: 10px
+}
+#world,#future{
+  background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
+  background-blend-mode: color-burn;
+  background-color: rgb(235, 160, 61);
+  background-size: 450%;
+  background-position: 90% 30%;
+}
+#future{
+  background-size: 300%;
+  background-position: 50% 20%;
+}
+#universe{
+  background-image: url("http://cdn.akamai.steamstatic.com/steam/apps/230290/extras/Universe-Sandbox-Saturn-Neptune-Earth.jpg?t=1512675913");
+  background-blend-mode: color-burn;
+  background-color: rgb(235, 160, 61);
+  background-size: 150%;
+  background-position: 80% 10%;
+}
+#tower{
+  background-image: url("https://i.imgur.com/9oC4NLj.jpg");
+  background-blend-mode: color-burn;
+  background-color: rgb(235, 160, 61);
+  background-size: 150%;
+  background-position: 50% 10%;
+}
+
+.select_chapter{
+  display: flex;
+  width: auto;
+}
+#selector{
+  width: 100%
+}
+.select_chapter{
+  width: 1120px;
+}
+#select_stage,#select_level{
+  
+}

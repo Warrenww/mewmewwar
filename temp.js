@@ -1,3 +1,5 @@
+var request = require("request");
+var cheerio = require("cheerio");
 var fs = require('fs');
 var firebase = require("firebase");
 var config = {
@@ -17,23 +19,27 @@ var database = firebase.database();
 // process.stdin.setEncoding('utf8');
 database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
-  // for(let i in catdata){
-  //   console.log(i);
-  //   database.ref("/catdata/"+i+"/count").set(0)
-  // }
 });
-database.ref("/user").once("value",function (snapshot) {
-  // console.log('loading') ;
-  // userdata = snapshot.val() ;
-  // for(let i in userdata){
-  //   console.log(userdata[i].name);
-  //   if(userdata[i].name == undefined){
-  //     database.ref("/user/"+i).update({name : "匿名貓咪",nickname : "匿名貓咪"})
-  //   } else database.ref("/user/"+i).update({nickname : userdata[i].name})
-  // }
-  // console.log(userdata);
-  // console.log('load complete') ;
-  // fs.writeFile('userdataBackup.json',JSON.stringify(userdata),(err) =>{
-  //   if (err) throw err;
-  //   console.log('It\'s saved!');
+database.ref("/stagedata").once("value",function (snapshot) {
+
 });
+request({
+  url: "http://battlecats-db.com/stage/index_legendstory.html",
+  method: "GET"
+},function (e,r,b) {
+  if(!e){
+    $ = cheerio.load(b);
+    let count=0;
+    $("#List").children("thead").each(function () {
+      process.stdout.write(count+":");
+      let name = $(this).find('a').eq(0).text();
+      process.stdout.write(name+"\n");
+      database.ref("/stagedata/s000"+AddZero(count)+"/name").set(name);
+      count++;
+    });
+
+  }
+});
+function AddZero(n) {
+  return n<10 ? "0"+n : n
+}

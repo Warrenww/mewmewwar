@@ -44,6 +44,11 @@ $(document).ready(function () {
 
   });
 
+  gtag('event', 'video_play', {
+    'video_title': 'My promotional video',
+    'duration': '01:32'
+  });
+
   $(document).on('click','.card',function () {
     if($(this).parent().attr("class")=='compareTarget_child') return
     socket.emit("user Search",{
@@ -55,6 +60,7 @@ $(document).ready(function () {
       uid : current_user_data.uid,
       cat : $(this).attr('value')
     });
+
   });
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','#searchBut',function () {
@@ -66,6 +72,7 @@ $(document).ready(function () {
     if (code == 13) {
       let keyword = $(this).val();
       socket.emit("text search",{key:keyword,type:'cat'});
+      ga('send', 'event', 'cat', 'search', 'text',{text:val});
     }
   });
 
@@ -366,7 +373,10 @@ $(document).ready(function () {
       rFilter,cFilter,aFilter,filterObj,
       type:"cat"
     });
-
+    if(cFilter.length>0) ga('send', 'event', 'cat', 'search', 'filter',{color:cFilter});
+    if(rFilter.length>0) ga('send', 'event', 'cat', 'search', 'filter',{rarity:rFilter});
+    if(aFilter.length>0) ga('send', 'event', 'cat', 'search', 'filter',{ability:aFilter});
+    if(filterObj.length>0) ga('send', 'event', 'cat', 'search', 'filter',{other:filterObj});
     scroll_to_div('selected');
   }
   function condenseCatName(data) {
