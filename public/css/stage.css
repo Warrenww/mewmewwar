@@ -1,8 +1,23 @@
-.select_chapter button{
-  width: 120px;
-  height: 80px;
+.select_chapter button[value~='0'],
+.select_chapter button[value~='1']{
+  width: 180px;
+  height: 120px;
   border-radius: 0;
-  margin: 10px
+  margin: 10px;
+  border: 4px solid black;
+  align-items: center;
+  -webkit-text-stroke: 0px;
+  font-size: 25px;
+}
+.select_chapter button[value~='1']{
+  animation-name: border-blink;
+  animation-duration: .5s ;
+  animation-iteration-count: 5;
+}
+@keyframes border-blink {
+  0%{border-color: rgb(255, 93, 46)}
+  50%{border-color: yellow}
+  100%{border-color: orange}
 }
 #world,#future{
   background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
@@ -17,7 +32,7 @@
 }
 #universe{
   background-image: url("http://cdn.akamai.steamstatic.com/steam/apps/230290/extras/Universe-Sandbox-Saturn-Neptune-Earth.jpg?t=1512675913");
-  background-blend-mode: color-burn;
+  background-blend-mode: hard-light;
   background-color: rgb(235, 160, 61);
   background-size: 150%;
   background-position: 80% 10%;
@@ -29,17 +44,58 @@
   background-size: 150%;
   background-position: 50% 10%;
 }
+#story{
+  background-image: url("footage/story_BG.png");
+  background-size: 100%;
+  background-position: 0% 100%;
+}
 
 .select_chapter{
   display: flex;
-  width: auto;
+}
+.select_chapter_holder{
+  width: 100%;
+  overflow-x: scroll;
+  margin: 10px 0;
+}
+.select_chapter_holder::-webkit-scrollbar,
+#select_stage::-webkit-scrollbar,
+#select_level::-webkit-scrollbar {
+    width: 0px;
 }
 #selector{
-  width: 100%
-}
-.select_chapter{
-  width: 1120px;
+  width: 100%;
 }
 #select_stage,#select_level{
-  
+  flex:3;
+  background-color: rgba(255,255,255,.7);
+  transition: .8s ease-in-out;
+  border: 5px solid gray;
+  overflow-y: scroll;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 30px 10px;
 }
+#select_stage{background-image: url("footage/select_stage_BG.png")}
+#select_level{background-image: url("footage/select_level_BG.png")}
+#select_stage button{padding: 0}
+#select_stage button[value~='1']{
+  background: linear-gradient(rgb(222, 168, 30), rgb(213, 97, 14));
+  animation-name: border-blink;
+  animation-duration: .5s ;
+  animation-iteration-count: 10;
+}
+.lv_sg_box{
+  display:flex;
+  height:500px;
+  width:100%
+}
+.enemy{cursor: pointer;}
+/* .display_BG{
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+} */

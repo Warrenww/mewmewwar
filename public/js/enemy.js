@@ -1,7 +1,6 @@
 $(document).ready(function () {
   var socket = io.connect();
   var timer = new Date().getTime();
-  const image_url =  "../public/css/footage/enemy/e" ;
   var current_user_data = {};
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -67,7 +66,7 @@ $(document).ready(function () {
       let id = data[i].id ;
       html += '<span class="card" value="'+id+'" '+
       'style="background-image:url('+
-       image_url+id+'.png'
+       image_url_enemy+id+'.png'
       +')">'+
       name+'</span>'
       number_page ++ ;
@@ -98,7 +97,7 @@ $(document).ready(function () {
       filterObj.push(bufferObj);
     });
 
-    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:'enemy'});
+    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:'enemy',uid:current_user_data.uid});
     scroll_to_div('selected');
   }
   var number_page,page_factor ;
@@ -132,13 +131,13 @@ $(document).ready(function () {
     html += screen.width > 768 ?
     "<tr>"+
     "<th style='height:80px;padding:0'><img src='"+
-    image_url+data.id+'.png'
+    image_url_enemy+data.id+'.png'
     +"' style='height:100%'></th>"+
     "<th colspan=5 id='全名'>"+data.全名+"</th>"+
     "</tr>" :
     "<tr>"+
     "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    image_url+data.id+'.png'
+    image_url_enemy+data.id+".png'"
     +"</tr><tr>"+
     "<th colspan='6' id='全名'>"+data.全名+"</th>"+
     "</tr>" ;

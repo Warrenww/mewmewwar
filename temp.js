@@ -15,31 +15,50 @@ var userdata;
 var catdata;
 firebase.initializeApp(config);
 var database = firebase.database();
+console.log('start');
+
 // process.stdout.write("www");
 // process.stdin.setEncoding('utf8');
-database.ref("/catdata").once("value",function (snapshot) {
-  catdata = snapshot.val();
-});
-database.ref("/stagedata").once("value",function (snapshot) {
+database.ref("/user").once("value",function (snapshot) {
+  console.log('get user data');
+  userdata = snapshot.val();
 
+  // for(let i in userdata){
+  //   console.log(i);
+    // database.ref("/user/"+i+"/history/stage").set('0');
+  // }
 });
-request({
-  url: "http://battlecats-db.com/stage/index_legendstory.html",
-  method: "GET"
-},function (e,r,b) {
-  if(!e){
-    $ = cheerio.load(b);
-    let count=0;
-    $("#List").children("thead").each(function () {
-      process.stdout.write(count+":");
-      let name = $(this).find('a').eq(0).text();
-      process.stdout.write(name+"\n");
-      database.ref("/stagedata/s000"+AddZero(count)+"/name").set(name);
-      count++;
-    });
+database.ref("/stagedata/story").once('value',function (snapshot) {
+  let data = snapshot.val() ;
+  for (let i in data){
+    for(let j in data[i]){
+      if(j == 'name') continue
+      database.ref("/stagedata/story/"+i+"/"+j+"/continue").set(true);
 
+    }
   }
 });
+// request({
+//   url: "http://battlecats-db.com/stage/s00000-02.html",
+//   method: "GET"
+// },function (e,r,b) {
+//   if(!e){
+//     $ = cheerio.load(b);
+//     let content = $(".maincontents table"),
+//     final = content.children().length == 6 ? true : false,
+//     tbody_2 = content.children("tbody").eq(final?2:1).children("tr"),
+//     enemy=[];
+//     for(let k=0;k<tbody_2.length;k++){
+//       console.log("enemy "+k);
+//       let ene = tbody_2.eq(k).children("td");
+//       console.log(ene.eq(0).text());
+//       enemy.push({
+//         Boss : ene.eq(0).text() == "BOSS" ? true : false
+//       });
+//     }
+//     console.log(enemy);
+//   }
+// });
 function AddZero(n) {
   return n<10 ? "0"+n : n
 }

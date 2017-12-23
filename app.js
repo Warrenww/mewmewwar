@@ -50,11 +50,13 @@ var database = firebase.database();
 var catdata,
     combodata,
     enemydata,
-    userdata ;
+    userdata,
+    stagedata ;
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().catdata ;
   combodata = snapshot.val().combodata ;
   enemydata = snapshot.val().enemydata ;
+  stagedata = snapshot.val().stagedata ;
   console.log('all data load complete!!') ;
 });
 arrangeUserData();
@@ -249,7 +251,8 @@ io.on('connection', function(socket){
           name : user.displayName,
           nickname :user.displayName,
           first_login : timer,
-          history : {cat:"",enemy:"",combo:""},
+          last_login : timer,
+          history : {cat:"",enemy:"",combo:"",stage:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
           variable : {cat:{}},
@@ -276,7 +279,8 @@ io.on('connection', function(socket){
     let timer = new Date().getTime(),
         last_cat = '',
         last_combo = [],
-        last_enemy = '';
+        last_enemy = '',
+        last_stage = '';
     console.log("user "+user.uid+" connect");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
@@ -286,7 +290,7 @@ io.on('connection', function(socket){
           name : "匿名貓咪",
           nickname : "匿名貓咪",
           first_login : timer,
-          history : {cat:"",enemy:"",combo:""},
+          history : {cat:"",enemy:"",combo:"",stage:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
           variable : {cat:{}},
@@ -299,6 +303,7 @@ io.on('connection', function(socket){
       for(let i in history.cat) last_cat = history.cat[i].id ;
       for(let i in history.combo) last_combo = history.combo[i].id ;
       for(let i in history.enemy) last_enemy = history.enemy[i].id ;
+      for(let i in history.stage) last_stage = history.stage[i].id ;
 
       let compareCat = snapshot.val().compare.cat2cat  ;
       let obj , arr = [] ;
@@ -314,6 +319,7 @@ io.on('connection', function(socket){
         last_cat : last_cat,
         last_combo : last_combo,
         last_enemy : last_enemy,
+        last_stage : last_stage,
         compare_c2c: arr,
         setting : snapshot.val().setting
       });
@@ -424,6 +430,38 @@ io.on('connection', function(socket){
     database.ref("/user/"+data.uid+"/setting/show_jp_cat").set(data.state);
   });
 
+  socket.on("required stage name",function (chapter) {
+    console.log("load stage name");
+    let buffer = [],
+        data = stagedata[chapter];
+    for(let i in data) buffer.push({id:i,name:data[i].name})
+    // console.log(buffer);
+    socket.emit("stage name",buffer);
+  });
+  socket.on("required level name",function (pos) {
+    console.log("load level name");
+    console.log(pos);
+    let data = stagedata[pos.chapter][pos.stage],
+        buffer = [];
+        for(let i in data) {
+          if (i == 'name') continue
+          buffer.push({id:i,name:data[i].name});
+        }
+        console.log(buffer);
+        socket.emit("level name",buffer);
+  });
+  socket.on("required level data",function (data) {
+    console.log("load level name");
+    console.log(data);
+    let parent = stagedata[data.chapter][data.stage].name;
+    socket.emit("level data",{
+      data:stagedata[data.chapter][data.stage][data.level],
+      parent:parent
+    });
+  });
+
+
+
   socket.on('get event date',function () {
     let dd = new Date().getDate(),
         mm = new Date().getMonth()+1,
@@ -498,6 +536,11 @@ function arrangeUserData() {
       } else if(userdata[i].Anonymous){
         if((timer - userdata[i].last_login)>3*86400000) {
           console.log("remove "+i+" since didn't login for 3 days");
+          database.ref('/user/'+i).remove();
+          continue
+        }
+        if(userdata[i].last_login == undefined){
+          console.log("remove "+i+" since unknown last login");
           database.ref('/user/'+i).remove();
           continue
         }

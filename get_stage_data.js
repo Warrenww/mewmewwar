@@ -14,11 +14,10 @@ var config = {
 
   var i=0,j=1;
   getData(i,j);
-
   function getData(i,j) {
-    console.log("https://battlecats-db.com/stage/s000"+AddZero(i)+"-0"+j+".html");
+    console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
     request({
-      url: "https://battlecats-db.com/stage/s000"+AddZero(i)+"-0"+j+".html",
+      url: "https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html",
       method: "GET"
     }, function(e,r,b) {
       let obj = {
@@ -30,10 +29,12 @@ var config = {
         limit_no : "",
         reward : [],
         enemy : [],
-        final : ""
+        final : "",
+        "continue" : "",
+        id:"tower-s070000-"+j
       };
       if(!e){
-        console.log("get s000"+AddZero(i)+"-0"+j);
+        console.log("get data");
         $ = cheerio.load(b);
         let content = $(".maincontents table"),
         final = content.children().length == 6 ? true : false,
@@ -43,6 +44,7 @@ var config = {
         console.log(final);
         obj.final = final;
         obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
+        obj.continue = thead.eq(0).children("td").eq(2).find("font").text()?false:true;
         obj.energy = thead.eq(0).children("td").eq(4).text();
         obj.exp = thead.eq(1).children("td").eq(1).text().split("XP+")[1];
         obj.castle = thead.eq(2).children("td").eq(2).text();
@@ -61,24 +63,24 @@ var config = {
           console.log("enemy "+k);
           let ene = tbody_2.eq(k).children("td")
           obj.enemy.push({
-            Boss : ene.eq(0) == "Boss" ? true : false,
+            Boss : ene.eq(0).text() == "BOSS" ? true : false,
             id : ene.eq(1).children("a").attr("href").split("/")[2].split(".html")[0],
             multiple : ene.eq(3).text(),
             amount : ene.eq(4).text(),
             castle : ene.eq(5).text(),
-            first_show : Number(ene.eq(6).text())/30,
+            first_show : (Number(ene.eq(6).text())/30).toFixed(1),
             next_time : FtoS(ene.eq(7).text())
           });
         }
         // console.log(obj);
         // console.log("next?");
-        database.ref("/stagedata/s000"+AddZero(i)+"/"+j).set(obj);
+        database.ref("/stagedata/tower/s070000/"+j).set(obj);
         j++;
-        if(final){j=1;i++}
-        getData(i,j);
+        // if(final){j=1;i++}
+        if(j<41) getData(i,j);
       }
       else {
-        console.log("error s000"+AddZero(i)+"-0"+j);
+        console.log("error s070"+AddZero(i)+"-0"+j);
         console.log(e);
       }
     });
@@ -90,32 +92,85 @@ var config = {
     if(s.indexOf("XP+")!=-1){
       obj.name = "經驗值";
       obj.amount = s.substring(3);
-    } else if(s.indexOf("個")!=-1){
-      switch (s.split(" ")[0]) {
-        case "スピードアップ":
-          obj.name = "加速";
-          obj.amount = s.split(" ")[1];
-          break;
-        case "おかめはちもく":
-          obj.name = "洞悉先機";
-          obj.amount = s.split(" ")[1];
-          break;
-        case "ニャンピュータ":
-          obj.name = "貓型電腦";
-          obj.amount = s.split(" ")[1];
-          break;
-        case "ネコボン":
-          obj.name = "土豪貓";
-          obj.amount = s.split(" ")[1];
-          break;
-        case "スニャイパー":
-          obj.name = "狙擊手";
-          obj.amount = s.split(" ")[1];
-          break;
-        default:
-        obj.name = "noname";
-        obj.amount = 1;
+    } else if(s.indexOf("個")!=-1||s.indexOf("枚")!=-1){
+      if(s.split(" ")[0].indexOf('マタタビ')!=-1){
+        let arr = s.split(" ")[0].split("マタタビ") ;
+        switch (arr[0]) {
+          case '青':
+            arr[0] = '藍色'
+            break;
+          case '赤':
+            arr[0] = '紅色'
+            break;
+          case '緑':
+            arr[0] = '綠色'
+            break;
+          case '虹':
+            arr[0] = '彩虹'
+            break;
+          default:
+            arr[0] = arr[0]+"色"
+        }
+        arr[1] = arr[1] ? "種子" : "";
+        obj.name = arr.join("貓薄荷");
       }
+      else if(s.split(" ")[0].indexOf('キャッツアイ')!=-1){
+        let arr = s.split(" ")[0].split("キャッツアイ") ;
+        arr[1] = (arr[1].split("レア")).join("稀有");
+        obj.name = "貓眼石"+arr[1];
+      }
+      else {
+        switch (s.split(" ")[0]) {
+          case "謎の骨":
+          obj.name = "神秘骨頭";
+          break;
+          case "鋼の歯車":
+          obj.name = "鋼製齒輪";
+          break;
+          case "羽根":
+          obj.name = "羽毛";
+          break;
+          case "レンガ":
+          obj.name = "紅磚";
+          break;
+          case "トレジャーレーダー":
+          obj.name = "寶物雷達";
+          break;
+          case "ネコビタンＣ":
+          obj.name = "喵力達C";
+          break;
+          case "ネコビタンＢ":
+          obj.name = "喵力達B";
+          break;
+          case "ネコビタンＡ":
+          obj.name = "喵力達A";
+          break;
+          case "にゃんこチケット":
+          obj.name = "貓咪卷";
+          break;
+          case "レアチケット":
+          obj.name = "稀有卷";
+          break;
+          case "スピードアップ":
+          obj.name = "加速";
+          break;
+          case "おかめはちもく":
+          obj.name = "洞悉先機";
+          break;
+          case "ニャンピュータ":
+          obj.name = "貓型電腦";
+          break;
+          case "ネコボン":
+          obj.name = "土豪貓";
+          break;
+          case "スニャイパー":
+          obj.name = "狙擊手";
+          break;
+          default:
+          obj.name = s.split(" ")[0];
+        }
+      }
+      obj.amount = s.split(" ")[1];
     } else {
       obj.name = "u" + p.children("a").attr("href").split("/")[2].split(".html")[0]
     }
@@ -125,7 +180,7 @@ var config = {
   function FtoS(s) {
     if(s == "-") return "-"
     let arr = s.indexOf("~") != -1 ? s.split("~") : s.split("～");
-    for(let i in arr) arr[i] = Number(arr[i])/30;
+    for(let i in arr) arr[i] = (Number(arr[i])/30).toFixed(1);
     return arr.join("~")
   }
   function AddZero(n) {

@@ -6,7 +6,6 @@ $(document).ready(function () {
         display_id : false
       } ;
   var filter_name = '' ;
-  const image_url =  "../public/css/footage/cat/u" ;
   var socket = io.connect();
   var current_user_data = {
     setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
@@ -37,16 +36,11 @@ $(document).ready(function () {
         '<i class="fa fa-trash"></i>'+
         '<span class="card" value="'+id+
         '" style="background-image:url('+
-        image_url+id+'.png'+
+        image_url_cat+id+'.png'+
         '">'+name+'</span></div>');
       }
     }
 
-  });
-
-  gtag('event', 'video_play', {
-    'video_title': 'My promotional video',
-    'duration': '01:32'
   });
 
   $(document).on('click','.card',function () {
@@ -166,14 +160,14 @@ $(document).ready(function () {
     html += screen.width > 768 ?
     "<tr>"+
     "<th style='height:80px;padding:0'><img src='"+
-    image_url+data.id+'.png'+
+    image_url_cat+data.id+'.png'+
     "' style='height:100%'></th>"+
     "<th colspan=3 rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
     "<th colspan=2>"+Thisbro(arr)+"</th>"+
     "</tr>" :
     "<tr>"+
     "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    image_url+data.id+'.png'+
+    image_url_cat+data.id+'.png'+
     "' style='height:100%'>"+Thisbro(arr)+"</th>"+
     "</tr><tr>"+
     "<th colspan='6' rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
@@ -262,7 +256,7 @@ $(document).ready(function () {
           pic_html +=
           '<span class="card" value="'+arr[i].cat[j]+'" '+
           'style="background-image:url('+
-          image_url+arr[i].cat[j]+'.png);'+
+          image_url_cat+arr[i].cat[j]+'.png);'+
           (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
           +'"></span>' ;
         }
@@ -295,7 +289,7 @@ $(document).ready(function () {
       html +=
       '<span class="card" value="'+arr[i]+'" '+
       'style="background-image:url('+
-      image_url+arr[i]+'.png);'+
+      image_url_cat+arr[i]+'.png);'+
       (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
       +'"></span>'  ;
     }
@@ -391,7 +385,7 @@ $(document).ready(function () {
       if(current == now){
         html += '<span class="card" value="'+id+'" '+
         'style="background-image:url('+
-        image_url+id+'.png);display:none">'+
+        image_url_cat+id+'.png);display:none">'+
         name+'</span>' ;
       }
       else{
@@ -401,7 +395,7 @@ $(document).ready(function () {
         '<span class="glyphicon glyphicon-shopping-cart"></span>'+
         '<span class="card" value="'+id+'" '+
         'style="background-image:url('+
-        image_url+id+'.png)">'+
+        image_url_cat+id+'.png)">'+
         name+'</span>' ;
         now = current ;
         number_page ++ ;
@@ -544,7 +538,7 @@ $(document).ready(function () {
       '<i class="fa fa-trash"></i>'+
       '<span class="card" value="'+id+
       '" style="background-image:url('+
-      image_url+id+'.png'+
+      image_url_cat+id+'.png'+
       '">'+name+'</span></div>')
       $('.compareTarget_holder').animate({
         scrollTop : $('.compareTarget').height()
@@ -618,7 +612,7 @@ $(document).ready(function () {
       '<i class="fa fa-trash"></i>'+
       '<span class="card" value="'+id+
       '" style="background-image:url('+
-      image_url+id+'.png'+
+      image_url_cat+id+'.png'+
       '">'+name+'</span></div>');
       $("#selected").sortable('cancel');
       $('.compareTarget_holder').animate({

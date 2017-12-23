@@ -129,7 +129,7 @@ td, th {
 .button_group{
   display:none;
   width:100%;
-  justify-content: center
+  justify-content: center;
 }
 .dataTable th,.select th,.compareTable th{
   background-color: rgba(242, 213, 167, 0.93);

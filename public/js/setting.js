@@ -13,6 +13,7 @@ $(document).ready(function () {
   $(document).on('blur','#userName',function () {
     let val = $(this).val() ;
     if(!confirm("確定要將名字改為"+val+"嗎?")) return
+    $("#current_user_name").text("Hi, "+val);
     socket.emit("rename",{uid:current_user_data.uid,name:val});
   });
   $(document).on("click","#reset_cat_lv",function () {

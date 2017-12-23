@@ -203,7 +203,7 @@ $(document).ready(function () {
       update_dialog = this.responseText ;
       $("#helpModal").find(".modal-body").html(update_dialog);
       $("#helpModal").find(".modal-header .title").text("更新紀錄");
-      $("#helpModal").find(".modal-footer").html("本網站資料來源主要為<a href='http://battlecats-db.com/' target='blank'>超絕攻略網</a>");
+      $("#helpModal").find(".modal-footer").html("本網站資料來源主要為<a href='https://cnhv.co/rnwe' target='blank'>超絕攻略網</a>");
     }
   }
   socket.on("connet",function (data) {

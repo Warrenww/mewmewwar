@@ -115,6 +115,7 @@ nav .mobile,
     width: 70%
   }
   #selected{overflow-y: scroll;}
+  .lv_sg_box{flex-direction: column;}
 }
 @media screen and (max-width: 1024px) {
   nav a img{

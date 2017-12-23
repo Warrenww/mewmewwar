@@ -53,7 +53,7 @@ gsjson({
   //   if (err) throw err;
   //   console.log('Enemydata is saved!');
   // });
-  console.log("all data save to firebase");
+  console.log("\nall data save to firebase");
 })
 .catch(function(err) {
   console.log(err.message);
