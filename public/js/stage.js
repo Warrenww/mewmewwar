@@ -87,7 +87,7 @@ $(document).ready(function () {
       $("#select_level").append(
         "<span class='card'style='"+
         "background-image:url(\"../public/css/footage/fight_BG_0"+
-        (Math.ceil(Math.random()*4))+".png\")"+
+        (Math.ceil(Math.random()*5))+".png\")"+
         "' id='"+data[i].id+"'>"+data[i].name+"</span>"
       ).css("flex","3").siblings().css("flex","1");
   });
@@ -222,13 +222,25 @@ $(document).ready(function () {
     }
   }
   $(document).on('click','.enemy',function () {
-    let id = $(this).attr("id");
-    socket.emit("user Search",{
-      uid : current_user_data.uid,
-      type : 'enemy',
-      id : id
+    let id = $(this).attr("id"),
+        multiple = $(this).next().text().split("％")[0];
+    // socket.emit("user Search",{
+    //   uid : current_user_data.uid,
+    //   type : 'enemy',
+    //   id : id
+    // });
+    // location.assign("/view/enemy.html");
+    // location.assign("/view/once.html?q=enemy&"+id+"&"+multiple);
+    $("body").append(
+      "<div class='float'><iframe src='"+
+      location.origin+"/view/once.html?q=enemy&"+
+      id+"&"+multiple+"'></iframe></div>"
+    );
+    $(".float_BG").fadeIn();
+    $(".float_BG").click(function () {
+      $(this).fadeOut();
+      $(".float").remove();
     });
-    location.assign("/view/enemy.html");
   });
 
 

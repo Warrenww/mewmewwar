@@ -179,7 +179,11 @@ $(document).ready(function () {
     } else {
       $("#login").fadeIn();
       console.log('did not sign in');
-      if(location.pathname != '/') {
+
+      if(location.pathname == '/view/once.html') {
+
+      }
+      else if(location.pathname != '/') {
         alert("登入以獲得更多功能!!!");
         location.assign("/");
       }
@@ -217,6 +221,12 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'UA-111466284-1');
+
+//google AD
+(adsbygoogle = window.adsbygoogle || []).push({
+  google_ad_client: "ca-pub-1854846319781914",
+  enable_page_level_ads: true
+});
 
 function levelToValue(origin,rarity,lv) {
   let limit ;

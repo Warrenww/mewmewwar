@@ -12,7 +12,8 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     console.log(data);
     current_user_data = data ;
-    if(data.last_enemy) socket.emit("display enemy",data.last_enemy) ;
+    if(data.last_enemy && location.pathname.indexOf("once") == -1)
+      socket.emit("display enemy",data.last_enemy) ;
   });
 
   var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','外星敵(星)','不死敵','白敵','無屬性敵'];
@@ -44,7 +45,34 @@ $(document).ready(function () {
     });
     socket.emit("display enemy",$(this).attr('value'));
   });
-
+  $(document).on('click',"#level_num button",function () {
+    let n = $(this).text().split("%")[0],
+        buffer = org = $(this).siblings("span").text().split(" ")[0];
+    org = Number(org)+Number(n);
+    if(org<100){
+      $(this).siblings("span").text(buffer+" %");
+    } else {
+      $(this).siblings("span").text(org+" %");
+      updateState(org/100);
+    }
+  });
+  var original_lv ;
+  $(document).on('click',"#level_num span",function () {
+    let org = $(this).text().split(" ")[0];
+    original_lv = org ;
+    $(this).html("<input type='number' value='"+org+"' />");
+    $(this).find("input").select();
+  });
+  $(document).on('blur',"#level_num span input",function () {
+    let org = $(this).val();
+    org = (org/50).toFixed(0)*50;
+    if(org<100){
+      $(this).parent().html(original_lv+" %");
+    } else {
+      $(this).parent().html(org+" %");
+      updateState(org/100);
+    }
+  });
 
   function TextSearch() {
     let keyword = $("#searchBox").val();
@@ -121,76 +149,16 @@ $(document).ready(function () {
 
   });
   socket.on('display enemy result',function (data) {
+    data.lv = 1;
     displayEnemyData(data) ;
   });
 
   function displayEnemyData(data) {
     let html = "" ;
-    // html += setting.display_id ? "<tr><th>Id</th><td id='id'>"+id+"</td></tr>" : "" ;
-
-    html += screen.width > 768 ?
-    "<tr>"+
-    "<th style='height:80px;padding:0'><img src='"+
-    image_url_enemy+data.id+'.png'
-    +"' style='height:100%'></th>"+
-    "<th colspan=5 id='全名'>"+data.全名+"</th>"+
-    "</tr>" :
-    "<tr>"+
-    "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    image_url_enemy+data.id+".png'"
-    +"</tr><tr>"+
-    "<th colspan='6' id='全名'>"+data.全名+"</th>"+
-    "</tr>" ;
-
-
+    html += displayenemyHtml(data)
     $(".dataTable").empty();
-    $('.compareTable').empty();
-    $(".dataTable").append(
-      html+
-      "<tr>"+
-      "<th colspan='1'>倍率</th>"+
-      "<td colspan='4' class='level'>"+
-      "<div id='level' class='slider'></div>"+
-      "</td>"+
-      "<td colspan='"+(screen.width < 768 ? 5 : 1)+"' >"+
-      "<span id='level_num'>100 %</span>"+
-      "</td >"+
-      "<tr>"+
-      "<th>體力</th><td id='體力' original='"+data.體力+"'>"+
-      levelToValue(data.體力,1).toFixed(0)+"</td>"+
-      "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-      "<th>硬度</th><td id='硬度' original='"+data.硬度+"'>"+
-      levelToValue(data.硬度,1).toFixed(0)+"</td>"+
-      "</tr><tr>"+
-      "<th>攻擊力</th><td id='攻撃力' original='"+data.攻撃力+"'>"+
-      levelToValue(data.攻撃力,1).toFixed(0)+"</td>"+
-      "<th>DPS</th><td id='DPS' original='"+data.dps+"'>"+
-      levelToValue(data.dps,1).toFixed(0)+"</td>"+
-      "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
-      "</tr><tr>"+
-      "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
-      "<th>跑速</th><td id='跑速'>"+data.速度+"</td>"+
-      "<td colspan='2' rowspan='2' id='範圍'>"+data.範圍+"</td>"+
-      "</tr><tr>"+
-      "<th>獲得金錢</th><td id='獲得金錢'>"+data.獲得金錢+"</td>"+
-      "<th>屬性</th><td id='屬性'>"+addColor(data.分類)+"</td>"+
-      "</tr><tr>"+
-      "<td colspan='6' id='特性' "+(
-      data.特性.indexOf("連續攻撃") != -1 ?
-      "original='"+data.特性+"'>"+
-      serialATK(data.特性,levelToValue(data.攻撃力,1)) :
-      ">"+data.特性)+
-      "</td>"+
-      "</tr><tr>"
-    );
-    initialSlider(data);
+    $(".dataTable").append(html);
     scroll_to_class("display",0) ;
-  }
-  function addColor(str) {
-    let a = str.split('['),
-        b = [] ;
-    for(let i in a) b.push(a[i].split(']')[0]) ;
-    return b.join(" ")
   }
 
   function filterSlider() {
@@ -262,54 +230,96 @@ $(document).ready(function () {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
 
-  function levelToValue(value,m) {
-    return value*m
-  }
-  function serialATK(prop,atk) {
-      let b = prop.split("（")[0];
-      let arr = prop.split("（")[1].split("）")[0].split(","),
-          c = prop.split("（")[1].split("）")[1];
-          console.log(atk)
-      console.log("("+arr.join()+")")
-      for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
-      console.log(arr.join())
-      return b+"（"+arr.join(' ')+"）"+c ;
-
-  }
-  function initialSlider(data) {
-    $("#level").slider({
-      max: 5000,
-      min: 100,
-      step: 50,
-      value: 100,
-    });
-    $("#level").on("slide", function(e,ui) {
-      $("#level_num").html(ui.value+" %");
-      updateState(ui.value/100);
-    });
-    $("#level").on("slidechange", function(e,ui) {
-      $("#level_num").html(ui.value+" %");
-      updateState(ui.value/100);
-    });
-    function updateState(level) {
-      let change = ['體力','硬度','攻撃力','DPS'] ;
-      for(let i in change){
-        let target = $('.dataTable').find('#'+change[i]) ;
-        let original = target.attr('original');
-        target.html(levelToValue(original,level).toFixed(0))
-              .css('background-color',' rgba(242, 213, 167, 0.93)');
-        setTimeout(function () {
-          target.css('background-color','rgba(255, 255, 255, .9)');
-        },500);
-      }
-      if(data.特性.indexOf("連續攻擊") != -1){
-        let target = $('.dataTable').find('#特性');
-        target.html(serialATK(data.特性,levelToValue(data.攻撃力,level)));
-      }
+  function updateState(level) {
+    let change = ['體力','硬度','攻撃力','DPS'] ;
+    for(let i in change){
+      let target = $('.dataTable').find('#'+change[i]) ;
+      let original = target.attr('original');
+      target.html(levelToValue(original,level).toFixed(0))
+            .css('background-color',' rgba(242, 213, 167, 0.93)');
+      setTimeout(function () {
+        target.css('background-color','rgba(255, 255, 255, .9)');
+      },500);
+    }
+    if(data.特性.indexOf("連續攻擊") != -1){
+      let target = $('.dataTable').find('#特性');
+      target.html(serialATK(data.特性,levelToValue(data.攻撃力,level)));
     }
   }
 
-
-
-
 });
+function displayenemyHtml(data) {
+  let html = '';
+  html += "<tr><td colspan="+(screen.width > 768 ?4:3)+" style='background-color:transparent'></td>"+
+          "<td colspan="+(screen.width > 768 ?2:3)+" id='link'><a target='blank' href='http://battlecats-db.com/enemy/"+
+          data.id+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
+
+  html += screen.width > 768 ?
+  "<tr>"+
+  "<th style='height:80px;padding:0'><img src='"+
+  image_url_enemy+data.id+'.png'
+  +"' style='height:100%'></th>"+
+  "<th colspan=5 id='全名'>"+data.全名+"</th>"+
+  "</tr>" :
+  "<tr>"+
+  "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
+  image_url_enemy+data.id+".png'"
+  +"</tr><tr>"+
+  "<th colspan='6' id='全名'>"+data.全名+"</th>"+
+  "</tr>" ;
+  html+=
+  "<tr>"+
+  "<th colspan='1'>倍率</th>"+
+  "<td colspan=5 id='level_num'>"+
+  "<button>-100%</button><button>-50%</button>"+
+  "<span style='margin:0 10px'>"+data.lv*100+" %</span>"+
+  "<button>+50%</button><button>+100%</button>"+
+  "</td >"+
+  "<tr>"+
+  "<th>體力</th><td id='體力' original='"+data.體力+"'>"+
+  levelToValue(data.體力,data.lv).toFixed(0)+"</td>"+
+  "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
+  "<th>硬度</th><td id='硬度' original='"+data.硬度+"'>"+
+  levelToValue(data.硬度,data.lv).toFixed(0)+"</td>"+
+  "</tr><tr>"+
+  "<th>攻擊力</th><td id='攻撃力' original='"+data.攻撃力+"'>"+
+  levelToValue(data.攻撃力,data.lv).toFixed(0)+"</td>"+
+  "<th>DPS</th><td id='DPS' original='"+data.dps+"'>"+
+  levelToValue(data.dps,data.lv).toFixed(0)+"</td>"+
+  "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
+  "</tr><tr>"+
+  "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
+  "<th>跑速</th><td id='跑速'>"+data.速度+"</td>"+
+  "<td colspan='2' rowspan='2' id='範圍'>"+data.範圍+"</td>"+
+  "</tr><tr>"+
+  "<th>獲得金錢</th><td id='獲得金錢'>"+data.獲得金錢+"</td>"+
+  "<th>屬性</th><td id='屬性'>"+addColor(data.分類)+"</td>"+
+  "</tr><tr>"+
+  "<td colspan='6' id='特性' "+(
+  data.特性.indexOf("連續攻撃") != -1 ?
+  "original='"+data.特性+"'>"+
+  serialATK(data.特性,levelToValue(data.攻撃力,data.lv)) :
+  ">"+data.特性)+
+  "</td>"+
+  "</tr><tr>"
+  return html
+}
+function levelToValue(value,m) {
+  return value*m
+}
+function serialATK(prop,atk) {
+    let b = prop.split("（")[0];
+    let arr = prop.split("（")[1].split("）")[0].split(","),
+        c = prop.split("（")[1].split("）")[1];
+        console.log(atk)
+    console.log("("+arr.join()+")")
+    for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
+    console.log(arr.join())
+    return b+"（"+arr.join(' ')+"）"+c ;
+}
+function addColor(str) {
+  let a = str.split('['),
+      b = [] ;
+  for(let i in a) b.push(a[i].split(']')[0]) ;
+  return b.join(" ")
+}

@@ -1,5 +1,7 @@
 var fs = require('fs');
 var app = require('express')();
+var request = require("request");
+var cheerio = require("cheerio");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var express = require('express');
@@ -60,6 +62,7 @@ database.ref("/").once("value",function (snapshot) {
   console.log('all data load complete!!') ;
 });
 arrangeUserData();
+geteventDay();
 
 io.on('connection', function(socket){
 
@@ -215,9 +218,12 @@ io.on('connection', function(socket){
       for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
     }
     result.combo = combo ;
-    database.ref("/user/"+uid+"/variable/cat/"+grossID).once("value",function (snapshot) {
-      result.lv = snapshot.val() ? snapshot.val().lv : 30 ;
-      result.count = snapshot.val()  ? snapshot.val().count : 0 ;
+    database.ref("/user/"+uid).once("value",function (snapshot) {
+      let storge_lv = snapshot.val().variable.cat[grossID].lv,
+          storge_count = snapshot.val().variable.cat[grossID].count,
+          default_lv = snapshot.val().setting.default_cat_lv;
+      result.lv = storge_lv ? storge_lv : default_lv ;
+      result.count = storge_count  ? storge_count : 0 ;
       socket.emit("display cat result",result);
     });
     // console.log(result);
@@ -447,7 +453,7 @@ io.on('connection', function(socket){
           if (i == 'name') continue
           buffer.push({id:i,name:data[i].name});
         }
-        console.log(buffer);
+        // console.log(buffer);
         socket.emit("level name",buffer);
   });
   socket.on("required level data",function (data) {
@@ -463,27 +469,9 @@ io.on('connection', function(socket){
 
 
   socket.on('get event date',function () {
-    let dd = new Date().getDate(),
-        mm = new Date().getMonth()+1,
-        yy = new Date().getFullYear() ;
-    let today = Date.parse(mm+" "+dd+","+yy);
-    console.log(today);
+    if(Math.random()>0.5)geteventDay();
     database.ref('/event_date').once('value',function (snapshot) {
-      let last = snapshot.val().system
-      console.log(last);
-      let diff = today - last ;
-      if(diff == 86400000*3) {
-        socket.emit('true event date',today);
-        database.ref('/event_date/system').set(today) ;
-        database.ref('/event_date/correct').set('') ;
-      } else if(diff > 86400000*3) {
-        let corr = last + 86400000*3 ;
-        socket.emit('true event date',corr);
-        database.ref('/event_date/system').set(corr) ;
-        database.ref('/event_date/correct').set('') ;
-      } else {
-        socket.emit('true event date',last);
-      }
+      socket.emit('true event date',snapshot.val());
     });
   });
   socket.on("test",function () {
@@ -493,26 +481,49 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     // console.log('user disconnected');
   });
-  socket.on("lucky",function(result){
-    let rarity = "";
-    if(result == 'SSR') rarity = "超激稀有" ;
-    if(result == 'SR') rarity = "激稀有" ;
-    if(result == 'R') rarity = "稀有" ;
-
-    let buffer = [];
-    let exist = '000' ;
-    for(let i in catdata) {
-      if(catdata[i].稀有度 == rarity) {
-        let current = i.substring(0,3);
-        if(current == exist) continue
-        buffer.push(current);
-        exist = current;
-      }
-    }
-    let choose = buffer[Math.floor((Math.random()*buffer.length))],
+  socket.on("lucky",function(data){
+    console.log("lucky ");
+    console.log(data);
+    database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
+      let jp = snapshot.val(),senddata=[];
+      for(let i in data.result){
+        let rarity='';
+        if(data.result[i] == 'SSR') rarity = "超激稀有" ;
+        if(data.result[i] == 'SR') rarity = "激稀有" ;
+        if(data.result[i] == 'R') rarity = "稀有" ;
+        let buffer = [];
+        let exist = '000' ;
+        if(!jp){
+          for(let i in catdata) {
+            if(catdata[i].稀有度 == rarity && catdata[i].region == '[TW][JP]') {
+              let current = i.substring(0,3);
+              if(current == exist) continue
+              buffer.push(current);
+              exist = current;
+            }
+          }
+        } else {
+          for(let i in catdata) {
+            if(catdata[i].稀有度 == rarity) {
+              let current = i.substring(0,3);
+              if(current == exist) continue
+              buffer.push(current);
+              exist = current;
+            }
+          }
+        }
+        let choose = buffer[Math.floor((Math.random()*buffer.length))],
         choooose = choose+"-1" ;
-        // console.log(choooose);
-    socket.emit("choose",{id:choooose,name:catdata[choooose].全名,rarity:result});
+        senddata.push({
+          id:choooose,
+          name:catdata[choooose].全名,
+          rarity:data.result[i]
+        });
+      }
+      // console.log(choooose);
+      socket.emit("choose",senddata);
+
+    });
   });
 
 
@@ -545,43 +556,46 @@ function arrangeUserData() {
           continue
         }
       } else {
-        let arr=[];
+        let arr=[],edit = ['cat','enemy','combo','stage'];
         count ++ ;
-        for(let j in userdata[i].history.cat) arr.push(userdata[i].history.cat[j]);
-        if (arr.length > 20){
-          console.log(i+" too many cat");
-          let k=0 ;
-          for(let j in userdata[i].history.cat){
-            k++;
-            if(k < (arr.length-19)) database.ref('/user/'+i+"/history/cat/"+j).remove();
+        for(let j in edit){
+          for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
+          if (arr.length > 20){
+            console.log(i+" too many "+edit[j]);
+            let l=0 ;
+            for(let k in userdata[i].history[edit[j]]){
+              l++;
+              if(l < (arr.length-19)) database.ref('/user/'+i+"/history/"+edit[j]+"/"+k).remove();
+            }
           }
-        }
-        arr = [];
-        for(let j in userdata[i].history.enemy) arr.push(userdata[i].history.enemy[j]);
-        if (arr.length > 20){
-          console.log(i+" too many enemy");
-          let k=0 ;
-          for(let j in userdata[i].history.enemy){
-            k++;
-            if(k < (arr.length-19)) database.ref('/user/'+i+"/history/enemy/"+j).remove();
-          }
-        }
-        arr = [];
-        for(let j in userdata[i].history.combo) arr.push(userdata[i].history.combo[j]);
-        if (arr.length > 20){
-          console.log(i+" too many combo");
-          let k=0 ;
-          for(let j in userdata[i].history.combo){
-            k++;
-            if(k < (arr.length-19)) database.ref('/user/'+i+"/history/combo/"+j).remove();
-          }
+          arr = [];
         }
       }
     }
     console.log("there are "+count+" users!!");
   });
 }
-
+function geteventDay() {
+  var t = new Date(),
+      y = t.getFullYear(),
+      m = AddZero(t.getMonth()+1),
+      d = AddZero(t.getDate()),
+      url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
+      console.log("get event day");
+      console.log(Date.parse(m+" "+d+","+y));
+  request({
+    url: url+y+m+d+".html",
+    method: "GET"
+  },function (e,r,b) {
+    if(!e){
+      $ = cheerio.load(b);
+      let body = $("body").html();
+      if(body.indexOf("<error>") == -1)
+        database.ref("/event_date").set(Date.parse(m+" "+d+","+y));
+      else console.log("did not update event day");
+    }
+  });
+}
 function levelToValue(origin,rarity,lv) {
   let limit ;
   switch (rarity) {
@@ -596,7 +610,9 @@ function levelToValue(origin,rarity,lv) {
   }
   return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
 }
-
+function AddZero(n) {
+  return n<10 ? "0"+n : n
+}
 
 
 const port = 8000 ;

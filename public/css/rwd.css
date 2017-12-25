@@ -44,39 +44,20 @@ nav .mobile,
   width: 100%;
 }
 @media screen and (max-width: 768px) {
-  nav{
-    height: 40px;
-    justify-content: space-between;
-  }
-  .page_1{
-    padding-top: 40px
-  }
-  .m_nav_panel{
-    display: flex;
-  }
+  nav{height: 40px;justify-content: space-between;}
+  .page_1{padding-top: 40px}
+  .m_nav_panel{display: flex;}
   nav .mobile{
     flex:1 ;
     display: flex;
     justify-content: flex-end;
   }
-  #start{
-    font-size: 30px;
-    padding: 6px 120px;
-  }
+  #start{font-size: 30px;padding: 6px 120px;}
   .select,
   .display
-  {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  span.button{
-    font-size: 18px;
-    padding: 1px 15px;
-  }
-  .card{
-    height: 80px;
-    width: 120px;
-  }
+  {padding-left: 0;padding-right: 0;}
+  span.button{font-size: 18px;padding: 1px 15px;}
+  .card{height: 80px;width: 120px;}
   .card-group{margin: 0}
   #selected{
     width: 100%;
@@ -90,9 +71,7 @@ nav .mobile,
     padding: 4px;
     border: 2px solid;
   }
-  .glyphicon-shopping-cart{
-    right: -79px;
-  }
+  .glyphicon-shopping-cart{right: -79px;}
   .navLinkBox,
   .settingBox,
   .level,
@@ -100,22 +79,13 @@ nav .mobile,
   #page_dot
   {display: none;}
 
-  .debugwindow h3{
-    font-size: 18px
-  }
-  .setting_container{
-    padding: 5%;
-  }
-  #history_cat,#history_ene{
-    width: 100%;
-    margin: 0;
-  }
-  .login_box{
-    left: 15%;
-    width: 70%
-  }
+  .debugwindow h3{font-size: 18px}
+  .setting_container{padding: 5%;}
+  #history_cat,#history_ene{width: 100%;margin: 0;}
+  .login_box{left: 15%;width: 70%}
   #selected{overflow-y: scroll;}
   .lv_sg_box{flex-direction: column;}
+  .float{width: 100%;left:0;height: 70%}
 }
 @media screen and (max-width: 1024px) {
   nav a img{

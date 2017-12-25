@@ -22,7 +22,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     console.log(data);
     current_user_data = data ;
-    if(data.last_cat) socket.emit("display cat",{
+    if(data.last_cat && location.pathname.indexOf('once') == -1) socket.emit("display cat",{
       uid : data.uid,
       cat : data.last_cat
     }) ;
@@ -157,73 +157,10 @@ $(document).ready(function () {
             "<td colspan=2><a target='blank' href='http://battlecats-db.com/unit/"+
             grossID+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
 
-    html += screen.width > 768 ?
-    "<tr>"+
-    "<th style='height:80px;padding:0'><img src='"+
-    image_url_cat+data.id+'.png'+
-    "' style='height:100%'></th>"+
-    "<th colspan=3 rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
-    "<th colspan=2>"+Thisbro(arr)+"</th>"+
-    "</tr>" :
-    "<tr>"+
-    "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-    image_url_cat+data.id+'.png'+
-    "' style='height:100%'>"+Thisbro(arr)+"</th>"+
-    "</tr><tr>"+
-    "<th colspan='6' rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
-    "</tr>" ;
-
+    html += displayCatHtml(data,arr,brr,lv,count);
 
     $(".dataTable").empty();
-    $(".dataTable").attr('id',data.id).append(
-      html+
-      "<tr>"+
-      "<th colspan='1'>等級</th>"+
-      "<td colspan='4' class='level'>"+
-      "<div id='level' class='slider'></div>"+
-      "</td>"+
-      "<td colspan='"+(screen.width < 768 ? 5 : 1)+"' >"+
-      "<span id='level_num'>30</span>"+
-      "</td >"+
-      "<tr>"+
-      "<th>體力</th><td id='體力' original='"+data.lv1體力+"'>"+
-      "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1體力,data.稀有度,lv).toFixed(0)+
-      "</span></td>"+
-      "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-      "<th>硬度</th><td id='硬度' original='"+data.lv1硬度+"'>"+
-      "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1硬度,data.稀有度,lv).toFixed(0)+
-      "</span></td>"+
-      "</tr><tr>"+
-      "<th>攻擊力</th><td id='攻擊力' original='"+data.lv1攻擊+"'>"+
-      "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1攻擊,data.稀有度,lv).toFixed(0)+
-      "</span></td>"+
-      "<th>DPS</th><td id='DPS' original='"+data.lv1dps+"'>"+
-      "<span class='editable' rarity='"+data.稀有度+"'>"+
-      levelToValue(data.lv1dps,data.稀有度,lv).toFixed(0)+
-      "</span></td>"+
-      "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
-      "</tr><tr>"+
-      "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
-      "<th>跑速</th><td id='跑速'>"+data.速度+"</td>"+
-      "<td colspan='2' rowspan='2' id='範圍'>"+data.範圍+"</td>"+
-      "</tr><tr>"+
-      "<th>花費</th><td id='花費'>"+data.花費+"</td>"+
-      "<th>再生産</th><td id='再生産'>"+data.再生産.toFixed(1)+" s</td>"+
-      "</tr><tr>"+
-      "<td colspan='6' id='特性' "+(
-      data.特性.indexOf("連續攻擊") != -1 ?
-      "original='"+data.特性+"'>"+
-      serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,lv)) :
-      ">"+data.特性)+
-      "</td>"+
-      "</tr><tr>"+
-      "<th colspan='6'>發動聯組</th>"+
-      AddCombo(brr)+
-      "</tr>"
-    );
+    $(".dataTable").attr('id',data.id).append(html);
     initialSlider(data,lv);
     scroll_to_class("display",0);
     if(data.id == "334-2"&&(Math.random()<0.5)) {
@@ -242,60 +179,6 @@ $(document).ready(function () {
       });
     }
   }
-  function AddCombo(arr) {
-    if(arr.length == 0){
-      return "</tr><tr><td colspan=6>無可用聯組</td>"
-    }
-    let html = "",
-        pic_html  ;
-    for(let i in arr){
-      pic_html = "<div style='display:flex'>" ;
-      for(let j in arr[i].cat){
-        // console.log(arr[i].cat[j])
-        if(arr[i].cat[j] != "-"){
-          pic_html +=
-          '<span class="card" value="'+arr[i].cat[j]+'" '+
-          'style="background-image:url('+
-          image_url_cat+arr[i].cat[j]+'.png);'+
-          (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
-          +'"></span>' ;
-        }
-      }
-      pic_html += "</div>" ;
-      html += screen.width > 768 ?
-              ("</tr><tr>"+
-              "<th val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-              "<td>"+arr[i].name+"</td>"+
-              "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
-              "</tr><tr>"+
-              "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
-              ("</tr><tr>"+
-              "<th colspan=2 val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-              "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
-              "</tr><tr>"+
-              "<td colspan=2 >"+arr[i].name+"</td>"+
-              "</tr><tr>"+
-              "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
-              "</tr><tr>"
-            );
-
-    }
-    // console.log(html);
-    return html
-  }
-  function Thisbro(arr) {
-    let html = "<div style='display:flex;justify-content: center;"+(screen.width > 768 ? "" : "padding:10px")+"'>" ;
-    for(let i in arr) {
-      html +=
-      '<span class="card" value="'+arr[i]+'" '+
-      'style="background-image:url('+
-      image_url_cat+arr[i]+'.png);'+
-      (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
-      +'"></span>'  ;
-    }
-    html += "</div>" ;
-    return html
-  }
   function initialSlider(data,lv) {
     $("#level").slider({
       max: 100,
@@ -305,10 +188,7 @@ $(document).ready(function () {
     setTimeout(function () {
       $("#level").slider('option','value',lv)
     },800);
-    $("#level").on("slide", function(e,ui) {
-      $("#level_num").html(ui.value);
-      updateState(ui.value);
-    });
+
     $("#level").on("slidechange", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
@@ -320,6 +200,10 @@ $(document).ready(function () {
         });
       }
     });
+    $("#level").on("slide", function(e,ui) {
+      $("#level_num").html(ui.value);
+      updateState(ui.value);
+    });
     function updateState(level) {
       let rarity = data.稀有度;
       let change = ['體力','硬度','攻擊力','DPS'] ;
@@ -327,8 +211,8 @@ $(document).ready(function () {
         let target = $('.dataTable').find('#'+change[i]) ;
         let original = target.attr('original');
         target.html("<span class='editable' rarity='"+data.稀有度+"'>"+
-                levelToValue(original,rarity,level).toFixed(0)+
-                "</span>").css('background-color',' rgba(242, 213, 167, 0.93)');
+        levelToValue(original,rarity,level).toFixed(0)+
+        "</span>").css('background-color',' rgba(242, 213, 167, 0.93)');
         setTimeout(function () {
           target.css('background-color','rgba(255, 255, 255, .9)');
         },500);
@@ -466,35 +350,6 @@ $(document).ready(function () {
 
     },function () {
       $("#TOOLTIP").fadeOut();
-  });
-
-
-  $('#test').click(function () {
-    html2canvas($('.display').get(), {
-      onrendered: function(canvas) {
-        // document.body.appendChild(canvas);
-        var link=document.createElement("a");
-        link.href=canvas.toDataURL('image/jpg');   //function blocks CORS
-        link.download = 'screenshot.jpg';
-        link.click();
-      },
-    });
-    // let width = $('.compareTable').width(),
-    //     height = $('.compareTable').height() ;
-    // html2canvas($('.compareTable').get(), {
-    //     onrendered: function (canvas) {
-    //         var tempcanvas=document.createElement('canvas');
-    //         console.log(width+":"+height)
-    //         tempcanvas.width = width;
-    //         tempcanvas.height = height ;
-    //         var context=tempcanvas.getContext('2d');
-    //         context.drawImage(canvas,0,0);
-    //         var link=document.createElement("a");
-    //         link.href=tempcanvas.toDataURL('image/jpg');   //function blocks CORS
-    //         link.download = 'screenshot.jpg';
-    //         link.click();
-    //     }
-    // });
   });
 
   $(".sortable").sortable({
@@ -729,3 +584,124 @@ $(document).ready(function () {
 
   }
 });
+function AddCombo(arr) {
+  if(arr.length == 0){
+    return "</tr><tr><td colspan=6>無可用聯組</td>"
+  }
+  let html = "",
+      pic_html  ;
+  for(let i in arr){
+    pic_html = "<div style='display:flex'>" ;
+    for(let j in arr[i].cat){
+      // console.log(arr[i].cat[j])
+      if(arr[i].cat[j] != "-"){
+        pic_html +=
+        '<span class="card" value="'+arr[i].cat[j]+'" '+
+        'style="background-image:url('+
+        image_url_cat+arr[i].cat[j]+'.png);'+
+        (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
+        +'"></span>' ;
+      }
+    }
+    pic_html += "</div>" ;
+    html += screen.width > 768 ?
+            ("</tr><tr>"+
+            "<th val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
+            "<td>"+arr[i].name+"</td>"+
+            "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
+            "</tr><tr>"+
+            "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
+            ("</tr><tr>"+
+            "<th colspan=2 val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
+            "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
+            "</tr><tr>"+
+            "<td colspan=2 >"+arr[i].name+"</td>"+
+            "</tr><tr>"+
+            "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
+            "</tr><tr>"
+          );
+
+  }
+  // console.log(html);
+  return html
+}
+function Thisbro(arr) {
+  let html = "<div style='display:flex;justify-content: center;"+(screen.width > 768 ? "" : "padding:10px")+"'>" ;
+  for(let i in arr) {
+    html +=
+    '<span class="card" value="'+arr[i]+'" '+
+    'style="background-image:url('+
+    image_url_cat+arr[i]+'.png);'+
+    (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
+    +'"></span>'  ;
+  }
+  html += "</div>" ;
+  return html
+}
+function displayCatHtml(data,arr,brr,lv,count) {
+  let html = '';
+  html += screen.width > 768 ?
+  "<tr>"+
+  "<th style='height:80px;padding:0'><img src='"+
+  image_url_cat+data.id+'.png'+
+  "' style='height:100%'></th>"+
+  "<th colspan=3 rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
+  "<th colspan=2>"+Thisbro(arr)+"</th>"+
+  "</tr>" :
+  "<tr>"+
+  "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
+  image_url_cat+data.id+'.png'+
+  "' style='height:100%'>"+Thisbro(arr)+"</th>"+
+  "</tr><tr>"+
+  "<th colspan='6' rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
+  "</tr>" ;
+  html +=
+  "<tr>"+
+  "<th colspan='1'>等級</th>"+
+  "<td colspan='4' class='level'>"+
+  "<div id='level' class='slider'></div>"+
+  "</td>"+
+  "<td colspan='"+(screen.width < 768 ? 5 : 1)+"' >"+
+  "<span id='level_num'>30</span>"+
+  "</td >"+
+  "<tr>"+
+  "<th>體力</th><td id='體力' original='"+data.lv1體力+"'>"+
+  "<span class='editable' rarity='"+data.稀有度+"'>"+
+  levelToValue(data.lv1體力,data.稀有度,lv).toFixed(0)+
+  "</span></td>"+
+  "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
+  "<th>硬度</th><td id='硬度' original='"+data.lv1硬度+"'>"+
+  "<span class='editable' rarity='"+data.稀有度+"'>"+
+  levelToValue(data.lv1硬度,data.稀有度,lv).toFixed(0)+
+  "</span></td>"+
+  "</tr><tr>"+
+  "<th>攻擊力</th><td id='攻擊力' original='"+data.lv1攻擊+"'>"+
+  "<span class='editable' rarity='"+data.稀有度+"'>"+
+  levelToValue(data.lv1攻擊,data.稀有度,lv).toFixed(0)+
+  "</span></td>"+
+  "<th>DPS</th><td id='DPS' original='"+data.lv1dps+"'>"+
+  "<span class='editable' rarity='"+data.稀有度+"'>"+
+  levelToValue(data.lv1dps,data.稀有度,lv).toFixed(0)+
+  "</span></td>"+
+  "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
+  "</tr><tr>"+
+  "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
+  "<th>跑速</th><td id='跑速'>"+data.速度+"</td>"+
+  "<td colspan='2' rowspan='2' id='範圍'>"+data.範圍+"</td>"+
+  "</tr><tr>"+
+  "<th>花費</th><td id='花費'>"+data.花費+"</td>"+
+  "<th>再生産</th><td id='再生産'>"+data.再生産.toFixed(1)+" s</td>"+
+  "</tr><tr>"+
+  "<td colspan='6' id='特性' "+(
+  data.特性.indexOf("連續攻擊") != -1 ?
+  "original='"+data.特性+"'>"+
+  serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,lv)) :
+  ">"+data.特性)+
+  "</td>"+
+  "</tr><tr>"+
+  "<th colspan='6'>發動聯組</th>"+
+  AddCombo(brr)+
+  "</tr>"
+
+  return html
+}

@@ -1,11 +1,24 @@
-﻿<!--<h4>Ver 6.0 更新</h4>
+<style>
+#www{
+animation-name: blink;
+animation-duration: .5s ;
+animation-iteration-count: infinite;
+}
+@keyframes blink {
+  0%{color: rgb(255, 93, 46)}
+  50%{color: rgb(250, 204, 86)}
+  100%{color: rgb(255, 72, 40)}
+}
+</style>
+<h2 id='www' style='text-align: center;color:rgb(255, 121, 64)'>
+關卡資訊即將上線，敬請期待
+</h2>
+﻿<h4>Ver 5.9 更新</h4>
 <ul>
-<li><b>加入了關卡資訊!!!</b></li>
-<li><b>加入了關卡資訊!!!</b></li>
-<li><b>加入了關卡資訊!!!</b></li>
-<li>很重要所以放三次(?)</li>
-<li>UI優化</li>
-</ul>-->
+<li>修正有時候貓咪等級不是使用者預設的Bug</li>
+<li><b>轉蛋可以隱藏日版貓咪了</b></li>
+<li>轉蛋介面大優化(?)</li>
+</ul>
 ﻿<h4>Ver 5.8 更新</h4>
 <ul>
 <li>Bug Fixed</li>
