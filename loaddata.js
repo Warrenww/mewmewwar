@@ -40,7 +40,7 @@ gsjson({
     database.ref("/catdata/"+i).update(result[0][i]) ;
   }
   database.ref("/combodata").update(obj) ;
-  database.ref("/enemydata").update(result[2]) ;
+  // database.ref("/enemydata").update(result[2]) ;
   // fs.writeFile('public/js/Catdata.txt', JSON.stringify(result[0]), (err) => {
   //   if (err) throw err;
   //   console.log('Catdata is saved!');
@@ -54,6 +54,9 @@ gsjson({
   //   console.log('Enemydata is saved!');
   // });
   console.log("\nall data save to firebase");
+  setTimeout(function () {
+        process.exit()
+  },2000);
 })
 .catch(function(err) {
   console.log(err.message);

@@ -46,59 +46,56 @@ var t = new Date(),
     console.log(url+y+m+d+".html");
 
 request({
-  url: url+y+m+23+".html",
+  url: "https://m.gamer.com.tw/forum/C.php?bsn=23772&snA=10129&bpage=1&top=0&ltype=",
   method: "GET"
 },function (e,r,b) {
   if(!e){
     $ = cheerio.load(b);
-    //console.log($("body").html());
-    // let content = $(".maincontents table"),
-    // final = content.children().length == 6 ? true : false,
-    // tbody_2 = content.children("tbody").eq(final?2:1).children("tr"),
-    // enemy=[];
-    // for(let k=0;k<tbody_2.length;k++){
-    //   console.log("enemy "+k);
-    //   let ene = tbody_2.eq(k).children("td");
-    //   console.log(ene.eq(0).text());
-    //   enemy.push({
-    //     Boss : ene.eq(0).text() == "BOSS" ? true : false
-    //   });
-    // }
-    // console.log(enemy);
+    // console.log($("tbody").html());
+    $("tr").each(function () {
+      let stage = $(this).children("td").eq(0).text().split("-");
+      let name = $(this).children("td").eq(2).text();
+      // console.log(stage+":"+name);
+      if(stage[1] != '0'){
+        database.ref("/stagedata/story/s000"+(AddZero(stage[0]-1))+"/"+stage[1]+"/name").set(name)
+      }
+      // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
+    });
   }
 });
 function AddZero(n) {
   return n<10 ? "0"+n : n
 }
-encode('cat&273-1&50')
-function encode(str) {
-  let code = [];
-  for (let i in str){
-    process.stdout.write(str[i]);
-    code.push(str.charCodeAt(i))
-  }
-  process.stdout.write('\n');
-  console.log(code);
-  let output=[]
-  for(let i in code){
-    code[i] += 8;
-    output.push(String.fromCharCode(code[i]));
-  }
-  console.log(output.join(''));
-}
-decode('mk~0<A=7;0?:')
-function decode(str) {
-  let code = [];
-  for (let i in str){
-    process.stdout.write(str[i]);
-    code.push(str.charCodeAt(i))
-  }
-  process.stdout.write('\n');
-  console.log(code);
-  let output=[]
-  for(let i in code){
-    code[i] -= 8;
-    output.push(String.fromCharCode(code[i]));
-  }
-  console.log(output.join(''));
-}
+//
+// encode('cat&273-1&50')
+// function encode(str) {
+//   let code = [];
+//   for (let i in str){
+//     process.stdout.write(str[i]);
+//     code.push(str.charCodeAt(i))
+//   }
+//   process.stdout.write('\n');
+//   console.log(code);
+//   let output=[]
+//   for(let i in code){
+//     code[i] += 8;
+//     output.push(String.fromCharCode(code[i]));
+//   }
+//   console.log(output.join(''));
+// }
+// decode('mk~0<A=7;0?:')
+// function decode(str) {
+//   let code = [];
+//   for (let i in str){
+//     process.stdout.write(str[i]);
+//     code.push(str.charCodeAt(i))
+//   }
+//   process.stdout.write('\n');
+//   console.log(code);
+//   let output=[]
+//   for(let i in code){
+//     code[i] -= 8;
+//     output.push(String.fromCharCode(code[i]));
+//   }
+//   console.log(output.join(''));
+// }

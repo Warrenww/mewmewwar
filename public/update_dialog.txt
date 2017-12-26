@@ -1,18 +1,10 @@
-<style>
-#www{
-animation-name: blink;
-animation-duration: .5s ;
-animation-iteration-count: infinite;
-}
-@keyframes blink {
-  0%{color: rgb(255, 93, 46)}
-  50%{color: rgb(250, 204, 86)}
-  100%{color: rgb(255, 72, 40)}
-}
-</style>
 <h2 id='www' style='text-align: center;color:rgb(255, 121, 64)'>
 關卡資訊即將上線，敬請期待
 </h2>
+﻿<h4>Ver 5.10 更新</h4>
+<ul>
+<li>加入年末活動時間表，方便查看關卡時間</li>
+</ul>
 ﻿<h4>Ver 5.9 更新</h4>
 <ul>
 <li>修正有時候貓咪等級不是使用者預設的Bug</li>
@@ -143,3 +135,15 @@ animation-iteration-count: infinite;
 <li>聯組資料錯字修正</li>
 <li>新增幫助視窗(本窗口)</li>
 </ul>
+<style>
+#www{
+animation-name: blink;
+animation-duration: .5s ;
+animation-iteration-count: infinite;
+}
+@keyframes blink {
+  0%{color: rgb(255, 93, 46)}
+  50%{color: rgb(250, 204, 86)}
+  100%{color: rgb(255, 72, 40)}
+}
+</style>

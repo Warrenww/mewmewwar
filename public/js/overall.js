@@ -193,8 +193,12 @@ $(document).ready(function () {
     $("#current_user_name").text("Hi, "+name);
   });
 
-
-
+  //temp
+  $("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>")
+  $("#year_event").click(function () {
+    $(this).fadeOut();
+    $("#year_event_BG").fadeOut();
+  });
 
   var xmlhttp = new XMLHttpRequest() ;
   var url = "../public/update_dialog.txt";
@@ -260,4 +264,73 @@ function scroll_to_class(class_name,n) {
   $('html,body').animate(
     {scrollTop: $("."+class_name).eq(n).offset().top},
     1000,'easeInOutCubic');
+}
+
+//temp
+function yearevent() {
+  let html = '<h1 style="text-align:center;color:white">年終活動</h1><table>';
+  let obj = {"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}};
+  for(let i in obj){
+    for(let j=7;j<24;j++) obj[i][j] = '';
+    let time = [7,8,9,12,13,14,19,20,21],
+        time_2 = [11,12,13,14],
+        time_3 = [19,20,21,22];
+    for(let j in time) obj[i][time[j]] += "傳奇關卡統率力減半,";
+
+    if(i%2 == 0) {
+      obj[i].allday = "世界篇寶物嘉年華,";
+      for(let j in time_2) obj[i][time_2[j]] += "游擊戰經驗值喵,";
+      for(let j in time_3) obj[i][time_3[j]] += "超級游擊經驗值喵,";
+
+    }
+    else {
+      obj[i].allday = "未來篇寶物嘉年華,";
+      for(let j in time_2) obj[i][time_2[j]] += "超級游擊經驗值喵,";
+      for(let j in time_3) obj[i][time_3[j]] += "游擊戰經驗值喵,";
+    }
+    if(i==28||i==31) obj[i].allday += "宇宙篇寶物嘉年華,";
+
+    if(i%3 == 2){
+      obj[i][16] += "終極游擊經驗值喵,"
+      obj[i][17] += "終極游擊經驗值喵,"
+      obj[i][22] += "超終極游擊經驗值喵,"
+      obj[i][23] += "超終極游擊經驗值喵,"
+    } else if(i%3 == 0){
+      obj[i][22] += "終極游擊經驗值喵,"
+      obj[i][23] += "終極游擊經驗值喵,"
+      obj[i][8] += "超終極游擊經驗值喵,"
+      obj[i][9] += "超終極游擊經驗值喵,"
+    } else {
+      obj[i][8] += "終極游擊經驗值喵,"
+      obj[i][9] += "終極游擊經驗值喵,"
+      obj[i][16] += "超終極游擊經驗值喵,"
+      obj[i][17] += "超終極游擊經驗值喵,"
+    }
+
+  }
+  console.log(obj);
+  let today = new Date(),
+      day = today.getDate(),
+      hr = today.getHours();
+  console.log(day+","+hr);
+  console.log(obj[day]);
+  html += "<tr><th>全天</th><td>"+turn(obj[day].allday)+"</td></tr>";
+  for(let i in obj[day]){
+    if(i=='allday') continue
+    html += "<tr id='"+i+"'><th>"+AddZero(i)+":00</th>"+
+    "<td style='border:"+
+    (i==12?'3px solid rgb(255, 77, 77)':'0px')+
+    "'>"+turn(obj[day][i])+"</td></tr>"
+  }
+  html += "</table>";
+  return html
+}
+function turn(s) {
+  let arr = s.split(",");
+  let ww = '';
+  for(let i in arr) ww += arr[i]+"</br>";
+  return ww
+}
+function AddZero(n) {
+  return n<10 ? "0"+n : n
 }

@@ -469,7 +469,7 @@ io.on('connection', function(socket){
 
 
   socket.on('get event date',function () {
-    if(Math.random()>0.5)geteventDay();
+    if(Math.random()>0.7)geteventDay();
     database.ref('/event_date').once('value',function (snapshot) {
       socket.emit('true event date',snapshot.val());
     });

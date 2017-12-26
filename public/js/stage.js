@@ -34,8 +34,8 @@ $(document).ready(function () {
     }
   });
 
-  var chapter = ['世界篇','未來篇','宇宙篇','傳說故事','極難關','月間關','開眼關','貓咪</br>風雲塔'] ;
-  var chapter_id = ['world','future','universe','story','hard','month','openEye','tower'] ;
+  var chapter = ['世界篇','未來篇','宇宙篇','傳說故事','極難關','月間關','開眼關','貓咪</br>風雲塔','狂亂貓','大狂亂貓'] ;
+  var chapter_id = ['world','future','universe','story','hard','month','openEye','tower','crazy','bigCrazy'] ;
   for(let i in chapter) $(".select_chapter").append("<button id='"+chapter_id[i]+"' value='0'>"+chapter[i]+"</button>") ;
   $(".select_chapter").css('width',200*chapter.length)
 
@@ -132,8 +132,11 @@ $(document).ready(function () {
               "</tr><tr>"+
               "<th colspan=6>關卡敵人</th>"+
               "</tr><tr>"+
-              "<th>敵人</th><th>倍率</th><th>數量</th>"+
-              "<th>城連動</th><th>首次出現(s)</th><th>再次出現(s)</th>"+
+              "<th>敵人</th><th class='enemy_head' id='multiple'>倍率</th>"+
+              "<th class='enemy_head' id='amount'>數量</th>"+
+              "<th class='enemy_head' id='castle'>城連動</th>"+
+              "<th class='enemy_head' id='first_show'>首次出現(s)</th>"+
+              "<th class='enemy_head' id='next_time'>再次出現(s)</th>"+
               "</tr><tr>"+Addenemy(data.enemy)+
               "</tr><tr>"+
               "</tr>" ):(
@@ -184,17 +187,17 @@ $(document).ready(function () {
   function Addenemy(arr) {
     let html ="";
     for(let i in arr){
-      html += "<tr>"+
+      html += "<tr class='enemy_row' id='"+i+"'>"+
               "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
               (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
               "'><img src='"+image_url_enemy+arr[i].id+
               ".png' style='width:100%'/></td>" ;
       html += screen.width > 768 ?(
-            "<td>"+arr[i].multiple+"</td>"+
-            "<td>"+arr[i].amount+"</td>"+
-            "<td>"+arr[i].castle+"</td>"+
-            "<td>"+arr[i].first_show+"</td>"+
-            "<td>"+arr[i].next_time+"</td>"+
+            "<td id='multiple'>"+arr[i].multiple+"</td>"+
+            "<td id='amount'>"+arr[i].amount+"</td>"+
+            "<td id='castle'>"+arr[i].castle+"</td>"+
+            "<td id='first_show'>"+arr[i].first_show+"</td>"+
+            "<td id='next_time'>"+arr[i].next_time+"</td>"+
             "</tr>"):(
               "<td>"+arr[i].multiple+"</td>"+
               "<th>數量</th>"+"<td>"+arr[i].amount+"</td>"+
@@ -213,24 +216,16 @@ $(document).ready(function () {
     return chapter[d]
   }
   function prize(s) {
-    switch (s) {
-      case 'expression':
-
-        break;
-      default:
-        return s
+    if(s.indexOf("u")!=-1){
+      return "<img src='"+image_url_cat+s.split("u")[1]+
+      "-1.png' style='width:100%' />"
+    } else {
+      return s
     }
   }
   $(document).on('click','.enemy',function () {
     let id = $(this).attr("id"),
         multiple = $(this).next().text().split("％")[0];
-    // socket.emit("user Search",{
-    //   uid : current_user_data.uid,
-    //   type : 'enemy',
-    //   id : id
-    // });
-    // location.assign("/view/enemy.html");
-    // location.assign("/view/once.html?q=enemy&"+id+"&"+multiple);
     $("body").append(
       "<div class='float'><iframe src='"+
       location.origin+"/view/once.html?q=enemy&"+
@@ -250,9 +245,68 @@ $(document).ready(function () {
     return false;
   });
 
+  $(document).on('click','.enemy_head',sortStageEnemy);
+  function sortStageEnemy() {
+    let name = $(this).attr('id');
+    var arr = [] ;
+    let flag = true ;
+    $(this).css('border-top','5px solid rgb(246, 132, 59)')
+            .siblings().css('border-top','0px solid');
+
+    $(".enemy_row").each(function () {
+      let obj = {},
+          val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
+      obj = {
+        id:$(this).attr('id'),
+        item:val!=NaN ? val : 99999
+      }
+      arr.push(obj);
+    });
+    // console.log(name);
+    // console.log(arr);
+    for(let i=0;i<arr.length;i++){
+      for(let j=i+1;j<arr.length;j++){
+        if(arr[j].item>arr[i].item){
+          $(".enemy_row[id='"+arr[i].id+"']").before( $(".enemy_row[id='"+arr[j].id+"']"));
+          flag = false ;
+        }
+        arr = [] ;
+        $(".enemy_row").each(function () {
+          let obj = {},
+              val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
+          obj = {
+            id:$(this).attr('id'),
+            item:val!=NaN?val:99999
+          }
+          arr.push(obj);
+        });
+      }
+    }
+    if(flag){
+      $(this).css('border-top','5px solid rgb(59, 184, 246)')
+              .siblings().css('border-top','0px solid');
+
+      for(let i=0;i<arr.length;i++){
+        for(let j=i+1;j<arr.length;j++){
+          if(arr[j].item<arr[i].item){
+            $(".enemy_row[id='"+arr[i].id+"']").before( $(".enemy_row[id='"+arr[j].id+"']"));
+          }
+          arr = [] ;
+          $(".enemy_row").each(function () {
+            let obj = {},
+            val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
+            obj = {
+              id:$(this).attr('id'),
+              item:val!=NaN ?val:99999
+            }
+            arr.push(obj);
+          });
+        }
+      }
+    }
+  }
 
 });
-
 
 function sleep(n) {
   let start = now = new Date().getTime();
