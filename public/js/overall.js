@@ -319,7 +319,7 @@ function yearevent() {
     if(i=='allday') continue
     html += "<tr id='"+i+"'><th>"+AddZero(i)+":00</th>"+
     "<td style='border:"+
-    (i==12?'3px solid rgb(255, 77, 77)':'0px')+
+    (i==hr?'3px solid rgb(255, 77, 77)':'0px')+
     "'>"+turn(obj[day][i])+"</td></tr>"
   }
   html += "</table>";
