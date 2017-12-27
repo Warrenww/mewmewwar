@@ -218,14 +218,18 @@ io.on('connection', function(socket){
       for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
     }
     result.combo = combo ;
-    database.ref("/user/"+uid).once("value",function (snapshot) {
-      let storge_lv = snapshot.val().variable.cat[grossID].lv,
-          storge_count = snapshot.val().variable.cat[grossID].count,
-          default_lv = snapshot.val().setting.default_cat_lv;
-      result.lv = storge_lv ? storge_lv : default_lv ;
-      result.count = storge_count  ? storge_count : 0 ;
+    if(!uid){
       socket.emit("display cat result",result);
-    });
+    } else {
+      database.ref("/user/"+uid).once("value",function (snapshot) {
+        let storge_lv = snapshot.val().variable.cat[grossID].lv,
+        storge_count = snapshot.val().variable.cat[grossID].count,
+        default_lv = snapshot.val().setting.default_cat_lv;
+        result.lv = storge_lv ? storge_lv : default_lv ;
+        result.count = storge_count  ? storge_count : 0 ;
+        socket.emit("display cat result",result);
+      });
+    }
     // console.log(result);
 
   });
