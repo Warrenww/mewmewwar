@@ -300,6 +300,7 @@ io.on('connection', function(socket){
           name : "匿名貓咪",
           nickname : "匿名貓咪",
           first_login : timer,
+          last_login : timer,
           history : {cat:"",enemy:"",combo:"",stage:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
