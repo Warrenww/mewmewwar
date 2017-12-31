@@ -9,57 +9,57 @@ body,html{
   -o-user-select:none;
   cursor: default;
 }
-
-.debugwindow{
-  background-color: rgba(0, 0, 0, 0.9);
+.iframe_holder{
   display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  bottom: 0%;
-  width: 100%;
-  padding: 5px;
+  width: 300%;
+  position: relative;
+  left: -100%;
+  transition: .8s ease-in-out
 }
-.debugwindow h3{
-  color: white;
-  padding-left: 10px;
-  padding-right: 10px;
+.view{overflow: hidden;}
+#left,#right{
+  width: 100px;
+  height: 100px;
+  background-color: transparent;
+  position: fixed;
+  top: 50%;
+  border: 50px solid transparent;
+  transition: .2s ease-in-out;
+  cursor: pointer;
+}
+#left{border-right: 50px solid white;left:-20px}
+#right{border-left: 50px solid white;right:-20px}
+#left:hover{border-right: 50px solid rgb(255, 177, 66)}
+#right:hover{border-left: 50px solid rgb(255, 177, 66)}
+#date{
+  width: 50%;
+  height: 100px;
+  position: fixed;
+  top: 50%;
+  background-color: rgba(255,255,255,.8);
   text-align: center;
+  margin: 0 25%;
+  border-radius: 20px;
+  padding: 20px;
+  font-size: 40px;
   font-weight: bold;
-  margin: 0
+  display: none;
 }
-
-button,.button,.selected_cat{
-  background-color: rgb(227, 158, 73) ;
-  background: linear-gradient(rgb(245, 216, 76), rgb(199, 133, 39));
-  border: 2px solid black ;
-  border-radius: 10px ;
-  cursor: pointer;
-  color: white ;
-  font-weight: bolder;
-  font-size: 1.2em ;
-  margin:  0 20px;
-  padding: 2px 20px ;
-  transition: .1s ease-in-out;
-  text-align: center;
-  /*-webkit-text-stroke: 1px black;*/
-}
-#current_user_name,
-#userdata{
-  height: 100%;
-  color: white;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  font-size: 20px;
-  cursor: pointer;
-}
-#retry{
-  background-color: rgb(227, 81, 81) ;
-  background: linear-gradient(rgb(255, 124, 85), rgb(219, 71, 71));
-}
-#fine{
-  background-color: rgb(157, 233, 113) ;
-  background: linear-gradient(rgb(221, 232, 113), rgb(99, 193, 69));
+@media screen and (max-width: 768px){
+  #left,#right{
+    width: 50px;
+    height: 50px;
+    border: 25px solid transparent;
+  }
+  #left{border-right: 25px solid rgb(255, 177, 66);left:-10px}
+  #right{border-left: 25px solid rgb(255, 177, 66);right:-10px}
+  #left:hover{border-right: 25px solid rgb(255, 177, 66)}
+  #right:hover{border-left: 25px solid rgb(255, 177, 66)}
+  #date{
+    width: 70%;
+    margin: 0 15%;
+    font-size: 30px;
+    height: 70px;
+    padding: 10px;
+  }
 }

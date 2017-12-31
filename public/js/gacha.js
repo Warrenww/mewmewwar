@@ -37,7 +37,7 @@ $(document).ready(function () {
 
   }
   socket.on("choose",function (data) {
-    console.log(data);
+    // console.log(data);
     for(let i in data){
       $(".result").append('<span class="card" value="'+data[i].id+'" '+
       'style="background-image:url('+
@@ -48,7 +48,7 @@ $(document).ready(function () {
       +'">'+data[i].name+'</span>');
     }
     $('body').animate({
-      scrollTop : screen.height
+      scrollTop : $('.result')[0].offsetHeight
     },1000,"easeInOutCubic")
   });
   $(document).on('click','.card',function () {

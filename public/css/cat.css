@@ -24,3 +24,73 @@
   top: 30px;
   right: -134px;
 }
+.compare_panel{
+  position: fixed;
+  height: 0px;
+  width: 100px;
+  background-color: rgba(0,0,0,.7);
+  Z-INDEX: 99;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  transition: .4s ease-in-out;
+  justify-content: center;
+  overflow: hidden;
+}
+.compare_panel span{
+  font-size: 20px;
+  text-align: center;
+  padding:0 10px;
+  cursor: pointer;
+}
+.compare_panel span:hover{
+  color: rgb(222, 175, 77)
+}
+.compareTarget_child{
+  display: flex;
+  font-size: 20px;
+  align-items: center;
+  transition: .2s ease-in-out
+}
+.compareTarget_child:hover{color:rgb(232, 84, 84)}
+#compareTarget_tag{
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bolder;
+  width: 40px;
+  height: 180px;
+  position: fixed;
+  top: 65%;
+  left: 0;
+  background-color: rgba(255,255,255,.64);
+  z-index: 3;
+  cursor: pointer;
+  transition: .8s ease-in-out;
+}
+#compareTarget_tag i {transition: .8s ease-in-out;}
+.compareTarget_holder{
+  position: fixed;
+  top: 0px;
+  left:-180;
+  width: 180px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.64) ;
+  padding: 10px;
+  z-index: 2;
+  transition: .8s ease-in-out;
+  overflow-y: scroll;
+  padding-top: 60px
+}
+.compareTarget{
+  flex-direction: column;
+  display: flex;
+  min-height: 100%
+}
+#compare_panel_BG{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 98;
+  display: none;
+}

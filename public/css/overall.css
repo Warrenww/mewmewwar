@@ -29,7 +29,7 @@ iframe{
   height: 100%;
   border: 0;
 }
-#current_user_name,
+.current_user_name,
 #userdata{
   height: 100%;
   color: white;
@@ -46,14 +46,6 @@ iframe{
   align-items: center;
   width: 100%;
   padding: 10px
-}
-#a_gacha::after{
-  content: 'beta';
-  font-size: 10px;
-  position: relative;
-  color: aqua;
-  top: -12px;
-  font-weight: bold;
 }
 .search input{
   height: 30px;
@@ -206,52 +198,12 @@ table {
   align-items: center;
   flex:6 ;
 }
-.compareTarget_holder{
-  position: fixed;
-  top: 0px;
-  left:-180;
-  width: 180px;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.64) ;
-  padding: 10px;
-  z-index: 2;
-  transition: .8s ease-in-out;
-  overflow-y: scroll;
-  padding-top: 60px
-}
-.compareTarget{
-  flex-direction: column;
-  display: flex;
-  align-items: flex-end;
-  min-height: 100%
-}
+
 .compareTarget_holder::-webkit-scrollbar,
 .comparedataholder::-webkit-scrollbar
  {
     width: 0px;
 }
-.compareTarget_child{
-  display: flex;
-  font-size: 20px;
-  align-items: center;
-  transition: .2s ease-in-out
-}
-.compareTarget_child:hover{color:rgb(232, 84, 84)}
-#compareTarget_tag{
-  padding: 10px;
-  font-size: 20px;
-  font-weight: bolder;
-  width: 40px;
-  height: 180px;
-  position: fixed;
-  top: 65%;
-  left: 0;
-  background-color: rgba(255,255,255,.64);
-  z-index: 3;
-  cursor: pointer;
-  transition: .8s ease-in-out;
-}
-#compareTarget_tag i {transition: .8s ease-in-out;}
 
 #clear_compare{
   cursor: pointer;
@@ -315,7 +267,7 @@ table {
 .reverse,.compareTarget_child i,
 .compareTable th{cursor: pointer;}
 #helpModal .modal-body{
-  height: 80% ;
+  height: 70% ;
   overflow-y: scroll;
 }
 #helpModal .title{font-size: 20px;font-weight: bold;}
@@ -324,16 +276,17 @@ table {
   width: 100%;
   height: 100%;
   padding: 0;
-  padding-top: 70px
+  padding-top: 70px;
+  overflow: scroll;
 }
+.compareDisplay::-webkit-scrollbar {width: 0}
 .compareTable{width: 100%}
 .comparedataholder{
   display: flex;
   flex: 3;
-  overflow-x: visible;
-  overflow-y: scroll;
   width: 90%;
 }
+.comparedata{max-width: 250px}
 #compare_number{
   position: relative;
   top: -40px;

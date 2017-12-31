@@ -18,33 +18,49 @@ nav a img{
   align-items: center;
   padding-left: 20px
 }
-.navLinkBox a{
+.navLinkBox a,
+.navLinkBox span{
   font-size: 20px;
   color: white ;
   margin:10px
 }
-.settingBox{
+.settingBox,
+.m_settingBox{
   flex:1;
   display:flex;
   align-items:center;
   justify-content: flex-end;
 }
-.settingBox i{
+.settingBox i,
+.m_settingBox i{
   font-size:32px;
   color:white;
   margin-right:10px ;
   cursor: pointer;
   transition: .4s ease-in-out
 }
-.settingBox #setting:hover{
+.settingBox #setting:hover,
+.m_settingBox #setting:hover{
   color:rgb(226, 152, 41) ;
   animation-name: test ;
   animation-duration: 2s
 }
-.settingBox #info:hover{
+.settingBox #info:hover,
+.m_settingBox #info:hover{
   color:rgb(73, 215, 8) ;
 }
-
+.nav_panel {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 40px;
+    background-color: rgba(0,0,0,.7);
+    width: 150px;
+    text-align: center;
+    height: 0;
+    overflow: hidden;
+    transition: .4s ease-in-out
+}
 @keyframes test {
   from{transform: rotate(0deg);}
   to{transform: rotate(180deg);}

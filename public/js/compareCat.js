@@ -20,7 +20,7 @@ $(document).ready(function () {
         let id = data.compare_c2c[i].id ;
         buffer.push(id);
       }
-      socket.emit("start compare c2c",buffer);
+      socket.emit("start compare c2c",{id:data.uid,target:buffer});
     }
   });
 
@@ -50,29 +50,30 @@ $(document).ready(function () {
 
     );
     for(let i in compare){
-      let data = compare[i];
+      let data = compare[i].data,
+          lv = compare[i].lv;
       // console.log(data);
       $(".comparedatabody").append(
         "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
         "<table>"+
         "<tr>"+
-        "<th id='level' rarity='"+data.稀有度+"'>30</th>"+
+        "<th id='level' rarity='"+data.稀有度+"'>"+lv+"</th>"+
         "</tr><tr>"+
         "<th style='height:80px;padding:0'><img src='"+
-        image_url+compare[i].id+'.png'+
+        image_url+data.id+'.png'+
         "' style='height:100%'></th>"+
         "</tr><tr>"+
         "<th id='全名'>"+data.全名+"</th>"+
         "</tr><tr>"+
-        "<td id='體力' original='"+data.lv1體力+"'>"+levelToValue(data.lv1體力,data.稀有度,30).toFixed(0)+"</td>"+
+        "<td id='體力' original='"+data.lv1體力+"'>"+levelToValue(data.lv1體力,data.稀有度,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
         "<td id='KB'>"+data.kb+"</td>"+
         "</tr><tr>"+
-        "<td id='硬度' original='"+data.lv1硬度+"'>"+levelToValue(data.lv1硬度,data.稀有度,30).toFixed(0)+"</td>"+
+        "<td id='硬度' original='"+data.lv1硬度+"'>"+levelToValue(data.lv1硬度,data.稀有度,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
-        "<td id='攻擊力' original='"+data.lv1攻擊+"'>"+levelToValue(data.lv1攻擊,data.稀有度,30).toFixed(0)+"</td>"+
+        "<td id='攻擊力' original='"+data.lv1攻擊+"'>"+levelToValue(data.lv1攻擊,data.稀有度,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
-        "<td id='DPS' original='"+data.lv1dps+"'>"+levelToValue(data.lv1dps,data.稀有度,30).toFixed(0)+"</td>"+
+        "<td id='DPS' original='"+data.lv1dps+"'>"+levelToValue(data.lv1dps,data.稀有度,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
         "<td id='射程'>"+data.射程+"</td>"+
         "</tr><tr>"+
@@ -89,7 +90,7 @@ $(document).ready(function () {
         "<td id='特性' "+
         (data.特性.indexOf("連續攻擊") != -1 ?
         "original='"+data.特性+"' atk='"+data.lv1攻擊+"'>"+
-        serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,30)) :
+        serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,lv)) :
         ">"+data.特性
         )+
         "</td>"+

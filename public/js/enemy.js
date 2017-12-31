@@ -235,7 +235,7 @@ $(document).ready(function () {
     for(let i in change){
       let target = $('.dataTable').find('#'+change[i]) ;
       let original = target.attr('original');
-      target.html(levelToValue(original,level).toFixed(0))
+      target.html(mutipleValue(original,level).toFixed(0))
             .css('background-color',' rgba(242, 213, 167, 0.93)');
       setTimeout(function () {
         target.css('background-color','rgba(255, 255, 255, .9)');
@@ -243,12 +243,13 @@ $(document).ready(function () {
     }
     if(data.特性.indexOf("連續攻擊") != -1){
       let target = $('.dataTable').find('#特性');
-      target.html(serialATK(data.特性,levelToValue(data.攻撃力,level)));
+      target.html(serialATK(data.特性,mutipleValue(data.攻撃力,level)));
     }
   }
 
 });
 function displayenemyHtml(data) {
+  console.log(data);
   let html = '';
   html += "<tr><td colspan="+(screen.width > 768 ?4:3)+" style='background-color:transparent'></td>"+
           "<td colspan="+(screen.width > 768 ?2:3)+" id='link'><a target='blank' href='http://battlecats-db.com/enemy/"+
@@ -277,15 +278,15 @@ function displayenemyHtml(data) {
   "</td >"+
   "<tr>"+
   "<th>體力</th><td id='體力' original='"+data.體力+"'>"+
-  levelToValue(data.體力,data.lv).toFixed(0)+"</td>"+
+  mutipleValue(data.體力,data.lv).toFixed(0)+"</td>"+
   "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
   "<th>硬度</th><td id='硬度' original='"+data.硬度+"'>"+
-  levelToValue(data.硬度,data.lv).toFixed(0)+"</td>"+
+  mutipleValue(data.硬度,data.lv).toFixed(0)+"</td>"+
   "</tr><tr>"+
   "<th>攻擊力</th><td id='攻撃力' original='"+data.攻撃力+"'>"+
-  levelToValue(data.攻撃力,data.lv).toFixed(0)+"</td>"+
+  mutipleValue(data.攻撃力,data.lv).toFixed(0)+"</td>"+
   "<th>DPS</th><td id='DPS' original='"+data.dps+"'>"+
-  levelToValue(data.dps,data.lv).toFixed(0)+"</td>"+
+  mutipleValue(data.dps,data.lv).toFixed(0)+"</td>"+
   "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
   "</tr><tr>"+
   "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
@@ -298,13 +299,14 @@ function displayenemyHtml(data) {
   "<td colspan='6' id='特性' "+(
   data.特性.indexOf("連續攻撃") != -1 ?
   "original='"+data.特性+"'>"+
-  serialATK(data.特性,levelToValue(data.攻撃力,data.lv)) :
+  serialATK(data.特性,mutipleValue(data.攻撃力,data.lv)) :
   ">"+data.特性)+
   "</td>"+
   "</tr><tr>"
   return html
 }
-function levelToValue(value,m) {
+function mutipleValue(value,m) {
+  console.log(value+":"+m);
   return value*m
 }
 function serialATK(prop,atk) {

@@ -32,28 +32,29 @@ $(document).ready(function () {
       for(let i in data.compare_c2c){
         let id = data.compare_c2c[i].id,
             name = data.compare_c2c[i].name;
-        $(".compareTarget").append('<div class="compareTarget_child" value='+id+'>'+
-        '<i class="fa fa-trash"></i>'+
+        $(".compareTarget").append(
         '<span class="card" value="'+id+
         '" style="background-image:url('+
         image_url_cat+id+'.png'+
-        '">'+name+'</span></div>');
+        '">'+name+'</span>');
       }
     }
 
   });
 
-  $(document).on('click','.card',function () {
-    if($(this).parent().attr("class")=='compareTarget_child') return
-    socket.emit("user Search",{
-      uid : current_user_data.uid,
-      type : 'cat',
-      id : $(this).attr('value')
-    });
-    socket.emit("display cat",{
-      uid : current_user_data.uid,
-      cat : $(this).attr('value')
-    });
+  $(document).on('click','.card',function (e) {
+    if($(this).parent().parent().attr("class")=='compareTarget_holder') return
+    else {
+      socket.emit("user Search",{
+        uid : current_user_data.uid,
+        type : 'cat',
+        id : $(this).attr('value')
+      });
+      socket.emit("display cat",{
+        uid : current_user_data.uid,
+        cat : $(this).attr('value')
+      });
+    }
 
   });
   $(document).on('click','#search_ability',search) ;
@@ -163,7 +164,7 @@ $(document).ready(function () {
     $(".dataTable").attr('id',data.id).append(html);
     initialSlider(data,lv);
     scroll_to_class("display",0);
-    if(data.id == "334-2"&&(Math.random()<0.5)) {
+    if(data.id == "334-2"&&(Math.random()<0.4)) {
       $(".dataTable").append(
         '<div class="animate_cat">'+
         '<img src="../public/css/footage/animate/u334-2.gif" style="width:100%" />'+
@@ -369,13 +370,12 @@ $(document).ready(function () {
   });
 
 
-
+  $('body').append("<div id='compare_panel_BG'></div>");
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   $(document).on('click','.glyphicon-shopping-cart',addToCompare);
   $(document).on('click',"#addcart", function () {
-    $('.compareTarget_holder').css('left',0);
-    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
-    showcomparetarget = 0 ;
+    $('.compare_panel').css('height',0);
+    if(showcomparetarget) showhidecomparetarget();
     let id = $(".dataTable").attr('id'),
         name = $(".dataTable").find("#全名").text();
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
@@ -389,12 +389,11 @@ $(document).ready(function () {
         repeat.css('border-color','white');
       },1000);
     } else {
-      $(".compareTarget").append('<div class="compareTarget_child" value='+id+'>'+
-      '<i class="fa fa-trash"></i>'+
-      '<span class="card" value="'+id+
-      '" style="background-image:url('+
-      image_url_cat+id+'.png'+
-      '">'+name+'</span></div>')
+      $(".compareTarget").append(
+          '<span class="card" value="'+id+
+          '" style="background-image:url('+
+          image_url_cat+id+'.png'+
+          '">'+name+'</span>');
       $('.compareTarget_holder').animate({
         scrollTop : $('.compareTarget').height()
       },500,'easeInOutCubic');
@@ -404,23 +403,56 @@ $(document).ready(function () {
     }
 
   });
-  $(document).on('click','.compareTarget_child',function () {
-    let r = confirm("確定要將"+$(this).children(".card").text()+"從比較列中移除?") ;
-    if(!r) return
-    $(this).remove();
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    $("#compare_number").text(compare.length);
-    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+  $(document).on('click','.compareTarget .card',function (e) {
+    let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;
+    $('.compare_panel').remove();
+    $("#compare_panel_BG").fadeIn();
+    $('body').append(
+      "<div class='compare_panel' id='"+
+      $(this).attr('value')+
+      "'><span id='show'>顯示</span><span id='del'>刪除</span></div>");
+    $('.compare_panel').css({top:pos_y,left:pos_x}).animate({height:60},400);
+    $('.compare_panel #show').click(function () {
+      socket.emit("user Search",{
+        uid : current_user_data.uid,
+        type : 'cat',
+        id : $(this).parent().attr('id')
+      });
+      socket.emit("display cat",{
+        uid : current_user_data.uid,
+        cat : $(this).parent().attr('id')
+      });
+      showhidecomparetarget();
+      $("#compare_panel_BG").fadeOut();
+      $('.compare_panel').css('height',0);
+    });
+    $('.compare_panel #del').click(function () {
+      let target = $(".compareTarget .card[value='"+$(this).parent().attr('id')+"']");
+      let r = confirm("確定要將"+target.text()+"從比較列中移除?") ;
+      if(!r) return
+      target.remove();
+      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      $("#compare_number").text(compare.length);
+      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+      $("#compare_panel_BG").fadeOut();
+      $('.compare_panel').css('height',0);
+    });
   });
+  $(document).on('click','#compare_panel_BG',function () {
+    $("#compare_panel_BG").fadeOut();
+    $('.compare_panel').css('height',0);
+  });
+
   var showcomparetarget = 1 ;
   $(document).on('click','#compareTarget_tag',showhidecomparetarget);
   function showhidecomparetarget() {
+    $('.compare_panel').css('height',0);
     if(showcomparetarget){
       $('.compareTarget_holder').css('left',0);
-      $(this).css('left',180).children('i').css({"transform":"rotate(180deg)"});
+      $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
     } else {
       $('.compareTarget_holder').css('left',-180);
-      $(this).css('left',0).children('i').css({"transform":"rotate(0deg)"});
+      $('#compareTarget_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
     }
     showcomparetarget = showcomparetarget ? 0 : 1 ;
   }
@@ -492,9 +524,8 @@ $(document).ready(function () {
     }
   });
   function addToCompare() {
-    $('.compareTarget_holder').css('left',0);
-    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
-    showcomparetarget = 0 ;
+    $('.compare_panel').css('height',0);
+    if(showcomparetarget) showhidecomparetarget();
     let target = $(this).parent().children(".card:visible");
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     if(compare.indexOf(target.attr('value')) != -1) {
@@ -507,9 +538,7 @@ $(document).ready(function () {
         repeat.css('border-color','white');
       },1000);
     } else {
-      $(".compareTarget").append("<div class='compareTarget_child' value='"+
-      target.attr('value')+"'><i class='fa fa-trash'></i></div>");
-      target.clone().appendTo(".compareTarget_child[value~="+target.attr('value')+"]");
+      target.clone().appendTo('.compareTarget');
       $('.compareTarget_holder').animate({
         scrollTop : $('.compareTarget').height()
       },500,'easeInOutCubic');
@@ -521,6 +550,7 @@ $(document).ready(function () {
   $("#clear_compare").click(function () {
     let r = confirm("確定要移除所有貓咪?!");
     if(!r)return
+    showhidecomparetarget();
     $(this).siblings().html("");
     compare = [];
     $("#compare_number").text(compare.length);
@@ -531,6 +561,8 @@ $(document).ready(function () {
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
     location.assign('/compareCat.html');
   });
+
+
 
   function changeSlider() {
     let target = $("#"+filter_name+".filter_option");
@@ -583,7 +615,10 @@ $(document).ready(function () {
     }
 
   }
+
 });
+
+
 function AddCombo(arr) {
   if(arr.length == 0){
     return "</tr><tr><td colspan=6>無可用聯組</td>"

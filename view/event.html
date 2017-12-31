@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/event.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
@@ -34,14 +35,17 @@
       <div class="m_settingBox">
       </div>
     </div>
-
-    <div>
-      <div>
-        <iframe></iframe>
+    <!-- 黑魔法 : 按下向右箭頭後依序鍵入"n""e""x""t"將顯示下一次活動的內容 -->
+    <div class="view">
+      <div class="iframe_holder">
+        <iframe id="prev"></iframe>
+        <iframe id="now"></iframe>
+        <iframe id="next"></iframe>
       </div>
-
-
     </div>
+    <span id="left"></span>
+    <span id="right"></span>
+    <span id="date"></span>
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">

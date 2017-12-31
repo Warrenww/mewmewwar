@@ -150,20 +150,31 @@ $(document).ready(function () {
     //   .siblings().css('background-color','white');
     // $(this).attr('active',true).siblings().attr('active',false);
   });
-  var nav_site = ["cat","enemy","combo","compareCat","calender","event","gacha"],
-      nav_text = ["貓咪資料","敵人資料","查詢聯組","比較貓咪","活動日程","最新消息","轉蛋"];
+  var nav_site_1 = ["cat","enemy","combo","stage"],
+      nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
+  var nav_site_2 = ["compareCat","calender","event","gacha"],
+      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋"];
 
-  var nav_html = "" ;
-  for (let i in nav_site){
-    nav_html += "<a href='"+(location.pathname == "/"?"/view/":"")+
-    nav_site[i]+".html' id='a_"+nav_site[i]+"'>"+nav_text[i]+"</a>";
+  var nav_html_panel = "" ,
+      nav_html = '';
+  for (let i in nav_site_1){
+    nav_html_panel += "<a href='"+(location.pathname == "/"?"/view/":"")+
+    nav_site_1[i]+".html' id='a_"+nav_site_1[i]+"'>"+nav_text_1[i]+"</a>";
   }
+  nav_html += "<span class='show_panel'>資料庫</span><div class='nav_panel'>"+nav_html_panel+"</div>"
+  for (let i in nav_site_2){
+    nav_html += "<a href='"+(location.pathname == "/"?"/view/":"")+
+    nav_site_2[i]+".html' id='a_"+nav_site_2[i]+"'>"+nav_text_2[i]+"</a>";
+  }
+
+
   $("nav .navLinkBox").html(nav_html) ;
   $(".m_navLinkBox").html(nav_html) ;
 
-  var setting_html = '<a id="current_user_name"></a>'+
+  var setting_html = '<a class="current_user_name"></a><div style="display:flex;justify-content:center">'+
       '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
-      '<a href="'+(location.pathname == "/"?"/view/":"")+'setting.html"><i class="material-icons" id="setting">settings</i></a>' ;
+      '<a href="'+(location.pathname == "/"?"/view/":"")+
+      'setting.html"><i class="material-icons" id="setting">settings</i></a></div>' ;
   $("nav .settingBox").html(setting_html);
   $(".m_settingBox").html(setting_html);
   $("i[data-target='#helpModal']").click(function () {
@@ -190,15 +201,10 @@ $(document).ready(function () {
     }
   });
   socket.on("user name",function (name) {
-    $("#current_user_name").text("Hi, "+name);
+    $(".current_user_name").text("Hi, "+name);
   });
 
-  //temp
-  $("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>")
-  $("#year_event").click(function () {
-    $(this).fadeOut();
-    $("#year_event_BG").fadeOut();
-  });
+
 
   var xmlhttp = new XMLHttpRequest() ;
   var url = "../public/update_dialog.txt";
@@ -218,7 +224,27 @@ $(document).ready(function () {
     console.log("server ready")
   }) ;
 });
-
+$(window).load(function () {
+  var nav_panel = 0, nav_panel_timeout;
+  $(".show_panel").hover(function () {
+    nav_panel_timeout = setTimeout(function () {
+      $(".nav_panel").css("height",200);
+      nav_panel = 1;
+    },200);
+  },function () {
+    clearTimeout(nav_panel_timeout);
+  }) ;
+  $(".show_panel").click(function () {
+    if(nav_panel) $(".nav_panel").css("height",0);
+    else $(".nav_panel").css("height",200);
+    nav_panel = nav_panel ? 0 :1 ;
+  });
+  $(".nav_panel").hover(function () {}
+  ,function () {
+    $(".nav_panel").css("height",0);
+    nav_panel = 0 ;
+  }) ;
+});
 //google Analytics
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
@@ -266,65 +292,6 @@ function scroll_to_class(class_name,n) {
     1000,'easeInOutCubic');
 }
 
-//temp
-function yearevent() {
-  let html = '<h1 style="text-align:center;color:white">年終活動</h1><table>';
-  let obj = {"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}};
-  for(let i in obj){
-    for(let j=7;j<24;j++) obj[i][j] = '';
-    let time = [7,8,12,13,19,20],
-        time_2 = [11,12,13],
-        time_3 = [19,20,21];
-    for(let j in time) obj[i][time[j]] += "傳奇關卡統率力減半,";
-
-    if(i%2 == 0) {
-      obj[i].allday = "世界篇寶物嘉年華,";
-      for(let j in time_2) obj[i][time_2[j]] += "游擊戰經驗值喵,";
-      for(let j in time_3) obj[i][time_3[j]] += "超級游擊經驗值喵,";
-
-    }
-    else {
-      obj[i].allday = "未來篇寶物嘉年華,";
-      for(let j in time_2) obj[i][time_2[j]] += "超級游擊經驗值喵,";
-      for(let j in time_3) obj[i][time_3[j]] += "游擊戰經驗值喵,";
-    }
-    if(i==28||i==31) obj[i].allday += "宇宙篇寶物嘉年華,";
-
-    if(i%3 == 2){
-      obj[i][16] += "終極游擊經驗值喵,"
-      obj[i][22] += "超終極游擊經驗值喵,"
-    } else if(i%3 == 0){
-      obj[i][22] += "終極游擊經驗值喵,"
-      obj[i][8] += "超終極游擊經驗值喵,"
-    } else {
-      obj[i][8] += "終極游擊經驗值喵,"
-      obj[i][16] += "超終極游擊經驗值喵,"
-    }
-
-  }
-  console.log(obj);
-  let today = new Date(),
-      day = today.getDate(),
-      hr = today.getHours();
-  console.log(day+","+hr);
-  console.log(obj[day]);
-  html += "<tr><th>全天</th><td>"+turn(obj[day].allday)+"</td></tr>";
-  for(let i in obj[day]){
-    if(i=='allday') continue
-    html += "<tr id='"+i+"'><th>"+AddZero(i)+":00</th>"+
-    "<td style='border:"+
-    (i==hr?'3px solid rgb(255, 77, 77)':'0px')+
-    "'>"+turn(obj[day][i])+"</td></tr>"
-  }
-  html += "</table>";
-  return html
-}
-function turn(s) {
-  let arr = s.split(",");
-  let ww = '';
-  for(let i in arr) ww += arr[i]+"</br>";
-  return ww
-}
 function AddZero(n) {
   return n<10 ? "0"+n : n
 }

@@ -17,6 +17,11 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
+  'use strict';
+const bodyParser = require('body-parser'),
+      crypto = require('crypto');
+
+
 firebase.initializeApp(config);
 var provider = new firebase.auth.FacebookAuthProvider();
 firebase.auth().useDeviceLanguage();
@@ -28,7 +33,8 @@ firebase.auth().getRedirectResult().then(function(result) {
   }
   // The signed-in user info.
   var user = result.user;
-}).catch(function(error) {
+})
+.catch(function(error) {
   // Handle Errors here.
   var errorCode = error.code;
   var errorMessage = error.message;
@@ -38,15 +44,7 @@ firebase.auth().getRedirectResult().then(function(result) {
   var credential = error.credential;
   // ...
 });
-//設定資料的程式如下：
-// var db = firebase.database();
-// var ref = db.ref("/www");
-// var value = {
-//  Test1: "t1",
-//  Test2: "t2"
-// }
-// ref.set(value);
-//取得的資料程式如下：
+
 var database = firebase.database();
 
 var catdata,
@@ -353,11 +351,20 @@ io.on('connection', function(socket){
     console.log(data);
     database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
   });
-  socket.on("start compare c2c",function (arr) {
+  socket.on("start compare c2c",function (data) {
     console.log('start compare c2c');
     let compare = [];
-    for(let i in arr) compare.push(catdata[arr[i]]);
-    socket.emit("c2c compare",compare);
+    database.ref("/user/"+data.id).once("value",function (snapshot) {
+      let def = snapshot.val().setting.default_cat_lv,
+          catArr = snapshot.val().variable.cat ;
+      for(let i in data.target) {
+        let id = data.target[i].substring(0,3),
+            lv = catArr[id].lv == 'default' ? def : catArr[id].lv;
+        compare.push({data:catdata[data.target[i]],lv:lv});
+      }
+      socket.emit("c2c compare",compare);
+
+    });
   });
   socket.on("user name",function (id) {
     database.ref("/user/"+id+"/nickname").once("value",function (snapshot) {
@@ -475,7 +482,6 @@ io.on('connection', function(socket){
 
 
   socket.on('get event date',function () {
-    if(Math.random()>0.7)geteventDay();
     database.ref('/event_date').once('value',function (snapshot) {
       socket.emit('true event date',snapshot.val());
     });
@@ -534,7 +540,7 @@ io.on('connection', function(socket){
 
 
 });
-var  timeout ;
+var timeout ;
 function arrangeUserData() {
   timeout = setTimeout(function () {
     arrangeUserData();
@@ -582,24 +588,89 @@ function arrangeUserData() {
   });
 }
 function geteventDay() {
+  var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
+  console.log(event_url);
   var t = new Date(),
       y = t.getFullYear(),
-      m = AddZero(t.getMonth()+1),
-      d = AddZero(t.getDate()),
-      url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
-      console.log("get event day");
-      console.log(Date.parse(m+" "+d+","+y));
+      m = t.getMonth()+1,
+      d = t.getDate();
+      console.log("get event day")
+      console.log(y+AddZero(m)+AddZero(d));
   request({
-    url: url+y+m+d+".html",
+    url: event_url+y+AddZero(m)+AddZero(d)+".html",
     method: "GET"
   },function (e,r,b) {
     if(!e){
       $ = cheerio.load(b);
       let body = $("body").html();
-      if(body.indexOf("<error>") == -1)
-        database.ref("/event_date").set(Date.parse(m+" "+d+","+y));
-      else console.log("did not update event day");
-    }
+      if(body.indexOf("<error>") == -1) {
+        console.log("change event day");
+        database.ref("/event_date/now").set(y+"/"+AddZero(m)+"/"+AddZero(d));
+      }
+      else {
+        console.log("did not change event day");
+      }
+    }else{console.log(e);}
+  });
+  NextEventDay(y,m,d);
+  PrevEventDay(y,m,d);
+  setTimeout(function () {
+    geteventDay()
+  },86400000);
+}
+function NextEventDay(y,m,d) {
+  var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
+  var d_31 = [1,3,5,7,8,10,12];
+  d ++ ;
+  if(m == 2 && d>28){m++,d=1}
+  else if (d_31.indexOf(m) != -1 && d>31) {m++,d=1}
+  else if (d>30) {m++,d=1}
+  if(m>12){y++;m=1}
+  console.log("next event day ?= "+y+AddZero(m)+AddZero(d));
+  request({
+    url: event_url+y+AddZero(m)+AddZero(d)+".html",
+    method: "GET"
+  },function (e,r,b) {
+    if(!e){
+      $ = cheerio.load(b);
+      let body = $("body").html();
+      if(body.indexOf("<error>") == -1) {
+        console.log("change next event day");
+        database.ref("/event_date/next").set(y+"/"+AddZero(m)+"/"+AddZero(d));
+      }
+      else {
+        console.log("next day");
+        NextEventDay(y,m,d)
+      }
+    } else {console.log(e);}
+  });
+}
+function PrevEventDay(y,m,d) {
+  var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
+  var d_31 = [1,3,5,7,8,10,12];
+  d -- ;
+  if(d==0){
+    m--;
+    if(m==0){y--;m=12}
+    d = m==2 ? 28 : (d_31.indexOf(m) != -1 ? 31 : 30);
+  }
+  console.log("prev event day ?= "+y+AddZero(m)+AddZero(d));
+  request({
+    url: event_url+y+AddZero(m)+AddZero(d)+".html",
+    method: "GET"
+  },function (e,r,b) {
+    if(!e){
+      $ = cheerio.load(b);
+      let body = $("body").html();
+      if(body.indexOf("<error>") == -1) {
+        console.log("change prev event day");
+        database.ref("/event_date/prev").set(y+"/"+AddZero(m)+"/"+AddZero(d));
+      }
+      else {
+        console.log("prev day");
+        PrevEventDay(y,m,d)
+      }
+    } else {console.log(e);}
   });
 }
 function levelToValue(origin,rarity,lv) {
