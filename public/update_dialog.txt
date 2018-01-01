@@ -1,4 +1,7 @@
-
+﻿<h4>Ver 6.1 更新</h4>
+<ul>
+<li>Bug Fixed</li>
+</ul>
 ﻿<h4>Ver 6.0 更新</h4>
 <ul>
 <li><b>關卡資訊上線啦!!!</b></li>

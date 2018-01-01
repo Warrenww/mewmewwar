@@ -17,9 +17,8 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
-  'use strict';
-const bodyParser = require('body-parser'),
-      crypto = require('crypto');
+var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
+var d_31 = [1,3,5,7,8,10,12];
 
 
 firebase.initializeApp(config);
@@ -221,11 +220,11 @@ io.on('connection', function(socket){
       socket.emit("display cat result",result);
     } else {
       database.ref("/user/"+uid).once("value",function (snapshot) {
-        let storge_lv = snapshot.val().variable.cat[grossID].lv,
-        storge_count = snapshot.val().variable.cat[grossID].count,
-        default_lv = snapshot.val().setting.default_cat_lv;
-        result.lv = storge_lv ? storge_lv : default_lv ;
-        result.count = storge_count  ? storge_count : 0 ;
+        let default_lv = snapshot.val().setting.default_cat_lv;
+        let storge_lv = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].lv : default_lv,
+            storge_count = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].count : 0;
+        result.lv = storge_lv  ;
+        result.count = storge_count ;
         socket.emit("display cat result",result);
       });
     }
@@ -264,7 +263,7 @@ io.on('connection', function(socket){
           history : {cat:"",enemy:"",combo:"",stage:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
-          variable : {cat:{}},
+          variable : {cat:""},
           Anonymous : user.isAnonymous
         }
         if(user.isAnonymous){
@@ -356,10 +355,10 @@ io.on('connection', function(socket){
     let compare = [];
     database.ref("/user/"+data.id).once("value",function (snapshot) {
       let def = snapshot.val().setting.default_cat_lv,
-          catArr = snapshot.val().variable.cat ;
+          catArr = snapshot.val().variable.cat ? snapshot.val().variable.cat : [];
       for(let i in data.target) {
         let id = data.target[i].substring(0,3),
-            lv = catArr[id].lv == 'default' ? def : catArr[id].lv;
+            lv = catArr[id] ? (catArr[id].lv == 'default' ? def : catArr[id].lv) : def;
         compare.push({data:catdata[data.target[i]],lv:lv});
       }
       socket.emit("c2c compare",compare);
@@ -556,18 +555,19 @@ function arrangeUserData() {
         console.log("remove "+i);
         database.ref('/user/'+i).remove();
         continue
-      } else if(userdata[i].Anonymous){
-        if((timer - userdata[i].last_login)>3*86400000) {
-          console.log("remove "+i+" since didn't login for 3 days");
-          database.ref('/user/'+i).remove();
-          continue
-        }
-        if(userdata[i].last_login == undefined){
-          console.log("remove "+i+" since unknown last login");
-          database.ref('/user/'+i).remove();
-          continue
-        }
       } else {
+        if(userdata[i].Anonymous){
+          if((timer - userdata[i].last_login)>3*86400000) {
+            console.log("remove "+i+" since didn't login for 3 days");
+            database.ref('/user/'+i).remove();
+            continue
+          }
+          if(userdata[i].last_login == undefined){
+            console.log("remove "+i+" since unknown last login");
+            database.ref('/user/'+i).remove();
+            continue
+          }
+        }
         let arr=[],edit = ['cat','enemy','combo','stage'];
         count ++ ;
         for(let j in edit){
@@ -582,14 +582,16 @@ function arrangeUserData() {
           }
           arr = [];
         }
+        if(!userdata[i].variable) {
+          console.log("user "+i+" no variable");
+          database.ref('/user/'+i+"/variable").set({cat:""});
+        }
       }
     }
     console.log("there are "+count+" users!!");
   });
 }
 function geteventDay() {
-  var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
-  console.log(event_url);
   var t = new Date(),
       y = t.getFullYear(),
       m = t.getMonth()+1,
@@ -606,27 +608,25 @@ function geteventDay() {
       if(body.indexOf("<error>") == -1) {
         console.log("change event day");
         database.ref("/event_date/now").set(y+"/"+AddZero(m)+"/"+AddZero(d));
+        NextEventDay(y,m,d);
+        PrevEventDay(y,m,d);
       }
       else {
         console.log("did not change event day");
       }
     }else{console.log(e);}
   });
-  NextEventDay(y,m,d);
-  PrevEventDay(y,m,d);
   setTimeout(function () {
     geteventDay()
   },86400000);
 }
 function NextEventDay(y,m,d) {
-  var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
-  var d_31 = [1,3,5,7,8,10,12];
   d ++ ;
   if(m == 2 && d>28){m++,d=1}
   else if (d_31.indexOf(m) != -1 && d>31) {m++,d=1}
   else if (d>30) {m++,d=1}
   if(m>12){y++;m=1}
-  console.log("next event day ?= "+y+AddZero(m)+AddZero(d));
+  // console.log("next event day ?= "+y+AddZero(m)+AddZero(d));
   request({
     url: event_url+y+AddZero(m)+AddZero(d)+".html",
     method: "GET"
@@ -646,15 +646,13 @@ function NextEventDay(y,m,d) {
   });
 }
 function PrevEventDay(y,m,d) {
-  var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
-  var d_31 = [1,3,5,7,8,10,12];
   d -- ;
   if(d==0){
     m--;
     if(m==0){y--;m=12}
     d = m==2 ? 28 : (d_31.indexOf(m) != -1 ? 31 : 30);
   }
-  console.log("prev event day ?= "+y+AddZero(m)+AddZero(d));
+  // console.log("prev event day ?= "+y+AddZero(m)+AddZero(d));
   request({
     url: event_url+y+AddZero(m)+AddZero(d)+".html",
     method: "GET"
