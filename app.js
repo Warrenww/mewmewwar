@@ -356,7 +356,7 @@ io.on('connection', function(socket){
           catArr = snapshot.val().variable ? snapshot.val().variable.cat : [];
       for(let i in data.target) {
         let id = data.target[i].substring(0,3),
-            lv = catArr[id] ? (catArr[id].lv == 'default' ? def : catArr[id].lv) : def;
+            lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def;
         compare.push({data:catdata[data.target[i]],lv:lv});
       }
       socket.emit("c2c compare",compare);

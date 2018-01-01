@@ -22,6 +22,12 @@ $(document).ready(function () {
       console.log(string);
       if(string == 'next'){
         $(".iframe_holder").animate({left:-width*2},800);
+        let date = $(".iframe_holder").children().eq(2).attr("date");
+        $("#date").text(date);
+        $("#date").fadeIn();
+        setTimeout(function () {
+          $("#date").fadeOut();
+        },2800);
       }
     }
 
