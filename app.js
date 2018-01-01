@@ -62,8 +62,6 @@ arrangeUserData();
 geteventDay();
 
 io.on('connection', function(socket){
-
-
   socket.on("search",function (data) {
         console.log("searching "+data.type+"....");
         console.log(data);
@@ -355,7 +353,7 @@ io.on('connection', function(socket){
     let compare = [];
     database.ref("/user/"+data.id).once("value",function (snapshot) {
       let def = snapshot.val().setting.default_cat_lv,
-          catArr = snapshot.val().variable.cat ? snapshot.val().variable.cat : [];
+          catArr = snapshot.val().variable ? snapshot.val().variable.cat : [];
       for(let i in data.target) {
         let id = data.target[i].substring(0,3),
             lv = catArr[id] ? (catArr[id].lv == 'default' ? def : catArr[id].lv) : def;
