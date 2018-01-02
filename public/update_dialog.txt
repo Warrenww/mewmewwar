@@ -1,3 +1,7 @@
+﻿<h4>Ver 6.2 更新</h4>
+<ul>
+<li>首頁加入遊戲中開場動畫</li>
+</ul>
 ﻿<h4>Ver 6.1 更新</h4>
 <ul>
 <li>Bug Fixed</li>

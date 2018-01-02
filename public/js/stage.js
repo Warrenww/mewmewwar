@@ -258,12 +258,12 @@ $(document).ready(function () {
           val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
       obj = {
         id:$(this).attr('id'),
-        item:val!=NaN ? val : 99999
+        item: !val ? 99999 : val
       }
       arr.push(obj);
     });
     // console.log(name);
-    // console.log(arr);
+    console.log(arr);
     for(let i=0;i<arr.length;i++){
       for(let j=i+1;j<arr.length;j++){
         if(arr[j].item>arr[i].item){
@@ -276,7 +276,7 @@ $(document).ready(function () {
               val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
           obj = {
             id:$(this).attr('id'),
-            item:val!=NaN?val:99999
+            item:!val?99999:val
           }
           arr.push(obj);
         });
@@ -297,7 +297,7 @@ $(document).ready(function () {
             val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
             obj = {
               id:$(this).attr('id'),
-              item:val!=NaN ?val:99999
+              item:!val?99999:val
             }
             arr.push(obj);
           });

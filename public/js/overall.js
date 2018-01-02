@@ -52,6 +52,11 @@ $(document).ready(function () {
       });
     });
   }
+  var today = new Date();
+  $(".start_holder p span").text(today.getFullYear());
+  $(".start_holder p ").animate({
+    top:-$(".start_holder p ").height()
+  },60000,"linear");
 
   if(screen.width < 768){
     $("#lower_table .value_display").attr("colspan",7);
