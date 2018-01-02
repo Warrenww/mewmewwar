@@ -88,7 +88,7 @@ io.on('connection', function(socket){
           let level = snapshot.val().default_cat_lv,
               showJP = snapshot.val().show_jp_cat;
 
-          if(!showJP || type == 'cat'){
+          if(!showJP && type == 'cat'){
             for(let i in load_data){
               let region = load_data[i].region;
               if(region.indexOf("[TW]") == -1) delete load_data[i]
