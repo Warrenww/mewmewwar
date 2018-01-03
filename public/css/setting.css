@@ -39,7 +39,7 @@
   font-size: 20px;
   text-align: center;
 }
-#reset_cat_lv{
+#reset_cat_lv,#reset_own_cat{
   background: linear-gradient(rgb(246, 154, 87),rgb(255, 74, 74))
 }
 .switch {
@@ -82,7 +82,7 @@ input:checked + .slider:before {
   transform: translateX(32px);
   box-shadow: gray -4px 0px 10px;
 }
-#cat_history,#ene_history{
+#cat_history,#ene_history,#own_cat{
   font-size: 40px;
   color:gray;
   transform: rotate(-90deg);
@@ -90,11 +90,12 @@ input:checked + .slider:before {
   transition: .4s ease-in-out;
 }
 #cat_history:hover,
-#ene_history:hover{
+#ene_history:hover,
+#own_cat:hover{
   background-color: rgba(200,200,200,.5);
   border-radius: 50%
 }
-#history_cat,#history_ene{
+#history_cat,#history_ene,#cat_own{
   width: 95%;
   margin: 0 2.5%;
   display: flex;
@@ -104,13 +105,19 @@ input:checked + .slider:before {
   transition: .8s ease-in-out;
   overflow-y: scroll;
 }
-#history_cat::-webkit-scrollbar {
+#history_cat::-webkit-scrollbar,
+#history_ene::-webkit-scrollbar,
+#cat_own::-webkit-scrollbar{
     width: 8px;
 }
-#history_cat::-webkit-scrollbar-track {
+#history_cat::-webkit-scrollbar-track,
+#history_ene::-webkit-scrollbar,
+#cat_own::-webkit-scrollbar {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 }
-#history_cat::-webkit-scrollbar-thumb {
+#history_cat::-webkit-scrollbar-thumb,
+#history_ene::-webkit-scrollbar,
+#cat_own::-webkit-scrollbar {
   background-color: gray;
   outline: 1px solid slategrey;
   border-radius: 4px;

@@ -212,7 +212,7 @@ $(document).ready(function () {
 
 
   var xmlhttp = new XMLHttpRequest() ;
-  var url = "../public/update_dialog.txt";
+  var url = "../public/update_dialog.html";
   var update_dialog ;
 
   xmlhttp.open("GET", url, true);
@@ -228,6 +228,18 @@ $(document).ready(function () {
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
+  //temp
+  $("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>");
+  $("#year_event").click(function () {
+    $(this).fadeOut();
+    $("#year_event_BG").fadeOut();
+  });
+  let hr = today.getHours(),
+      y_h = $("#year_event tr[id="+hr+"]")[0] ? $("#year_event tr[id="+hr+"]")[0].offsetTop : 0;
+  $("#year_event").animate({
+    scrollTop : y_h-200
+  },800,"easeInOutCubic");
+
 });
 $(window).load(function () {
   var nav_panel = 0, nav_panel_timeout;
@@ -257,11 +269,6 @@ gtag('js', new Date());
 
 gtag('config', 'UA-111466284-1');
 
-//google AD
-(adsbygoogle = window.adsbygoogle || []).push({
-  google_ad_client: "ca-pub-1854846319781914",
-  enable_page_level_ads: true
-});
 
 function levelToValue(origin,rarity,lv) {
   let limit ;
@@ -296,7 +303,66 @@ function scroll_to_class(class_name,n) {
     {scrollTop: $("."+class_name).eq(n).offset().top},
     1000,'easeInOutCubic');
 }
-
 function AddZero(n) {
   return n<10 ? "0"+n : n
+}
+
+//temp
+function yearevent() {
+  let today = new Date(),
+      day = today.getDate(),
+      hr = today.getHours();
+  let html = '<h1 style="text-align:center;color:white">1/'+day+' 年初活動</h1><table>';
+  let obj = {"1":{},"2":{},"3":{},"4":{},"5":{},"6":{},"7":{},"8":{},"9":{}};
+  for(let i in obj){
+    for(let j=7;j<24;j++) obj[i][j] = '';
+    let time = [7,8,12,13,19,20],
+        time_2 = [11,12,13],
+        time_3 = [19,20,21];
+    for(let j in time) obj[i][time[j]] += "傳奇關卡統率力減半,";
+
+    if(i%2 == 0) {
+      obj[i].allday = "世界篇寶物嘉年華,";
+      for(let j in time_2) obj[i][time_2[j]] += "游擊戰經驗值喵,";
+      for(let j in time_3) obj[i][time_3[j]] += "超級游擊經驗值喵,";
+
+    }
+    else {
+      obj[i].allday = "未來篇寶物嘉年華,";
+      for(let j in time_2) obj[i][time_2[j]] += "超級游擊經驗值喵,";
+      for(let j in time_3) obj[i][time_3[j]] += "游擊戰經驗值喵,";
+    }
+    if(i==3||i==6||i==9) obj[i].allday += "宇宙篇寶物嘉年華,";
+
+    if(i%3 == 1){
+      obj[i][16] += "終極游擊經驗值喵,"
+      obj[i][22] += "超終極游擊經驗值喵,"
+    } else if(i%3 == 2){
+      obj[i][22] += "終極游擊經驗值喵,"
+      obj[i][8] += "超終極游擊經驗值喵,"
+    } else {
+      obj[i][8] += "終極游擊經驗值喵,"
+      obj[i][16] += "超終極游擊經驗值喵,"
+    }
+
+  }
+  // console.log(obj);
+  // console.log(day+","+hr);
+  // console.log(obj[day]);
+  html += "<tr><th>全天</th><td>"+turn(obj[day].allday)+"</td></tr>";
+  for(let i in obj[day]){
+    if(i=='allday') continue
+    html += "<tr id='"+i+"'><th>"+AddZero(i)+":00</th>"+
+    "<td style='border:"+
+    (i==hr?'3px solid rgb(255, 77, 77)':'0px')+
+    "'>"+turn(obj[day][i])+"</td></tr>"
+  }
+  html += "</table>";
+  return html
+}
+function turn(s) {
+  let arr = s.split(",");
+  let ww = '';
+  for(let i in arr) ww += arr[i]+"</br>";
+  return ww
 }

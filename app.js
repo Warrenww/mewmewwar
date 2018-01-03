@@ -19,31 +19,16 @@ var config = {
   };
 var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
 var d_31 = [1,3,5,7,8,10,12];
+var admin = require("firebase-admin");
 
+var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
 
-firebase.initializeApp(config);
-var provider = new firebase.auth.FacebookAuthProvider();
-firebase.auth().useDeviceLanguage();
-firebase.auth().getRedirectResult().then(function(result) {
-  if (result.credential) {
-    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-    var token = result.credential.accessToken;
-    // ...
-  }
-  // The signed-in user info.
-  var user = result.user;
-})
-.catch(function(error) {
-  // Handle Errors here.
-  var errorCode = error.code;
-  var errorMessage = error.message;
-  // The email of the user's account used.
-  var email = error.email;
-  // The firebase.auth.AuthCredential type that was used.
-  var credential = error.credential;
-  // ...
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://BattleCat-Smart.firebaseio.com"
 });
 
+firebase.initializeApp(config);
 var database = firebase.database();
 
 var catdata,
@@ -220,9 +205,11 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid).once("value",function (snapshot) {
         let default_lv = snapshot.val().setting.default_cat_lv;
         let storge_lv = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].lv : default_lv,
-            storge_count = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].count : 0;
-        result.lv = storge_lv  ;
-        result.count = storge_count ;
+            storge_count = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].count : 1,
+            own = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].own : false;
+        result.lv = storge_lv ? storge_lv : default_lv  ;
+        result.count = storge_count ? storge_count : 1;
+        result.own = own;
         socket.emit("display cat result",result);
       });
     }
@@ -262,6 +249,7 @@ io.on('connection', function(socket){
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
           variable : {cat:""},
+          folder : {owned:""},
           Anonymous : user.isAnonymous
         }
         if(user.isAnonymous){
@@ -301,6 +289,7 @@ io.on('connection', function(socket){
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
           variable : {cat:{}},
+          folder : {owned:""},
           Anonymous : true
         }
         database.ref('/user/'+user.uid).set(data) ;
@@ -396,13 +385,14 @@ io.on('connection', function(socket){
   });
   socket.on("history",function (uid) {
     console.log(uid+"'s history");
-    database.ref("/user/"+uid+"/history").once("value",function (snapshot) {
-      let data = snapshot.val() ;
+    database.ref("/user/"+uid).once("value",function (snapshot) {
+      let data = snapshot.val().history,
+          owned = snapshot.val().folder.owned;
       // console.log(data);
-      let buffer = {cat:[],enemy:[]};
+      let buffer = {cat:[],enemy:[],owned:[]};
       for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].全名,id :data.cat[i].id});
       for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].全名,id :data.enemy[i].id});
-
+      for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].全名,id :owned[i]+"-1"})
       // console.log(buffer);
       socket.emit("return history",buffer);
     });
@@ -412,6 +402,21 @@ io.on('connection', function(socket){
     let id = data.id,
         gross = id.substring(0,3);
     database.ref("/user/"+data.uid+"/variable/cat/"+gross).update({lv:data.lv});
+  });
+  socket.on("mark own",function (data) {
+    console.log(data.uid+" claim he/she "+
+        (data.mark?"does":"doesn't")+" own "+data.cat);
+
+    database.ref("/user/"+data.uid+"/variable/cat/"+data.cat)
+      .update({own:data.mark ? true : false});
+    database.ref("/user/"+data.uid+"/folder").once("value",function (snapshot) {
+      let folder = snapshot.val(),
+          arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
+      if(data.mark) arr.push(data.cat);
+      else arr.splice(arr.indexOf(data.cat),1);
+      arr = arr.length ? arr : 0 ;
+      database.ref("/user/"+data.uid+"/folder").update({owned:arr});
+    });
   });
 
   socket.on("require setting",function (id) {
@@ -433,17 +438,21 @@ io.on('connection', function(socket){
         }
       });
   });
-  socket.on("show hide cat id",function (data) {
-    console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's cat id");
-    database.ref("/user/"+data.uid+"/setting/show_cat_id").set(data.state);
+  socket.on("reset owned cat",function (id) {
+    console.log("reset all "+id+"'s cat owned state");
+    database.ref("/user/"+id+"/variable/cat").once("value",function (snapshot) {
+      for(let i in snapshot.val()){
+        database.ref("/user/"+id+"/variable/cat/"+i+"/own").set(false);
+      }
+    });
+    database.ref("/user/"+id+"/folder/owned").set("0");
   });
-  socket.on("show hide cat count",function (data) {
-    console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's cat count");
-    database.ref("/user/"+data.uid+"/setting/show_cat_count").set(data.state);
-  });
-  socket.on("show hide jp cat",function (data) {
-    console.log(data.uid+" want to "+(data.state?"show":"hide")+" it's jp cat");
-    database.ref("/user/"+data.uid+"/setting/show_jp_cat").set(data.state);
+
+  socket.on("change setting",function (data) {
+    console.log(data.uid+" want to "+
+        (data.state?"show":"hide")+" it's "+data.type);
+    database.ref("/user/"+data.uid+"/setting/show_"+data.type)
+        .set(data.state);
   });
 
   socket.on("required stage name",function (chapter) {
@@ -558,11 +567,25 @@ function arrangeUserData() {
           if((timer - userdata[i].last_login)>3*86400000) {
             console.log("remove "+i+" since didn't login for 3 days");
             database.ref('/user/'+i).remove();
+            admin.auth().deleteUser(i)
+            .then(function() {
+              console.log("Successfully deleted user");
+            })
+            .catch(function(error) {
+              console.log("Error deleting user:", error);
+            });
             continue
           }
           if(userdata[i].last_login == undefined){
             console.log("remove "+i+" since unknown last login");
             database.ref('/user/'+i).remove();
+            admin.auth().deleteUser(i)
+            .then(function() {
+              console.log("Successfully deleted user");
+            })
+            .catch(function(error) {
+              console.log("Error deleting user:", error);
+            });
             continue
           }
         }

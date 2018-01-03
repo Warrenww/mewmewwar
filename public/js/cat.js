@@ -118,9 +118,9 @@ $(document).ready(function () {
     let data = result.this,
         arr = result.bro,
         brr = result.combo,
-        lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv;
-    displayCatData(data,arr,brr,lv,result.count) ;
-
+        lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
+        own = result.own;
+    displayCatData(data,arr,brr,lv,result.count,own) ;
   });
   var number_page,page_factor ;
   socket.on("search result",function (data) {
@@ -141,15 +141,19 @@ $(document).ready(function () {
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
     $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
   });
-  function displayCatData(data,arr,brr,lv,count) {
+  function displayCatData(data,arr,brr,lv,count,own) {
     let html = "",
         showID = current_user_data.setting.show_cat_id,
         showCount = current_user_data.setting.show_cat_count,
         id = data.id,
         grossID = id.substring(0,3);
+        console.log(own);
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
     html += "<tr><td style='background-color:transparent' colspan="+
-            (screen.width > 768 ?4:3)+"></td>"+
+            (screen.width > 768 ?2:0)+"></td>"+
+            "<td style='background-color:transparent' colspan="+
+            (screen.width > 768 ?2:3)+"><span class='button' id='mark_own' value='"+
+            (own?1:0)+"'>我有這隻貓</span></td>"+
             "<td style='background-color:transparent' colspan="+
             (screen.width > 768 ?2:3)+"><button id='addcart'>加到購物車</button></td>";
 
@@ -288,7 +292,15 @@ $(document).ready(function () {
     }
     return html ;
   }
-
+  $(document).on("click","#mark_own",function () {
+    let val = Number($(this).attr("value")) ? 0 : 1,
+        cat = $(this).parents("table").attr("id").substring(0,3);
+    socket.emit("mark own",{
+      uid:current_user_data.uid,
+      cat:cat,
+      mark:val
+    });
+  });
   function filterSlider() {
     $("#slider_holder").show();
     $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');

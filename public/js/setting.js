@@ -21,6 +21,11 @@ $(document).ready(function () {
     if(!r) return
     socket.emit("reset cat level",current_user_data.uid);
   });
+  $(document).on("click","#reset_own_cat",function () {
+    let r = confirm("要重置所有擁有的貓咪嗎?");
+    if(!r) return
+    socket.emit("reset owned cat",current_user_data.uid);
+  });
   $(document).on("click","#logout",function () {
     if(!confirm("確定要登出嗎")) return
     firebase.auth().signOut().then(function() {
@@ -29,24 +34,15 @@ $(document).ready(function () {
       // An error happened.
     });
   });
-  $(document).on("click","#show_cat_id",function () {
-    socket.emit("show hide cat id",{
+  $(document).on("click","input[type='checkbox']",function () {
+    let type = $(this).attr("id").split("show_")[1];
+    socket.emit("change setting",{
+      type:type,
       uid:current_user_data.uid,
       state:$(this).prop("checked")
     });
   });
-  $(document).on("click","#show_cat_count",function () {
-    socket.emit("show hide cat count",{
-      uid:current_user_data.uid,
-      state:$(this).prop("checked")
-    });
-  });
-  $(document).on("click","#show_jp_cat",function () {
-    socket.emit("show hide jp cat",{
-      uid:current_user_data.uid,
-      state:$(this).prop("checked")
-    });
-  });
+
   let cat_history_show = 0;
   $(document).on("click","#cat_history",function () {
     if(!cat_history_show){
@@ -58,6 +54,18 @@ $(document).ready(function () {
       $(this).css({transform:"rotate(-90deg)"});
     }
     cat_history_show = cat_history_show ? 0 : 1 ;
+  });
+  let cat_owned_show = 0;
+  $(document).on("click","#own_cat",function () {
+    if(!cat_owned_show){
+      $("#cat_own").css({"height":560});
+      $(this).css({transform:"rotate(0deg)"});
+      scroll_to_div("cat_own")
+    } else {
+      $("#cat_own").css({"height":0});
+      $(this).css({transform:"rotate(-90deg)"});
+    }
+    cat_owned_show = cat_owned_show ? 0 : 1 ;
   });
   let ene_history_show = 0;
   $(document).on("click","#ene_history",function () {
@@ -130,6 +138,12 @@ $(document).ready(function () {
         'style="background-image:url('+
         image_url_enemy+history.enemy[i].id+'.png);">'+
         history.enemy[i].name+'</span>');
+    for(let i in history.owned)
+      $("#cat_own").append(
+        '<span class="card" type="cat" value="'+history.owned[i].id+'" '+
+        'style="background-image:url('+
+        image_url_cat+history.owned[i].id+'.png);">'+
+        history.owned[i].name+'</span>');
   });
 
 
