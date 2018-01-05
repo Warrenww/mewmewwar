@@ -210,21 +210,21 @@ $(document).ready(function () {
       updateState(ui.value);
     });
     function updateState(level) {
-      let rarity = data.稀有度;
-      let change = ['體力','硬度','攻擊力','DPS'] ;
+      let rarity = data.rarity;
+      let change = ['hp','hardness','atk','DPS'] ;
       for(let i in change){
         let target = $('.dataTable').find('#'+change[i]) ;
         let original = target.attr('original');
-        target.html("<span class='editable' rarity='"+data.稀有度+"'>"+
+        target.html("<span class='editable' rarity='"+data.rarity+"'>"+
         levelToValue(original,rarity,level).toFixed(0)+
         "</span>").css('background-color',' rgba(242, 213, 167, 0.93)');
         setTimeout(function () {
           target.css('background-color','rgba(255, 255, 255, .9)');
         },500);
       }
-      if(data.特性.indexOf("連續攻擊") != -1){
-        let target = $('.dataTable').find('#特性');
-        target.html(serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,level)));
+      if(data.char.indexOf("連續攻擊") != -1){
+        let target = $('.dataTable').find('#char');
+        target.html(serialATK(data.char,levelToValue(data.atk,data.rarity,level)));
       }
     }
   }
@@ -389,7 +389,7 @@ $(document).ready(function () {
     $('.compare_panel').css('height',0);
     if(showcomparetarget) showhidecomparetarget();
     let id = $(".dataTable").attr('id'),
-        name = $(".dataTable").find("#全名").text();
+        name = $(".dataTable").find("#name").text();
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     if(compare.indexOf(id) != -1) {
       let repeat = $('.compareTarget').find('[value='+id+']') ;
@@ -574,8 +574,6 @@ $(document).ready(function () {
     location.assign('/compareCat.html');
   });
 
-
-
   function changeSlider() {
     let target = $("#"+filter_name+".filter_option");
     let range = JSON.parse(target.attr('range')),
@@ -692,7 +690,7 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "<th style='height:80px;padding:0'><img src='"+
   image_url_cat+data.id+'.png'+
   "' style='height:100%'></th>"+
-  "<th colspan=3 rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
+  "<th colspan=3 rarity='"+data.rarity+"' id='name'>"+data.name+"</th>"+
   "<th colspan=2>"+Thisbro(arr)+"</th>"+
   "</tr>" :
   "<tr>"+
@@ -700,7 +698,7 @@ function displayCatHtml(data,arr,brr,lv,count) {
   image_url_cat+data.id+'.png'+
   "' style='height:100%'>"+Thisbro(arr)+"</th>"+
   "</tr><tr>"+
-  "<th colspan='6' rarity='"+data.稀有度+"' id='全名'>"+data.全名+"</th>"+
+  "<th colspan='6' rarity='"+data.rarity+"' id='name'>"+data.name+"</th>"+
   "</tr>" ;
   html +=
   "<tr>"+
@@ -712,38 +710,38 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "<span id='level_num'>30</span>"+
   "</td >"+
   "<tr>"+
-  "<th>體力</th><td id='體力' original='"+data.lv1體力+"'>"+
-  "<span class='editable' rarity='"+data.稀有度+"'>"+
-  levelToValue(data.lv1體力,data.稀有度,lv).toFixed(0)+
+  "<th>體力</th><td id='hp' original='"+data.hp+"'>"+
+  "<span class='editable' rarity='"+data.rarity+"'>"+
+  levelToValue(data.hp,data.rarity,lv).toFixed(0)+
   "</span></td>"+
   "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-  "<th>硬度</th><td id='硬度' original='"+data.lv1硬度+"'>"+
-  "<span class='editable' rarity='"+data.稀有度+"'>"+
-  levelToValue(data.lv1硬度,data.稀有度,lv).toFixed(0)+
+  "<th>硬度</th><td id='hardness' original='"+(data.atk/data.kb).toFixed(0)+"'>"+
+  "<span class='editable' rarity='"+data.rarity+"'>"+
+  levelToValue(data.atk/data.kb,data.rarity,lv).toFixed(0)+
   "</span></td>"+
   "</tr><tr>"+
-  "<th>攻擊力</th><td id='攻擊力' original='"+data.lv1攻擊+"'>"+
-  "<span class='editable' rarity='"+data.稀有度+"'>"+
-  levelToValue(data.lv1攻擊,data.稀有度,lv).toFixed(0)+
+  "<th>攻擊力</th><td id='攻擊力' original='"+data.atk+"'>"+
+  "<span class='editable' rarity='"+data.rarity+"'>"+
+  levelToValue(data.atk,data.rarity,lv).toFixed(0)+
   "</span></td>"+
   "<th>DPS</th><td id='DPS' original='"+data.lv1dps+"'>"+
-  "<span class='editable' rarity='"+data.稀有度+"'>"+
-  levelToValue(data.lv1dps,data.稀有度,lv).toFixed(0)+
+  "<span class='editable' rarity='"+data.rarity+"'>"+
+  levelToValue(data.lv1dps,data.rarity,lv).toFixed(0)+
   "</span></td>"+
-  "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
+  "<th>射程</th><td id='range'>"+data.range+"</td>"+
   "</tr><tr>"+
-  "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
-  "<th>跑速</th><td id='跑速'>"+data.速度+"</td>"+
-  "<td colspan='2' rowspan='2' id='範圍'>"+data.範圍+"</td>"+
+  "<th>攻頻</th><td id='freq'>"+data.freq.toFixed(1)+" s</td>"+
+  "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
+  "<td colspan='2' rowspan='2' id='multi'>"+data.multi+"</td>"+
   "</tr><tr>"+
-  "<th>花費</th><td id='花費'>"+data.花費+"</td>"+
-  "<th>再生産</th><td id='再生産'>"+data.再生産.toFixed(1)+" s</td>"+
+  "<th>花費</th><td id='cost'>"+data.cost+"</td>"+
+  "<th>再生産</th><td id='cd'>"+data.cd.toFixed(1)+" s</td>"+
   "</tr><tr>"+
-  "<td colspan='6' id='特性' "+(
-  data.特性.indexOf("連續攻擊") != -1 ?
-  "original='"+data.特性+"'>"+
-  serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,lv)) :
-  ">"+data.特性)+
+  "<td colspan='6' id='char' "+(
+  data.char.indexOf("連續攻擊") != -1 ?
+  "original='"+data.char特性+"'>"+
+  serialATK(data.char,levelToValue(data.atk,data.rarity,lv)) :
+  ">"+data.char)+
   "</td>"+
   "</tr><tr>"+
   "<th colspan='6'>發動聯組</th>"+

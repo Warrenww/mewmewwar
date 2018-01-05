@@ -16,9 +16,11 @@ var catdata;
 firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
-
-var i=150;
-getthewww(i)
+database.ref("/catdata").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  var i=384;
+  getthewww(i);
+});
 function getthewww(i) {
   // console.log(AddZero(i));
   request({
@@ -33,13 +35,20 @@ function getthewww(i) {
         let name = $(this).children("td").eq(1).text();
         // console.log(stage+":"+name);
         if(stage == '開放条件'){
-          console.log(AddZero(i)+"-"+j+":"+parseCondition(name));
+          let id = AddZero(i)+"-"+j;
+          process.stdout.clearLine();
+          process.stdout.cursorTo(0);
+          process.stdout.write("loading cat data "+id+"---");
+          process.stdout.write((Number(i)/384*100).toFixed(2).toString());
+          process.stdout.write("%");
+          // console.log(id,parseCondition(name,id));
+          database.ref("/catdata/"+id+"/get_method").set(parseCondition(name,id));
           j++
         }
         // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
       });
       i++;
-      if(i<200) getthewww(i)
+      if(i<384) getthewww(i)
 
     } else {console.log(e);}
   });
@@ -48,7 +57,7 @@ function getthewww(i) {
 function AddZero(n) {
   return n>99 ? n : (n>9 ? "0"+n : "00"+n)
 }
-function parseCondition(s) {
+function parseCondition(s,id) {
   if(s.indexOf("マタタビ") != -1){
     let g = s.indexOf("緑"),p = s.indexOf("紫"),
         r = s.indexOf("赤"),b = s.indexOf("青"),
@@ -69,9 +78,16 @@ function parseCondition(s) {
     let ww = s.split(" ＆ ");
     ww[1] = ww[1].split("にゃんこガチャ").join("").split("ネコカン").join("貓罐頭");
     return ww.join(" + ")
-  } else if(s.indexOf("Lv") != -1 && s.indexOf("SP") == -1){
+  }
+  else if(s.indexOf("開眼の")!=-1&&s.indexOf("襲来！")!=-1){
+    let ww = "開眼的"+catdata[id]["全名"]+"襲來! + 合併等級Lv20以上";
+    // console.log(ww);
+    return ww ;
+  }
+  else if(s.indexOf("Lv") != -1 && s.indexOf("SP") == -1){
     return "合併等級Lv" + s.split("Lv")[1] +"以上"
-  } else {
+  }
+  else {
     switch (s) {
       case '各種ガチャ ':
         s = '從稀有轉蛋中獲得'

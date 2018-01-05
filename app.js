@@ -113,7 +113,7 @@ io.on('connection', function(socket){
           else buffer_2 = buffer_1 ;
           buffer_1 = [] ;
           if(rFilter.length != 0) {
-            for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].稀有度) != -1) buffer_1.push(buffer_2[i]) ;
+            for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].rarity) != -1) buffer_1.push(buffer_2[i]) ;
           }
           else buffer_1 = buffer_2 ;
           buffer_2 = [] ;
@@ -125,7 +125,7 @@ io.on('connection', function(socket){
               level_bind = otherFilter[i].level_bind;
 
               for(let j in buffer_1){
-                let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].稀有度,level) : buffer_1[j][name];
+                let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].rarity,level) : buffer_1[j][name];
                 if(value > limit && !reverse) buffer_2.push(buffer_1[j]);
                 else if (value < limit && reverse) buffer_2.push(buffer_1[j]);
               }
@@ -133,11 +133,11 @@ io.on('connection', function(socket){
           } else buffer_2 = buffer_1 ;
           buffer_1 = [] ;
 
-          // for(let i in buffer_2) console.log(buffer_2[i].全名) ;
+          // for(let i in buffer_2) console.log(buffer_2[i].name) ;
           for(let i in buffer_2) {
             let obj = {
               id : buffer_2[i].id,
-              name : buffer_2[i].全名
+              name : buffer_2[i].name
             }
             buffer_1.push(obj) ;
           }
@@ -153,13 +153,13 @@ io.on('connection', function(socket){
     data = {} ;
     if(obj.type == 'cat'){
       for(let id in catdata){
-        if(catdata[id].全名.indexOf(key) != -1) {
+        if(catdata[id].name.indexOf(key) != -1) {
           let simple = id.substring(0,3);
           for(let j=1;j<4;j++){
             let x = simple + '-' + j  ;
             if(catdata[x]) {
               let obj = {
-                name : catdata[x].全名,
+                name : catdata[x].name,
                 id : catdata[x].id
               };
               buffer.push(obj) ;
@@ -170,9 +170,9 @@ io.on('connection', function(socket){
     }
     else if (obj.type == 'enemy'){
       for(let i in enemydata){
-        if(enemydata[i].全名.indexOf(key) != -1){
+        if(enemydata[i].name.indexOf(key) != -1){
           let obj = {
-            name : enemydata[i].全名,
+            name : enemydata[i].name,
             id : enemydata[i].id
           };
           buffer.push(obj) ;
@@ -254,7 +254,7 @@ io.on('connection', function(socket){
         }
         if(user.isAnonymous){
           let name_arr = [] ;
-          for(let i in catdata) name_arr.push(catdata[i].全名);
+          for(let i in catdata) name_arr.push(catdata[i].name);
           let anonymous = name_arr[Math.floor((Math.random()*name_arr.length))];
           data.name = "匿名"+anonymous;
           data.nickname = "匿名"+anonymous;
@@ -306,7 +306,7 @@ io.on('connection', function(socket){
       for(let i in compareCat){
         obj = {};
         if(!catdata[compareCat[i]]) continue
-        obj = {id:compareCat[i],name:catdata[compareCat[i]].全名};
+        obj = {id:compareCat[i],name:catdata[compareCat[i]].name};
         arr.push(obj);
       }
       socket.emit("current_user_data",{
@@ -390,9 +390,9 @@ io.on('connection', function(socket){
           owned = snapshot.val().folder.owned;
       // console.log(data);
       let buffer = {cat:[],enemy:[],owned:[]};
-      for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].全名,id :data.cat[i].id});
-      for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].全名,id :data.enemy[i].id});
-      for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].全名,id :owned[i]+"-1"})
+      for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].name,id :data.cat[i].id});
+      for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].name,id :data.enemy[i].id});
+      for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
       // console.log(buffer);
       socket.emit("return history",buffer);
     });
@@ -513,7 +513,7 @@ io.on('connection', function(socket){
         let exist = '000' ;
         if(!jp){
           for(let i in catdata) {
-            if(catdata[i].稀有度 == rarity && catdata[i].region == '[TW][JP]') {
+            if(catdata[i].rarity == rarity && catdata[i].region == '[TW][JP]') {
               let current = i.substring(0,3);
               if(current == exist) continue
               buffer.push(current);
@@ -522,7 +522,7 @@ io.on('connection', function(socket){
           }
         } else {
           for(let i in catdata) {
-            if(catdata[i].稀有度 == rarity) {
+            if(catdata[i].rarity == rarity) {
               let current = i.substring(0,3);
               if(current == exist) continue
               buffer.push(current);
@@ -534,7 +534,7 @@ io.on('connection', function(socket){
         choooose = choose+"-1" ;
         senddata.push({
           id:choooose,
-          name:catdata[choooose].全名,
+          name:catdata[choooose].name,
           rarity:data.result[i]
         });
       }

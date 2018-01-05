@@ -26,6 +26,20 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
+
+database.ref("/enemydata").once("value",function (snapshot) {
+  let catdata = snapshot.val();
+  for(let i in catdata){
+    let obj = {
+      name : catdata[i].全名,
+
+    }
+    database.ref("/enemydata/"+i).update(obj);
+    // database.ref("/catdata/"+i+"/攻撃力").remove();
+    // database.ref("/catdata/"+i+"/體力").remove();
+
+  }
+});
 // process.stdout.write("www");
 // process.stdin.setEncoding('utf8');
 database.ref("/user").once("value",function (snapshot) {
@@ -38,6 +52,7 @@ database.ref("/user").once("value",function (snapshot) {
   //   count++;
   // }
 });
+
 database.ref("/stagedata/story").once('value',function (snapshot) {
   let data = snapshot.val() ;
   for (let i in data){

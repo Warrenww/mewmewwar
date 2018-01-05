@@ -41,7 +41,8 @@ $(document).ready(function () {
         grossID = id.substring(0,3);
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
 
-    html += "<tr><td colspan = 4 style='background-color:transparent'></td>"+
+    html += "<tr><td colspan = 2 style='background-color:transparent'></td>"+
+            "<th colspan = 2><a href='/view/cat.html'>回到貓咪大戰爭中文資料庫</a></th>"+
             "<td colspan=2 id='link'><a target='blank' href='http://battlecats-db.com/unit/"+
             grossID+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
     html += displayCatHtml(data,arr,brr,lv,count);
