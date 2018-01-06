@@ -229,7 +229,7 @@ $(document).ready(function () {
     console.log("server ready")
   }) ;
   //temp
-  $("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>");
+  if(location.pathname == "/")$("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>");
   $("#year_event").click(function () {
     $(this).fadeOut();
     $("#year_event_BG").fadeOut();

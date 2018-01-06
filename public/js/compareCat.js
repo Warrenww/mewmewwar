@@ -30,19 +30,19 @@ $(document).ready(function () {
       "<table>"+
       "<tr>"+"<th>Level</th>"+
       "</tr><tr>"+"<th style='height:80px;'>Picture</th>"+
-      "</tr><tr>"+"<th>全名</th>"+
-      "</tr><tr>"+"<th>體力</th>"+
-      "</tr><tr>"+"<th>KB</th>"+
-      "</tr><tr>"+"<th>硬度</th>"+
-      "</tr><tr>"+"<th>攻擊力</th>"+
-      "</tr><tr>"+"<th>DPS</th>"+
-      "</tr><tr>"+"<th>射程</th"+
-      "</tr><tr>"+"<th>攻頻</th>"+
-      "</tr><tr>"+"<th>跑速</th>"+
-      "</tr><tr>"+"<th>範圍</th>"+
-      "</tr><tr>"+"<th>花費</th>"+
-      "</tr><tr>"+"<th>再生産</th>"+
-      "</tr><tr>"+"<th>特性</th>"+
+      "</tr><tr>"+"<th id='name'>全名</th>"+
+      "</tr><tr>"+"<th id='hp'>體力</th>"+
+      "</tr><tr>"+"<th id='kb'>KB</th>"+
+      "</tr><tr>"+"<th id='hardness'>硬度</th>"+
+      "</tr><tr>"+"<th id='atk'>攻擊力</th>"+
+      "</tr><tr>"+"<th id='DPS'>DPS</th>"+
+      "</tr><tr>"+"<th id='range'>射程</th"+
+      "</tr><tr>"+"<th id='freq'>攻頻</th>"+
+      "</tr><tr>"+"<th id='speed'>跑速</th>"+
+      "</tr><tr>"+"<th id='multi'>範圍</th>"+
+      "</tr><tr>"+"<th id='cost'>花費</th>"+
+      "</tr><tr>"+"<th id='cd'>再生産</th>"+
+      "</tr><tr>"+"<th id='char'>特性</th>"+
       "</tr>"+"</table>"+"</div>"+
       "<div class='comparedataholder'>"+
       "<div style='display:flex' class='comparedatabody'></div>"
@@ -57,41 +57,41 @@ $(document).ready(function () {
         "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
         "<table>"+
         "<tr>"+
-        "<th id='level' rarity='"+data.稀有度+"'>"+lv+"</th>"+
+        "<th id='level' rarity='"+data.rarity+"'>"+lv+"</th>"+
         "</tr><tr>"+
         "<th style='height:80px;padding:0'><img src='"+
         image_url+data.id+'.png'+
         "' style='height:100%'></th>"+
         "</tr><tr>"+
-        "<th id='全名'>"+data.全名+"</th>"+
+        "<th id='name'>"+data.name+"</th>"+
         "</tr><tr>"+
-        "<td id='體力' original='"+data.lv1體力+"'>"+levelToValue(data.lv1體力,data.稀有度,lv).toFixed(0)+"</td>"+
+        "<td id='hp' original='"+data.hp+"'>"+levelToValue(data.hp,data.rarity,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
         "<td id='KB'>"+data.kb+"</td>"+
         "</tr><tr>"+
-        "<td id='硬度' original='"+data.lv1硬度+"'>"+levelToValue(data.lv1硬度,data.稀有度,lv).toFixed(0)+"</td>"+
+        "<td id='hardness' original='"+(data.hp/data.kb)+"'>"+levelToValue(data.hp/data.kb,data.rarity,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
-        "<td id='攻擊力' original='"+data.lv1攻擊+"'>"+levelToValue(data.lv1攻擊,data.稀有度,lv).toFixed(0)+"</td>"+
+        "<td id='atk' original='"+data.atk+"'>"+levelToValue(data.atk,data.rarity,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
-        "<td id='DPS' original='"+data.lv1dps+"'>"+levelToValue(data.lv1dps,data.稀有度,lv).toFixed(0)+"</td>"+
+        "<td id='DPS' original='"+data.lv1dps+"'>"+levelToValue(data.lv1dps,data.rarity,lv).toFixed(0)+"</td>"+
         "</tr><tr>"+
-        "<td id='射程'>"+data.射程+"</td>"+
+        "<td id='range'>"+data.range+"</td>"+
         "</tr><tr>"+
-        "<td id='攻頻'>"+data.攻頻.toFixed(1)+"</td>"+
+        "<td id='freq'>"+data.freq.toFixed(1)+"</td>"+
         "</tr><tr>"+
-        "<td id='跑速'>"+data.速度+"</td>"+
+        "<td id='speed'>"+data.speed+"</td>"+
         "</tr><tr>"+
-        "<td id='範圍'>"+data.範圍+"</td>"+
+        "<td id='multi'>"+data.multi+"</td>"+
         "</tr><tr>"+
-        "<td id='花費'>"+data.花費+"</td>"+
+        "<td id='cost'>"+data.cost+"</td>"+
         "</tr><tr>"+
-        "<td id='再生産'>"+data.再生産.toFixed(1)+"</td>"+
+        "<td id='cd'>"+data.cd.toFixed(1)+"</td>"+
         "</tr><tr>"+
-        "<td id='特性' "+
-        (data.特性.indexOf("連續攻擊") != -1 ?
-        "original='"+data.特性+"' atk='"+data.lv1攻擊+"'>"+
-        serialATK(data.特性,levelToValue(data.lv1攻擊,data.稀有度,lv)) :
-        ">"+data.特性
+        "<td id='char' "+
+        (data.char.indexOf("連續攻擊") != -1 ?
+        "original='"+data.char+"' atk='"+data.atk+"'>"+
+        serialATK(data.char,levelToValue(data.atk,data.rarity,lv)) :
+        ">"+data.char
         )+
         "</td>"+
         "</tr>"+
@@ -116,7 +116,7 @@ $(document).ready(function () {
 
       if (level && level < 101 && level > 0) {
         $(this).parent().html(level);
-        let change = ['體力','硬度','攻擊力','DPS'] ;
+        let change = ['hp','hardness','atk','DPS'] ;
         for(let i in change){
           let target = $('.compareTable #'+id).find('#'+change[i]) ;
           let original = target.attr('original');
@@ -126,7 +126,7 @@ $(document).ready(function () {
             target.css('background-color','rgba(255, 255, 255, .9)');
           },500);
         }
-        let target = $('.compareTable #'+id).find('#特性'),
+        let target = $('.compareTable #'+id).find('#char'),
             original = target.attr('original'),
             atk = target.attr('atk');
         if(original && original.indexOf("連續攻擊") != -1) target.html(serialATK(original,levelToValue(atk,rarity,level)))
@@ -138,10 +138,10 @@ $(document).ready(function () {
   function highlightTheBest() {
     $('.comparedata').find('td').removeClass('best');
     $('.comparedatahead tbody').children().each(function () {
-      let name = $(this).text();
-      if(name == 'Picture' || name == '全名' ||name == '特性' || name == 'KB' || name == 'Level') return ;
-      // console.log(name);
-      if(name == '範圍'){
+      let name = $(this).children().attr("id");
+      if(!name||name==undefined) return ;
+      console.log(name);
+      if(name == 'multi'){
         $(".comparedata").each(function () {
           if($(this).find("#"+name).text() == '範圍') $(this).find("#"+name).attr('class','best') ;
         });
@@ -177,7 +177,7 @@ $(document).ready(function () {
       // console.log(name);
       // console.log(max);
       // console.log(min);
-      if(name == '再生産' || name == '攻頻' || name == '花費') {
+      if(name == 'cd' || name == 'freq' || name == 'cost') {
         for(let i in min) $("#"+min[i].id).find("#"+name).attr('class','best');
       }
       else for(let i in max) $("#"+max[i].id).find("#"+name).attr('class','best');
@@ -186,10 +186,10 @@ $(document).ready(function () {
   }
   $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
   function sortCompareCat() {
-    let name = $(this).text();
+    let name = $(this).attr("id");
     var arr = [] ;
     let flag = true ;
-    if(name == 'Picture' || name == '全名' ||name == '特性' || name =='範圍' || name == 'KB') return ;
+    if(name == 'Picture' || name == 'name' ||name == 'char' || name =='multi' || name == 'KB') return ;
     $(this).css('border-left','5px solid rgb(246, 132, 59)')
             .parent().siblings().children().css('border-left','0px solid');
 

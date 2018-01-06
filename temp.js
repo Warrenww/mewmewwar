@@ -27,14 +27,23 @@ var database = firebase.database();
 console.log('start');
 
 
-database.ref("/enemydata").once("value",function (snapshot) {
+database.ref("/catdata").once("value",function (snapshot) {
   let catdata = snapshot.val();
   for(let i in catdata){
     let obj = {
-      name : catdata[i].全名,
-
+      全名 : null,
+      lv1攻擊 : null,
+      lv1體力 : null,
+      再生産 : null,
+      射程 : null,
+      攻頻 : null,
+      特性 : null,
+      稀有度 : null,
+      範圍 : null,
+      花費 : null,
+      速度 : null
     }
-    database.ref("/enemydata/"+i).update(obj);
+    database.ref("/catdata/"+i).update(obj);
     // database.ref("/catdata/"+i+"/攻撃力").remove();
     // database.ref("/catdata/"+i+"/體力").remove();
 
