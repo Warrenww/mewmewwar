@@ -54,22 +54,32 @@ database.ref("/catdata").once("value",function (snapshot) {
 database.ref("/user").once("value",function (snapshot) {
   console.log('get user data');
   userdata = snapshot.val();
-  // let count = 0 ;
-  // for(let i in userdata){
-  //   console.log(count,i);
-  //   database.ref("/user/"+i+"/folder").set('0');
-  //   count++;
-  // }
+  let count = 0 ;
+  for(let i in userdata){
+    let stage = userdata[i].history.stage;
+    for(let j in stage){
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      process.stdout.write("loading user data "+i+" history "+j);
+      process.stdout.write((Number(count)/688*100).toFixed(2).toString());
+      process.stdout.write("%");
+      // let arr = stage != "0" ? (stage[j].id).split("-") : [];
+      if (j=="0") {
+        // database.ref("/user/"+i+"/history/stage").set("0");
+      }
+    }
+    count++;
+  }
 });
 
-database.ref("/stagedata/story").once('value',function (snapshot) {
+database.ref("/stagedata/tower/s07000").once('value',function (snapshot) {
   let data = snapshot.val() ;
+  // database.ref("/stagedata/tower/s07000").set(data);
   for (let i in data){
-    for(let j in data[i]){
-      if(j == 'name') continue
-      // database.ref("/stagedata/story/"+i+"/"+j+"/continue").set(true);
-
-    }
+      if(i=="name")continue
+      let arr = (data[i].id).split("-");
+      arr[1] = "s07000";
+      database.ref("/stagedata/tower/s07000/"+i).update({id:arr.join("-")});
   }
 });
 var t = new Date(),

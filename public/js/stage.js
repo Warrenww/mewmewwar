@@ -113,7 +113,7 @@ $(document).ready(function () {
             (screen.width > 768 ?"<td colspan=2 style='background:transparent'></td>":"")+
             "<th>接關</th><td>"+(data.continue?"可以":"不行")+"</td>"+
             "<td colspan=2><a target='blank' href='http://battlecats-db.com/stage/"+
-            data.id+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
+            (data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
     html += screen.width > 768 ?
             ( "<tr>"+
               "<th rowspan=2 colspan=1>"+chapterName(data.id)+"</th>"+
