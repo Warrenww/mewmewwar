@@ -224,7 +224,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid).once('value',function (snapshot) {
         let data = snapshot.val(),
         last = data.history.last_cat?data.history.last_cat.substring(0,3):"",
-        cat = data.variable.cat[id],
+        cat = data.variable.cat[grossID],
         count = (cat?(cat.count?cat.count:0):0) + 1;
         if(grossID != last) {
           database.ref("/user/"+uid+"/history/last_cat").set(id);
