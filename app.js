@@ -71,7 +71,6 @@ io.on('connection', function(socket){
         database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
           let level = snapshot.val().default_cat_lv,
               showJP = snapshot.val().show_jp_cat;
-
           if(!showJP && type == 'cat'){
             for(let i in load_data){
               let region = load_data[i].region;
@@ -83,13 +82,13 @@ io.on('connection', function(socket){
             for(let i in load_data){
               for(let j in cFilter){
                 if(type == 'cat' && load_data[i].tag == '[無]') break;
-                if(type == 'enemy' && load_data[i]['分類'] == '[無]') break;
+                if(type == 'enemy' && load_data[i]['color'] == '[無]') break;
 
                 if(type == 'cat' && load_data[i].tag.indexOf(cFilter[j]) != -1 ) {
                   buffer_1.push(load_data[i]);
                   break;
                 }
-                if(type == 'enemy' && load_data[i]['分類'].indexOf(cFilter[j]) != -1 ) {
+                if(type == 'enemy' && load_data[i]['color'].indexOf(cFilter[j]) != -1 ) {
                   buffer_1.push(load_data[i]);
                   break;
                 }
@@ -197,9 +196,8 @@ io.on('connection', function(socket){
       for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
     }
     result.combo = combo ;
-    if(!uid){
-      socket.emit("display cat result",result);
-    } else {
+    if(!uid) socket.emit("display cat result",result);
+    else {
       database.ref("/user/"+uid).once("value",function (snapshot) {
         let default_lv = snapshot.val().setting.default_cat_lv;
         let storge_lv = snapshot.val().variable.cat[grossID] ? snapshot.val().variable.cat[grossID].lv : default_lv,
@@ -212,11 +210,55 @@ io.on('connection', function(socket){
       });
     }
     // console.log(result);
-
+    if(uid){
+      console.log("recording user history");
+      database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
+      database.ref("/user/"+uid).once('value',function (snapshot) {
+        let data = snapshot.val(),
+        last = data.history.last_cat.substring(0,3),
+        cat = data.variable.cat[id],
+        count = (cat?(cat.count?cat.count:0):0) + 1;
+        if(grossID != last) {
+          database.ref("/user/"+uid+"/history/last_cat").set(id);
+          console.log("count cat search time(user)");
+          database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(count);
+          console.log("count cat search time(global)");
+          database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
+            let count = snapshot.val() + 1;
+            database.ref("/catdata/"+id+"/count").set(count);
+          });
+        }
+        else console.log("same as last cat");
+      });
+    }
   });
-  socket.on("display enemy",function (id) {
+  socket.on("display enemy",function (data) {
+    let uid = data.uid,id = data.id;
+    console.log(data);
     console.log("client requir enemy "+id+"'s data'");
     socket.emit('display enemy result',enemydata[id]);
+
+    if(uid){
+      console.log("recording user history");
+      database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id});
+      database.ref("/user/"+uid).once('value',function (snapshot) {
+        let data = snapshot.val(),
+        last = data.history.last_enemy,
+        enemy = data.variable.enemy?data.variable.enemy[id]:null,
+        count = (enemy?(enemy.count?enemy.count:0):0) + 1;
+        if(id != last) {
+          database.ref("/user/"+uid+"/history/last_enemy").set(id);
+          console.log("count enemy search time(user)");
+          database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
+          console.log("count enemy search time(global)");
+          database.ref("/enemydata/"+id+"/count").once("value",function (snapshot) {
+            let count = snapshot.val() + 1;
+            database.ref("/enemydata/"+id+"/count").set(count);
+          });
+        }
+        else console.log("same as last enemy");
+      });
+    }
   });
 
   socket.on("user login",function (user) {
@@ -294,11 +336,10 @@ io.on('connection', function(socket){
         return
       }
       let history = snapshot.val().history ;
-      for(let i in history.cat) last_cat = history.cat[i].id ;
-      for(let i in history.combo) last_combo = history.combo[i].id ;
-      for(let i in history.enemy) last_enemy = history.enemy[i].id ;
-      for(let i in history.stage) last_stage = history.stage[i].id ;
-
+      last_cat = history.last_cat;
+      last_enemy = history.last_enemy;
+      last_combo = history.last_combo;
+      last_stage = history.last_stage;
       let compareCat = snapshot.val().compare.cat2cat  ;
       let obj , arr = [] ;
       for(let i in compareCat){
@@ -320,15 +361,19 @@ io.on('connection', function(socket){
     });
     console.log('user data send');
   });
-  socket.on("search combo",function (arr) {
+  socket.on("search combo",function (data) {
     console.log("searching combo......") ;
     let buffer = [] ;
+    let arr = data.id,uid = data.uid;
     for(let i in combodata){
       for(let j in arr){
         if(arr[j] == (i.substring(0,4))) buffer.push(combodata[i]) ;
       }
     }
     socket.emit("combo result",buffer) ;
+    console.log("recording user history");
+    database.ref("/user/"+uid+"/history/combo").push({type : "combo",id : arr});
+    database.ref("/user/"+uid+"/history/last_combo").set(arr);
   }) ;
   socket.on("compare cat",function (data) {
     console.log("compare cat!!");
@@ -359,28 +404,6 @@ io.on('connection', function(socket){
     database.ref("/user/"+data.uid+"/nickname").set(data.name);
   });
 
-
-  // socket.on("user Search",function (obj) {
-  //   console.log("recording user history");
-  //   console.log(obj);
-  //   database.ref("/user/"+obj.uid+"/history/"+obj.type)
-  //         .push({type : obj.type,id : obj.id});
-  //   if(obj.type == 'cat'){
-  //     let id = obj.id,
-  //         gross = id.substring(0,3);
-  //
-  //     console.log("count cat search time(user)");
-  //     database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").once('value',function (snapshot) {
-  //       let count = (snapshot.val()?snapshot.val():0) + 1;
-  //       database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").set(count);
-  //     });
-  //     console.log("count cat search time(global)");
-  //     database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
-  //       let count = snapshot.val() + 1;
-  //       database.ref("/catdata/"+id+"/count").set(count);
-  //     });
-  //   }
-  // });
   socket.on("history",function (uid) {
     console.log(uid+"'s history");
     database.ref("/user/"+uid).once("value",function (snapshot) {
@@ -474,12 +497,42 @@ io.on('connection', function(socket){
         socket.emit("level name",buffer);
   });
   socket.on("required level data",function (data) {
-    console.log("load level name");
+    console.log("load level data");
     console.log(data);
     let parent = stagedata[data.chapter][data.stage].name;
     socket.emit("level data",{
       data:stagedata[data.chapter][data.stage][data.level],
       parent:parent
+    });
+
+    let chapter = data.chapter,
+        stage = data.stage,
+        level = data.level,
+        id = chapter+"-"+stage+"-"+level,
+        uid = data.uid;
+    console.log("recording user history");
+    database.ref("/user/"+uid+"/history/stage").push({
+      type : "stage",
+      id : id
+    });
+    database.ref("/user/"+uid).once('value',function (snapshot) {
+      let data = snapshot.val(),
+          last = data.history.last_stage,
+          Stage = data.variable.stage?data.variable.stage[id]:null,
+          count = (Stage?(Stage.count?Stage.count:0):0) + 1;
+      if(id != last) {
+        database.ref("/user/"+uid+"/history/last_stage").set(id);
+        console.log("count stage search time(user)");
+        database.ref("/user/"+uid+"/variable/stage/"+id+"/count").set(count);
+        console.log("count stage search time(global)");
+        database.ref("/stagedata/"+chapter+"/"+stage+"/"+level+"/count")
+          .once("value",function (snapshot) {
+            let count = snapshot.val() + 1;
+            database.ref("/stagedata/"+chapter+"/"+stage+"/"+level+"/count")
+              .set(count);
+          });
+      }
+      else console.log("same as last stage");
     });
   });
 

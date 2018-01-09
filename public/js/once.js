@@ -19,7 +19,8 @@ $(document).ready(function () {
       cat : search[1]
     });
   } else if(search[0] == 'enemy'){
-    socket.emit("display enemy",search[1]);
+
+    socket.emit("display enemy",{uid : "",id:search[1]});
   } else {
     location.assign("/");
   }
@@ -58,6 +59,7 @@ $(document).ready(function () {
     });
   }
   socket.on('display enemy result',function (data) {
+    console.log(data);
     data.lv = search[2]/100 ;
     displayEnemyData(data) ;
   });

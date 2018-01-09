@@ -14,7 +14,8 @@ $(document).ready(function () {
     console.log(data);
     current_user_data = data ;
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
-      socket.emit("display enemy",data.last_enemy) ;
+    socket.emit("display enemy",{uid:data.uid,id:data.last_enemy});
+
   });
 
   var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','外星敵(星)','不死敵','白敵','無屬性敵'];
@@ -39,12 +40,10 @@ $(document).ready(function () {
   });
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','.card',function () {
-    socket.emit("user Search",{
-      uid : current_user_data.uid,
-      type : 'enemy',
-      id : $(this).attr('value')
+    socket.emit("display enemy",{
+      uid:current_user_data.uid,
+      id:$(this).attr('value')
     });
-    socket.emit("display enemy",$(this).attr('value'));
   });
   $(document).on('click',"#level_num button",function () {
     let n = $(this).text().split("%")[0],

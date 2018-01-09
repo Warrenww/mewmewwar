@@ -46,11 +46,6 @@ $(document).ready(function () {
   $(document).on('click','.card',function (e) {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
     else {
-      socket.emit("user Search",{
-        uid : current_user_data.uid,
-        type : 'cat',
-        id : $(this).attr('value')
-      });
       socket.emit("display cat",{
         uid : current_user_data.uid,
         cat : $(this).attr('value')
@@ -93,12 +88,10 @@ $(document).ready(function () {
     $('#level').slider('option','value',val);
   });
   $(document).on('click','.searchCombo',function () {
-    console.log()
-    socket.emit("user Search",{
-      uid : current_user_data.uid,
-      type : 'combo',
-      id : [$(this).attr('val')]
-    });
+    socket.emit("search combo",{
+      uid:current_user_data.uid,
+      id:[$(this).attr('val')]
+    }) ;
     location.assign('combo.html')
   }) ;
 
@@ -423,11 +416,6 @@ $(document).ready(function () {
       "'><span id='show'>顯示</span><span id='del'>刪除</span></div>");
     $('.compare_panel').css({top:pos_y,left:pos_x}).animate({height:60},400);
     $('.compare_panel #show').click(function () {
-      socket.emit("user Search",{
-        uid : current_user_data.uid,
-        type : 'cat',
-        id : $(this).parent().attr('id')
-      });
       socket.emit("display cat",{
         uid : current_user_data.uid,
         cat : $(this).parent().attr('id')

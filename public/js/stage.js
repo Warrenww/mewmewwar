@@ -26,7 +26,12 @@ $(document).ready(function () {
     if(data.last_stage){
       let last_stage = data.last_stage,
           arr = last_stage.split("-");
-      socket.emit("required level data",{chapter:arr[0],stage:arr[1],level:arr[2]});
+      socket.emit("required level data",{
+        uid:data.uid,
+        chapter:arr[0],
+        stage:arr[1],
+        level:arr[2]
+      });
       socket.emit("required stage name",arr[0]);
       $('#select_stage').attr("chapter",arr[0]);
       $('#select_level').attr("stage",arr[1]);
@@ -97,11 +102,11 @@ $(document).ready(function () {
         stage = $(this).parent().attr('stage'),
         chapter = $(this).parent().siblings().attr('chapter');
     console.log(chapter+">"+stage+">"+level);
-    socket.emit("required level data",{chapter:chapter,stage:stage,level:level});
-    socket.emit("user Search",{
-      uid : current_user_data.uid,
-      type : 'stage',
-      id : chapter+"-"+stage+"-"+level
+    socket.emit("required level data",{
+      uid: current_user_data.uid,
+      chapter:chapter,
+      stage:stage,
+      level:level
     });
   });
   socket.on("level data",function (obj) {

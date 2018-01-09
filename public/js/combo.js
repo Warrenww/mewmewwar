@@ -11,7 +11,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     console.log(data);
     current_user_data = data ;
-    if(data.last_combo)  socket.emit("search combo",data.last_combo) ;
+    if(data.last_combo)  socket.emit("search combo",{uid:data.uid,id:data.last_combo}) ;
     for(let i in data.last_combo){
       $(".button[name~='"+data.last_combo[i]+"']").attr('value',1);
     }
@@ -45,8 +45,10 @@ $(document).ready(function () {
       });
     }) ;
     console.log(A_search);
-    socket.emit("search combo",A_search) ;
-    searchCombo(A_search);
+    socket.emit("search combo",{
+      uid:current_user_data.uid,
+      id:A_search
+    }) ;
     socket.emit("user Search",{
       uid : current_user_data.uid,
       type : 'combo',
@@ -59,11 +61,9 @@ $(document).ready(function () {
   }) ;
 
   $(document).on('click','.card',function () {
-    let id = $(this).attr('value');
-    socket.emit("user Search",{
+    socket.emit("display cat",{
       uid : current_user_data.uid,
-      type : 'cat',
-      id : id
+      cat : $(this).attr('value')
     });
     location.assign("/view/cat.html");
   });

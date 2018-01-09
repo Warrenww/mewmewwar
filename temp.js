@@ -62,8 +62,7 @@ database.ref("/enemydata").once("value",function (snapshot) {
       process.stdout.write("%");
 
       let obj = {
-        全名 : null,
-        硬度: null
+        count : 0
       }
       database.ref("/enemydata/"+i).update(obj);
       // database.ref("/catdata/"+i+"/攻撃力").remove();
