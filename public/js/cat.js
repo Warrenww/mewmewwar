@@ -7,6 +7,7 @@ $(document).ready(function () {
       } ;
   var filter_name = '' ;
   var socket = io.connect();
+  var current_cat_data = {};
   var current_user_data = {
     setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
   };
@@ -121,6 +122,7 @@ $(document).ready(function () {
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
         own = result.own;
     displayCatData(data,arr,brr,lv,result.count,own) ;
+    current_cat_data = result;
   });
   var number_page,page_factor ;
   socket.on("search result",function (data) {
@@ -256,10 +258,6 @@ $(document).ready(function () {
       rFilter,cFilter,aFilter,filterObj,
       type:"cat"
     });
-    if(cFilter.length>0) ga('send', 'event', 'cat', 'search', 'filter',{color:cFilter});
-    if(rFilter.length>0) ga('send', 'event', 'cat', 'search', 'filter',{rarity:rFilter});
-    if(aFilter.length>0) ga('send', 'event', 'cat', 'search', 'filter',{ability:aFilter});
-    if(filterObj.length>0) ga('send', 'event', 'cat', 'search', 'filter',{other:filterObj});
     scroll_to_div('selected');
   }
   function condenseCatName(data) {

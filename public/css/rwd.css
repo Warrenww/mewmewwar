@@ -88,6 +88,7 @@ nav .mobile,
   .lv_sg_box{flex-direction: column;}
   .float{width: 100%;left:0;height: 70%}
   .nav_panel{position: relative;top: 0}
+  #level_num button {display: none;}
   /* TEMP:  */
   #year_event{padding: 5% 0}
 }

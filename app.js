@@ -67,7 +67,6 @@ io.on('connection', function(socket){
             load_data = enemydata ;
             break;
           default:
-
         } ;
         database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
           let level = snapshot.val().default_cat_lv,
@@ -141,7 +140,6 @@ io.on('connection', function(socket){
             }
             buffer_1.push(obj) ;
           }
-
           socket.emit("search result",buffer_1);
         });
 
@@ -362,27 +360,27 @@ io.on('connection', function(socket){
   });
 
 
-  socket.on("user Search",function (obj) {
-    console.log("recording user history");
-    console.log(obj);
-    database.ref("/user/"+obj.uid+"/history/"+obj.type)
-          .push({type : obj.type,id : obj.id});
-    if(obj.type == 'cat'){
-      let id = obj.id,
-          gross = id.substring(0,3);
-
-      console.log("count cat search time(user)");
-      database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").once('value',function (snapshot) {
-        let count = (snapshot.val()?snapshot.val():0) + 1;
-        database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").set(count);
-      });
-      console.log("count cat search time(global)");
-      database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
-        let count = snapshot.val() + 1;
-        database.ref("/catdata/"+id+"/count").set(count);
-      });
-    }
-  });
+  // socket.on("user Search",function (obj) {
+  //   console.log("recording user history");
+  //   console.log(obj);
+  //   database.ref("/user/"+obj.uid+"/history/"+obj.type)
+  //         .push({type : obj.type,id : obj.id});
+  //   if(obj.type == 'cat'){
+  //     let id = obj.id,
+  //         gross = id.substring(0,3);
+  //
+  //     console.log("count cat search time(user)");
+  //     database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").once('value',function (snapshot) {
+  //       let count = (snapshot.val()?snapshot.val():0) + 1;
+  //       database.ref("/user/"+obj.uid+"/variable/cat/"+gross+"/count").set(count);
+  //     });
+  //     console.log("count cat search time(global)");
+  //     database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
+  //       let count = snapshot.val() + 1;
+  //       database.ref("/catdata/"+id+"/count").set(count);
+  //     });
+  //   }
+  // });
   socket.on("history",function (uid) {
     console.log(uid+"'s history");
     database.ref("/user/"+uid).once("value",function (snapshot) {
@@ -546,7 +544,7 @@ io.on('connection', function(socket){
 
 
 });
-var timeout ;
+var timeout,event_get_count = 0 ;
 function arrangeUserData() {
   timeout = setTimeout(function () {
     arrangeUserData();
@@ -642,6 +640,7 @@ function geteventDay() {
   },86400000);
 }
 function NextEventDay(y,m,d) {
+  event_get_count ++ ;
   d ++ ;
   if(m == 2 && d>28){m++,d=1}
   else if (d_31.indexOf(m) != -1 && d>31) {m++,d=1}
@@ -658,10 +657,12 @@ function NextEventDay(y,m,d) {
       if(body.indexOf("<error>") == -1) {
         console.log("change next event day");
         database.ref("/event_date/next").set(y+"/"+AddZero(m)+"/"+AddZero(d));
+        event_get_count = 0 ;
       }
       else {
         console.log("next day");
-        NextEventDay(y,m,d)
+        if(event_get_count<10) NextEventDay(y,m,d);
+        else console.log("There are no event update for later 10 days.");
       }
     } else {console.log(e);}
   });

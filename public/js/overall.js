@@ -172,7 +172,6 @@ $(document).ready(function () {
     nav_site_2[i]+".html' id='a_"+nav_site_2[i]+"'>"+nav_text_2[i]+"</a>";
   }
 
-
   $("nav .navLinkBox").html(nav_html) ;
   $(".m_navLinkBox").html(nav_html) ;
 
@@ -209,8 +208,6 @@ $(document).ready(function () {
     $(".current_user_name").text("Hi, "+name);
   });
 
-
-
   var xmlhttp = new XMLHttpRequest() ;
   var url = "../public/update_dialog.html";
   var update_dialog ;
@@ -229,7 +226,7 @@ $(document).ready(function () {
     console.log("server ready")
   }) ;
   //temp
-  if(location.pathname == "/")$("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>");
+  if(0)$("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>");
   $("#year_event").click(function () {
     $(this).fadeOut();
     $("#year_event_BG").fadeOut();
@@ -245,7 +242,7 @@ $(window).load(function () {
   var nav_panel = 0, nav_panel_timeout;
   $(".show_panel").hover(function () {
     nav_panel_timeout = setTimeout(function () {
-      $(".nav_panel").css("height",200);
+      $(".nav_panel").css("height",screen.width>768?200:160);
       nav_panel = 1;
     },200);
   },function () {
@@ -253,7 +250,7 @@ $(window).load(function () {
   }) ;
   $(".show_panel").click(function () {
     if(nav_panel) $(".nav_panel").css("height",0);
-    else $(".nav_panel").css("height",200);
+    else $(".nav_panel").css("height",screen.width>768?200:160);
     nav_panel = nav_panel ? 0 :1 ;
   });
   $(".nav_panel").hover(function () {}

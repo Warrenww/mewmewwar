@@ -2,6 +2,7 @@ $(document).ready(function () {
   var socket = io.connect();
   var timer = new Date().getTime();
   var current_user_data = {};
+  var current_enemy_data = {};
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connet",user);
@@ -49,7 +50,7 @@ $(document).ready(function () {
     let n = $(this).text().split("%")[0],
         buffer = org = $(this).siblings("span").text().split(" ")[0];
     org = Number(org)+Number(n);
-    if(org<100){
+    if(org<100||org>1e6){
       $(this).siblings("span").text(buffer+" %");
     } else {
       $(this).siblings("span").text(org+" %");
@@ -66,7 +67,7 @@ $(document).ready(function () {
   $(document).on('blur',"#level_num span input",function () {
     let org = $(this).val();
     org = (org/50).toFixed(0)*50;
-    if(org<100){
+    if(org<100||org>1e6){
       $(this).parent().html(original_lv+" %");
     } else {
       $(this).parent().html(org+" %");
@@ -78,7 +79,7 @@ $(document).ready(function () {
     let keyword = $("#searchBox").val();
     let buffer = [] ;
     for(let id in enemydata){
-      if(enemydata[id].全名.indexOf(keyword) != -1) buffer.push(enemydata[id]) ;
+      if(enemydata[id].name.indexOf(keyword) != -1) buffer.push(enemydata[id]) ;
     }
     console.log(buffer);
     $("#selected").empty();
@@ -150,6 +151,7 @@ $(document).ready(function () {
   });
   socket.on('display enemy result',function (data) {
     data.lv = 1;
+    current_enemy_data = data;
     displayEnemyData(data) ;
   });
 
@@ -159,6 +161,23 @@ $(document).ready(function () {
     $(".dataTable").empty();
     $(".dataTable").append(html);
     scroll_to_class("display",0) ;
+  }
+  function updateState(level) {
+    let change = ['hp','hardness','atk','DPS'] ;
+    for(let i in change){
+      let target = $('.dataTable').find('#'+change[i]) ;
+      let original = target.attr('original');
+      target.html(mutipleValue(original,level).toFixed(0))
+            .css('background-color',' rgba(242, 213, 167, 0.93)');
+      setTimeout(function () {
+        target.css('background-color','rgba(255, 255, 255, .9)');
+      },500);
+    }
+    if(current_enemy_data.tag.indexOf("連續攻擊") != -1){
+      console.log("!!");
+      let target = $('.dataTable').find('#char');
+      target.html(serialATK(current_enemy_data.char,mutipleValue(current_enemy_data.atk,level)));
+    }
   }
 
   function filterSlider() {
@@ -230,22 +249,7 @@ $(document).ready(function () {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
 
-  function updateState(level) {
-    let change = ['體力','硬度','攻撃力','DPS'] ;
-    for(let i in change){
-      let target = $('.dataTable').find('#'+change[i]) ;
-      let original = target.attr('original');
-      target.html(mutipleValue(original,level).toFixed(0))
-            .css('background-color',' rgba(242, 213, 167, 0.93)');
-      setTimeout(function () {
-        target.css('background-color','rgba(255, 255, 255, .9)');
-      },500);
-    }
-    if(data.特性.indexOf("連續攻擊") != -1){
-      let target = $('.dataTable').find('#特性');
-      target.html(serialATK(data.特性,mutipleValue(data.攻撃力,level)));
-    }
-  }
+
 
 });
 function displayenemyHtml(data) {
@@ -260,13 +264,13 @@ function displayenemyHtml(data) {
   "<th style='height:80px;padding:0'><img src='"+
   image_url_enemy+data.id+'.png'
   +"' style='height:100%'></th>"+
-  "<th colspan=5 id='全名'>"+data.全名+"</th>"+
+  "<th colspan=5 id='name'>"+data.name+"</th>"+
   "</tr>" :
   "<tr>"+
   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
   image_url_enemy+data.id+".png'"
   +"</tr><tr>"+
-  "<th colspan='6' id='全名'>"+data.全名+"</th>"+
+  "<th colspan='6' id='name'>"+data.name+"</th>"+
   "</tr>" ;
   html+=
   "<tr>"+
@@ -277,36 +281,36 @@ function displayenemyHtml(data) {
   "<button>+50%</button><button>+100%</button>"+
   "</td >"+
   "<tr>"+
-  "<th>體力</th><td id='體力' original='"+data.體力+"'>"+
-  mutipleValue(data.體力,data.lv).toFixed(0)+"</td>"+
+  "<th>體力</th><td id='hp' original='"+data.hp+"'>"+
+  mutipleValue(data.hp,data.lv).toFixed(0)+"</td>"+
   "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-  "<th>硬度</th><td id='硬度' original='"+data.硬度+"'>"+
-  mutipleValue(data.硬度,data.lv).toFixed(0)+"</td>"+
+  "<th>硬度</th><td id='hardness' original='"+(data.hp/data.kb)+"'>"+
+  mutipleValue(data.hp/data.kb,data.lv).toFixed(0)+"</td>"+
   "</tr><tr>"+
-  "<th>攻擊力</th><td id='攻撃力' original='"+data.攻撃力+"'>"+
-  mutipleValue(data.攻撃力,data.lv).toFixed(0)+"</td>"+
+  "<th>攻擊力</th><td id='atk' original='"+data.atk+"'>"+
+  mutipleValue(data.atk,data.lv).toFixed(0)+"</td>"+
   "<th>DPS</th><td id='DPS' original='"+data.dps+"'>"+
   mutipleValue(data.dps,data.lv).toFixed(0)+"</td>"+
-  "<th>射程</th><td id='射程'>"+data.射程+"</td>"+
+  "<th>射程</th><td id='range'>"+data.range+"</td>"+
   "</tr><tr>"+
-  "<th>攻頻</th><td id='攻頻'>"+data.攻頻.toFixed(1)+" s</td>"+
-  "<th>跑速</th><td id='跑速'>"+data.速度+"</td>"+
-  "<td colspan='2' rowspan='2' id='範圍'>"+data.範圍+"</td>"+
+  "<th>攻頻</th><td id='freq'>"+data.freq.toFixed(1)+" s</td>"+
+  "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
+  "<td colspan='2' rowspan='2' id='multi'>"+data.multi+"</td>"+
   "</tr><tr>"+
-  "<th>獲得金錢</th><td id='獲得金錢'>"+data.獲得金錢+"</td>"+
-  "<th>屬性</th><td id='屬性'>"+addColor(data.分類)+"</td>"+
+  "<th>獲得金錢</th><td id='reward'>"+data.reward+"</td>"+
+  "<th>屬性</th><td id='color'>"+addColor(data.color)+"</td>"+
   "</tr><tr>"+
-  "<td colspan='6' id='特性' "+(
-  data.特性.indexOf("連續攻撃") != -1 ?
-  "original='"+data.特性+"'>"+
-  serialATK(data.特性,mutipleValue(data.攻撃力,data.lv)) :
-  ">"+data.特性)+
+  "<td colspan='6' id='char' "+(
+  data.char.indexOf("連續攻撃") != -1 ?
+  "original='"+data.char+"'>"+
+  serialATK(data.char,mutipleValue(data.atk,data.lv)) :
+  ">"+data.char)+
   "</td>"+
   "</tr><tr>"
   return html
 }
 function mutipleValue(value,m) {
-  console.log(value+":"+m);
+  // console.log(value+":"+m);
   return value*m
 }
 function serialATK(prop,atk) {
