@@ -71,12 +71,6 @@ io.on('connection', function(socket){
         database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
           let level = snapshot.val().default_cat_lv,
               showJP = snapshot.val().show_jp_cat;
-          if(!showJP && type == 'cat'){
-            for(let i in load_data){
-              let region = load_data[i].region;
-              if(region.indexOf("[TW]") == -1) delete load_data[i]
-            }
-          }
 
           if(cFilter.length != 0){
             for(let i in load_data){
@@ -130,16 +124,30 @@ io.on('connection', function(socket){
             }
           } else buffer_2 = buffer_1 ;
           buffer_1 = [] ;
-
-          // for(let i in buffer_2) console.log(buffer_2[i].name) ;
-          for(let i in buffer_2) {
-            let obj = {
-              id : buffer_2[i].id,
-              name : buffer_2[i].name
+          if(!showJP && type == 'cat'){
+            for(let i in buffer_2){
+              let region = buffer_2[i].region;
+              if(region.indexOf("[TW]") == -1) delete buffer_2[i]
             }
-            buffer_1.push(obj) ;
+            for(let i in buffer_2) {
+              let obj = {
+                id : buffer_2[i].id,
+                name : buffer_2[i].name
+              }
+              buffer_1.push(obj) ;
+            }
+            socket.emit("search result",buffer_1);
           }
-          socket.emit("search result",buffer_1);
+          else{
+            for(let i in buffer_2) {
+              let obj = {
+                id : buffer_2[i].id,
+                name : buffer_2[i].name
+              }
+              buffer_1.push(obj) ;
+            }
+            socket.emit("search result",buffer_1);
+          }
         });
 
   });
@@ -215,7 +223,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
       database.ref("/user/"+uid).once('value',function (snapshot) {
         let data = snapshot.val(),
-        last = data.history.last_cat.substring(0,3),
+        last = data.history.last_cat?data.history.last_cat.substring(0,3):"",
         cat = data.variable.cat[id],
         count = (cat?(cat.count?cat.count:0):0) + 1;
         if(grossID != last) {
