@@ -6,7 +6,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connet",user);
+      socket.emit("user connect",user);
     } else {
       console.log('did not sign in');
     }

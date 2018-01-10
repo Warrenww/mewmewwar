@@ -102,7 +102,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connet",user);
+      socket.emit("user connect",user);
       socket.emit("require setting",user.uid);
     } else {
       console.log('did not sign in');
@@ -116,11 +116,14 @@ $(document).ready(function () {
   });
   socket.on("user setting",function (data) {
     console.log(data);
-    $("#default_cat_lv").attr('value',data.default_cat_lv);
-    $("#show_cat_id").prop('checked',data.show_cat_id);
-    $("#show_cat_count").prop('checked',data.show_cat_count);
-    $("#show_jp_cat").prop('checked',data.show_jp_cat);
-  });
+    for(let i in data){
+      if(i == "default_cat_lv"){
+        $("#default_cat_lv").attr('value',data.default_cat_lv);
+      } else {
+        $("#"+i).prop('checked',data[i]);
+      }
+    }
+});
 
 
   socket.on("return history",function (history) {

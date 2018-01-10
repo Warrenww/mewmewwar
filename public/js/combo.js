@@ -3,7 +3,7 @@ $(document).ready(function () {
   const image_url =  "../public/css/footage/cat/u" ;
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connet",user);
+      socket.emit("user connect",user);
     } else {
       console.log('did not sign in');
     }

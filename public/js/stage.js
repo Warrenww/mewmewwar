@@ -14,7 +14,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connet",user);
+      socket.emit("user connect",user);
     } else {
       console.log('did not sign in');
     }
@@ -39,24 +39,43 @@ $(document).ready(function () {
     }
   });
 
-  var chapter = ['世界篇','未來篇','宇宙篇','傳說故事','極難關','月間關','開眼關','貓咪</br>風雲塔','狂亂貓','大狂亂貓'] ;
-  var chapter_id = ['world','future','universe','story','hard','month','openEye','tower','crazy','bigCrazy'] ;
-  for(let i in chapter) $(".select_chapter").append("<button id='"+chapter_id[i]+"' value='0'>"+chapter[i]+"</button>") ;
-  $(".select_chapter").css('width',200*chapter.length)
+  var chapter = {
+    a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
+    a0:{name : '傳說故事',id : 'story',show : true},
+    a1:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
+    b:{name : '世界篇',id : 'world',show : false},
+    c:{name : '未來篇',id : 'future',show : false},
+    d:{name : '宇宙篇',id : 'universe',show : false},
+    f:{name : '極難關',id : 'hard',show : false},
+    g:{name : '月間關',id : 'month',show : false},
+    h:{name : '開眼關',id : 'openEye',show : false},
+    j:{name : '狂亂貓',id : 'crazy',show : false},
+    k:{name : '大狂亂貓',id : 'bigCrazy',show : false}
+  };
+  let chapter_count = 0;
+  for(let i in chapter) {
+    $(".select_chapter").append(
+        "<button id='"+chapter[i].id+
+      "' value='0' show='"+chapter[i].show+"'>"
+      +chapter[i].name+"</button>"
+    ) ;
+    chapter_count ++ ;
+  }
+  $(".select_chapter").css('width',200*chapter_count);
 
   $(document).on("click","#select_stage,#select_level",function () {
     $(this).css("flex",'3').siblings().css("flex",'1');
   });
-
   $(document).on("click",".select_chapter button",function () {
-    let chapter = $(this).attr('id');
+    let chapter = $(this).attr('id'),
+        show = $(this).attr("show")=="true"?true:false;
     $(this).attr("value",'1');
     setTimeout(function () {
       $(".select_chapter button[value=1]").attr("value",0);
     },4000);
     console.log(chapter);
     $("#select_stage").attr("chapter",chapter);
-    if(chapter != 'story' && chapter != 'tower') alert("not yet ready");
+    if(!show) alert("not yet ready");
     else socket.emit("required stage name",chapter);
   });
   socket.on("stage name",function (data) {
@@ -133,7 +152,7 @@ $(document).ready(function () {
               "<th>出擊限制</th>"+"<td>"+data.limit_no+"</td>"+
               "</tr><tr>"+
               "<th colspan=6>過關獎勵</th>"+
-              "</tr><tr>"+Addreward(data.reward)+
+              "</tr><tr>"+Addreward(data.reward,data.integral)+
               "</tr><tr>"+
               "<th colspan=6>關卡敵人</th>"+
               "</tr><tr>"+
@@ -160,7 +179,7 @@ $(document).ready(function () {
               "<th>出擊限制</th>"+"<td colspan=3>"+data.limit_no+"</td>"+
               "</tr><tr>"+
               "<th colspan=4>過關獎勵</th>"+
-              "</tr><tr>"+Addreward(data.reward)+
+              "</tr><tr>"+Addreward(data.reward,data.integral)+
               "</tr><tr>"+
               "<th colspan=6>關卡敵人</th>"+
               "</tr><tr>"+Addenemy(data.enemy)+
@@ -172,7 +191,8 @@ $(document).ready(function () {
 
     scroll_to_class('display',0);
   });
-  function Addreward(arr) {
+  function Addreward(arr,b) {
+    console.log(b);
     let html ="";
     for(let i in arr){
       html += screen.width > 768 ?
@@ -182,7 +202,7 @@ $(document).ready(function () {
                 "<tr><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
                 "<td colspan=2>"+arr[i].prize.amount+"</td></tr>"
               );
-      html += "<th>取得機率</th>"+"<td>"+arr[i].chance+"</td>"+
+      html += "<th>"+(b?"累計積分":"取得機率")+"</th>"+"<td>"+arr[i].chance+"</td>"+
               "<th>取得上限</th>"+"<td>"+arr[i].limit+"</td>"+
               "</tr>"
 
@@ -216,18 +236,27 @@ $(document).ready(function () {
     return html
   }
   function chapterName(s) {
-    let c = s.split("-")[0],
-        d = chapter_id.indexOf(c);
-    return chapter[d]
+    let c = s.split("-")[0];
+    for(let i in chapter){
+       if (chapter[i].id == c) return chapter[i].name ;
+    }
+    return
   }
   function prize(s) {
     if(s.indexOf("u")!=-1){
       return "<img src='"+image_url_cat+s.split("u")[1]+
-      "-1.png' style='width:100%' />"
+      "-1.png' style='width:100%' class='cat' id='"+s.split("u")[1]+"-1' />"
     } else {
       return s
     }
   }
+  $(document).on("click",".cat",function () {
+    socket.emit("display cat",{
+      uid : current_user_data.uid,
+      cat : $(this).attr('id')
+    });
+    location.assign("/view/cat.html");
+  });
   $(document).on('click','.enemy',function () {
     let id = $(this).attr("id"),
         multiple = $(this).next().text().split("％")[0];

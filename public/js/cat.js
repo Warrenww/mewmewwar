@@ -5,7 +5,6 @@ $(document).ready(function () {
         compare_max : 4 ,
         display_id : false
       } ;
-  var filter_name = '' ;
   var socket = io.connect();
   var current_cat_data = {};
   var current_user_data = {
@@ -14,7 +13,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connet",user);
+      socket.emit("user connect",user);
     } else {
       console.log('did not sign in');
     }
@@ -94,6 +93,23 @@ $(document).ready(function () {
     }) ;
     location.assign('combo.html')
   }) ;
+  $(document).on("click","#share",function () {
+    let id = $(this).parent().siblings().attr("id"),
+        lv = $(this).parent().siblings().find("#level_num").text(),
+        host = location.origin;
+    $(this).append(
+      "<input type='text' value='"+
+      host+"/view/once.html?q=cat&"+
+      id+"&"+lv+"' style='position:fixed;top:-100px'/>"
+    );
+    $(this).find("input").select();
+    document.execCommand("Copy");
+    $("#copy_alert").css("left",-10);
+    setTimeout(function () {
+      $(this).find("input").remove();
+      $("#copy_alert").css("left",-250);
+    },2600);
+  });
 
   var rarity = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'] ;
   for(let i in rarity) $(".select_rarity").append("<span class='button' name='"+rarity[i]+"' value='0' >"+rarity[i]+"</span>") ;
@@ -130,11 +146,15 @@ $(document).ready(function () {
     $("#selected").append(condenseCatName(data));
     $(".button_group").css('display','flex');
     scroll_to_div("selected");
-    number_page /= (screen.width > 1024?8:6) ;
+    let select_width = $("#selected").innerWidth(),
+        card_width = screen.width > 1024 ? 216 :140,
+        per_page = Math.floor(select_width/card_width)*2;
+
+    number_page = Math.ceil(number_page/per_page) ;
     if(number_page>25) page_factor = 2;
     for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
-    $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
+      $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
   });
   function displayCatData(data,arr,brr,lv,count,own) {
     let html = "",
@@ -142,20 +162,14 @@ $(document).ready(function () {
         showCount = current_user_data.setting.show_cat_count,
         id = data.id,
         grossID = id.substring(0,3);
-        console.log(own);
-    // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
-    html += "<tr><td style='background-color:transparent' colspan="+
-            (screen.width > 768 ?2:0)+"></td>"+
-            "<td style='background-color:transparent' colspan="+
-            (screen.width > 768 ?2:3)+"><span class='button' id='mark_own' value='"+
-            (own?1:0)+"'>我有這隻貓</span></td>"+
-            "<td style='background-color:transparent' colspan="+
-            (screen.width > 768 ?2:3)+"><button id='addcart'>加到購物車</button></td>";
+
+        if(own) $("#more_option #mark_own").attr("value",1);
+        else $("#more_option #mark_own").attr("value",0);
+        $("#more_option #out").parent().attr("href","http://battlecats-db.com/unit/"+grossID+".html");
 
     html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
             "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+count+"</td>"+
-            "<td colspan=2><a target='blank' href='http://battlecats-db.com/unit/"+
-            grossID+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
+            "<td id='more' colspan='2'>更多選項</td></tr>";
 
     html += displayCatHtml(data,arr,brr,lv,count);
 
@@ -284,13 +298,19 @@ $(document).ready(function () {
     return html ;
   }
   $(document).on("click","#mark_own",function () {
-    let val = Number($(this).attr("value")) ? 0 : 1,
-        cat = $(this).parents("table").attr("id").substring(0,3);
+    let val = Number($(this).attr("value")),
+        cat = $(this).parent().siblings().attr("id").substring(0,3);
     socket.emit("mark own",{
       uid:current_user_data.uid,
       cat:cat,
       mark:val
     });
+  });
+  var show_more = 1;
+  $(document).on("click","#more",function () {
+    if(show_more) $("#more_option").css("height",50);
+    else $("#more_option").css("height",0);
+    show_more = show_more?0:1;
   });
   function filterSlider() {
     $("#slider_holder").show();
@@ -310,51 +330,6 @@ $(document).ready(function () {
     }).parent().siblings('.active').html(active=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>')
     .siblings('.reverse').html(reverse=='true'?'以下':'以上');
   }
-  $('#slider_holder').children('.active').click(function () {
-    let target = $("#"+filter_name+".filter_option");
-    target.attr('active',target.attr('active')=='true'?'false':'true');
-    $(this).html(target.attr('active')=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>');
-  });
-  $('#slider_holder').children('.reverse').click(function () {
-    let target = $("#"+filter_name+".filter_option");
-    target.attr('reverse',target.attr('reverse')=='true'?'false':'true');
-    $(this).html(target.attr('reverse')=='true'?'以下':'以上');
-  });
-  $('#slider_holder').find('.slider').on("slidechange",function (e,ui) {
-    $("#lower_table").find("#"+filter_name).attr('value',ui.value);
-  });
-  $("#lower_table").find("#selectAll").click(function () {
-    if($(this).text().trim() == '全選') {
-      $(".filter_option").attr('active','true');
-      $(this).text('全部清除');
-      $('.active').html('<i class="material-icons">&#xe837;</i>');
-    }
-    else{
-      filter_name = "" ;
-      $(".filter_option").attr('active','false');
-      $(this).text('全選');
-      $('.active').html('<i class="material-icons">&#xe836;</i>');
-      $("#slider_holder").hide().siblings().children('.filter_option').css('border-bottom','0px solid');
-    }
-  });
-  $(".filter_option").hover(
-    function () {
-      let position = $(this).offset(),
-          value = $(this).attr('value'),
-          width = $(this).outerWidth()-10,
-          active = $(this).attr('active') == 'true' ? true : false ,
-          reverse = $(this).attr('reverse') == 'true' ? '以下' : '以上';
-
-      // alert(JSON.stringify(position));
-      position.top -= 30 ;
-        if(active && screen.width > 768){
-          $("#TOOLTIP").finish().fadeIn();
-          $("#TOOLTIP").offset(position).width(width).text(value+reverse) ;
-        }
-
-    },function () {
-      $("#TOOLTIP").fadeOut();
-  });
 
   $(".sortable").sortable({
     scroll:false,

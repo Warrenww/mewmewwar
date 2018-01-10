@@ -108,6 +108,14 @@
         </div>
 
         <div class="display">
+          <div id='more_option'>
+            <span class='button' id='mark_own' value='0'>我有這隻貓</span>
+            <button id='addcart'>加到購物車</button>
+            <button id='share'>分享</button>
+            <a target='blank' style="width:200px">
+              <button id="out">在超絕攻略網打開</button>
+            </a>
+          </div>
           <table class="dataTable"></table>
         </div>
 
@@ -129,6 +137,7 @@
     </div>
 
     <div id="TOOLTIP">This is a tool tip</div>
+    <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">
@@ -156,8 +165,8 @@
     <script src="../public/js/jquery.easing.1.3.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="../public/js/firebaseConfig.js"></script>
-    <script src="../public/js/cat.js"></script>
     <script src="../public/js/overall.js"></script>
+    <script src="../public/js/cat.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

@@ -15,9 +15,9 @@ var config = {
   var i=0,j=1;
   getData(i,j);
   function getData(i,j) {
-    console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
+    // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
     request({
-      url: "https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html",
+      url: "https://battlecats-db.com/stage/s02048-"+AddZero(j)+".html",
       method: "GET"
     }, function(e,r,b) {
       let obj = {
@@ -31,7 +31,7 @@ var config = {
         enemy : [],
         final : "",
         "continue" : "",
-        id:"tower-s070000-"+j
+        id:"maylook-s02048-"+j
       };
       if(!e){
         console.log("get data");
@@ -44,7 +44,8 @@ var config = {
         console.log(final);
         obj.final = final;
         obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
-        obj.continue = thead.eq(0).children("td").eq(2).find("font").text()?false:true;
+        obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
+        obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
         obj.energy = thead.eq(0).children("td").eq(4).text();
         obj.exp = thead.eq(1).children("td").eq(1).text().split("XP+")[1];
         obj.castle = thead.eq(2).children("td").eq(2).text();
@@ -72,15 +73,15 @@ var config = {
             next_time : FtoS(ene.eq(7).text())
           });
         }
-        // console.log(obj);
+        console.log(obj);
         // console.log("next?");
-        database.ref("/stagedata/tower/s070000/"+j).set(obj);
+        database.ref("/stagedata/maylook/s02048/"+j).set(obj);
         j++;
         // if(final){j=1;i++}
-        if(j<41) getData(i,j);
+        if(!final) getData(i,j);
       }
       else {
-        console.log("error s070"+AddZero(i)+"-0"+j);
+        // console.log("error s070"+AddZero(i)+"-0"+j);
         console.log(e);
       }
     });

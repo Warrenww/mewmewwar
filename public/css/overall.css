@@ -241,7 +241,7 @@ table {
 }
 #TOOLTIP{
   position: fixed;
-  display: flex;
+  display: none;
   background-color: rgba(60, 44, 6, 0.9);
   padding: 5px;
   /*border-radius: 6px;*/

@@ -50,28 +50,28 @@ console.log('start');
 //   }
 // });
 
-database.ref("/enemydata").once("value",function (snapshot) {
-  let enemydata = snapshot.val();
-  let count = 0;
-    for(let i in enemydata){
-      count ++;
-      process.stdout.clearLine();
-      process.stdout.cursorTo(0);
-      process.stdout.write("update enemy "+i+"---");
-      process.stdout.write((count/382*100).toFixed(2).toString());
-      process.stdout.write("%");
-
-      let obj = {
-        count : 0
-      }
-      database.ref("/enemydata/"+i).update(obj);
-      // database.ref("/catdata/"+i+"/攻撃力").remove();
-      // database.ref("/catdata/"+i+"/體力").remove();
-    }
-    setTimeout(function () {
-      process.exit()
-    },2000)
-});
+// database.ref("/enemydata").once("value",function (snapshot) {
+//   let enemydata = snapshot.val();
+//   let count = 0;
+//     for(let i in enemydata){
+//       count ++;
+//       process.stdout.clearLine();
+//       process.stdout.cursorTo(0);
+//       process.stdout.write("update enemy "+i+"---");
+//       process.stdout.write((count/382*100).toFixed(2).toString());
+//       process.stdout.write("%");
+//
+//       let obj = {
+//         count : 0
+//       }
+//       database.ref("/enemydata/"+i).update(obj);
+//       // database.ref("/catdata/"+i+"/攻撃力").remove();
+//       // database.ref("/catdata/"+i+"/體力").remove();
+//     }
+//     setTimeout(function () {
+//       process.exit()
+//     },2000)
+// });
 
 // database.ref("/user").once("value",function (snapshot) {
 //   console.log('get user data');
@@ -94,16 +94,16 @@ database.ref("/enemydata").once("value",function (snapshot) {
 //   }
 // });
 
-// database.ref("/stagedata/tower/s07000").once('value',function (snapshot) {
-//   let data = snapshot.val() ;
-//   // database.ref("/stagedata/tower/s07000").set(data);
-//   for (let i in data){
-//       if(i=="name")continue
-//       let arr = (data[i].id).split("-");
-//       arr[1] = "s07000";
-//       // database.ref("/stagedata/tower/s07000/"+i).update({id:arr.join("-")});
-//   }
-// });
+database.ref("/stagedata/story").once('value',function (snapshot) {
+  let data = snapshot.val() ;
+  // database.ref("/stagedata/tower/s07000").set(data);
+  for (let i in data){
+    for(let j in data[i]){
+      if (j == 'name') continue
+      database.ref("/stagedata/story/"+i+"/"+j).update({integral:false});
+    }
+  }
+});
 
 var t = new Date(),
     y = t.getFullYear(),

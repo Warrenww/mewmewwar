@@ -49,6 +49,13 @@
   background-size: 100%;
   background-position: 0% 100%;
 }
+#maylook{
+  background-image: url("footage/maylook_BG.png");
+  background-size: 100%;
+  background-position: 0% 100%;
+  background-color: rgba(0,0,0,.6);
+  background-blend-mode: multiply;
+}
 
 .select_chapter{
   display: flex;
@@ -57,6 +64,7 @@
   width: 100%;
   overflow-x: scroll;
   margin: 10px 0;
+  background-color: rgba(255,255,255,.5)
 }
 .select_chapter_holder::-webkit-scrollbar,
 #select_stage::-webkit-scrollbar,

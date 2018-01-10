@@ -3,9 +3,16 @@ const image_url_enemy =  "../public/css/footage/enemy/e" ;
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
+  var filter_name = '';
   // $(document).on('click', '#current_user_name', facebookLog); //Facebook登入
   $(document).on("click","#fb_login",facebookLog)
-  $(document).on("click","#guest_login",guestLog)
+  $(document).on("click","#guest_login",function () {
+    let r = confirm("資料庫容量有限，"+
+    "匿名登入使用者如果連續三天沒有使用將被刪除，"+
+    "是否仍要繼續匿名登入?");
+    if(r) guestLog();
+    else return
+  })
   function facebookLog() {
     auth.signInWithPopup(facebook_provider).then(function(result) {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -112,13 +119,13 @@ $(document).ready(function () {
     $(window).bind('mousewheel', false);
     let current = $("#selected").scrollTop(),
         offset = $("#selected").height(),
-        current_page = current/offset ;
+        current_page = Number((current/offset).toFixed(0))+Number(n) ;
 
     $("#selected").animate(
       {scrollTop: current+offset*n},
       100*Math.sqrt(Math.abs(n)),'easeInOutCubic');
 
-    $("#page_dot").find("span[value='"+(current_page+n)+"']")
+    $("#page_dot").find("span[value='"+Number(current_page)+"']")
       .css('background-color','rgb(254, 168, 74)')
       .siblings().css('background-color','white')
 
@@ -258,6 +265,57 @@ $(window).load(function () {
     $(".nav_panel").css("height",0);
     nav_panel = 0 ;
   }) ;
+  $('#slider_holder').children('.active').click(function () {
+    let target = $("#"+filter_name+".filter_option");
+    target.attr('active',target.attr('active')=='true'?'false':'true');
+    $(this).html(target.attr('active')=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>');
+  });
+  $('#slider_holder').children('.reverse').click(function () {
+    let target = $("#"+filter_name+".filter_option");
+    target.attr('reverse',target.attr('reverse')=='true'?'false':'true');
+    $(this).html(target.attr('reverse')=='true'?'以下':'以上');
+  });
+  $('#slider_holder').find('.slider').on("slidechange",function (e,ui) {
+    $("#lower_table").find("#"+filter_name).attr('value',ui.value);
+  });
+  $("#lower_table").find("#selectAll").click(function () {
+    if($(this).text().trim() == '全選') {
+      $(".filter_option").attr('active','true');
+      $(this).text('全部清除');
+      $('.active').html('<i class="material-icons">&#xe837;</i>');
+    }
+    else{
+      filter_name = "" ;
+      $(".filter_option").attr('active','false');
+      $(this).text('全選');
+      $('.active').html('<i class="material-icons">&#xe836;</i>');
+      $("#slider_holder").hide().siblings().children('.filter_option').css('border-bottom','0px solid');
+    }
+  });
+  $(".filter_option").hover(
+    function () {
+      let position = $(this).offset(),
+          value = $(this).attr('value'),
+          width = $(this).outerWidth()-10,
+          active = $(this).attr('active') == 'true' ? true : false ,
+          reverse = $(this).attr('reverse') == 'true' ? '以下' : '以上';
+      position.top -= 30 ;
+        if(active && screen.width > 768){
+          $("#TOOLTIP").finish().fadeIn().css("display","flex");
+          $("#TOOLTIP").offset(position).width(width).text(value+reverse) ;
+        }
+
+    },function () {
+      $("#TOOLTIP").fadeOut();
+  });
+  $(".slider").slider();
+  $(".slider").on("slide", function(e,ui) {
+    $(this).parent().siblings('td.value_display').html(ui.value);
+  });
+  $(".slider").on("slidechange", function(e,ui) {
+    $(this).parent().siblings('td.value_display').html(ui.value);
+  });
+
 });
 //google Analytics
 window.dataLayer = window.dataLayer || [];

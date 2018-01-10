@@ -124,30 +124,17 @@ io.on('connection', function(socket){
             }
           } else buffer_2 = buffer_1 ;
           buffer_1 = [] ;
-          if(!showJP && type == 'cat'){
-            for(let i in buffer_2){
-              let region = buffer_2[i].region;
-              if(region.indexOf("[TW]") == -1) delete buffer_2[i]
+
+          for(let i in buffer_2) {
+            let obj = {
+              id : buffer_2[i].id,
+              name : buffer_2[i].name
             }
-            for(let i in buffer_2) {
-              let obj = {
-                id : buffer_2[i].id,
-                name : buffer_2[i].name
-              }
-              buffer_1.push(obj) ;
-            }
-            socket.emit("search result",buffer_1);
+            if(type == 'cat' && !showJP) continue
+            else buffer_1.push(obj) ;
           }
-          else{
-            for(let i in buffer_2) {
-              let obj = {
-                id : buffer_2[i].id,
-                name : buffer_2[i].name
-              }
-              buffer_1.push(obj) ;
-            }
-            socket.emit("search result",buffer_1);
-          }
+          socket.emit("search result",buffer_1);
+
         });
 
   });
@@ -215,28 +202,26 @@ io.on('connection', function(socket){
         result.count = storge_count ? storge_count : 1;
         result.own = own;
         socket.emit("display cat result",result);
-      });
-    }
-    // console.log(result);
-    if(uid){
-      console.log("recording user history");
-      database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
-      database.ref("/user/"+uid).once('value',function (snapshot) {
-        let data = snapshot.val(),
-        last = data.history.last_cat?data.history.last_cat.substring(0,3):"",
-        cat = data.variable.cat[grossID],
-        count = (cat?(cat.count?cat.count:0):0) + 1;
-        if(grossID != last) {
-          database.ref("/user/"+uid+"/history/last_cat").set(id);
-          console.log("count cat search time(user)");
-          database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(count);
-          console.log("count cat search time(global)");
-          database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
-            let count = snapshot.val() + 1;
-            database.ref("/catdata/"+id+"/count").set(count);
-          });
-        }
-        else console.log("same as last cat");
+
+        database.ref("/user/"+uid).once('value',function (snapshot) {
+          let data = snapshot.val(),
+          last = data.history.last_cat?data.history.last_cat.substring(0,3):"",
+          cat = data.variable.cat[grossID],
+          count = (cat?(cat.count?cat.count:0):0) + 1;
+          if(grossID != last) {
+            console.log("recording user history");
+            database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
+            database.ref("/user/"+uid+"/history/last_cat").set(id);
+            console.log("count cat search time(user)");
+            database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(count);
+            console.log("count cat search time(global)");
+            database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
+              let count = snapshot.val() + 1;
+              database.ref("/catdata/"+id+"/count").set(count);
+            });
+          }
+          else console.log("same as last cat");
+        });
       });
     }
   });
@@ -244,17 +229,22 @@ io.on('connection', function(socket){
     let uid = data.uid,id = data.id;
     console.log(data);
     console.log("client requir enemy "+id+"'s data'");
-    socket.emit('display enemy result',enemydata[id]);
+    let buffer = enemydata[id];
 
     if(uid){
-      console.log("recording user history");
-      database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id});
+      database.ref("/user/"+uid+"/variable/").once("value",function (snapshot) {
+        let data = snapshot.val();
+        buffer.count = data.enemy?(data.enemy[id]?data.enemy[id].count:0):0;
+        socket.emit('display enemy result',buffer);
+      });
       database.ref("/user/"+uid).once('value',function (snapshot) {
         let data = snapshot.val(),
         last = data.history.last_enemy,
         enemy = data.variable.enemy?data.variable.enemy[id]:null,
         count = (enemy?(enemy.count?enemy.count:0):0) + 1;
         if(id != last) {
+          console.log("recording user history");
+          database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id});
           database.ref("/user/"+uid+"/history/last_enemy").set(id);
           console.log("count enemy search time(user)");
           database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
@@ -266,7 +256,7 @@ io.on('connection', function(socket){
         }
         else console.log("same as last enemy");
       });
-    }
+    } else socket.emit('display enemy result',buffer);
   });
 
   socket.on("user login",function (user) {
@@ -317,7 +307,7 @@ io.on('connection', function(socket){
     });
 
   });
-  socket.on("user connet",function (user){
+  socket.on("user connect",function (user){
     let timer = new Date().getTime(),
         last_cat = '',
         last_combo = [],
@@ -435,7 +425,6 @@ io.on('connection', function(socket){
   socket.on("mark own",function (data) {
     console.log(data.uid+" claim he/she "+
         (data.mark?"does":"doesn't")+" own "+data.cat);
-
     database.ref("/user/"+data.uid+"/variable/cat/"+data.cat)
       .update({own:data.mark ? true : false});
     database.ref("/user/"+data.uid+"/folder").once("value",function (snapshot) {

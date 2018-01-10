@@ -5,7 +5,7 @@ $(document).ready(function () {
   var current_enemy_data = {};
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connet",user);
+      socket.emit("user connect",user);
     } else {
       console.log('did not sign in');
     }
@@ -141,7 +141,11 @@ $(document).ready(function () {
     $("#selected").append(condenseEnemyName(result));
     $(".button_group").css('display','flex');
     scroll_to_div("selected");
-    number_page /= 10 ;
+    let select_width = $("#selected").innerWidth(),
+        card_width = screen.width > 1024 ? 200 :140,
+        per_page = Math.floor(select_width/card_width)*2;
+
+    number_page = Math.ceil(number_page/per_page) ;
     if(number_page>25) page_factor = 2;
     for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
@@ -155,7 +159,15 @@ $(document).ready(function () {
   });
 
   function displayEnemyData(data) {
-    let html = "" ;
+    let html = "",
+        showID = current_user_data.setting.show_enemy_id,
+        showCount = current_user_data.setting.show_enemy_count;
+
+    html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
+            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+data.count+"</td>"+
+            "<td colspan=2><a target='blank' href='http://battlecats-db.com/enemy/"+
+            data.id+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
+
     html += displayenemyHtml(data)
     $(".dataTable").empty();
     $(".dataTable").append(html);
@@ -197,67 +209,13 @@ $(document).ready(function () {
     }).parent().siblings('.active').html(active=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>')
     .siblings('.reverse').html(reverse=='true'?'以下':'以上');
   }
-  $('#slider_holder').children('.active').click(function () {
-    let target = $("#"+filter_name+".filter_option");
-    target.attr('active',target.attr('active')=='true'?'false':'true');
-    $(this).html(target.attr('active')=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>');
-  });
-  $('#slider_holder').children('.reverse').click(function () {
-    let target = $("#"+filter_name+".filter_option");
-    target.attr('reverse',target.attr('reverse')=='true'?'false':'true');
-    $(this).html(target.attr('reverse')=='true'?'以下':'以上');
-  });
-  $('#slider_holder').find('.slider').on("slidechange",function (e,ui) {
-    $("#lower_table").find("#"+filter_name).attr('value',ui.value);
-  });
-  $("#lower_table").find("#selectAll").click(function () {
-    if($(this).text().trim() == '全選') {
-      $(".filter_option").attr('active','true');
-      $(this).text('全部清除');
-      $('.active').html('<i class="material-icons">&#xe837;</i>');
-    }
-    else{
-      filter_name = "" ;
-      $(".filter_option").attr('active','false');
-      $(this).text('全選');
-      $('.active').html('<i class="material-icons">&#xe836;</i>');
-      $("#slider_holder").hide().siblings().children('.filter_option').css('border-bottom','0px solid');
-    }
-  });
-  $(".filter_option").hover(
-    function () {
-      let position = $(this).offset(),
-          value = $(this).attr('value'),
-          width = $(this).outerWidth()-10,
-          active = $(this).attr('active') == 'true' ? true : false ,
-          reverse = $(this).attr('reverse') == 'true' ? '以下' : '以上';
-      position.top -= 30 ;
-        if(active && screen.width > 768){
-          $("#TOOLTIP").finish().fadeIn();
-          $("#TOOLTIP").offset(position).width(width).text(value+reverse) ;
-        }
-
-    },function () {
-      $("#TOOLTIP").fadeOut();
-  });
-  $(".slider").slider();
-  $(".slider").on("slide", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
-  });
-  $(".slider").on("slidechange", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
-  });
-
+  
 
 
 });
 function displayenemyHtml(data) {
   console.log(data);
   let html = '';
-  html += "<tr><td colspan="+(screen.width > 768 ?4:3)+" style='background-color:transparent'></td>"+
-          "<td colspan="+(screen.width > 768 ?2:3)+" id='link'><a target='blank' href='http://battlecats-db.com/enemy/"+
-          data.id+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
-
   html += screen.width > 768 ?
   "<tr>"+
   "<th style='height:80px;padding:0'><img src='"+
