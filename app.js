@@ -533,6 +533,11 @@ io.on('connection', function(socket){
     });
   });
 
+  // socket.on("customer service",function (data) {
+  //   console.log("service",data);
+  //   database.ref("/user/"+data.uid+"/service").push(data.time);
+  // });
+
 
 
   socket.on('get event date',function () {
@@ -547,8 +552,8 @@ io.on('connection', function(socket){
   socket.on('disconnect', function(){
     // console.log('user disconnected');
   });
-  socket.on("lucky",function(data){
-    console.log("lucky ");
+  socket.on("gacha",function(data){
+    console.log("gacha");
     console.log(data);
     database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
       let jp = snapshot.val(),senddata=[];
@@ -559,25 +564,28 @@ io.on('connection', function(socket){
         if(data.result[i] == 'R') rarity = "稀有" ;
         let buffer = [];
         let exist = '000' ;
-        if(!jp){
-          for(let i in catdata) {
-            if(catdata[i].rarity == rarity && catdata[i].region == '[TW][JP]') {
-              let current = i.substring(0,3);
-              if(current == exist) continue
-              buffer.push(current);
-              exist = current;
-            }
-          }
-        } else {
-          for(let i in catdata) {
-            if(catdata[i].rarity == rarity) {
-              let current = i.substring(0,3);
-              if(current == exist) continue
-              buffer.push(current);
-              exist = current;
-            }
+        for(let i in catdata) {
+          if( catdata[i].rarity == rarity &&
+              (jp||catdata[i].region.indexOf("[JP]")!=-1) &&
+              (rarity=="超激稀有"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1)
+            ) {
+            let current = i.substring(0,3);
+            if(current == exist) continue
+            buffer.push(current);
+            exist = current;
           }
         }
+        // if(!jp){
+        //   for(let i in catdata) {
+        //     if(catdata[i].rarity == rarity && catdata[i].region == '[TW][JP]') {
+        //       let current = i.substring(0,3);
+        //       if(current == exist) continue
+        //       buffer.push(current);
+        //       exist = current;
+        //     }
+        //   }
+        // } else {
+        // }
         let choose = buffer[Math.floor((Math.random()*buffer.length))],
         choooose = choose+"-1" ;
         senddata.push({

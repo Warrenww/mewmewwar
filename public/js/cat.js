@@ -22,7 +22,8 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     console.log(data);
     current_user_data = data ;
-    if(data.last_cat && location.pathname.indexOf('once') == -1) socket.emit("display cat",{
+    if(data.last_cat && location.pathname.indexOf('once') == -1)
+    socket.emit("display cat",{
       uid : data.uid,
       cat : data.last_cat
     }) ;
@@ -94,8 +95,8 @@ $(document).ready(function () {
     location.assign('combo.html')
   }) ;
   $(document).on("click","#share",function () {
-    let id = $(this).parent().siblings().attr("id"),
-        lv = $(this).parent().siblings().find("#level_num").text(),
+    let id = $(this).parents("#more_option").siblings().attr("id"),
+        lv = $(this).parents("#more_option").siblings().find("#level_num").text(),
         host = location.origin;
     $(this).append(
       "<input type='text' value='"+
@@ -163,9 +164,11 @@ $(document).ready(function () {
         id = data.id,
         grossID = id.substring(0,3);
 
-        if(own) $("#more_option #mark_own").attr("value",1);
-        else $("#more_option #mark_own").attr("value",0);
-        $("#more_option #out").parent().attr("href","http://battlecats-db.com/unit/"+grossID+".html");
+    if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
+    else $("#more_option").css("height",0);
+    if(own) $("#more_option #mark_own").attr("value",1).find("span").fadeOut();
+    else $("#more_option #mark_own").attr("value",0);
+    $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+grossID+".html");
 
     html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
             "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+count+"</td>"+
@@ -298,16 +301,23 @@ $(document).ready(function () {
     return html ;
   }
   $(document).on("click","#mark_own",function () {
-    let val = Number($(this).attr("value")),
-        cat = $(this).parent().siblings().attr("id").substring(0,3);
+    let val = Number($(this).attr("value"))?0:1,
+        cat = $(this).parents("#more_option").siblings().attr("id").substring(0,3);
     socket.emit("mark own",{
       uid:current_user_data.uid,
       cat:cat,
       mark:val
     });
+    if(val) $(this).attr("value",1).find("span").fadeOut();
+    else $(this).attr("value",0).find("span").fadeIn();
+
   });
   var show_more = 1;
+  setTimeout(function () {
+    show_more = current_user_data.setting.show_more_option?0:1;
+  },500);
   $(document).on("click","#more",function () {
+    console.log(show_more);
     if(show_more) $("#more_option").css("height",50);
     else $("#more_option").css("height",0);
     show_more = show_more?0:1;

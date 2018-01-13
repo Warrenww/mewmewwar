@@ -42,12 +42,28 @@
       }
       .result{
         margin:5% 0;
+        justify-content: center;
       }
+      #scoreboard{
+        position: fixed;
+        top: 60px;
+        right:20px;
+        background-color: rgba(0,0,0,.7);
+        width: 20%;
+        color: white;
+        padding: 1%;
+      }
+      #scoreboard table{color: white}
+      #scoreboard h2{text-align: center;margin: 0;cursor: pointer;}
       @media screen and (max-width: 768px){
         #test,#test_2,#test_3{
           margin: 20px;
           font-size: 20px;
         }
+        #scoreboard{
+          width: 60%
+        }
+        .but_group{top: 90%}
       }
     </style>
 
@@ -58,6 +74,35 @@
         <button id='test_3' >清空</button>
       </div>
       <div class="result" style="width:100%;padding:5%;display:flex;flex-wrap: wrap;"></div>
+      <div id="scoreboard">
+        <h2>轉蛋結果<i class="material-icons">&#xe15b;</i><i class="material-icons" style="display:none">&#xe145;</i></h2>
+        <table>
+          <tr>
+            <th>稀有度</th>
+            <th>數量</th>
+            <th>機率</th>
+          </tr>
+          <tr id="R">
+            <th>稀有</th>
+            <td class="number"></td>
+            <td class="probability"></td>
+          </tr>
+          <tr id="SR">
+            <th>激稀有</th>
+            <td class="number"></td>
+            <td class="probability"></td>
+          </tr>
+          <tr id="SSR">
+            <th>超激稀有</th>
+            <td class="number"></td>
+            <td class="probability"></td>
+          </tr>
+          <tr>
+            <th>等級</th>
+            <td id="www" style="font-weight:bold;font-size:20px" colspan="2"></td>
+          </tr>
+        </table>
+      </div>
     </div>
 
 

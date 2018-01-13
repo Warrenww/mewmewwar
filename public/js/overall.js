@@ -4,6 +4,7 @@ $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
+  var current_user_data = {};
   // $(document).on('click', '#current_user_name', facebookLog); //Facebook登入
   $(document).on("click","#fb_login",facebookLog)
   $(document).on("click","#guest_login",function () {
@@ -59,6 +60,50 @@ $(document).ready(function () {
       });
     });
   }
+
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      socket.emit("user connect",user);
+    } else {
+      $("#login").fadeIn();
+      console.log('did not sign in');
+
+      if(location.pathname == '/view/once.html') {
+
+      }
+      else if(location.pathname != '/') {
+        alert("登入以獲得更多功能!!!");
+        location.assign("/");
+      }
+    }
+  });
+  socket.on("current_user_data",function (data) {
+    current_user_data = data ;
+    let name = data.name ;
+    $(".current_user_name").text("Hi, "+name);
+  });
+
+
+  if( location.pathname != "/view/calender.html"&&
+      location.pathname != "/view/event.html"&&
+      location.pathname != "/view/setting.html"&&
+      location.pathname != "/view/once.html"
+    ){
+    $("body").append("<div id='service'></div>");
+  }
+  $(document).on("click","#service",function () {
+    let url = "https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform";
+    let time = new Date().getTime(),
+        uid = current_user_data.uid;
+    // window.open(url,"_blank");
+    $("body").append(
+      "<div id='service_window_holder'>"+
+      "<iframe src='"+url+"' id='service_window'></iframe>"+
+      "</div>"
+    );
+  });
+
+
   var today = new Date();
   $(".start_holder p span").text(today.getFullYear());
   $(".start_holder p ").animate({
@@ -195,25 +240,7 @@ $(document).ready(function () {
         $("#helpModal .modal-header").scrollTop(100)
     dialog.scrollTop(ending);
   })
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user name",user.uid);
-    } else {
-      $("#login").fadeIn();
-      console.log('did not sign in');
 
-      if(location.pathname == '/view/once.html') {
-
-      }
-      else if(location.pathname != '/') {
-        alert("登入以獲得更多功能!!!");
-        location.assign("/");
-      }
-    }
-  });
-  socket.on("user name",function (name) {
-    $(".current_user_name").text("Hi, "+name);
-  });
 
   var xmlhttp = new XMLHttpRequest() ;
   var url = "../public/update_dialog.html";
@@ -316,6 +343,12 @@ $(window).load(function () {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
 
+});
+$(window).load(function () {
+  $(document).on("click","#service_window_holder",function () {
+    $(this).fadeOut();
+    setTimeout(function () {$(this).remove()},500);
+  });
 });
 //google Analytics
 window.dataLayer = window.dataLayer || [];

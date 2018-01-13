@@ -375,3 +375,50 @@ table {
   background-color: rgba(0,0,0,.7);
   z-index: 10;
 }
+#service{
+  width: 60px;
+  height: 60px;
+  position: fixed;
+  background-color: transparent;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 50%;
+  background-image: url("/public/css/footage/tab_icon.png");
+  background-size: cover;
+  cursor: pointer;
+  transition: .2s ease-in-out
+}
+#service::before{
+  content: "我是客服貓咪!喵!";
+  position: absolute;
+  width: 115px;
+  top: -20px;
+  left: -35px;
+  font-weight: bold;
+}
+#service:hover{
+  animation-name: jump;
+  animation-duration: .5s ;
+  animation-iteration-count: 3;
+}
+@keyframes jump {
+  0%{bottom: 20px}
+  50%{bottom: 40px}
+  100%{bottom: 20px}
+}
+#service_window_holder{
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  background-color: rgba(0,0,0,.7)
+}
+#service_window{
+  width: 90%;
+  height: 90%;
+  border: 10px solid white
+}
