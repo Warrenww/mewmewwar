@@ -83,17 +83,15 @@ $(document).ready(function () {
     let id = $(this).attr('value'),
         type = $(this).attr('type');
     if(type == 'cat'){
-      socket.emit("user Search",{
+      socket.emit("display cat",{
         uid : current_user_data.uid,
-        type : 'cat',
-        id : id
+        cat : id
       });
       location.assign("/view/cat.html");
     } else if(type == 'enemy'){
-      socket.emit("user Search",{
-        uid : current_user_data.uid,
-        type : 'enemy',
-        id : id
+      socket.emit("display enemy",{
+        uid:current_user_data.uid,
+        id:id
       });
       location.assign("/view/enemy.html");
     }

@@ -192,7 +192,7 @@ $(document).ready(function () {
     scroll_to_class('display',0);
   });
   function Addreward(arr,b) {
-    console.log(b);
+    // console.log(arr);
     let html ="";
     for(let i in arr){
       html += screen.width > 768 ?
@@ -228,9 +228,9 @@ $(document).ready(function () {
               "<th>數量</th>"+"<td>"+arr[i].amount+"</td>"+
               "</tr><tr>"+
               "<th>出現條件</th>"+
-              "<td>城體力<"+arr[i].castle+"</td>"+
-              "<td>"+arr[i].first_show+"秒後出現</td>"+
-              "<td>間隔"+arr[i].next_time+"秒後出現</td><tr>"
+              "<td colspan='3'>城體力小於<b>"+arr[i].castle+
+              "</b>時</br>於<b>"+arr[i].first_show+"</b>秒後出現"+
+              "</br>間隔<b>"+arr[i].next_time+"</b>秒後再次出現</td><tr>"
             )
     }
     return html
@@ -243,6 +243,7 @@ $(document).ready(function () {
     return
   }
   function prize(s) {
+    // console.log(s);
     if(s.indexOf("u")!=-1){
       return "<img src='"+image_url_cat+s.split("u")[1]+
       "-1.png' style='width:100%' class='cat' id='"+s.split("u")[1]+"-1' />"

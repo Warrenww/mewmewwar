@@ -166,8 +166,8 @@ $(document).ready(function () {
 
     if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
     else $("#more_option").css("height",0);
-    if(own) $("#more_option #mark_own").attr("value",1).find("span").fadeOut();
-    else $("#more_option #mark_own").attr("value",0);
+    if(own) $("#more_option #mark_own").attr({"value":1,"style":"color:rgb(96, 176, 37)"}).find("span").fadeOut();
+    else $("#more_option #mark_own").attr({"value":0,"style":"color:rgb(224, 103, 103)"}).find("span").fadeIn();
     $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+grossID+".html");
 
     html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
@@ -308,8 +308,8 @@ $(document).ready(function () {
       cat:cat,
       mark:val
     });
-    if(val) $(this).attr("value",1).find("span").fadeOut();
-    else $(this).attr("value",0).find("span").fadeIn();
+    if(val) $(this).attr({"value":1,"style":"color:rgb(96, 176, 37)"}).find("span").fadeOut();
+    else $(this).attr({"value":0,"style":"color:rgb(224, 103, 103)"}).find("span").fadeIn();
 
   });
   var show_more = 1;
@@ -317,7 +317,7 @@ $(document).ready(function () {
     show_more = current_user_data.setting.show_more_option?0:1;
   },500);
   $(document).on("click","#more",function () {
-    console.log(show_more);
+    // console.log(show_more);
     if(show_more) $("#more_option").css("height",50);
     else $("#more_option").css("height",0);
     show_more = show_more?0:1;

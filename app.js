@@ -124,15 +124,15 @@ io.on('connection', function(socket){
             }
           } else buffer_2 = buffer_1 ;
           buffer_1 = [] ;
-
           for(let i in buffer_2) {
             let obj = {
               id : buffer_2[i].id,
               name : buffer_2[i].name
             }
-            if(type == 'cat' && !showJP) continue
+            if(type == 'cat' && (showJP||buffer_2[i].region.indexOf("[TW]")==-1)) continue
             else buffer_1.push(obj) ;
           }
+          console.log("Result length:",buffer_1.length);
           socket.emit("search result",buffer_1);
 
         });
@@ -533,12 +533,6 @@ io.on('connection', function(socket){
     });
   });
 
-  // socket.on("customer service",function (data) {
-  //   console.log("service",data);
-  //   database.ref("/user/"+data.uid+"/service").push(data.time);
-  // });
-
-
 
   socket.on('get event date',function () {
     database.ref('/event_date').once('value',function (snapshot) {
@@ -566,7 +560,7 @@ io.on('connection', function(socket){
         let exist = '000' ;
         for(let i in catdata) {
           if( catdata[i].rarity == rarity &&
-              (jp||catdata[i].region.indexOf("[JP]")!=-1) &&
+              (jp||catdata[i].region.indexOf("[TW]")!=-1) &&
               (rarity=="超激稀有"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1)
             ) {
             let current = i.substring(0,3);
@@ -575,17 +569,7 @@ io.on('connection', function(socket){
             exist = current;
           }
         }
-        // if(!jp){
-        //   for(let i in catdata) {
-        //     if(catdata[i].rarity == rarity && catdata[i].region == '[TW][JP]') {
-        //       let current = i.substring(0,3);
-        //       if(current == exist) continue
-        //       buffer.push(current);
-        //       exist = current;
-        //     }
-        //   }
-        // } else {
-        // }
+
         let choose = buffer[Math.floor((Math.random()*buffer.length))],
         choooose = choose+"-1" ;
         senddata.push({

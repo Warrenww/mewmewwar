@@ -17,7 +17,7 @@ var config = {
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
     request({
-      url: "https://battlecats-db.com/stage/s02048-"+AddZero(j)+".html",
+      url: "https://battlecats-db.com/stage/s0300"+i+"-"+AddZero(j)+".html",
       method: "GET"
     }, function(e,r,b) {
       let obj = {
@@ -31,7 +31,7 @@ var config = {
         enemy : [],
         final : "",
         "continue" : "",
-        id:"maylook-s02048-"+j
+        id:"world-s0300"+i+"-"+j
       };
       if(!e){
         console.log("get data");
@@ -73,12 +73,14 @@ var config = {
             next_time : FtoS(ene.eq(7).text())
           });
         }
-        console.log(obj);
+        // console.log(obj);
         // console.log("next?");
-        database.ref("/stagedata/maylook/s02048/"+j).set(obj);
+        database.ref("/stagedata/world/s0300"+i+"/"+j).set(obj);
         j++;
         // if(final){j=1;i++}
-        if(!final) getData(i,j);
+        // if(!final) getData(i,j);
+        if(j<49) getData(i,j);
+        else {i++;j=1;if(i<3)getData(i,j);}
       }
       else {
         // console.log("error s070"+AddZero(i)+"-0"+j);
@@ -172,8 +174,10 @@ var config = {
         }
       }
       obj.amount = s.split(" ")[1];
-    } else {
+    } else if(p.children("a").attr("href")) {
       obj.name = "u" + p.children("a").attr("href").split("/")[2].split(".html")[0]
+    } else {
+      obj.name = s;
     }
     // console.log(obj);
     return obj
