@@ -174,8 +174,8 @@ var config = {
         }
       }
       obj.amount = s.split(" ")[1];
-    } else if(p.children("a").attr("href")) {
-      obj.name = "u" + p.children("a").attr("href").split("/")[2].split(".html")[0]
+    } else if(p.children("img").attr("src")) {
+      obj.name = "u" + p.children("img").attr("src").split("/")[3].split(".png")[0]
     } else {
       obj.name = s;
     }

@@ -43,7 +43,7 @@ $(document).ready(function () {
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
     a0:{name : '傳說故事',id : 'story',show : true},
     a1:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
-    b:{name : '世界篇',id : 'world',show : false},
+    b:{name : '世界篇',id : 'world',show : true},
     c:{name : '未來篇',id : 'future',show : false},
     d:{name : '宇宙篇',id : 'universe',show : false},
     f:{name : '極難關',id : 'hard',show : false},
@@ -83,7 +83,9 @@ $(document).ready(function () {
     $("#select_stage").empty();
     for( let i in data )
       $("#select_stage").append(
-        "<button value='0' style='width:180px;height:40px;margin:5px' id='"+data[i].id+"'>"+data[i].name+"</button>"
+        "<button value='0' style='width:180px;height:"+
+        (data[i].name.length>9?80:40)+"px;margin:5px' id='"+
+        data[i].id+"'>"+data[i].name+"</button>"
       ).css("flex","3").siblings().css("flex","1");
   });
   $(document).on("click","#select_stage button",function (e) {
@@ -246,7 +248,7 @@ $(document).ready(function () {
     // console.log(s);
     if(s.indexOf("u")!=-1){
       return "<img src='"+image_url_cat+s.split("u")[1]+
-      "-1.png' style='width:100%' class='cat' id='"+s.split("u")[1]+"-1' />"
+      ".png' style='width:100%' class='cat' id='"+s.split("u")[1]+"' />"
     } else {
       return s
     }

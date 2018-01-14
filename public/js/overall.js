@@ -273,7 +273,7 @@ $(document).ready(function () {
 
 });
 $(window).load(function () {
-  var nav_panel = 0, nav_panel_timeout;
+  var nav_panel = 0, nav_panel_timeout,close_nav_panel;
   $(".show_panel").hover(function () {
     nav_panel_timeout = setTimeout(function () {
       $(".nav_panel").css("height",screen.width>768?200:160);
@@ -281,13 +281,19 @@ $(window).load(function () {
     },200);
   },function () {
     clearTimeout(nav_panel_timeout);
+    close_nav_panel = setTimeout(function () {
+      $(".nav_panel").css("height",0);
+      nav_panel = 0;
+    },3000);
   }) ;
   $(".show_panel").click(function () {
     if(nav_panel) $(".nav_panel").css("height",0);
     else $(".nav_panel").css("height",screen.width>768?200:160);
     nav_panel = nav_panel ? 0 :1 ;
   });
-  $(".nav_panel").hover(function () {}
+  $(".nav_panel").hover(function () {
+    clearTimeout(close_nav_panel);
+  }
   ,function () {
     $(".nav_panel").css("height",0);
     nav_panel = 0 ;

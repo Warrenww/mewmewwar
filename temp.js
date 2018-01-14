@@ -27,51 +27,33 @@ var database = firebase.database();
 console.log('start');
 
 
-// database.ref("/catdata").once("value",function (snapshot) {
-//   let catdata = snapshot.val();
-//   for(let i in catdata){
-//     let obj = {
-//       全名 : null,
-//       lv1攻擊 : null,
-//       lv1體力 : null,
-//       再生産 : null,
-//       射程 : null,
-//       攻頻 : null,
-//       特性 : null,
-//       稀有度 : null,
-//       範圍 : null,
-//       花費 : null,
-//       速度 : null
-//     }
-//     database.ref("/catdata/"+i).update(obj);
-//     // database.ref("/catdata/"+i+"/攻撃力").remove();
-//     // database.ref("/catdata/"+i+"/體力").remove();
-//
-//   }
-// });
-
-database.ref("/enemydata").once("value",function (snapshot) {
-  let enemydata = snapshot.val();
-  let count = 0;
-    for(let i in enemydata){
-      count ++;
-      // process.stdout.clearLine();
-      // process.stdout.cursorTo(0);
-      // process.stdout.write("update enemy "+i+"---");
-      // process.stdout.write((count/382*100).toFixed(2).toString());
-      // process.stdout.write("%");
-
-      if(enemydata[i].全名) {
-        console.log(enemydata[i].全名,enemydata[i].name);
-        // database.ref("/enemydata/"+i).update({全名:null});
-      }
-      // database.ref("/catdata/"+i+"/攻撃力").remove();
-      // database.ref("/catdata/"+i+"/體力").remove();
-    }
-    setTimeout(function () {
-      process.exit()
-    },2000)
+database.ref("/catdata").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  console.log("cat data load complete");
 });
+
+// database.ref("/enemydata").once("value",function (snapshot) {
+//   let enemydata = snapshot.val();
+//   let count = 0;
+//     for(let i in enemydata){
+//       count ++;
+//       // process.stdout.clearLine();
+//       // process.stdout.cursorTo(0);
+//       // process.stdout.write("update enemy "+i+"---");
+//       // process.stdout.write((count/382*100).toFixed(2).toString());
+//       // process.stdout.write("%");
+//
+//       if(enemydata[i].全名) {
+//         console.log(enemydata[i].全名,enemydata[i].name);
+//         // database.ref("/enemydata/"+i).update({全名:null});
+//       }
+//       // database.ref("/catdata/"+i+"/攻撃力").remove();
+//       // database.ref("/catdata/"+i+"/體力").remove();
+//     }
+//     setTimeout(function () {
+//       process.exit()
+//     },2000)
+// });
 
 // database.ref("/user").once("value",function (snapshot) {
 //   console.log('get user data');
@@ -93,16 +75,25 @@ database.ref("/enemydata").once("value",function (snapshot) {
 //     count++;
 //   }
 // });
-
-database.ref("/stagedata/story").once('value',function (snapshot) {
+database.ref("/stagedata/world/s03002").once('value',function (snapshot) {
   let data = snapshot.val() ;
-  // database.ref("/stagedata/tower/s07000").set(data);
-  for (let i in data){
-    for(let j in data[i]){
-      if (j == 'name') continue
-      database.ref("/stagedata/story/"+i+"/"+j).update({integral:false});
+
+    for(let j in data){
+      if(j == "name") continue
+      let target = data[j];
+      console.log(target.id);
+      for (let k in target.reward){
+        if(target.reward[k].prize.name.indexOf("u")!=-1){
+          let name = target.reward[k].prize.name+"-1";
+          let amount = catdata[name.substring(1)].name;
+          console.log(name,amount);
+          database.ref("/stagedata/world/s03002/"+j+"/reward/"+k+"/prize")
+            .update({"name":name,"amount":amount});
+
+        }
+      }
     }
-  }
+
 });
 
 var t = new Date(),
