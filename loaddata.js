@@ -16,43 +16,27 @@ console.log("download data from google sheet!!");
 gsjson({
   spreadsheetId: sheet_ID,
   hash : 'id',
-  worksheet: ['貓咪資料','聯組','敵人資料']
+  worksheet: ['聯組']
 })
 .then(function(result) {
   console.log("download complete!!");
   var obj = {} ;
-  for(let i in result[1]){
+  for(let i in result[0]){
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(result[0][i].id);
     var bufferobj = {
-      id : result[1][i].id,
-      catagory : result[1][i].catagory,
-      name : result[1][i].name,
-      effect : result[1][i].effect,
-      amount : result[1][i].amount,
-      cat : [result[1][i].cat_1,result[1][i].cat_2,result[1][i].cat_3,result[1][i].cat_4,result[1][i].cat_5]
+      id : result[0][i].id,
+      catagory : result[0][i].catagory,
+      name : result[0][i].name,
+      effect : result[0][i].effect,
+      amount : result[0][i].amount,
+      cat : [result[0][i].cat_1,result[0][i].cat_2,result[0][i].cat_3,result[0][i].cat_4,result[0][i].cat_5]
     } ;
     obj[i] = bufferobj;
   }
-  var count = 0;
-  for(let i in result[0]){
-    process.stdout.clearLine();  // clear current text
-    process.stdout.cursorTo(0);  // move cursor to beginning of line
-    process.stdout.write("loading cat data "+i);  // write text
-    database.ref("/catdata/"+i).update(result[0][i]) ;
-  }
   database.ref("/combodata").update(obj) ;
-  // database.ref("/enemydata").update(result[2]) ;
-  // fs.writeFile('public/js/Catdata.txt', JSON.stringify(result[0]), (err) => {
-  //   if (err) throw err;
-  //   console.log('Catdata is saved!');
-  // });
-  // fs.writeFile('public/js/Combodata.txt', JSON.stringify(obj), (err) => {
-  //   if (err) throw err;
-  //   console.log('Combodata is saved!');
-  // });
-  // fs.writeFile('public/js/Enemydata.txt', JSON.stringify(result[2]), (err) => {
-  //   if (err) throw err;
-  //   console.log('Enemydata is saved!');
-  // });
+
   console.log("\nall data save to firebase");
   setTimeout(function () {
         process.exit()

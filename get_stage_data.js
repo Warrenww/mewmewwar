@@ -12,7 +12,7 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  var i=0,j=1;
+  var i=6,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -31,21 +31,26 @@ var config = {
         enemy : [],
         final : "",
         "continue" : "",
-        id:"world-s0300"+i+"-"+j
+        id:"universe-s0300"+i+"-"+j
       };
       if(!e){
-        console.log("get data");
+        // console.log("get data");
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(obj.id+"---");
+        process.stdout.write((j/48*100).toFixed(1).toString()+"%");
         $ = cheerio.load(b);
         let content = $(".maincontents table"),
         final = content.children().length == 6 ? true : false,
         thead = content.children("thead").eq(0).children("tr"),
         tbody_1 = content.children("tbody").eq(final?1:0).children("tr"),
         tbody_2 = content.children("tbody").eq(final?2:1).children("tr");
-        console.log(final);
+        // console.log(final);
         obj.final = final;
         obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
         obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
         obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
+        obj.constrain = thead.eq(0).children("td").eq(2).find("font").text().indexOf("制限")!=-1?parseConstrain(thead.eq(0).children("td").eq(2).find("font").text()):null;
         obj.energy = thead.eq(0).children("td").eq(4).text();
         obj.exp = thead.eq(1).children("td").eq(1).text().split("XP+")[1];
         obj.castle = thead.eq(2).children("td").eq(2).text();
@@ -58,10 +63,10 @@ var config = {
             chance : tbody_1.eq(k).children("td").eq(3).text(),
             limit : tbody_1.eq(k).children("td").eq(4).text() == '無制限' ? "無限" : tbody_1.eq(k).children("td").eq(4).text()
           });
-          process.stdout.write(" "+JSON.stringify(obj.reward[k].prize)+"\n");
+          // process.stdout.write(" "+JSON.stringify(obj.reward[k].prize)+"\n");
         }
         for(let k=0;k<tbody_2.length;k++){
-          console.log("enemy "+k);
+          // console.log("enemy "+k);
           let ene = tbody_2.eq(k).children("td")
           obj.enemy.push({
             Boss : ene.eq(0).text() == "BOSS" ? true : false,
@@ -74,13 +79,12 @@ var config = {
           });
         }
         // console.log(obj);
-        // console.log("next?");
-        database.ref("/stagedata/world/s0300"+i+"/"+j).set(obj);
+        database.ref("/stagedata/universe/s0300"+i+"/"+j).set(obj);
         j++;
         // if(final){j=1;i++}
         // if(!final) getData(i,j);
         if(j<49) getData(i,j);
-        else {i++;j=1;if(i<3)getData(i,j);}
+        // else {i++;j=1;if(i<3)getData(i,j);}
       }
       else {
         // console.log("error s070"+AddZero(i)+"-0"+j);
@@ -181,6 +185,25 @@ var config = {
     }
     // console.log(obj);
     return obj
+  }
+  function parseConstrain(c) {
+    // process.stdout.write("\n");
+    c = c.split(" ")[1];
+    // console.log(c);
+    if(c.indexOf("コスト")!=-1){
+      c = "生產成本:"+c.split("コスト")[1].split("円").join("元");
+    }
+    else if(c.indexOf("最大キャラ数")!=-1){
+      c = "最大出擊數量:"+c.split("最大キャラ数")[1].split("体")[0];
+    }
+    else if(c.indexOf("スロット1ページ目のみ")!=-1){
+      c = "出陣列表:僅限第一頁";
+    }
+    else {
+      c = c.split("レア").join("稀有");
+    }
+    // console.log(c);
+    return c
   }
   function FtoS(s) {
     if(s == "-") return "-"

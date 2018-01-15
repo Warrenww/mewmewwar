@@ -16,20 +16,57 @@ var catdata;
 firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
-// database.ref("/catdata").once("value",function (snapshot) {
-//   catdata = snapshot.val();
-//   var i=384;
-//   getthewww(i);
-// });
+database.ref("/catdata").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  let id = "186" ;
+  let url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R"+id+".html"
   request({
-    url:"https://battlecats-db.com/stage/s02008.html",
+    url:url,
     method: "GET"
   },function (e,r,b) {
     if(!e){
       $ = cheerio.load(b);
-      
-    }
+      // let name = $(".mb10").text().split("「")[1].split("」")[0]+" 稀有轉蛋";
+      let name = "蛋黃哥 合作活動 稀有轉蛋";
+      let obj = {ssr:[],sr:[],r:[]};
+      console.log(name);
+      let count = 0;
+      $(".block").children(".chara_block01").each(function () {
+        count++;
+        let a = $(this).find(" table tr").eq(1).children("td").eq(0),
+        c = a.children(".name").children(".t02").text();
+        for(let i in catdata){
+          if(catdata[i].name == c){
+            console.log(i,c);
+            database.ref("/catdata/"+i+"/get_method").set(name);
+            obj.ssr.push(i);
+          }
+        }
+      });
+      let w = "sr"
+      $(".block").children(".apc_chara01").each(function () {
+        let d = $(this).children(".apc_name").text().trim().split(", ");
+        console.log(d);
+        console.log(w);
+        for(let i in catdata){
+          if(d.indexOf(catdata[i].name)!=-1){
+             console.log(i,catdata[i].name);
+             database.ref("/catdata/"+i+"/get_method").set(name);
+             obj[w].push(i);
+           }
+        }
+        w = 'r';
+      });
+      database.ref("/gachadata/R"+id).set({name:name,content:obj});
+      console.log("count:",count);
+      setTimeout(function () {
+        process.exit();
+      },2000);
+    }else{console.log(e);}
   });
+
+});
+
 // function getthewww(i) {
 //   // console.log(AddZero(i));
 //   request({

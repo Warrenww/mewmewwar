@@ -45,7 +45,7 @@ $(document).ready(function () {
     a1:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
     b:{name : '世界篇',id : 'world',show : true},
     c:{name : '未來篇',id : 'future',show : false},
-    d:{name : '宇宙篇',id : 'universe',show : false},
+    d:{name : '宇宙篇',id : 'universe',show : true},
     f:{name : '極難關',id : 'hard',show : false},
     g:{name : '月間關',id : 'month',show : false},
     h:{name : '開眼關',id : 'openEye',show : false},
@@ -151,7 +151,9 @@ $(document).ready(function () {
               "</tr><tr>"+
               "<th>城堡體力</th>"+"<td>"+data.castle+"</td>"+
               "<th>戰線長度</th>"+"<td>"+data.length+"</td>"+
-              "<th>出擊限制</th>"+"<td>"+data.limit_no+"</td>"+
+              "<th>敵人出擊限制</th>"+"<td>"+data.limit_no+"</td>"+
+              "</tr><tr>"+
+              "<th>我方出擊限制</th>"+"<td colspan='5'>"+(data.constrain?data.constrain:"無")+"</td>+"+
               "</tr><tr>"+
               "<th colspan=6>過關獎勵</th>"+
               "</tr><tr>"+Addreward(data.reward,data.integral)+
@@ -178,7 +180,9 @@ $(document).ready(function () {
               "</tr><tr>"+
               "<th>戰線長度</th>"+"<td colspan=3>"+data.length+"</td>"+
               "</tr><tr>"+
-              "<th>出擊限制</th>"+"<td colspan=3>"+data.limit_no+"</td>"+
+              "<th>敵方出擊限制</th>"+"<td colspan=3>"+data.limit_no+"</td>"+
+              "</tr><tr>"+
+              "<th>我方出擊限制</th>"+"<td colspan=3>"+(data.constrain?data.constrain:"無")+"</td>"+
               "</tr><tr>"+
               "<th colspan=4>過關獎勵</th>"+
               "</tr><tr>"+Addreward(data.reward,data.integral)+

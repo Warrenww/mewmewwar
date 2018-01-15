@@ -5,7 +5,8 @@ $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
   var current_user_data = {};
-  // $(document).on('click', '#current_user_name', facebookLog); //Facebook登入
+
+//user login
   $(document).on("click","#fb_login",facebookLog)
   $(document).on("click","#guest_login",function () {
     let r = confirm("資料庫容量有限，"+
@@ -61,6 +62,7 @@ $(document).ready(function () {
     });
   }
 
+//get user data
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",user);
@@ -83,7 +85,7 @@ $(document).ready(function () {
     $(".current_user_name").text("Hi, "+name);
   });
 
-
+//coustomer service
   if( location.pathname != "/view/calender.html"&&
       location.pathname != "/view/event.html"&&
       location.pathname != "/view/setting.html"&&
@@ -103,7 +105,7 @@ $(document).ready(function () {
     );
   });
 
-
+//index page get year
   var today = new Date();
   $(".start_holder p span").text(today.getFullYear());
   $(".start_holder p ").animate({
@@ -113,6 +115,8 @@ $(document).ready(function () {
   if(screen.width < 768){
     $("#lower_table .value_display").attr("colspan",7);
   }
+
+  //input reaction
   $(document).on('keypress', 'input', function(e) {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) {
@@ -122,6 +126,8 @@ $(document).ready(function () {
   $(document).on('click', 'input',function (e) {
     e.stopPropagation();
   });
+
+  //button reaction
   $(document).on('click',".button",toggleButton);
   function toggleButton() {
     let val = Number($(this).attr('value')) ;
@@ -130,6 +136,8 @@ $(document).ready(function () {
       return val ;
     });
   }
+
+  //mobile navigation reaction
   var showMobilePanel = 1 ;
   $(document).on('click','#m_nav_menu',function () {
     if(showMobilePanel){
@@ -150,6 +158,8 @@ $(document).ready(function () {
       showMobilePanel = 1 ;
     }
   });
+
+  //table th reaction
   $(document).on('click','#upper_table th',function () {
     let on = $(this).siblings().children('[value=1]') ;
     if(on.length > 0) on.each(function () {$(this).attr('value',0);});
@@ -157,6 +167,8 @@ $(document).ready(function () {
       $(this).attr('value',1);
     });
   });
+
+  //change page reaction
   $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
   $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
   function turnPage(n) {
@@ -207,10 +219,12 @@ $(document).ready(function () {
     //   .siblings().css('background-color','white');
     // $(this).attr('active',true).siblings().attr('active',false);
   });
+
+  //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
       nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
   var nav_site_2 = ["compareCat","calender","event","gacha"],
-      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋"];
+      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋模擬器"];
 
   var nav_html_panel = "" ,
       nav_html = '';
@@ -256,6 +270,8 @@ $(document).ready(function () {
       $("#helpModal").find(".modal-footer").html("本網站資料來源主要為<a href='https://cnhv.co/rnwe' target='blank'>超絕攻略網</a>");
     }
   }
+
+
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
@@ -272,6 +288,7 @@ $(document).ready(function () {
   },800,"easeInOutCubic");
 
 });
+
 $(window).load(function () {
   var nav_panel = 0, nav_panel_timeout,close_nav_panel;
   $(".show_panel").hover(function () {
@@ -348,14 +365,12 @@ $(window).load(function () {
   $(".slider").on("slidechange", function(e,ui) {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
-
-});
-$(window).load(function () {
   $(document).on("click","#service_window_holder",function () {
     $(this).fadeOut();
     setTimeout(function () {$(this).remove()},500);
   });
 });
+
 //google Analytics
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
