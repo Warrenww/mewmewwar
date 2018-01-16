@@ -223,8 +223,8 @@ $(document).ready(function () {
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
       nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
-  var nav_site_2 = ["compareCat","calender","event","gacha"],
-      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋模擬器"];
+  var nav_site_2 = ["compareCat","calender","event","gacha"/*,"fight"*/],
+      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋模擬器"/*,"對戰"*/];
 
   var nav_html_panel = "" ,
       nav_html = '';

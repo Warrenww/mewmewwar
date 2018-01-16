@@ -35,12 +35,14 @@ var catdata,
     combodata,
     enemydata,
     userdata,
-    stagedata ;
+    stagedata,
+    gachadata ;
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().catdata ;
   combodata = snapshot.val().combodata ;
   enemydata = snapshot.val().enemydata ;
   stagedata = snapshot.val().stagedata ;
+  gachadata = snapshot.val().gachadata ;
   console.log('all data load complete!!') ;
 });
 arrangeUserData();
@@ -53,6 +55,7 @@ io.on('connection', function(socket){
         let rFilter = data.rFilter,
             cFilter = data.cFilter,
             aFilter = data.aFilter,
+            gFilter = data.gFilter,
             otherFilter = data.filterObj,
             type = data.type,
             buffer_1 = [],
@@ -68,6 +71,20 @@ io.on('connection', function(socket){
             break;
           default:
         } ;
+        if(gFilter.length != 0){
+          let transG = [];
+          for(let i in gachadata){
+            if(gFilter.indexOf(i) != -1) transG.push(gachadata[i].name);
+          }
+          for(let i in catdata){
+            for(let j in transG){
+              if(catdata[i].get_method.indexOf(transG[j]) != -1)
+                buffer_1.push({id:i,name:catdata[i].name});
+            }
+          }
+          socket.emit("search result",buffer_1);
+          return
+        }
         database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
           let level = snapshot.val().default_cat_lv,
               showJP = snapshot.val().show_jp_cat;
@@ -338,7 +355,13 @@ io.on('connection', function(socket){
       last_enemy = history.last_enemy;
       last_combo = history.last_combo;
       last_stage = history.last_stage;
-      let compareCat = snapshot.val().compare.cat2cat  ;
+      let compareCat = snapshot.val().compare.cat2cat,
+          fight_cat = snapshot.val().compare.cat2enemy.cat?snapshot.val().compare.cat2enemy.cat:null,
+          fight_ene = snapshot.val().compare.cat2enemy.enemy?snapshot.val().compare.cat2enemy.enemy:null,
+          fight = {
+            cat : fight_cat?{id:fight_cat.id,name:catdata[fight_cat.id].name}:null,
+            enemy : fight_ene?{id:fight_ene.id,name:enemydata[fight_ene.id].name,lv:fight_ene.lv}:null
+          };
       let obj , arr = [] ;
       for(let i in compareCat){
         obj = {};
@@ -354,7 +377,8 @@ io.on('connection', function(socket){
         last_enemy : last_enemy,
         last_stage : last_stage,
         compare_c2c: arr,
-        setting : snapshot.val().setting
+        setting : snapshot.val().setting,
+        fight : fight
       });
     });
     console.log('user data send');
@@ -543,9 +567,6 @@ io.on('connection', function(socket){
     console.log("This is a test string")
   });
 
-  socket.on('disconnect', function(){
-    // console.log('user disconnected');
-  });
   socket.on("gacha",function(data){
     console.log("gacha");
     console.log(data);
@@ -583,7 +604,19 @@ io.on('connection', function(socket){
 
     });
   });
+  socket.on("require gachadata",function () {
+    socket.emit("return gachadata",gachadata);
+  });
 
+  socket.on("compare C2E",function (data) {
+    console.log("compare C2E");
+    console.log(data);
+    database.ref("/user/"+data.uid+"/compare/cat2enemy").update(data.target)
+  });
+
+  socket.on('disconnect', function(){
+    // console.log('user disconnected');
+  });
 
 });
 var timeout,event_get_count = 0 ;

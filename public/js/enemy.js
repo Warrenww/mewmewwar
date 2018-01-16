@@ -15,7 +15,7 @@ $(document).ready(function () {
     current_user_data = data ;
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
     socket.emit("display enemy",{uid:data.uid,id:data.last_enemy});
-
+    show_more = !data.setting.show_more_option;
   });
 
   var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','外星敵(星)','不死敵','白敵','無屬性敵'];
@@ -155,6 +155,7 @@ $(document).ready(function () {
   socket.on('display enemy result',function (data) {
     data.lv = 1;
     current_enemy_data = data;
+    $(".dataTable").attr("id",data.id);
     displayEnemyData(data) ;
   });
 
@@ -163,10 +164,12 @@ $(document).ready(function () {
         showID = current_user_data.setting.show_enemy_id,
         showCount = current_user_data.setting.show_enemy_count;
 
+    if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
+    else $("#more_option").css("height",0);
+    $("#more_option #out ").attr("href","http://battlecats-db.com/enemy/"+data.id+".html");
     html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
             "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+data.count+"</td>"+
-            "<td colspan=2><a target='blank' href='http://battlecats-db.com/enemy/"+
-            data.id+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
+            "<td colspan=2 id='more'>更多選項</td></tr>";
 
     html += displayenemyHtml(data)
     $(".dataTable").empty();
@@ -209,7 +212,43 @@ $(document).ready(function () {
     }).parent().siblings('.active').html(active=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>')
     .siblings('.reverse').html(reverse=='true'?'以下':'以上');
   }
-  
+  var show_more = 1;
+  $(document).on("click","#more",function () {
+    // console.log(show_more);
+    if(show_more) $("#more_option").css("height",50);
+    else $("#more_option").css("height",0);
+    show_more = show_more?0:1;
+  });
+  $(document).on("click","#share",function () {
+    let id = $(this).parents("#more_option").siblings().attr("id"),
+        lv = $(this).parents("#more_option").siblings().find("#level_num").children("span").text().split(" %")[0],
+        host = location.origin;
+    $(this).append(
+      "<input type='text' value='"+
+      host+"/view/once.html?q=enemy&"+
+      id+"&"+lv+"' style='position:fixed;top:-100px'/>"
+    );
+    $(this).find("input").select();
+    document.execCommand("Copy");
+    $("#copy_alert").css("left",-10);
+    setTimeout(function () {
+      $(this).find("input").remove();
+      $("#copy_alert").css("left",-250);
+    },2600);
+  });
+  $(document).on("click","#addfight",function () {
+    let id = $(this).parents("#more_option").siblings().attr("id"),
+        lv = $(this).parents("#more_option").siblings().find("#level_num").children("span").text().split(" %")[0];
+    socket.emit("compare C2E",{
+      uid : current_user_data.uid,
+      target : {enemy:{id:id,lv:lv}}
+    });
+    $("#fight_alert").css("left",-10);
+    setTimeout(function () {
+      $(this).find("input").remove();
+      $("#fight_alert").css("left",-250);
+    },2600);
+  });
 
 
 });

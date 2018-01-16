@@ -18,7 +18,7 @@ nav .mobile,
   z-index: 10;
   transition: .8s ease-in-out;
 }
-#m_nav_panel_BG{
+#m_nav_panel_BG,#helper_BG{
   display: none;
   position: fixed;
   width: 100%;

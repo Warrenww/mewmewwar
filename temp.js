@@ -30,6 +30,14 @@ console.log('start');
 database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
   console.log("cat data load complete");
+  for(let i in catdata){
+    if(catdata[i].rarity == "稀有"){
+      if(catdata[i].get_method == "蛋黃哥 合作活動 稀有轉蛋"){
+        console.log(catdata[i].name);
+        // database.ref("/catdata/"+i+"/get_method").set("從稀有轉蛋中獲得");
+      }
+    }
+  }
 });
 
 // database.ref("/enemydata").once("value",function (snapshot) {
@@ -75,26 +83,26 @@ database.ref("/catdata").once("value",function (snapshot) {
 //     count++;
 //   }
 // });
-database.ref("/stagedata/world/s03002").once('value',function (snapshot) {
-  let data = snapshot.val() ;
-
-    for(let j in data){
-      if(j == "name") continue
-      let target = data[j];
-      console.log(target.id);
-      for (let k in target.reward){
-        if(target.reward[k].prize.name.indexOf("u")!=-1){
-          let name = target.reward[k].prize.name+"-1";
-          let amount = catdata[name.substring(1)].name;
-          console.log(name,amount);
-          database.ref("/stagedata/world/s03002/"+j+"/reward/"+k+"/prize")
-            .update({"name":name,"amount":amount});
-
-        }
-      }
-    }
-
-});
+// database.ref("/stagedata/world/s03002").once('value',function (snapshot) {
+//   let data = snapshot.val() ;
+//
+//     for(let j in data){
+//       if(j == "name") continue
+//       let target = data[j];
+//       console.log(target.id);
+//       for (let k in target.reward){
+//         if(target.reward[k].prize.name.indexOf("u")!=-1){
+//           let name = target.reward[k].prize.name+"-1";
+//           let amount = catdata[name.substring(1)].name;
+//           console.log(name,amount);
+//           database.ref("/stagedata/world/s03002/"+j+"/reward/"+k+"/prize")
+//             .update({"name":name,"amount":amount});
+//
+//         }
+//       }
+//     }
+//
+// });
 
 var t = new Date(),
     y = t.getFullYear(),

@@ -1,10 +1,6 @@
 $(document).ready(function () {
   var timer = new Date().getTime();
   var compare = [] ;
-  var setting = {
-        compare_max : 4 ,
-        display_id : false
-      } ;
   var socket = io.connect();
   var current_cat_data = {};
   var current_user_data = {
@@ -40,7 +36,23 @@ $(document).ready(function () {
         '">'+name+'</span>');
       }
     }
+    show_more = !data.setting.show_more_option;
 
+  });
+  socket.emit("require gachadata");
+  socket.on("return gachadata",function (data) {
+    // console.log(data);
+    for(let i in data){
+      // console.log(i,data[i].name);
+      $("#gacha_search").append("<span id='"+i+"' class='button' value = 0>"+data[i].name.split(" 稀有轉蛋")[0]+"</span>").toggle();
+    }
+  });
+  var more_gacha = 0 ;
+  $(document).on("click","#more_gacha_search",function () {
+    if(more_gacha) $(this).find("i").css("transform","rotate(90deg)");
+    else $(this).find("i").css("transform","rotate(-90deg)");
+    $("#gacha_search").toggle();
+    more_gacha = more_gacha?0:1;
   });
 
   $(document).on('click','.card',function (e) {
@@ -243,11 +255,13 @@ $(document).ready(function () {
   function search() {
     let rarity = $(".select_rarity [value=1]"),
     color = $(".select_color [value=1]"),
-    ability = $(".select_ability [value=1]");
-    let rFilter = [], cFilter = [], aFilter = [] ;
+    ability = $(".select_ability [value=1]"),
+    gacha = $("#gacha_search [value=1]");
+    let rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
+    for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
 
     let  filterObj = [] ;
     $(".filter_option[active='true']").each(function () {
@@ -265,7 +279,7 @@ $(document).ready(function () {
     });
     socket.emit("search",{
       uid:current_user_data.uid,
-      rFilter,cFilter,aFilter,filterObj,
+      rFilter,cFilter,aFilter,gFilter,filterObj,
       type:"cat"
     });
     scroll_to_div('selected');
@@ -313,9 +327,6 @@ $(document).ready(function () {
 
   });
   var show_more = 1;
-  setTimeout(function () {
-    show_more = current_user_data.setting.show_more_option?0:1;
-  },500);
   $(document).on("click","#more",function () {
     // console.log(show_more);
     if(show_more) $("#more_option").css("height",50);
@@ -424,6 +435,19 @@ $(document).ready(function () {
   $(document).on('click','#compare_panel_BG',function () {
     $("#compare_panel_BG").fadeOut();
     $('.compare_panel').css('height',0);
+  });
+
+  $(document).on("click","#addfight",function () {
+    let id = $(this).parents("#more_option").siblings().attr("id");
+    socket.emit("compare C2E",{
+      uid : current_user_data.uid,
+      target : {cat:{id:id}}
+    });
+    $("#fight_alert").css("left",-10);
+    setTimeout(function () {
+      $(this).find("input").remove();
+      $("#fight_alert").css("left",-250);
+    },2600);
   });
 
   var showcomparetarget = 1 ;
@@ -707,6 +731,9 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "</tr><tr>"+
   "<th>花費</th><td id='cost'>"+data.cost+"</td>"+
   "<th>再生産</th><td id='cd'>"+data.cd.toFixed(1)+" s</td>"+
+  "</tr><tr>"+
+  "<th>取得方法</th>"+
+  "<td colspan='6' id='get_method'>"+data.get_method+"</td>"+
   "</tr><tr>"+
   "<td colspan='6' id='char' "+(
   data.char.indexOf("連續攻擊") != -1 ?
