@@ -104,7 +104,7 @@ $(document).ready(function () {
   function search() {
     let color = $(".select_color [value=1]"),
         ability = $(".select_ability [value=1]");
-    let cFilter = [], aFilter = [], rFilter = [], filterObj = [] ;
+    let cFilter = [], aFilter = [], rFilter = [], filterObj = [],gFilter = [] ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
 
@@ -125,7 +125,7 @@ $(document).ready(function () {
       filterObj.push(bufferObj);
     });
 
-    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,type:'enemy',uid:current_user_data.uid});
+    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,gFilter,type:'enemy',uid:current_user_data.uid});
     scroll_to_div('selected');
   }
   var number_page,page_factor ;
