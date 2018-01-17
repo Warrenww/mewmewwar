@@ -3,30 +3,42 @@ $(document).ready(function () {
   var socket = io.connect();
   var current_user_data = {} ;
   console.log(search);
+  var sign_in = false ;
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user name",user.uid);
       socket.emit("user connect",user);
       console.log('user login');
+      sign_in = true ;
     } else {
       console.log('did not sign in');
+      require_data();
     }
   });
+  socket.on("current_user_data",function (data) {
+    console.log(data);
+    current_user_data = data ;
+    require_data();
+  });
 
-  $("nav,.m_nav_panel").remove();
-  if(search[0] == 'cat'){
-    socket.emit("display cat",{
-      uid : "",
-      cat : search[1]
-    });
-  } else if(search[0] == 'enemy'){
-    socket.emit("display enemy",{
-      uid : "",
-      id:search[1]
-    });
-  } else {
-    location.assign("/");
+  function require_data() {
+    if(search[0] == 'cat'){
+      socket.emit("display cat",{
+        uid : sign_in?current_user_data.uid:"",
+        cat : search[1],
+        history:false
+      });
+    } else if(search[0] == 'enemy'){
+      socket.emit("display enemy",{
+        uid : sign_in?current_user_data.uid:"",
+        id:search[1],
+        history:false
+      });
+    } else {
+      location.assign("/");
+    }
   }
+
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
     console.log(result) ;
@@ -46,7 +58,7 @@ $(document).ready(function () {
     // "<tr><th>Id</th><td id='id'>"+data.id+"</td></tr>"
 
     html += "<tr><td colspan = 2 style='background-color:transparent'></td>"+
-            "<th colspan = 2><a id='back'>回到貓咪大戰爭中文資料庫</a></th>"+
+            "<th colspan = 2><a id='back' href='/view/cat.html'>回到貓咪大戰爭中文資料庫</a></th>"+
             "<td colspan=2 id='link'><a target='blank' href='http://battlecats-db.com/unit/"+
             grossID+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
     html += displayCatHtml(data,arr,brr,lv,count);
@@ -67,7 +79,7 @@ $(document).ready(function () {
     data.lv = search[2]/100 ;
     $(".dataTable").empty();
     html += "<tr><td colspan = 2 style='background-color:transparent'></td>"+
-            "<th colspan = 2 id='back'><a>回到貓咪大戰爭中文資料庫</a></th>"+
+            "<th colspan = 2 id='back'><a href='/view/enemy.html'>回到貓咪大戰爭中文資料庫</a></th>"+
             "<td colspan=2 id='link'><a target='blank' href='http://battlecats-db.com/enemy/"+
             data.id+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
     html += displayenemyHtml(data) ;
@@ -80,24 +92,7 @@ $(document).ready(function () {
 
   });
 });
-$(window).load(function () {
-  // var socket = io.connect(),current_user_data={};
-  // socket.on("current_user_data",function (data) {
-  //   console.log(data);
-  //   current_user_data = data ;
-  // });
-  $("#back").bind('click',function () {
-    // let id = $(this).parents("table").attr("id");
-    // socket.emit("display cat",{
-    //   uid : current_user_data.uid,
-    //   cat : $(this).attr('id')
-    // });
-    location.assign(search[0]+".html");
-  });
-});
-function Test() {
-  alert("test");
-}
+
 function decode(str) {
   let code = [];
   for (let i in str){

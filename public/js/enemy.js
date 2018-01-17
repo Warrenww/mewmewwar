@@ -14,7 +14,7 @@ $(document).ready(function () {
     console.log(data);
     current_user_data = data ;
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
-    socket.emit("display enemy",{uid:data.uid,id:data.last_enemy});
+    socket.emit("display enemy",{uid:data.uid,id:data.last_enemy,history:true});
     show_more = !data.setting.show_more_option;
   });
 
@@ -42,7 +42,8 @@ $(document).ready(function () {
   $(document).on('click','.card',function () {
     socket.emit("display enemy",{
       uid:current_user_data.uid,
-      id:$(this).attr('value')
+      id:$(this).attr('value'),
+      history:true
     });
   });
   $(document).on('click',"#level_num button",function () {

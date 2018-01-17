@@ -247,14 +247,7 @@ $(document).ready(function () {
       'setting.html"><i class="material-icons" id="setting">settings</i></a></div>' ;
   $("nav .settingBox").html(setting_html);
   $(".m_settingBox").html(setting_html);
-  $("i[data-target='#helpModal']").click(function () {
-    let dialog = $("#helpModal").find(".modal-header"),
-        ending = dialog[0].scrollHeight ;
-        console.log(ending)
-        $("#helpModal .modal-header").scrollTop(100)
-    dialog.scrollTop(ending);
-  })
-
+  $(".m_settingBox").children("div").append("<div id='service'></div>");
 
   var xmlhttp = new XMLHttpRequest() ;
   var url = "../public/update_dialog.html";

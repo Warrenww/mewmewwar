@@ -75,7 +75,8 @@ $(document).ready(function () {
     let id = $(this).attr('value');
     socket.emit("display cat",{
       uid : current_user_data.uid,
-      cat : id
+      cat : id,
+      history:true
     }) ;
     location.assign("/view/cat.html");
   });

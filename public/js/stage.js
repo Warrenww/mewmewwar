@@ -260,7 +260,8 @@ $(document).ready(function () {
   $(document).on("click",".cat",function () {
     socket.emit("display cat",{
       uid : current_user_data.uid,
-      cat : $(this).attr('id')
+      cat : $(this).attr('id'),
+      history : true
     });
     location.assign("/view/cat.html");
   });

@@ -63,7 +63,8 @@ $(document).ready(function () {
   $(document).on('click','.card',function () {
     socket.emit("display cat",{
       uid : current_user_data.uid,
-      cat : $(this).attr('value')
+      cat : $(this).attr('value'),
+      history:true
     });
     location.assign("/view/cat.html");
   });

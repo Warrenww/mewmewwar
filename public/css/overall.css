@@ -100,7 +100,7 @@ button:active{
   overflow-x: hidden;
   background-image: url("footage/search_BG.png");
 }
-.display,.select{
+.display,.select,.content{
   align-items: center;
   display: flex;
   flex-direction: column;

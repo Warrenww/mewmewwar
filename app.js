@@ -196,6 +196,7 @@ io.on('connection', function(socket){
     console.log(data);
     let uid = data.uid,
         id = data.cat,
+        record = data.history,
         grossID = id.substring(0,3),
         result = {"this":"","bro":[],"combo":[]},
         level ;
@@ -225,7 +226,7 @@ io.on('connection', function(socket){
           last = data.history.last_cat?data.history.last_cat.substring(0,3):"",
           cat = data.variable.cat[grossID],
           count = (cat?(cat.count?cat.count:0):0) + 1;
-          if(grossID != last) {
+          if(grossID != last && record) {
             console.log("recording user history");
             database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
             database.ref("/user/"+uid+"/history/last_cat").set(id);
@@ -237,15 +238,15 @@ io.on('connection', function(socket){
               database.ref("/catdata/"+id+"/count").set(count);
             });
           }
-          else console.log("same as last cat");
+          else console.log(record?"same as last cat":"do not record");
         });
       });
     }
   });
   socket.on("display enemy",function (data) {
-    let uid = data.uid,id = data.id;
+    let uid = data.uid,id = data.id,record = data.history;
     console.log(data);
-    console.log("client requir enemy "+id+"'s data'");
+    console.log("client requir enemy "+id+"'s data");
     let buffer = enemydata[id];
 
     if(uid){
@@ -259,7 +260,7 @@ io.on('connection', function(socket){
         last = data.history.last_enemy,
         enemy = data.variable.enemy?data.variable.enemy[id]:null,
         count = (enemy?(enemy.count?enemy.count:0):0) + 1;
-        if(id != last) {
+        if(id != last && record) {
           console.log("recording user history");
           database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id});
           database.ref("/user/"+uid+"/history/last_enemy").set(id);
@@ -271,7 +272,7 @@ io.on('connection', function(socket){
             database.ref("/enemydata/"+id+"/count").set(count);
           });
         }
-        else console.log("same as last enemy");
+        else console.log(record?"same as last enemy":"do not record");
       });
     } else socket.emit('display enemy result',buffer);
   });

@@ -21,7 +21,8 @@ $(document).ready(function () {
     if(data.last_cat && location.pathname.indexOf('once') == -1)
     socket.emit("display cat",{
       uid : data.uid,
-      cat : data.last_cat
+      cat : data.last_cat,
+      history:true
     }) ;
     if(data.compare_c2c) {
       $(".compareTarget").empty();
@@ -60,7 +61,8 @@ $(document).ready(function () {
     else {
       socket.emit("display cat",{
         uid : current_user_data.uid,
-        cat : $(this).attr('value')
+        cat : $(this).attr('value'),
+        history:true
       });
     }
 
@@ -414,7 +416,8 @@ $(document).ready(function () {
     $('.compare_panel #show').click(function () {
       socket.emit("display cat",{
         uid : current_user_data.uid,
-        cat : $(this).parent().attr('id')
+        cat : $(this).parent().attr('id'),
+        history:true
       });
       showhidecomparetarget();
       $("#compare_panel_BG").fadeOut();
