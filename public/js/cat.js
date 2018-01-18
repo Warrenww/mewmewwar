@@ -723,11 +723,11 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "</span></td>"+
   "<th>DPS</th><td id='DPS' original='"+data.lv1dps+"'>"+
   "<span class='editable' rarity='"+data.rarity+"'>"+
-  levelToValue(data.lv1dps,data.rarity,lv).toFixed(0)+
+  (data.lv1dps!="-"?levelToValue(data.lv1dps,data.rarity,lv).toFixed(0):"-")+
   "</span></td>"+
   "<th>射程</th><td id='range'>"+data.range+"</td>"+
   "</tr><tr>"+
-  "<th>攻頻</th><td id='freq'>"+data.freq.toFixed(1)+" s</td>"+
+  "<th>攻頻</th><td id='freq'>"+(data.freq!="-"?data.freq.toFixed(1):"-")+" s</td>"+
   "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
   "<td colspan='2' rowspan='2' id='multi'>"+data.multi+"</td>"+
   "</tr><tr>"+
