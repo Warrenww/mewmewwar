@@ -85,13 +85,15 @@ $(document).ready(function () {
     if(type == 'cat'){
       socket.emit("display cat",{
         uid : current_user_data.uid,
-        cat : id
+        cat : id,
+        history:true
       });
       location.assign("/view/cat.html");
     } else if(type == 'enemy'){
       socket.emit("display enemy",{
         uid:current_user_data.uid,
-        id:id
+        id:id,
+        history:true
       });
       location.assign("/view/enemy.html");
     }

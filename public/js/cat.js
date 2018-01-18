@@ -223,13 +223,11 @@ $(document).ready(function () {
     $("#level").on("slidechange", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
-      if(ui.value != current_user_data.setting.default_cat_lv){
-        socket.emit("store cat level",{
-          uid : current_user_data.uid,
-          id : $(this).parents(".dataTable").attr("id"),
-          lv : ui.value
-        });
-      }
+      socket.emit("store cat level",{
+        uid : current_user_data.uid,
+        id : $(this).parents(".dataTable").attr("id"),
+        lv : ui.value
+      });
     });
     $("#level").on("slide", function(e,ui) {
       $("#level_num").html(ui.value);
@@ -263,7 +261,8 @@ $(document).ready(function () {
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
-    for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
+    if(more_gacha)
+      for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
 
     let  filterObj = [] ;
     $(".filter_option[active='true']").each(function () {
@@ -718,7 +717,7 @@ function displayCatHtml(data,arr,brr,lv,count) {
   levelToValue(data.atk/data.kb,data.rarity,lv).toFixed(0)+
   "</span></td>"+
   "</tr><tr>"+
-  "<th>攻擊力</th><td id='攻擊力' original='"+data.atk+"'>"+
+  "<th>攻擊力</th><td id='atk' original='"+data.atk+"'>"+
   "<span class='editable' rarity='"+data.rarity+"'>"+
   levelToValue(data.atk,data.rarity,lv).toFixed(0)+
   "</span></td>"+

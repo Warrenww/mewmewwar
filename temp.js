@@ -31,13 +31,9 @@ database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
   console.log("cat data load complete");
   for(let i in catdata){
-    if(catdata[i].rarity == "稀有"){
-      if(catdata[i].get_method == "蛋黃哥 合作活動 稀有轉蛋"){
-        console.log(catdata[i].name);
-        // database.ref("/catdata/"+i+"/get_method").set("從稀有轉蛋中獲得");
-      }
-    }
+    // database.ref("/newCatData/"+i).update({get_method:catdata[i].get_method})
   }
+  console.log("finish");
 });
 
 // database.ref("/enemydata").once("value",function (snapshot) {

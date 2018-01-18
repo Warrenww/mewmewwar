@@ -78,8 +78,14 @@ io.on('connection', function(socket){
           }
           for(let i in catdata){
             for(let j in transG){
-              if(catdata[i].get_method.indexOf(transG[j]) != -1)
-                buffer_1.push({id:i,name:catdata[i].name});
+              if(catdata[i].get_method.indexOf(transG[j]) != -1){
+                let grossID = i.substring(0,3);
+                for(let k=1;k<4;k++){
+                  let id = grossID+"-"+k;
+                  if(catdata[id])
+                    buffer_1.push({id:id,name:catdata[id].name});
+                }
+              }
             }
           }
           socket.emit("search result",buffer_1);
@@ -146,7 +152,7 @@ io.on('connection', function(socket){
               id : buffer_2[i].id,
               name : buffer_2[i].name
             }
-            if(type == 'cat' && (showJP||buffer_2[i].region.indexOf("[TW]")==-1)) continue
+            if(type == 'cat' && (!showJP&&buffer_2[i].region.indexOf("[JP]")==-1)) continue
             else buffer_1.push(obj) ;
           }
           console.log("Result length:",buffer_1.length);
@@ -223,11 +229,16 @@ io.on('connection', function(socket){
 
         database.ref("/user/"+uid).once('value',function (snapshot) {
           let data = snapshot.val(),
+          history = data.history.cat,
           last = data.history.last_cat?data.history.last_cat.substring(0,3):"",
           cat = data.variable.cat[grossID],
           count = (cat?(cat.count?cat.count:0):0) + 1;
           if(grossID != last && record) {
             console.log("recording user history");
+            for(let i in history){
+              if(history[i].id == id) delete history[i]
+            }
+            database.ref("/user/"+uid+"/history/cat").set(history);
             database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
             database.ref("/user/"+uid+"/history/last_cat").set(id);
             console.log("count cat search time(user)");
@@ -258,10 +269,15 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid).once('value',function (snapshot) {
         let data = snapshot.val(),
         last = data.history.last_enemy,
+        history = data.history.enemy,
         enemy = data.variable.enemy?data.variable.enemy[id]:null,
         count = (enemy?(enemy.count?enemy.count:0):0) + 1;
         if(id != last && record) {
           console.log("recording user history");
+          for(let i in history){
+            if(history[i].id == id) delete history[i]
+          }
+          database.ref("/user/"+uid+"/history/enemy").set(history);
           database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id});
           database.ref("/user/"+uid+"/history/last_enemy").set(id);
           console.log("count enemy search time(user)");

@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "description": "my first socket.io app",
   "dependencies": {
+    "api.ai": "^1.0.3",
+    "apiai": "^4.0.3",
     "cheerio": "^1.0.0-rc.2",
     "express": "^4.16.2",
     "firebase": "^4.7.0",
