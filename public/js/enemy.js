@@ -16,6 +16,28 @@ $(document).ready(function () {
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
     socket.emit("display enemy",{uid:data.uid,id:data.last_enemy,history:true});
     show_more = !data.setting.show_more_option;
+    if(data.last_enemy_search){
+      let last = data.last_enemy_search;
+      socket.emit("search",{
+        uid:data.uid,
+        rFilter:last.rFilter?last.rFilter:[],
+        cFilter:last.cFilter?last.cFilter:[],
+        aFilter:last.aFilter?last.aFilter:[],
+        gFilter:last.gFilter?last.gFilter:[],
+        filterObj:last.otherFilter?last.otherFilter:[],
+        type:"enemy"
+      });
+      for(let i in last){
+        if(i == 'otherFilter'){
+          for(let j in last[i]){
+            $("#lower_table").find("th[id='"+last[i][j].name+"']")
+              .attr({'active':true,'value':last[i][j].limit,'reverse':last[i][j].reverse})
+              .click();
+          }
+        }
+        else for(let j in last[i]) $("#upper_table").find(".button[name='"+last[i][j]+"']").click();
+      }
+    }
   });
 
   var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','外星敵(星)','不死敵','白敵','無屬性敵'];
@@ -74,6 +96,18 @@ $(document).ready(function () {
       updateState(org/100);
     }
   });
+
+  $(document).on('click',"#upper_table .button",function () {
+    $("body").bind('keypress',quickSearch);
+    setTimeout(function () {
+      $("body").unbind('keypress',quickSearch);
+    },5000);
+  });
+  function quickSearch(e) {
+    let code = (e.keyCode ? e.keyCode : e.which);
+    if (code == 13) search();
+    $("body").unbind('keypress',quickSearch);
+  }
 
   function TextSearch() {
     let keyword = $("#searchBox").val();

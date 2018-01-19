@@ -27,11 +27,19 @@ var database = firebase.database();
 console.log('start');
 
 
-database.ref("/catdata").once("value",function (snapshot) {
+database.ref("/newCatData").once("value",function (snapshot) {
   catdata = snapshot.val();
   console.log("cat data load complete");
   for(let i in catdata){
-    // database.ref("/newCatData/"+i).update({get_method:catdata[i].get_method})
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(i);
+    if(!catdata[i].tag) continue
+    if(catdata[i].tag.indexOf("善於攻擊")!=-1){
+      process.stdout.write(catdata[i].tag.join());
+      process.stdout.write("\n");
+
+    }
   }
   console.log("finish");
 });

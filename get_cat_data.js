@@ -28,7 +28,7 @@ var config = {
   }
   // aibot("你好")
 
-  var i=383,j=1;
+  var i=170,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -75,15 +75,15 @@ var config = {
 
         console.log(AddZero(i)+"-"+j);
         console.log(obj);
-        database.ref("/newCatData/"+AddZero(i)+"-"+j).set(obj)
-        if(j<bro) j++;
-        else{
-          j=1;i++;
-          if( i == 183 || i == 203 || i == 214 || i == 201 ||
-              i == 286 || i == 321 || i == 340 || i == 354 ||
-              i == 383) i++;
-        }
-        getData(i,j)
+        database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj)
+        if(j<bro) {j++;getData(i,j);}
+        // else{
+        //   j=1;i++;
+        //   if( i == 183 || i == 203 || i == 214 || i == 201 ||
+        //       i == 286 || i == 321 || i == 340 || i == 354 ||
+        //       i == 383) i++;
+        // }
+        // getData(i,j)
       }
       else {
         // console.log("error s070"+AddZero(i)+"-0"+j);
@@ -220,7 +220,7 @@ var config = {
         else if (c[i].indexOf("の確率で")!=-1) {
           c[i] = c[i].split(" ※")[0];
           let aa = c[i].split("％の確率で")[0].split(" "),
-          ene = aa[1]?(aa.length<4||aa.length>5 ?[parseEnemy(aa[1])]:[parseEnemy(aa[1]),parseEnemy(aa[2])]):"",
+          ene = aa[1]?(aa.length<4||aa.indexOf("除く）")!=-1 ?[parseEnemy(aa[1])]:[parseEnemy(aa[1]),parseEnemy(aa[2])]):"",
           cha = Number(aa[aa.length-1]),
           bb = c[i].split("の確率で")[1].indexOf("F")!=-1?c[i].split("の確率で")[1].split("F"):c[i].split("の確率で"),
           tim = Number(bb[0].split("～")[0])/30,abi = parseAbility(bb[1]);
@@ -240,9 +240,9 @@ var config = {
         else {
           c[i] = c[i].split(" ※")[0];
           let bb = c[i].split("（"),
-          aa = bb.length < 3 ? bb[0].split(" "):["",bb[0].split(" ")[1],bb[1].split(" ")[4]],
+          aa = bb.length<3&&c[i].indexOf("除く）")==-1 ? bb[0].split(" "):["",bb[0].split(" ")[1],bb[1].split(" ")[4]],
           ene = aa.length == 3 ? [parseEnemy(aa[1])]:[parseEnemy(aa[1]),parseEnemy(aa[2])],
-          abi = aa.length == 3 ? parseAbility(aa[2]):parseAbility(aa[3]);
+          abi = parseAbility(aa[aa.length-1]);
           for(let j in ene){
             if(obj.tag.indexOf("對"+ene[j].substring(0,2))==-1)
               obj.tag.push("對"+ene[j].substring(0,2));

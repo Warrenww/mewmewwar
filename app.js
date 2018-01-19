@@ -38,7 +38,7 @@ var catdata,
     stagedata,
     gachadata ;
 database.ref("/").once("value",function (snapshot) {
-  catdata = snapshot.val().catdata ;
+  catdata = snapshot.val().newCatData ;
   combodata = snapshot.val().combodata ;
   enemydata = snapshot.val().enemydata ;
   stagedata = snapshot.val().stagedata ;
@@ -62,6 +62,10 @@ io.on('connection', function(socket){
             buffer_2 = [],
             load_data = {},
             user = data.uid;
+        console.log("recording last search quene");
+        database.ref("/user/"+user+"/history/last_"+type+"_search").update({
+          rFilter,cFilter,aFilter,gFilter,otherFilter
+        })
         switch (type) {
           case 'cat':
             load_data = catdata ;
@@ -77,6 +81,7 @@ io.on('connection', function(socket){
             if(gFilter.indexOf(i) != -1) transG.push(gachadata[i].name);
           }
           for(let i in catdata){
+            if(!catdata[i].get_method) continue
             for(let j in transG){
               if(catdata[i].get_method.indexOf(transG[j]) != -1){
                 let grossID = i.substring(0,3);
@@ -98,10 +103,14 @@ io.on('connection', function(socket){
           if(cFilter.length != 0){
             for(let i in load_data){
               for(let j in cFilter){
-                if(type == 'cat' && load_data[i].tag == '[無]') break;
+                if(type == 'cat' && !load_data[i].tag) break;
                 if(type == 'enemy' && load_data[i]['color'] == '[無]') break;
 
-                if(type == 'cat' && load_data[i].tag.indexOf(cFilter[j]) != -1 ) {
+                if( type == 'cat' &&
+                    (load_data[i].tag.indexOf(cFilter[j]) != -1 ||
+                    ((cFilter[j] != "對白色" || cFilter[j] != "對鋼鐵") &&
+                    load_data[i].tag.indexOf("對全部") != -1))
+                ) {
                   buffer_1.push(load_data[i]);
                   break;
                 }
@@ -117,7 +126,7 @@ io.on('connection', function(socket){
           if(aFilter.length != 0){
             for(let i in buffer_1){
               for(let j in aFilter){
-                if(buffer_1[i].tag == '[無]') break;
+                if(buffer_1[i].tag == '[無]' || !buffer_1[i].tag) break;
                 else if(buffer_1[i].tag.indexOf(aFilter[j]) != -1) {
                   buffer_2.push(buffer_1[i]);
                   break;
@@ -150,7 +159,7 @@ io.on('connection', function(socket){
           for(let i in buffer_2) {
             let obj = {
               id : buffer_2[i].id,
-              name : buffer_2[i].name
+              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
             }
             if(type == 'cat' && (!showJP&&buffer_2[i].region.indexOf("[JP]")==-1)) continue
             else buffer_1.push(obj) ;
@@ -166,31 +175,29 @@ io.on('connection', function(socket){
     let key = obj.key ,
     buffer = [],
     data = {} ;
-    if(obj.type == 'cat'){
-      for(let id in catdata){
-        if(catdata[id].name.indexOf(key) != -1) {
-          let simple = id.substring(0,3);
-          for(let j=1;j<4;j++){
-            let x = simple + '-' + j  ;
-            if(catdata[x]) {
-              let obj = {
-                name : catdata[x].name,
-                id : catdata[x].id
-              };
-              buffer.push(obj) ;
-            }
+    switch (obj.type) {
+      case 'cat':
+        load_data = catdata ;
+        break;
+      case 'enemy':
+        load_data = enemydata ;
+        break;
+      default:
+    } ;
+    for(let id in load_data){
+      let name = load_data[id].name?load_data[id].name:load_data[id].jp_name;
+      if(name.indexOf(key) != -1) {
+        let simple = id.substring(0,3);
+        for(let j=1;j<4;j++){
+          let x = obj.type == 'cat'?(simple+'-'+j):simple ;
+          if(load_data[x]) {
+            let obj = {
+              name : load_data[x].name,
+              id : load_data[x].id
+            };
+            buffer.push(obj) ;
+            if(obj.type == 'enemy') break
           }
-        }
-      }
-    }
-    else if (obj.type == 'enemy'){
-      for(let i in enemydata){
-        if(enemydata[i].name.indexOf(key) != -1){
-          let obj = {
-            name : enemydata[i].name,
-            id : enemydata[i].id
-          };
-          buffer.push(obj) ;
         }
       }
     }
@@ -372,6 +379,8 @@ io.on('connection', function(socket){
       last_enemy = history.last_enemy;
       last_combo = history.last_combo;
       last_stage = history.last_stage;
+      last_cat_search = history.last_cat_search;
+      last_enemy_search = history.last_enemy_search;
       let compareCat = snapshot.val().compare.cat2cat,
           fight_cat = snapshot.val().compare.cat2enemy.cat?snapshot.val().compare.cat2enemy.cat:null,
           fight_ene = snapshot.val().compare.cat2enemy.enemy?snapshot.val().compare.cat2enemy.enemy:null,
@@ -393,6 +402,8 @@ io.on('connection', function(socket){
         last_combo : last_combo,
         last_enemy : last_enemy,
         last_stage : last_stage,
+        last_cat_search : last_cat_search,
+        last_enemy_search : last_enemy_search,
         compare_c2c: arr,
         setting : snapshot.val().setting,
         fight : fight
@@ -548,17 +559,22 @@ io.on('connection', function(socket){
         level = data.level,
         id = chapter+"-"+stage+"-"+level,
         uid = data.uid;
-    console.log("recording user history");
-    database.ref("/user/"+uid+"/history/stage").push({
-      type : "stage",
-      id : id
-    });
     database.ref("/user/"+uid).once('value',function (snapshot) {
       let data = snapshot.val(),
           last = data.history.last_stage,
+          history = data.history.stage,
           Stage = data.variable.stage?data.variable.stage[id]:null,
           count = (Stage?(Stage.count?Stage.count:0):0) + 1;
       if(id != last) {
+        console.log("recording user history");
+        for(let i in history){
+          if(history[i] == id) delete history[i]
+        }
+        database.ref("/user/"+uid+"/history/stage").set(history)
+        database.ref("/user/"+uid+"/history/stage").push({
+          type : "stage",
+          id : id
+        });
         database.ref("/user/"+uid+"/history/last_stage").set(id);
         console.log("count stage search time(user)");
         database.ref("/user/"+uid+"/variable/stage/"+id+"/count").set(count);
@@ -788,10 +804,10 @@ function PrevEventDay(y,m,d) {
 function levelToValue(origin,rarity,lv) {
   let limit ;
   switch (rarity) {
-    case '稀有':
+    case 'R':
     limit = 70 ;
     break;
-    case '激稀有狂亂':
+    case 'SR_alt':
     limit = 20 ;
     break;
     default:

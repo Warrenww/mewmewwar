@@ -1,5 +1,6 @@
 const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
+
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
@@ -83,16 +84,17 @@ $(document).ready(function () {
     current_user_data = data ;
     let name = data.name ;
     $(".current_user_name").text("Hi, "+name);
+    if( location.pathname != "/view/calender.html"&&
+    location.pathname != "/view/event.html"&&
+    location.pathname != "/view/setting.html"&&
+    location.pathname != "/view/once.html"&&
+    !data.setting.show_more_service
+  ){
+    $("body").append("<div id='service'></div>");
+  }
   });
 
 //coustomer service
-  if( location.pathname != "/view/calender.html"&&
-      location.pathname != "/view/event.html"&&
-      location.pathname != "/view/setting.html"&&
-      location.pathname != "/view/once.html"
-    ){
-    $("body").append("<div id='service'></div>");
-  }
   $(document).on("click","#service",function () {
     let url = "https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform";
     let time = new Date().getTime(),
@@ -375,10 +377,10 @@ gtag('config', 'UA-111466284-1');
 function levelToValue(origin,rarity,lv) {
   let limit ;
   switch (rarity) {
-    case '稀有':
+    case 'R':
     limit = 70 ;
     break;
-    case '激稀有狂亂':
+    case 'SR_alt':
     limit = 20 ;
     break;
     default:
@@ -386,15 +388,15 @@ function levelToValue(origin,rarity,lv) {
   }
   return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
 }
-function serialATK(prop,atk) {
-    let b = prop.split("（")[0];
-    let arr = prop.split("（")[1].split("）")[0].split(","),
-        c = prop.split("（")[1].split("）")[1];
-    // console.log(b+"("+arr.join()+")")
-    for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
-    return b+"（"+arr.join(' ')+"）"+c ;
-
-}
+// function serialATK(prop,atk) {
+//     let b = prop.split("（")[0];
+//     let arr = prop.split("（")[1].split("）")[0].split(","),
+//         c = prop.split("（")[1].split("）")[1];
+//     // console.log(b+"("+arr.join()+")")
+//     for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
+//     return b+"（"+arr.join(' ')+"）"+c ;
+//
+// }
 function scroll_to_div(div_id){
   $('html,body').animate(
     {scrollTop: $("#"+div_id).offset().top-100},

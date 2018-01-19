@@ -50,50 +50,42 @@ $(document).ready(function () {
 
     );
     for(let i in compare){
-      let data = compare[i].data,
+      let data = new Cat(compare[i].data),
           lv = compare[i].lv;
       // console.log(data);
       $(".comparedatabody").append(
         "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
         "<table>"+
         "<tr>"+
-        "<th id='level' rarity='"+data.rarity+"'>"+lv+"</th>"+
+        "<th id='level'>"+lv+"</th>"+
         "</tr><tr>"+
-        "<th style='height:80px;padding:0'><img src='"+
-        image_url+data.id+'.png'+
-        "' style='height:100%'></th>"+
+        "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
         "</tr><tr>"+
-        "<th id='name'>"+data.name+"</th>"+
+        "<th id='name'>"+data.Name+"</th>"+
         "</tr><tr>"+
-        "<td id='hp' original='"+data.hp+"'>"+levelToValue(data.hp,data.rarity,lv).toFixed(0)+"</td>"+
+        "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
         "</tr><tr>"+
         "<td id='KB'>"+data.kb+"</td>"+
         "</tr><tr>"+
-        "<td id='hardness' original='"+(data.hp/data.kb)+"'>"+levelToValue(data.hp/data.kb,data.rarity,lv).toFixed(0)+"</td>"+
+        "<td id='hardness'>"+data.Tovalue('hardness',lv)+"</td>"+
         "</tr><tr>"+
-        "<td id='atk' original='"+data.atk+"'>"+levelToValue(data.atk,data.rarity,lv).toFixed(0)+"</td>"+
+        "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
         "</tr><tr>"+
-        "<td id='DPS' original='"+data.lv1dps+"'>"+levelToValue(data.lv1dps,data.rarity,lv).toFixed(0)+"</td>"+
+        "<td id='DPS'>"+data.Tovalue('dps',lv)+"</td>"+
         "</tr><tr>"+
         "<td id='range'>"+data.range+"</td>"+
         "</tr><tr>"+
-        "<td id='freq'>"+data.freq.toFixed(1)+"</td>"+
+        "<td id='freq'>"+data.Freq+"</td>"+
         "</tr><tr>"+
         "<td id='speed'>"+data.speed+"</td>"+
         "</tr><tr>"+
-        "<td id='multi'>"+data.multi+"</td>"+
+        "<td id='multi'>"+data.Aoe+"</td>"+
         "</tr><tr>"+
         "<td id='cost'>"+data.cost+"</td>"+
         "</tr><tr>"+
-        "<td id='cd'>"+data.cd.toFixed(1)+"</td>"+
+        "<td id='cd'>"+data.cd+"</td>"+
         "</tr><tr>"+
-        "<td id='char' "+
-        (data.char.indexOf("連續攻擊") != -1 ?
-        "original='"+data.char+"' atk='"+data.atk+"'>"+
-        serialATK(data.char,levelToValue(data.atk,data.rarity,lv)) :
-        ">"+data.char
-        )+
-        "</td>"+
+        "<td id='char'>"+data.CharHtml(lv)+"</td>"+
         "</tr>"+
         "</table>"+
         "</div>"

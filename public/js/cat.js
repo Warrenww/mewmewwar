@@ -37,8 +37,36 @@ $(document).ready(function () {
         '">'+name+'</span>');
       }
     }
+    if(data.last_cat_search){
+      let last = data.last_cat_search;
+      socket.emit("search",{
+        uid:data.uid,
+        rFilter:last.rFilter?last.rFilter:[],
+        cFilter:last.cFilter?last.cFilter:[],
+        aFilter:last.aFilter?last.aFilter:[],
+        gFilter:last.gFilter?last.gFilter:[],
+        filterObj:last.otherFilter?last.otherFilter:[],
+        type:"cat"
+      });
+      for(let i in last){
+        if(i == 'otherFilter'){
+          for(let j in last[i]){
+            $("#lower_table").find("th[id='"+last[i][j].name+"']")
+              .attr({'active':true,'value':last[i][j].limit,'reverse':last[i][j].reverse})
+              .click();
+          }
+        }
+        else if(i=='gFilter'){
+          for(let j in last[i]) $("#gacha_table").find(".button[id='"+last[i][j]+"']").click();
+          $("#more_gacha_search").click();
+        }
+        else for(let j in last[i]) $("#upper_table").find(".button[name='"+last[i][j]+"']").click();
+      }
+    }
     show_more = !data.setting.show_more_option;
-
+    setTimeout(function () {
+      $("#loading").fadeOut();
+    },2500);
   });
   socket.emit("require gachadata");
   socket.on("return gachadata",function (data) {
@@ -80,6 +108,17 @@ $(document).ready(function () {
       ga('send', 'event', 'cat', 'search', 'text',{text:val});
     }
   });
+  $(document).on('click',"#upper_table .button",function () {
+    $("body").bind('keypress',quickSearch);
+    setTimeout(function () {
+      $("body").unbind('keypress',quickSearch);
+    },5000);
+  });
+  function quickSearch(e) {
+    let code = (e.keyCode ? e.keyCode : e.which);
+    if (code == 13) search();
+    $("body").unbind('keypress',quickSearch);
+  }
 
   var input_org ;
   $(document).on('click','.editable',function () {
@@ -126,27 +165,28 @@ $(document).ready(function () {
     },2600);
   });
 
-  var rarity = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'] ;
-  for(let i in rarity) $(".select_rarity").append("<span class='button' name='"+rarity[i]+"' value='0' >"+rarity[i]+"</span>") ;
+  var rarity = ['B','EX','R','SR','SSR'] ;
+  for(let i in rarity) $(".select_rarity").append("<span class='button' name='"+rarity[i]+"' value='0' >"+parseRarity(rarity[i])+"</span>") ;
 
-  var color = ['對紅','對浮','對黒','對鋼鐵','對天使','對外星','對不死','對白'];
-  for(let i in color) $(".select_color").append("<span class='button' name='["+color[i]+"]' value='0'>"+color[i]+"</span>") ;
+  var color = ['對紅色','對飄浮','對黑色','對鋼鐵','對天使','對外星','對不死','對白色','對全部'];
+  for(let i in color) $(".select_color").append("<span class='button' name='"+color[i]+"' value='0'>"+color[i]+"</span>") ;
 
-  var ability = ['增攻','降攻','免疫降攻','擅於攻擊','很耐打','超大傷害','爆擊','擊退','免疫擊退','連續攻擊','不死剋星',
+  var ability = ['增攻','降攻','免疫降攻','善於攻擊','很耐打','超大傷害','爆擊','擊退','免疫擊退','連續攻擊','不死剋星',
                 '緩速','免疫緩速','暫停','免疫暫停','遠方攻擊','復活','波動','抵銷波動','免疫波動','2倍金錢','只能攻撃',
-                '攻城','鋼鐵','免疫傳送','破盾'];
-  for(let i in ability) $(".select_ability").append("<span class='button' name='["+ability[i]+"]' value='0'>"+ability[i]+"</span>") ;
+                '攻城','鋼鐵','免疫傳送','破盾','1次攻擊'];
+  for(let i in ability) $(".select_ability").append("<span class='button' name='"+ability[i]+"' value='0'>"+ability[i]+"</span>") ;
 
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
     console.log(result) ;
-    let data = result.this,
+    let data = new Cat(result.this),
         arr = result.bro,
         brr = result.combo,
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
         own = result.own;
+
     displayCatData(data,arr,brr,lv,result.count,own) ;
-    current_cat_data = result;
+    current_cat_data = data;
   });
   var number_page,page_factor ;
   socket.on("search result",function (data) {
@@ -235,20 +275,20 @@ $(document).ready(function () {
     });
     function updateState(level) {
       let rarity = data.rarity;
-      let change = ['hp','hardness','atk','DPS'] ;
+      let change = ['hp','hardness','atk','dps'] ;
       for(let i in change){
         let target = $('.dataTable').find('#'+change[i]) ;
-        let original = target.attr('original');
-        target.html("<span class='editable' rarity='"+data.rarity+"'>"+
-        levelToValue(original,rarity,level).toFixed(0)+
+
+        target.html("<span class='editable'>"+
+        data.Tovalue(change[i],level)+
         "</span>").css('background-color',' rgba(242, 213, 167, 0.93)');
         setTimeout(function () {
           target.css('background-color','rgba(255, 255, 255, .9)');
         },500);
       }
-      if(data.char.indexOf("連續攻擊") != -1){
-        let target = $('.dataTable').find('#char');
-        target.html(serialATK(data.char,levelToValue(data.atk,data.rarity,level)));
+      if(data.serial){
+        $('.dataTable').find('#char').children("span")
+          .text("("+data.serialATK(level)+")");
       }
     }
   }
@@ -625,7 +665,6 @@ $(document).ready(function () {
 
 });
 
-
 function AddCombo(arr) {
   if(arr.length == 0){
     return "</tr><tr><td colspan=6>無可用聯組</td>"
@@ -684,19 +723,17 @@ function displayCatHtml(data,arr,brr,lv,count) {
   let html = '';
   html += screen.width > 768 ?
   "<tr>"+
-  "<th style='height:80px;padding:0'><img src='"+
-  image_url_cat+data.id+'.png'+
-  "' style='height:100%'></th>"+
-  "<th colspan=3 rarity='"+data.rarity+"' id='name'>"+data.name+"</th>"+
+  "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
+  "<th colspan=3 rarity='"+data.rarity+"' id='name'>["+data.Rarity+"] "+data.Name+"</th>"+
   "<th colspan=2>"+Thisbro(arr)+"</th>"+
   "</tr>" :
   "<tr>"+
   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-  image_url_cat+data.id+'.png'+
-  "' style='height:100%'>"+Thisbro(arr)+"</th>"+
+  data.imgURL+"' style='height:100%'>"+Thisbro(arr)+"</th>"+
   "</tr><tr>"+
-  "<th colspan='6' rarity='"+data.rarity+"' id='name'>"+data.name+"</th>"+
+  "<th colspan='6' rarity='"+data.rarity+"' id='name'>["+data.Rarity+"] "+data.Name+"</th>"+
   "</tr>" ;
+
   html +=
   "<tr>"+
   "<th colspan='1'>等級</th>"+
@@ -707,46 +744,43 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "<span id='level_num'>30</span>"+
   "</td >"+
   "<tr>"+
-  "<th>體力</th><td id='hp' original='"+data.hp+"'>"+
-  "<span class='editable' rarity='"+data.rarity+"'>"+
-  levelToValue(data.hp,data.rarity,lv).toFixed(0)+
-  "</span></td>"+
+  "<th>體力</th><td id='hp'>"+
+  "<span class='editable'>"+data.Tovalue('hp',lv)+"</span></td>"+
   "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-  "<th>硬度</th><td id='hardness' original='"+(data.atk/data.kb).toFixed(0)+"'>"+
-  "<span class='editable' rarity='"+data.rarity+"'>"+
-  levelToValue(data.atk/data.kb,data.rarity,lv).toFixed(0)+
-  "</span></td>"+
+  "<th>硬度</th><td id='hardness'>"+
+  "<span class='editable'>"+data.Tovalue('hardness',lv)+"</span></td>"+
   "</tr><tr>"+
-  "<th>攻擊力</th><td id='atk' original='"+data.atk+"'>"+
-  "<span class='editable' rarity='"+data.rarity+"'>"+
-  levelToValue(data.atk,data.rarity,lv).toFixed(0)+
-  "</span></td>"+
-  "<th>DPS</th><td id='DPS' original='"+data.lv1dps+"'>"+
-  "<span class='editable' rarity='"+data.rarity+"'>"+
-  (data.lv1dps!="-"?levelToValue(data.lv1dps,data.rarity,lv).toFixed(0):"-")+
-  "</span></td>"+
+  "<th>攻擊力</th><td id='atk'>"+
+  "<span class='editable'>"+data.Tovalue('atk',lv)+"</span></td>"+
+  "<th>DPS</th><td id='dps'>"+
+  "<span class='editable'>"+data.Tovalue('dps',lv)+"</span></td>"+
   "<th>射程</th><td id='range'>"+data.range+"</td>"+
   "</tr><tr>"+
-  "<th>攻頻</th><td id='freq'>"+(data.freq!="-"?data.freq.toFixed(1):"-")+" s</td>"+
+  "<th>攻頻</th><td id='freq'>"+data.Freq+" s</td>"+
   "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
-  "<td colspan='2' rowspan='2' id='multi'>"+data.multi+"</td>"+
+  "<td colspan='2' rowspan='3' id='aoe'>"+data.Aoe+"</td>"+
+  "</tr><tr>"+
+  "<th>攻擊週期</th><td id='cost'>"+data.atk_period+" s</td>"+
+  "<th>攻發時間</th><td id='cd'>"+data.atk_speed+" s</td>"+
   "</tr><tr>"+
   "<th>花費</th><td id='cost'>"+data.cost+"</td>"+
-  "<th>再生産</th><td id='cd'>"+data.cd.toFixed(1)+" s</td>"+
+  "<th>再生産</th><td id='cd'>"+data.cd+" s</td>"+
   "</tr><tr>"+
   "<th>取得方法</th>"+
-  "<td colspan='6' id='get_method'>"+data.get_method+"</td>"+
+  "<td colspan='5' id='get_method'>"+data.get_method+"</td>"+
   "</tr><tr>"+
-  "<td colspan='6' id='char' "+(
-  data.char.indexOf("連續攻擊") != -1 ?
-  "original='"+data.char特性+"'>"+
-  serialATK(data.char,levelToValue(data.atk,data.rarity,lv)) :
-  ">"+data.char)+
-  "</td>"+
+  "<td colspan = '6' id='char'>"+data.CharHtml(lv)+"</td>"+
   "</tr><tr>"+
   "<th colspan='6'>發動聯組</th>"+
   AddCombo(brr)+
   "</tr>"
 
   return html
+}
+
+function parseRarity(r) {
+  let arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'],
+      brr = ['B','EX','R','SR','SR_alt','SSR'];
+
+  return arr[brr.indexOf(r)]
 }
