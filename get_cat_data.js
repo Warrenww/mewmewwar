@@ -28,7 +28,7 @@ var config = {
   }
   // aibot("你好")
 
-  var i=170,j=1;
+  var i=399,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -52,7 +52,9 @@ var config = {
           row_2 = row_1.next(),
           row_3 = row_2.next(),
           row_4 = row_3.next(),
-          row_5 = row_4.next();
+          row_5 = row_4.next(),
+          row_7 = row_5.next().next(),
+          row_8 = row_7.next();
 
         obj.jp_name = content.find("tr[class='bgc12']").eq(j).children().eq(1).text();
         obj.rarity = parseRarity(row_1.children().eq(0).eq(0).text());
@@ -72,18 +74,20 @@ var config = {
         obj.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
         obj.cd = Number(row_4.children().eq(7).children().eq(0).text())/30;
         parseChar(row_5.children().eq(1),obj);
+        parseCondition(row_7,row_8,obj);
 
         console.log(AddZero(i)+"-"+j);
         console.log(obj);
         database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj)
         if(j<bro) {j++;getData(i,j);}
-        // else{
-        //   j=1;i++;
-        //   if( i == 183 || i == 203 || i == 214 || i == 201 ||
-        //       i == 286 || i == 321 || i == 340 || i == 354 ||
-        //       i == 383) i++;
-        // }
-        // getData(i,j)
+        else{
+          j=1;i++;
+          if( i == 183 || i == 203 || i == 214 || i == 201 ||
+              i == 286 || i == 321 || i == 340 || i == 354 ||
+              i == 383) i++;
+          getData(i,j);
+        }
+
       }
       else {
         // console.log("error s070"+AddZero(i)+"-0"+j);
@@ -355,4 +359,55 @@ var config = {
   }
   function AddZero(n) {
     return n>99 ? n : (n>9 ? "0"+n : "00"+n)
+  }
+  function parseCondition(row_7,row_8,obj) {
+    if(row_7.children().eq(0).text()=="開放条件"){
+      s = row_7.children().eq(1).text();
+    } else if(row_8.children().eq(0).text()=="開放条件"){
+      s = row_8.children().eq(1).text();
+    } else {
+      obj.get_method = '-';
+      return
+    }
+    if(s.indexOf("マタタビ") != -1){
+      let g = s.indexOf("緑"),p = s.indexOf("紫"),
+          r = s.indexOf("赤"),b = s.indexOf("青"),
+          y = s.indexOf("黄"),ra = s.indexOf("虹"),
+          se = s.indexOf("種"),
+          html = '合併等級Lv 30以上 + ' ;
+      // console.log(g+","+p+","+r+","+b+","+y+","+ra+","+se);
+      let arr = [g,p,r,b,y,ra],brr = ['綠色','紫色','紅色','藍色','黃色','彩虹'];
+      // console.log(arr);
+      for (let i in arr){
+        if(arr[i] != -1){
+          html += brr[i]+"貓薄荷"+(se == -1 ? "" : (arr[i]>se ? "種子" : "" ))+s.substring(arr[i]+1,arr[i]+2)+"個,";
+        }
+      }
+      // console.log(html.length);
+      obj.get_method = html.substring(0,html.length-1)
+    } else if(s.indexOf(" ＆ ") != -1){
+      let ww = s.split(" ＆ ");
+      ww[1] = ww[1].split("にゃんこガチャ").join("").split("ネコカン").join("貓罐頭");
+      obj.get_method = ww.join(" + ")
+    }
+    else if(s.indexOf("開眼の")!=-1&&s.indexOf("襲来！")!=-1){
+      let ww = "開眼的"+(obj.name?obj.name:obj.jp_name)+"襲來! + 合併等級Lv20以上";
+      // console.log(ww);
+      obj.get_method = ww ;
+    }
+    else if(s.indexOf("Lv") != -1 && s.indexOf("SP") == -1){
+      obj.get_method = "合併等級Lv" + s.split("Lv")[1] +"以上"
+    }
+    else {
+      switch (s) {
+        case '各種ガチャ ':
+          s = '從稀有轉蛋中獲得'
+          break
+        default:
+          s = s
+          break
+      }
+      obj.get_method = s;
+    }
+    return
   }

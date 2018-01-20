@@ -88,7 +88,7 @@ io.on('connection', function(socket){
                 for(let k=1;k<4;k++){
                   let id = grossID+"-"+k;
                   if(catdata[id])
-                    buffer_1.push({id:id,name:catdata[id].name});
+                    buffer_1.push({id:id,name:catdata[id].name?catdata[id].name:catdata[id].jp_name});
                 }
               }
             }
@@ -254,6 +254,7 @@ io.on('connection', function(socket){
             database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
               let count = snapshot.val() + 1;
               database.ref("/catdata/"+id+"/count").set(count);
+              database.ref("/newCatData/"+id+"/count").set(count);
             });
           }
           else console.log(record?"same as last cat":"do not record");
@@ -606,16 +607,13 @@ io.on('connection', function(socket){
     database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
       let jp = snapshot.val(),senddata=[];
       for(let i in data.result){
-        let rarity='';
-        if(data.result[i] == 'SSR') rarity = "超激稀有" ;
-        if(data.result[i] == 'SR') rarity = "激稀有" ;
-        if(data.result[i] == 'R') rarity = "稀有" ;
+        let rarity=data.result[i];
         let buffer = [];
         let exist = '000' ;
         for(let i in catdata) {
           if( catdata[i].rarity == rarity &&
               (jp||catdata[i].region.indexOf("[TW]")!=-1) &&
-              (rarity=="超激稀有"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1)
+              (rarity=="SSR"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1)
             ) {
             let current = i.substring(0,3);
             if(current == exist) continue
@@ -623,12 +621,11 @@ io.on('connection', function(socket){
             exist = current;
           }
         }
-
         let choose = buffer[Math.floor((Math.random()*buffer.length))],
         choooose = choose+"-1" ;
         senddata.push({
           id:choooose,
-          name:catdata[choooose].name,
+          name:catdata[choooose].name?catdata[choooose].name:catdata[choooose].jp_name,
           rarity:data.result[i]
         });
       }
@@ -735,7 +732,7 @@ function geteventDay() {
       if(body.indexOf("<error>") == -1) {
         console.log("change event day");
         database.ref("/event_date/now").set(y+"/"+AddZero(m)+"/"+AddZero(d));
-        NextEventDay(y,m,d);
+        // NextEventDay(y,m,d);
         PrevEventDay(y,m,d);
       }
       else {

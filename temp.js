@@ -26,20 +26,15 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
-
-database.ref("/newCatData").once("value",function (snapshot) {
+//
+database.ref("/catdata").once("value",function (snapshot) {
   catdata = snapshot.val();
   console.log("cat data load complete");
   for(let i in catdata){
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     process.stdout.write(i);
-    if(!catdata[i].tag) continue
-    if(catdata[i].tag.indexOf("善於攻擊")!=-1){
-      process.stdout.write(catdata[i].tag.join());
-      process.stdout.write("\n");
-
-    }
+    database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
   }
   console.log("finish");
 });
@@ -87,23 +82,20 @@ database.ref("/newCatData").once("value",function (snapshot) {
 //     count++;
 //   }
 // });
-// database.ref("/stagedata/world/s03002").once('value',function (snapshot) {
+
+// database.ref("/stagedata/universe/s03006").once('value',function (snapshot) {
 //   let data = snapshot.val() ;
 //
 //     for(let j in data){
 //       if(j == "name") continue
-//       let target = data[j];
-//       console.log(target.id);
-//       for (let k in target.reward){
-//         if(target.reward[k].prize.name.indexOf("u")!=-1){
-//           let name = target.reward[k].prize.name+"-1";
-//           let amount = catdata[name.substring(1)].name;
-//           console.log(name,amount);
-//           database.ref("/stagedata/world/s03002/"+j+"/reward/"+k+"/prize")
-//             .update({"name":name,"amount":amount});
 //
-//         }
-//       }
+//       let target = data[j],
+//           arr=[{chance:"",limit:"",prize:{amount:"",name:'寶物'}}];
+//       // arr = arr.concat(target.reward);
+//       console.log(target.id);
+//           database.ref("/stagedata/universe/s03006/"+j+"/reward/0/prize")
+//             .update({"name":'寶物',"amount":target.reward[0].prize.name});
+//
 //     }
 //
 // });

@@ -59,7 +59,7 @@ class Cat{
       for(let k in char){
         if(char[k].type=='波動'){
           html+=char[k].chance+"%的機率 發出Lv"+
-          char[k].percent+"的"+char[k].type+" (射程:"+
+          char[k].percent+"的<span id ='type'>"+char[k].type+"</span> (射程:"+
           (132.5+200*char[k].percent)+")"
         }else{
           html +=
@@ -71,7 +71,7 @@ class Cat{
           (char[k].range?" "+char[k].range.join("~"):"")+
           (char[k].period?+char[k].period.toFixed(1)+"秒":"");
           if(char[k].arr){
-            html += "<span>("+this.serialATK(lv)+")<span>"
+            html += "<span id='serial'>("+this.serialATK(lv)+")<span>"
           }
           html += "</br>";
         }

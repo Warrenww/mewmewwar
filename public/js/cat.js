@@ -302,7 +302,7 @@ $(document).ready(function () {
         },500);
       }
       if(data.serial){
-        $('.dataTable').find('#char').children("span")
+        $('.dataTable').find('#char').children("span[id=serial]")
           .text("("+data.serialATK(level)+")");
       }
     }
@@ -389,7 +389,7 @@ $(document).ready(function () {
     else $("#more_option").css("height",0);
     show_more = show_more?0:1;
   });
-  $(document).on("click","#char span",function () {
+  $(document).on("click","#char span[id='type']",function () {
     let type = $(this).attr("id"),
     rFilter=[],aFilter=[],gFilter=[],filterObj=[],cFilter=[];
     if(type == 'color') {
@@ -404,10 +404,23 @@ $(document).ready(function () {
     }
     else {
       let ww = $(this).text().split(" ")[0].split("(")[0];
+      if(ww.indexOf("連續攻擊")!=-1) ww = '連續攻擊';
+      switch (ww) {
+        case '會心一擊':
+          ww = '爆擊'
+          break;
+        case '對敵城傷害x4':
+          ww = '攻城'
+          break;
+        case '擊倒敵人時，獲得2倍金錢':
+          ww = '2倍金錢'
+          break;
+        default:
+          ww = ww;
+      }
       aFilter=[ww];
       $("#upper_table .button").each(function () {
-        if($(this).attr('name')!=ww) $(this).attr('value',0);
-        else $(this).attr('value',1);
+        if($(this).attr('name')==ww||$(this).attr('value')=='1') $(this).click() ;
       });
     }
     socket.emit("search",{
