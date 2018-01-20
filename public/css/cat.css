@@ -94,3 +94,31 @@
   z-index: 98;
   display: none;
 }
+#char span{
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.select_color .button[name~='對紅色'][value~='1']
+{background:linear-gradient(rgb(246, 134, 112), rgb(199, 65, 39))}
+.select_color .button[name~='對漂浮'][value~='1']
+{background:linear-gradient(rgb(180, 212, 73), rgb(98, 139, 60))}
+.select_color .button[name~='對黑色'][value~='1']
+{background:linear-gradient(rgb(62, 62, 62), rgb(42, 42, 42))}
+.select_color .button[name~='對鋼鐵'][value~='1']
+{background:linear-gradient(rgb(219, 219, 219),rgb(156, 156, 156))}
+.select_color .button[name~='對天使'][value~='1']
+{background:linear-gradient(rgb(224, 213, 111), rgb(207, 198, 78))}
+.select_color .button[name~='對外星'][value~='1']
+{background:linear-gradient(rgb(111, 224, 218), rgb(57, 184, 176))}
+.select_color .button[name~='對不死'][value~='1']
+{background:linear-gradient(rgb(201, 117, 236), rgb(141, 47, 161))}
+.ability_icon{
+  width: 30px;
+  height: 30px;
+  /* background-image: url("/public/css/footage/gameIcon/atkup.png"); */
+  background-size: cover;
+  background-color: rgb(135, 135, 135);
+  background-blend-mode: luminosity;
+}
+.ability_tip{width: 200px;text-align: center;}

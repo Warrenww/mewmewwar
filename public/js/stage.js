@@ -44,7 +44,7 @@ $(document).ready(function () {
     a0:{name : '傳說故事',id : 'story',show : true},
     a1:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
     b:{name : '世界篇',id : 'world',show : true},
-    c:{name : '未來篇',id : 'future',show : false},
+    c:{name : '未來篇',id : 'future',show : true},
     d:{name : '宇宙篇',id : 'universe',show : true},
     f:{name : '極難關',id : 'hard',show : false},
     g:{name : '月間關',id : 'month',show : false},
@@ -73,6 +73,7 @@ $(document).ready(function () {
     setTimeout(function () {
       $(".select_chapter button[value=1]").attr("value",0);
     },4000);
+    $("#select_level").empty();
     console.log(chapter);
     $("#select_stage").attr("chapter",chapter);
     if(!show) alert("not yet ready");
@@ -102,20 +103,29 @@ $(document).ready(function () {
     if($(this).parent().css("flex") == '3 1 0%') timeout = 800;
     setTimeout(function () {
       $('#select_stage').animate({
-        scrollTop : $('#select_stage button[value="1"]')[0].offsetTop-500
+        scrollTop : $('#select_stage button[value="1"]')[0].offsetTop-$("#select_stage").height()
       },800,'easeInOutCubic');
     },timeout);
   });
   socket.on("level name",function (data) {
     console.log(data);
     $("#select_level").empty();
-    for( let i in data )
+    for( let i in data.name )
       $("#select_level").append(
         "<span class='card'style='"+
         "background-image:url(\"../public/css/footage/fight_BG_0"+
         (Math.ceil(Math.random()*5))+".png\")"+
-        "' id='"+data[i].id+"'>"+data[i].name+"</span>"
+        "' id='"+data.name[i].id+"'>"+data.name[i].name+"</span>"
       ).css("flex","3").siblings().css("flex","1");
+      $("#select_stage").find("button[id='"+data.stage+"']")
+        .attr('value',1).siblings().each(function () {
+          $(this).attr('value',0)
+        });
+      setTimeout(function () {
+        $('#select_stage').animate({
+          scrollTop : $('#select_stage button[value="1"]')[0].offsetTop-$("#select_stage").height()
+        },800,'easeInOutCubic');
+      },800);
   });
   $(document).on("click","#select_level .card",function (e) {
     e.stopPropagation();
@@ -142,8 +152,10 @@ $(document).ready(function () {
             (data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
     html += screen.width > 768 ?
             ( "<tr>"+
-              "<th rowspan=2 colspan=1>"+chapterName(data.id)+"</th>"+
-              "<th rowspan=2 colspan=1>"+obj.parent+"</th>"+
+              "<th rowspan=2 colspan=1 id='chapter' value='"+data.id.split("-")[0]+"'>"
+              +chapterName(data.id)+"</th>"+
+              "<th rowspan=2 colspan=1 id='stage' value='"+data.id.split("-")[1]+"'>"
+              +obj.parent+"</th>"+
               "<th rowspan=2 colspan=2>"+data.name+"</th>"+
               "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
               "</tr><tr>"+
@@ -169,8 +181,10 @@ $(document).ready(function () {
               "</tr><tr>"+
               "</tr>" ):(
               "<tr>"+
-              "<th colspan=1>"+chapterName(data.id)+"</th>"+
-              "<th colspan=1>"+obj.parent+"</th>"+
+              "<th colspan=1 id='chapter' value='"+data.id.split("-")[0]+"'>"
+              +chapterName(data.id)+"</th>"+
+              "<th colspan=1 id='stage' value='"+data.id.split("-")[1]+"'>"
+              +obj.parent+"</th>"+
               "<th colspan=2>"+data.name+"</th>"+
               "</tr><tr>"+
               "<th>經驗值</th>"+"<td>"+data.exp+"</td>"+
@@ -196,6 +210,15 @@ $(document).ready(function () {
     // $(".display_BG").css('background-image','url(\"../public/css/footage/fight_BG_02.png\")');
 
     scroll_to_class('display',0);
+  });
+  $(document).on("click",".dataTable #chapter",function () {
+    scroll_to_div('selector');
+    $(".select_chapter").find("button[id='"+$(this).attr('value')+"']").click();
+  });
+  $(document).on("click",".dataTable #stage",function () {
+    let chapter = $(this).siblings("#chapter").attr("value"),
+        stage = $(this).attr('value');
+    socket.emit("required level name",{chapter:chapter,stage:stage});
   });
   function Addreward(arr,b) {
     // console.log(arr);

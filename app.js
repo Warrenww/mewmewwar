@@ -543,7 +543,7 @@ io.on('connection', function(socket){
           buffer.push({id:i,name:data[i].name});
         }
         // console.log(buffer);
-        socket.emit("level name",buffer);
+        socket.emit("level name",{name:buffer,stage:pos.stage});
   });
   socket.on("required level data",function (data) {
     console.log("load level data");

@@ -67,6 +67,12 @@ $(document).ready(function () {
     setTimeout(function () {
       $("#loading").fadeOut();
     },2500);
+    if(!data.setting.show_ability_text ||screen.width<768){
+        $(".select_ability").children(".button").each(function () {
+          $(this).css('padding',0).children("span").fadeOut()
+            .siblings("i").css({width:40,height:40});
+        });
+    }
   });
   socket.emit("require gachadata");
   socket.on("return gachadata",function (data) {
@@ -82,6 +88,23 @@ $(document).ready(function () {
     else $(this).find("i").css("transform","rotate(-90deg)");
     $("#gacha_search").toggle();
     more_gacha = more_gacha?0:1;
+  });
+  var tip_fadeOut;
+  $(document).on("click",".select_ability .button",function () {
+    let text = $(this).children("span").text(),
+        val = $(this).attr('value')=='1'?true:false;
+        console.log(val);
+    if((!current_user_data.setting.show_ability_text||screen.width<768)&&val){
+      clearTimeout(tip_fadeOut);
+      $(".ability_tip").remove();
+      $("body").append("<div class='ability_tip'>"+text+"<div>");
+      setTimeout(function () {
+        $(".ability_tip").css("left",-10);
+      },100)
+      tip_fadeOut = setTimeout(function () {
+        $(".ability_tip").css("left",-250)
+      },2000);
+    }
   });
 
   $(document).on('click','.card',function (e) {
@@ -164,18 +187,10 @@ $(document).ready(function () {
       $("#copy_alert").css("left",-250);
     },2600);
   });
-
-  var rarity = ['B','EX','R','SR','SSR'] ;
-  for(let i in rarity) $(".select_rarity").append("<span class='button' name='"+rarity[i]+"' value='0' >"+parseRarity(rarity[i])+"</span>") ;
-
-  var color = ['對紅色','對飄浮','對黑色','對鋼鐵','對天使','對外星','對不死','對白色','對全部'];
-  for(let i in color) $(".select_color").append("<span class='button' name='"+color[i]+"' value='0'>"+color[i]+"</span>") ;
-
-  var ability = ['增攻','降攻','免疫降攻','善於攻擊','很耐打','超大傷害','爆擊','擊退','免疫擊退','連續攻擊','不死剋星',
-                '緩速','免疫緩速','暫停','免疫暫停','遠方攻擊','復活','波動','抵銷波動','免疫波動','2倍金錢','只能攻撃',
-                '攻城','鋼鐵','免疫傳送','破盾','1次攻擊'];
-  for(let i in ability) $(".select_ability").append("<span class='button' name='"+ability[i]+"' value='0'>"+ability[i]+"</span>") ;
-
+  $(".select_ability").find(".ability_icon").each(function () {
+    let name = $(this).attr("id");
+    $(this).css("background-image","url('"+image_url_icon+name+".png')");
+  });
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
     console.log(result) ;
@@ -373,6 +388,33 @@ $(document).ready(function () {
     if(show_more) $("#more_option").css("height",50);
     else $("#more_option").css("height",0);
     show_more = show_more?0:1;
+  });
+  $(document).on("click","#char span",function () {
+    let type = $(this).attr("id"),
+    rFilter=[],aFilter=[],gFilter=[],filterObj=[],cFilter=[];
+    if(type == 'color') {
+      let ww = $(this).text().split(",")
+      for(let i in ww){
+        cFilter.push("對"+ww[i].substring(0,2))
+      }
+      $("#upper_table .button").each(function () {
+        if(cFilter.indexOf($(this).attr('name'))==-1) $(this).attr('value',0);
+        else $(this).attr('value',1);
+      });
+    }
+    else {
+      let ww = $(this).text().split(" ")[0].split("(")[0];
+      aFilter=[ww];
+      $("#upper_table .button").each(function () {
+        if($(this).attr('name')!=ww) $(this).attr('value',0);
+        else $(this).attr('value',1);
+      });
+    }
+    socket.emit("search",{
+      uid:current_user_data.uid,
+      rFilter,cFilter,aFilter,gFilter,filterObj,
+      type:"cat"
+    });
   });
   function filterSlider() {
     $("#slider_holder").show();
@@ -624,8 +666,9 @@ $(document).ready(function () {
   }
   function calculateLV() {
     let val = Number($(this).val()),
-        rarity = $(this).parent().attr('rarity'),
-        ori = Number($(this).parents('td').attr('original')),
+        rarity = current_cat_data.rarity,
+        type = $(this).parents('td').attr('id'),
+        ori = current_cat_data[type],
         lv;
     if(!val){
       $(this).parent().html(input_org);
@@ -633,10 +676,10 @@ $(document).ready(function () {
     }
     let limit ;
     switch (rarity) {
-      case '稀有':
+      case 'R':
       limit = 70 ;
       break;
-      case '激稀有狂亂':
+      case 'SR_alt':
       limit = 20 ;
       break;
       default:
@@ -746,7 +789,7 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "<tr>"+
   "<th>體力</th><td id='hp'>"+
   "<span class='editable'>"+data.Tovalue('hp',lv)+"</span></td>"+
-  "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
+  "<th>KB</th><td id='KB'>"+data.Tovalue('kb',lv)+"</td>"+
   "<th>硬度</th><td id='hardness'>"+
   "<span class='editable'>"+data.Tovalue('hardness',lv)+"</span></td>"+
   "</tr><tr>"+
@@ -760,7 +803,7 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
   "<td colspan='2' rowspan='3' id='aoe'>"+data.Aoe+"</td>"+
   "</tr><tr>"+
-  "<th>攻擊週期</th><td id='cost'>"+data.atk_period+" s</td>"+
+  "<th>攻擊週期</th><td id='cost'>"+data.Period+" s</td>"+
   "<th>攻發時間</th><td id='cd'>"+data.atk_speed+" s</td>"+
   "</tr><tr>"+
   "<th>花費</th><td id='cost'>"+data.cost+"</td>"+
@@ -774,7 +817,6 @@ function displayCatHtml(data,arr,brr,lv,count) {
   "<th colspan='6'>發動聯組</th>"+
   AddCombo(brr)+
   "</tr>"
-
   return html
 }
 

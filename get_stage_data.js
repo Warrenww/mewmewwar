@@ -12,7 +12,7 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  var i=6,j=1;
+  var i=3,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -31,7 +31,7 @@ var config = {
         enemy : [],
         final : "",
         "continue" : "",
-        id:"universe-s0300"+i+"-"+j
+        id:"future-s0300"+i+"-"+j
       };
       if(!e){
         // console.log("get data");
@@ -79,12 +79,12 @@ var config = {
           });
         }
         // console.log(obj);
-        database.ref("/stagedata/universe/s0300"+i+"/"+j).set(obj);
+        database.ref("/stagedata/future/s0300"+i+"/"+j).set(obj);
         j++;
         // if(final){j=1;i++}
         // if(!final) getData(i,j);
         if(j<49) getData(i,j);
-        // else {i++;j=1;if(i<3)getData(i,j);}
+        else {i++;j=1;if(i<6)getData(i,j);}
       }
       else {
         // console.log("error s070"+AddZero(i)+"-0"+j);
@@ -157,6 +157,9 @@ var config = {
           break;
           case "レアチケット":
           obj.name = "稀有卷";
+          break;
+          case "ネコカン":
+          obj.name = "貓罐頭";
           break;
           case "スピードアップ":
           obj.name = "加速";

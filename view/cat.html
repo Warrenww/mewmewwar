@@ -48,15 +48,58 @@
         <table id="upper_table">
             <tr>
                 <th colspan="2">稀有度</th>
-                <td colspan="4" class="select_rarity"></td>
+                <td colspan="4" class="select_rarity">
+                  <span class='button' name='B' value='0' >基本</span>
+                  <span class='button' name='EX' value='0' >EX</span>
+                  <span class='button' name='R' value='0' >稀有</span>
+                  <span class='button' name='SR' value='0' >激稀有</span>
+                  <span class='button' name='SR_alt' value='0' >激稀有狂亂</span>
+                  <span class='button' name='SSR' value='0' >超激稀有</span>
+                </td>
             </tr>
             <tr>
                 <th colspan="2">屬性</th>
-                <td colspan="4" class="select_color"></td>
+                <td colspan="4" class="select_color">
+                  <span class='button' name='對紅色' value='0' >紅色敵人</span>
+                  <span class='button' name='對漂浮' value='0' >漂浮敵人</span>
+                  <span class='button' name='對黑色' value='0' >黑色敵人</span>
+                  <span class='button' name='對鋼鐵' value='0' >鋼鐵敵人</span>
+                  <span class='button' name='對天使' value='0' >天使</span>
+                  <span class='button' name='對外星' value='0' >異星戰士</span>
+                  <span class='button' name='對不死' value='0' >不死生物</span>
+                  <span class='button' name='對白色' value='0' >白色敵人</span>
+                  <span class='button' name='對全部' value='0' >全部敵人</span>
+                </td>
             </tr>
             <tr>
                 <th colspan="2" rowspan="2">能力</th>
-                <td colspan="4" rowspan="2" class="select_ability"></td>
+                <td colspan="4" rowspan="2" class="select_ability">
+                  <span class='button'name='降攻'value='0'><i id='atkdown'class="ability_icon"></i><span> 使攻擊力下降</span></span>
+                  <span class='button'name='增攻'value='0'><i id='atkup'class="ability_icon"></i><span> 攻擊力上升</span></span>
+                  <span class='button'name='免疫降攻'value='0'><i id='noatkdown'class="ability_icon"></i><span> 攻擊力下降無效</span></span>
+                  <span class='button'name='善於攻擊'value='0'><i id='goodat'class="ability_icon"></i><span> 善於攻擊</span></span>
+                  <span class='button'name='很耐打'value='0'><i id='morehp'class="ability_icon"></i><span> 很耐打</span></span>
+                  <span class='button'name='超大傷害'value='0'><i id='bighurt'class="ability_icon"></i><span> 超大傷害</span></span>
+                  <span class='button'name='爆擊'value='0'><i id='criticalhit'class="ability_icon"></i><span> 會心一擊</span></span>
+                  <span class='button'name='擊退'value='0'><i id='goaway'class="ability_icon"></i><span> 打飛敵人</span></span>
+                  <span class='button'name='免疫擊退'value='0'><i id='nogoaway'class="ability_icon"></i><span> 打飛無效</span></span>
+                  <span class='button'name='連續攻擊'value='0'><i id='serialatk'class="ability_icon"></i><span> 連續攻擊</span></span>
+                  <span class='button'name='不死剋星'value='0'><i id='killdeath'class="ability_icon"></i><span> 不死剋星</span></span>
+                  <span class='button'name='緩速'value='0'><i id='slow'class="ability_icon"></i><span> 使動作變慢</span></span>
+                  <span class='button'name='免疫緩速'value='0'><i id='noslow'class="ability_icon"></i><span> 使動作變慢無效</span></span>
+                  <span class='button'name='暫停'value='0'><i id='stop'class="ability_icon"></i><span> 使動作停止</span></span>
+                  <span class='button'name='免疫暫停'value='0'><i id='nostop'class="ability_icon"></i><span> 使動作停止無效</span></span>
+                  <span class='button'name='遠方攻擊'value='0'><i id='faratk'class="ability_icon"></i><span> 遠方攻擊</span></span>
+                  <span class='button'name='復活'value='0'><i id='surive'class="ability_icon"></i><span> 死前存活</span></span>
+                  <span class='button'name='波動'value='0'><i id='wave'class="ability_icon"></i><span> 波動</span></span>
+                  <span class='button'name='免疫波動'value='0'><i id='nowave'class="ability_icon"></i><span> 波動傷害無效</span></span>
+                  <span class='button'name='抵銷波動'value='0'><i id='stopwave'class="ability_icon"></i><span> 波動滅止</span></span>
+                  <span class='button'name='2倍金錢'value='0'><i id='2money'class="ability_icon"></i><span> 得到很多金錢</span></span>
+                  <span class='button'name='攻城'value='0'><i id='castle'class="ability_icon"></i><span> 善於攻城</span></span>
+                  <span class='button'name='免疫傳送'value='0'><i id='notrans'class="ability_icon"></i><span> 傳送無效</span></span>
+                  <span class='button'name='破盾'value='0'><i id='breakshell'class="ability_icon"></i><span> 破壞護盾</span></span>
+                  <span class='button'name='1次攻擊'value='0'><i id='1atk'class="ability_icon"></i><span> 1次攻擊</span></span>
+                </td>
             </tr>
 
         </table>
@@ -157,6 +200,7 @@
     <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
     <div id="fight_alert">已加入對戰 <i class="material-icons">&#xe877;</i></div>
+    <div id="ability_tip">使攻擊力下降</div>
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">

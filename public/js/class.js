@@ -4,7 +4,7 @@ class Cat{
     this.name = obj.name;
     this.aoe = obj.aoe;
     this.atk = obj.atk;
-    this.atk_period = obj.atk_period.toFixed(2);
+    this.atk_period = obj.atk_period;
     this.atk_speed = obj.atk_speed.toFixed(2);
     this.cd = obj.cd.toFixed(1);
     this.char = obj.char;
@@ -38,6 +38,10 @@ class Cat{
     if(this.freq) return this.freq.toFixed(1)
     else return "-"
   }
+  get Period(){
+    if(this.atk_period) return this.atk_period.toFixed(2)
+    else return "-"
+  }
   get Name(){
     if(this.name) return this.name
     else return this.jp_name
@@ -58,10 +62,11 @@ class Cat{
           char[k].percent+"的"+char[k].type+" (射程:"+
           (132.5+200*char[k].percent)+")"
         }else{
-          html += (char[k].against?"對"+char[k].against:"")+
+          html +=
+          (char[k].against?"對<span id='color'>"+char[k].against+"</span>":"")+
           (char[k].chance?char[k].chance+"%的機率":"")+
           (char[k].lower?"體力小於"+char[k].lower+"%時":"")+
-          char[k].type+
+          "<span id='type'>"+char[k].type+"</span>"+
           (char[k].percent?char[k].percent+"%":"")+
           (char[k].range?" "+char[k].range.join("~"):"")+
           (char[k].period?+char[k].period.toFixed(1)+"秒":"");
@@ -76,7 +81,9 @@ class Cat{
   }
   Tovalue(type,lv){
     var origin = this[type],
-        limit,result ;
+        limit,result,
+        lv_bind = ['hp','dps','hardness','atk',] ;
+    if(lv_bind.indexOf(type)==-1) return origin
     switch (this.rarity) {
       case 'R':
       limit = 70 ;

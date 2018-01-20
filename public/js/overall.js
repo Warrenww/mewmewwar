@@ -1,5 +1,6 @@
 const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
+const image_url_icon =  "../public/css/footage/gameIcon/" ;
 
 $(document).ready(function () {
   var socket = io.connect();
@@ -137,6 +138,10 @@ $(document).ready(function () {
       val = val ? 0 : 1 ;
       return val ;
     });
+    $(this).find("i").css("background-blend-mode",function () {
+      let type = val ? 'normal' : 'luminosity';
+      return type
+    })
   }
 
   //mobile navigation reaction
@@ -164,9 +169,9 @@ $(document).ready(function () {
   //table th reaction
   $(document).on('click','#upper_table th',function () {
     let on = $(this).siblings().children('[value=1]') ;
-    if(on.length > 0) on.each(function () {$(this).attr('value',0);});
+    if(on.length > 0) on.each(function () {$(this).click();});
     else $(this).siblings().children().each(function () {
-      $(this).attr('value',1);
+      $(this).click();
     });
   });
 
@@ -195,7 +200,9 @@ $(document).ready(function () {
   }
   var scroll_select = function (e) {
     if(e.originalEvent.wheelDelta < 0) {
-      if($(this).scrollTop()+$(this).height() == $(this)[0].scrollHeight) return true
+      if( $(this).scrollTop()+$(this).height() > $(this)[0].scrollHeight-2
+      &&  $(this).scrollTop()+$(this).height() < $(this)[0].scrollHeight+2
+      ) return true
       turnPage(1);
         //scroll down
     }else {
