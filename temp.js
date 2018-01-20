@@ -26,18 +26,18 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
-//
-database.ref("/catdata").once("value",function (snapshot) {
-  catdata = snapshot.val();
-  console.log("cat data load complete");
-  for(let i in catdata){
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write(i);
-    database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
-  }
-  console.log("finish");
-});
+
+// database.ref("/catdata").once("value",function (snapshot) {
+//   catdata = snapshot.val();
+//   console.log("cat data load complete");
+//   for(let i in catdata){
+//     process.stdout.clearLine();
+//     process.stdout.cursorTo(0);
+//     process.stdout.write(i);
+//     database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
+//   }
+//   console.log("finish");
+// });
 
 // database.ref("/enemydata").once("value",function (snapshot) {
 //   let enemydata = snapshot.val();
@@ -83,22 +83,29 @@ database.ref("/catdata").once("value",function (snapshot) {
 //   }
 // });
 
-// database.ref("/stagedata/universe/s03006").once('value',function (snapshot) {
-//   let data = snapshot.val() ;
-//
-//     for(let j in data){
-//       if(j == "name") continue
-//
-//       let target = data[j],
-//           arr=[{chance:"",limit:"",prize:{amount:"",name:'寶物'}}];
-//       // arr = arr.concat(target.reward);
-//       console.log(target.id);
-//           database.ref("/stagedata/universe/s03006/"+j+"/reward/0/prize")
-//             .update({"name":'寶物',"amount":target.reward[0].prize.name});
-//
-//     }
-//
-// });
+database.ref("/stagedata/world/s03000").once('value',function (snapshot) {
+  let data = snapshot.val(),
+      data26 = data[26],
+      data28 = data[28];
+
+    console.log(data26.name,data28.name);
+    console.log(data26.reward,data28.reward);
+
+    //
+    // for(let j in data){
+    //   if(j == "name") continue
+    //
+    //   let target = data[j],
+    //       arr=[{chance:"",limit:"",prize:{amount:"",name:'寶物'}}];
+    //   // arr = arr.concat(target.reward);
+    //   for(let i in target.reward){
+    //     if(target.reward[i].prize.name.indexOf("u")!=-1)
+    //     console.log(target.name,target.reward[i].prize.amount);
+    //   }
+
+    // }
+
+});
 
 var t = new Date(),
     y = t.getFullYear(),

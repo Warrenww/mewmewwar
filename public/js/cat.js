@@ -389,7 +389,7 @@ $(document).ready(function () {
     else $("#more_option").css("height",0);
     show_more = show_more?0:1;
   });
-  $(document).on("click","#char span[id='type']",function () {
+  $(document).on("click","#char span[id!='serial']",function () {
     let type = $(this).attr("id"),
     rFilter=[],aFilter=[],gFilter=[],filterObj=[],cFilter=[];
     if(type == 'color') {

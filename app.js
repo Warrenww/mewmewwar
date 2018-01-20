@@ -36,7 +36,8 @@ var catdata,
     enemydata,
     userdata,
     stagedata,
-    gachadata ;
+    gachadata,
+    catname = {TW:{R:[],SR:[],SSR:[]},JP:{R:[],SR:[],SSR:[]}} ;
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().newCatData ;
   combodata = snapshot.val().combodata ;
@@ -44,6 +45,20 @@ database.ref("/").once("value",function (snapshot) {
   stagedata = snapshot.val().stagedata ;
   gachadata = snapshot.val().gachadata ;
   console.log('all data load complete!!') ;
+
+  var exist='000',current='';
+  for(let i in catdata) {
+    let current = i.substring(0,3),rarity = catdata[i].rarity;
+    if(current == exist) continue
+    exist = current;
+    if(rarity=="SSR"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1){
+      let name = catdata[i].name?catdata[i].name:catdata[i].jp_name,
+          region = catdata[i].region.indexOf('[TW]')!=-1?'TW':'JP';
+      catname[region][rarity].push({id:i,name:name})
+    }
+  }
+  // console.log(catname.R.length,catname.SR.length,catname.SSR.length);
+
 });
 arrangeUserData();
 geteventDay();
@@ -597,35 +612,21 @@ io.on('connection', function(socket){
       socket.emit('true event date',snapshot.val());
     });
   });
-  socket.on("test",function () {
-    console.log("This is a test string")
-  });
 
   socket.on("gacha",function(data){
     console.log("gacha");
     console.log(data);
     database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
       let jp = snapshot.val(),senddata=[];
+
       for(let i in data.result){
-        let rarity=data.result[i];
-        let buffer = [];
-        let exist = '000' ;
-        for(let i in catdata) {
-          if( catdata[i].rarity == rarity &&
-              (jp||catdata[i].region.indexOf("[TW]")!=-1) &&
-              (rarity=="SSR"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1)
-            ) {
-            let current = i.substring(0,3);
-            if(current == exist) continue
-            buffer.push(current);
-            exist = current;
-          }
-        }
-        let choose = buffer[Math.floor((Math.random()*buffer.length))],
-        choooose = choose+"-1" ;
+        let rarity = data.result[i];
+        let buffer = jp?catname.JP[rarity].concat(catname.TW[rarity]):catname.TW[rarity];
+
+        let choose = buffer[Math.floor((Math.random()*buffer.length))];
         senddata.push({
-          id:choooose,
-          name:catdata[choooose].name?catdata[choooose].name:catdata[choooose].jp_name,
+          id:choose.id,
+          name:choose.name,
           rarity:data.result[i]
         });
       }

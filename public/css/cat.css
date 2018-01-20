@@ -94,7 +94,8 @@
   z-index: 98;
   display: none;
 }
-#char span[id~='type']{
+#char span[id~='type'],
+#char span[id~='color']{
   font-weight: bold;
   text-decoration: underline;
   cursor: pointer;
