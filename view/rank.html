@@ -1,0 +1,99 @@
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>空白頁</title>
+    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_event.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="../public/css/navBar.css" />
+    <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/intro.css" />
+    <link rel="stylesheet" href="../public/css/rwd.css" />
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  </head>
+  <body>
+    <div class="page_1">
+      <div class="content">
+        <p style="font-size:20px;text-align:center;font-weight:bold">
+          等級排行任務是角色等級與強化等級的總和</br>
+          達成一定等級排行後可依等級高低獲得各種不同的報酬
+        </p>
+        <table class="select">
+          <tr>
+            <th colspan="2">直接輸入等級</th>
+            <td id="exact"><input type="number" /></td>
+          </tr>
+          <tr>
+            <th>等級</th>
+            <th id="BorS"><span value='1'>大於</span><span value='0'>小於</span></th>
+            <td id="half-plane"><input type="number" /></td>
+          </tr>
+          <tr>
+            <th colspan="2">等級區間</th>
+            <td id="interval"><input type="number" />to<input type="number" /></td>
+          </tr>
+          <tr>
+            <th colspan="2">關鍵字搜尋</th>
+            <td id="keyword">
+              <span>稀有券</span>
+              <span>貓咪券</span>
+              <span>等級上限</span>
+              <span>貓眼石</span>
+              <span>貓薄荷</span>
+            </td>
+          </tr>
+        </table>
+        <div style="display:flex;width:100%;justify-content:center;padding-bottom:5%">
+          <button id="show_all">全部顯示</button>
+          <button id="clear_all">全部清除</button>
+        </div>
+        <table class="dataTable">
+          <thead>
+            <tr>
+              <th colspan="2">查詢結果</th>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal fade" id="helpModal" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <div class='title'></div>
+          </div>
+          <div class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <!-- <button id="setting-submit" class="btn btn-default" >Confirm</button> -->
+            <button id="setting-cancel" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../public/js/html2canvas.min.js"></script>
+    <script src="../public/js/class.js"></script>
+    <script src="../public/js/overall.js"></script>
+    <script src="../public/js/intro.js"></script>
+    <script src="../public/js/jquery.easing.1.3.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="../public/js/firebaseConfig.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </body>
+</html>

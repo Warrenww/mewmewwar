@@ -64,29 +64,29 @@ $(document).ready(function () {
       }
     }
     show_more = !data.setting.show_more_option;
+    if(!data.setting.show_ability_text ||screen.width<768){
+        $(".select_ability").children(".button").each(function () {
+          $(this).css({'padding':0,'border-radius':7,'overflow':'hidden'})
+            .children("span").fadeOut().siblings("i").css({width:40,height:40});
+        });
+    }
     setTimeout(function () {
       $("#loading").fadeOut();
     },2500);
-    if(!data.setting.show_ability_text ||screen.width<768){
-        $(".select_ability").children(".button").each(function () {
-          $(this).css('padding',0).children("span").fadeOut()
-            .siblings("i").css({width:40,height:40});
-        });
-    }
   });
   socket.emit("require gachadata");
   socket.on("return gachadata",function (data) {
     // console.log(data);
-    for(let i in data){
-      // console.log(i,data[i].name);
-      $("#gacha_search").append("<span id='"+i+"' class='button' value = 0>"+data[i].name.split(" 稀有轉蛋")[0]+"</span>").toggle();
-    }
+    // for(let i in data){
+    //   // console.log(i,data[i].name);
+    //   $("#gacha_search").append("<span id='"+i+"' class='button' value = 0>"+data[i].name.split(" 稀有轉蛋")[0]+"</span>").toggle();
+    // }
   });
   var more_gacha = 0 ;
   $(document).on("click","#more_gacha_search",function () {
     if(more_gacha) $(this).find("i").css("transform","rotate(90deg)");
     else $(this).find("i").css("transform","rotate(-90deg)");
-    $("#gacha_search").toggle();
+    $(".gacha_search").toggle();
     more_gacha = more_gacha?0:1;
   });
   var tip_fadeOut;
@@ -311,7 +311,8 @@ $(document).ready(function () {
     let rarity = $(".select_rarity [value=1]"),
     color = $(".select_color [value=1]"),
     ability = $(".select_ability [value=1]"),
-    gacha = $("#gacha_search [value=1]");
+    gacha = $(".gacha_search td .button[value=1]");
+    console.log(more_gacha);
     let rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;

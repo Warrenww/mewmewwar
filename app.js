@@ -37,17 +37,25 @@ var catdata,
     userdata,
     stagedata,
     gachadata,
-    catname = {TW:{R:[],SR:[],SSR:[]},JP:{R:[],SR:[],SSR:[]}} ;
+    rankdata,
+    catname = {TW:{R:[],SR:[],SSR:[]},JP:{R:[],SR:[],SSR:[]}},
+    most_search_cat ='' ;
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().newCatData ;
   combodata = snapshot.val().combodata ;
   enemydata = snapshot.val().enemydata ;
   stagedata = snapshot.val().stagedata ;
   gachadata = snapshot.val().gachadata ;
+  rankdata = snapshot.val().rankdata ;
   console.log('all data load complete!!') ;
 
-  var exist='000',current='';
+  var exist='000',current='',count=0;
   for(let i in catdata) {
+    if(catdata[i].count > count){
+      most_search_cat = i;
+      count = catdata[i].count
+    }
+
     let current = i.substring(0,3),rarity = catdata[i].rarity;
     if(current == exist) continue
     exist = current;
@@ -57,6 +65,7 @@ database.ref("/").once("value",function (snapshot) {
       catname[region][rarity].push({id:i,name:name})
     }
   }
+  console.log('most search',catdata[most_search_cat].name,count);
   // console.log(catname.R.length,catname.SR.length,catname.SSR.length);
 
 });
@@ -606,11 +615,13 @@ io.on('connection', function(socket){
     });
   });
 
-
   socket.on('get event date',function () {
     database.ref('/event_date').once('value',function (snapshot) {
       socket.emit('true event date',snapshot.val());
     });
+  });
+  socket.on("rankdata",function () {
+    socket.emit("recive rank data",rankdata);
   });
 
   socket.on("gacha",function(data){

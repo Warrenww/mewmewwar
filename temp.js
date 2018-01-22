@@ -83,29 +83,29 @@ console.log('start');
 //   }
 // });
 
-database.ref("/stagedata/world/s03000").once('value',function (snapshot) {
-  let data = snapshot.val(),
-      data26 = data[26],
-      data28 = data[28];
-
-    console.log(data26.name,data28.name);
-    console.log(data26.reward,data28.reward);
-
-    //
-    // for(let j in data){
-    //   if(j == "name") continue
-    //
-    //   let target = data[j],
-    //       arr=[{chance:"",limit:"",prize:{amount:"",name:'寶物'}}];
-    //   // arr = arr.concat(target.reward);
-    //   for(let i in target.reward){
-    //     if(target.reward[i].prize.name.indexOf("u")!=-1)
-    //     console.log(target.name,target.reward[i].prize.amount);
-    //   }
-
-    // }
-
-});
+// database.ref("/stagedata/world/s03000").once('value',function (snapshot) {
+//   let data = snapshot.val(),
+//       data26 = data[26],
+//       data28 = data[28];
+//
+//     console.log(data26.name,data28.name);
+//     console.log(data26.reward,data28.reward);
+//
+//     //
+//     // for(let j in data){
+//     //   if(j == "name") continue
+//     //
+//     //   let target = data[j],
+//     //       arr=[{chance:"",limit:"",prize:{amount:"",name:'寶物'}}];
+//     //   // arr = arr.concat(target.reward);
+//     //   for(let i in target.reward){
+//     //     if(target.reward[i].prize.name.indexOf("u")!=-1)
+//     //     console.log(target.name,target.reward[i].prize.amount);
+//     //   }
+//
+//     // }
+//
+// });
 
 var t = new Date(),
     y = t.getFullYear(),
@@ -115,23 +115,26 @@ var t = new Date(),
     // console.log(url+y+m+d+".html");
 
 // request({
-//   url: "https://m.gamer.com.tw/forum/C.php?bsn=23772&snA=10129&bpage=1&top=0&ltype=",
+//   url: "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/rank/tw/index.html",
 //   method: "GET"
 // },function (e,r,b) {
 //   if(!e){
 //     $ = cheerio.load(b);
 //     // console.log($("tbody").html());
 //     $("tr").each(function () {
-//       let stage = $(this).children("td").eq(0).text().split("-");
-//       let name = $(this).children("td").eq(2).text();
-//       // console.log(stage+":"+name);
-//       if(stage[1] != '0'){
-//         database.ref("/stagedata/story/s000"+(AddZero(stage[0]-1))+"/"+stage[1]+"/name").set(name)
+//       let rank = $(this).children("td").eq(0).text();
+//       let name = $(this).children("td").eq(1).text().split("\n");
+//       let www = '';
+//       for(let i in name){
+//         www += name[i].trim();
 //       }
+//       console.log(rank,www);
+//       database.ref("/rankdata/"+rank).set(www);
 //       // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
 //     });
 //   }
 // });
+
 function AddZero(n) {
   return n<10 ? "0"+n : n
 }

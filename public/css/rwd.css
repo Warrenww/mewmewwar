@@ -46,7 +46,6 @@ nav .mobile,
 }
 @media screen and (max-width: 768px) {
   nav{height: 40px;justify-content: space-between;}
-  .page_1{padding-top: 40px}
   .m_nav_panel{display: flex;}
   nav .mobile{
     flex:1 ;
@@ -55,8 +54,9 @@ nav .mobile,
   }
   #start{font-size: 30px;padding: 6px 120px;}
   .select,
-  .display
-  {padding-left: 0;padding-right: 0;}
+  .display,
+  .content
+  {padding-left: 0;padding-right: 0;padding-top: 10%}
   span.button{font-size: 18px;padding: 1px 15px;}
   .card{height: 80px;width: 120px;}
   .card-group{margin: 0}
@@ -97,6 +97,9 @@ nav .mobile,
     width: 30px;
     height: 30px;
   }
+  .navigation .tag{height: 30px;margin-bottom: 15%}
+  .navigation .text{font-size: 16px}
+  .navigation .tagBG{left: -50%}
   /* TEMP:  */
   #year_event{padding: 5% 0}
 
@@ -112,4 +115,13 @@ nav .mobile,
     height: 7px;
     margin: 3px
   }
+}
+@media screen and (max-width:425px) {
+  .navigation{display: none;}
+  .window{flex-direction: column;}
+  .select,
+  .display,
+  .content
+  {padding-top: 15%}
+  .navigation_m{display: flex}
 }

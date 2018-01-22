@@ -8,70 +8,11 @@ $(document).ready(function () {
   var filter_name = '';
   var current_user_data = {};
 
-//user login
-  $(document).on("click","#fb_login",facebookLog)
-  $(document).on("click","#guest_login",function () {
-    let r = confirm("資料庫容量有限，"+
-    "匿名登入使用者如果連續三天沒有使用將被刪除，"+
-    "是否仍要繼續匿名登入?");
-    if(r) guestLog();
-    else return
-  })
-  function facebookLog() {
-    auth.signInWithPopup(facebook_provider).then(function(result) {
-      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-      var token = result.credential.accessToken;
-      // The signed-in user info.
-      var user = result.user;
-      // console.log(user);
-      socket.emit("user login",result.user) ;
-      $("#login").fadeOut();
-      // window.location.assign("/");
-    }).catch(function(error) {
-      console.log(error);
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      var email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
-      // ...
-    });
-  }
-  function guestLog() {
-    firebase.auth().signInAnonymously().catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // ...
-    })
-    .then(function () {
-      $("#login").fadeOut();
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // console.log(user);
-          socket.emit("user login",user) ;
-          var isAnonymous = user.isAnonymous;
-          var uid = user.uid;
-          // ...
-        } else {
-          // User is signed out.
-          // ...
-        }
-        // ...
-      });
-    });
-  }
-
 //get user data
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",user);
     } else {
-      $("#login").fadeIn();
-      console.log('did not sign in');
-
       if(location.pathname == '/view/once.html') {
 
       }
@@ -90,9 +31,9 @@ $(document).ready(function () {
     location.pathname != "/view/setting.html"&&
     location.pathname != "/view/once.html"&&
     !data.setting.show_more_service
-  ){
-    $("body").append("<div id='service'></div>");
-  }
+    ){
+      $("body").append("<div id='service'></div>");
+    }
   });
 
 //coustomer service
@@ -108,12 +49,7 @@ $(document).ready(function () {
     );
   });
 
-//index page get year
   var today = new Date();
-  $(".start_holder p span").text(today.getFullYear());
-  $(".start_holder p ").animate({
-    top:-$(".start_holder p ").height()
-  },60000,"linear");
 
   if(screen.width < 768){
     $("#lower_table .value_display").attr("colspan",7);
@@ -139,7 +75,7 @@ $(document).ready(function () {
       return val ;
     });
     $(this).find("i").css("background-blend-mode",function () {
-      let type = val ? 'normal' : 'luminosity';
+      let type = val ? 'normal' : 'multiply';
       return type
     })
   }
@@ -232,8 +168,8 @@ $(document).ready(function () {
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
       nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
-  var nav_site_2 = ["compareCat","calender","event","gacha"/*,"fight"*/],
-      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋模擬器"/*,"對戰"*/];
+  var nav_site_2 = ["compareCat","calender","event","gacha","intro"/*,"fight"*/],
+      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋模擬器","新手專區"/*,"對戰"*/];
 
   var nav_html_panel = "" ,
       nav_html = '';

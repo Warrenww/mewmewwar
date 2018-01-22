@@ -117,9 +117,9 @@
 .ability_icon{
   width: 30px;
   height: 30px;
-  /* background-image: url("/public/css/footage/gameIcon/atkup.png"); */
   background-size: cover;
-  background-color: rgb(135, 135, 135);
-  background-blend-mode: luminosity;
+  background-color: rgba(0,0,0,.6);
+  background-blend-mode: multiply;
 }
 .ability_tip{width: 200px;text-align: center;}
+.gacha_search{display: none;}
