@@ -740,9 +740,9 @@ function arrangeUserData() {
     userdata = snapshot.val();
     for(let i in userdata){
       // console.log(i);
-      process.stdout.clearLine();
-      process.stdout.cursorTo(0);
-      process.stdout.write(i);
+      // process.stdout.clearLine();
+      // process.stdout.cursorTo(0);
+      // process.stdout.write(i);
       if(i == undefined|| i == "undefined"){
         console.log("remove "+i);
         database.ref('/user/'+i).remove();
@@ -779,7 +779,7 @@ function arrangeUserData() {
         for(let j in edit){
           for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
           if (arr.length > 20){
-            process.stdout.write("\n");
+            // process.stdout.write("\n");
             console.log(i+" too many "+edit[j]);
             let l=0 ;
             for(let k in userdata[i].history[edit[j]]){
@@ -802,7 +802,7 @@ function arrangeUserData() {
         }
       }
     }
-    process.stdout.write("\n");
+    // process.stdout.write("\n");
     console.log("there are "+count+" users!!");
   });
 }
