@@ -404,7 +404,7 @@ io.on('connection', function(socket){
           history : {cat:"",enemy:"",combo:"",stage:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
-          variable : {cat:{},enemy:{},stage:{}},
+          variable : {cat:"",enemy:"",stage:""},
           folder : {owned:""},
           Anonymous : true
         }
@@ -707,7 +707,7 @@ io.on('connection', function(socket){
       let own = catdata[data.owned[i]+"-1"],
           own2 = catdata[data.owned[i]+"-2"],
           own3 = catdata[data.owned[i]+"-3"];
-      let tag = own.tag?own.tag:[];
+      let tag = own!='0'?(own.tag?own.tag:[]):[];
       if(own2) tag = tag.concat(own2.tag);
       if(own3) tag = tag.concat(own3.tag);
       let obj = {
