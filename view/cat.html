@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <nav>
+    <!-- <nav>
       <a href="\">
         <img src="../public/css/footage/title.png"/>
       </a>
@@ -36,7 +36,7 @@
     <div class="m_nav_panel">
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
-    </div>
+    </div> -->
 
 
     <div class="page_1">
@@ -179,7 +179,7 @@
           <tr class="gacha_search">
             <th>活動轉蛋</th>
             <td>
-              <span id="R045" class="button" value="0">越南大戰METAL SLUG DEFENSE 合作活動</span>
+              <span id="R045" class="button" value="0">越南大戰 合作活動</span>
               <span id="R185" class="button" value="0">梅露可物語 合作活動</span>
               <span id="R186" class="button" value="0">蛋黃哥 合作活動</span>
 
@@ -192,6 +192,12 @@
         </div>
         <div style="display:flex;width:100%">
           <div class="compareSorce">
+            <table style="padding:3%;padding-bottom:0">
+              <td id="result_count">共<span></span>筆結果</td>
+              <td id="result_expand">展開<i class="material-icons">&#xe240;</i></td>
+              <td id="result_snapshot">截圖<i class="material-icons">&#xe439;</i></td>
+              <td id="batch_own">批次加入我的貓咪圖鑑<i class="material-icons">&#xe7f0;</i></td>
+            </table>
             <div id="selected" class="sortable"></div>
             <div class="page_group"></div>
             <div class="button_group" >
@@ -240,6 +246,11 @@
     <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
     <div id="fight_alert">已加入對戰 <i class="material-icons">&#xe877;</i></div>
+    <div id="batch_alert">已加入圖鑑 <i class="material-icons">&#xe877;</i></div>
+    <div id='snapshot'><i class="material-icons">&#xe439;</i></div>
+    <div id="canvas_holder">
+      <div class="picture"></div>
+    </div>
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">

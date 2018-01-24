@@ -1,41 +1,75 @@
 <html>
   <head>
-    <meta charset='utf-8'/>
+    <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>活動日程</title>
-    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_calender.png">
+    <title>稀有轉蛋</title>
+    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_gacha.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/gacha.css" />
+    <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <nav>
+    <!-- <nav>
       <a href="\">
-        <img src="../public/css/footage/title.png" />
+        <img src="../public/css/footage/title.png"/>
       </a>
-      <div class="navLinkBox">
-      </div>
-      <div class="settingBox">
-      </div>
+      <div class="navLinkBox"></div>
+      <div class="settingBox"></div>
       <div class="mobile">
         <i class="material-icons" id="m_nav_menu">menu</i>
       </div>
     </nav>
-    <div id="m_nav_panel_BG">
-
-    </div>
+    <div id="m_nav_panel_BG"></div>
     <div class="m_nav_panel">
-      <div class="m_navLinkBox">
+      <div class="m_navLinkBox"></div>
+      <div class="m_settingBox"></div>
+    </div> -->
+    <style>
+
+    </style>
+
+    <div class="page_1">
+      <div class="but_group">
+        <button id='test' >轉蛋</button>
+        <button id='test_2' >11抽</button>
+        <button id='test_3' >清空</button>
       </div>
-      <div class="m_settingBox">
+      <div class="result"></div>
+      <div id="scoreboard">
+        <h2>轉蛋結果<i class="material-icons">&#xe15b;</i><i class="material-icons" style="display:none">&#xe145;</i></h2>
+        <table>
+          <tr>
+            <th>稀有度</th>
+            <th>數量</th>
+            <th>機率</th>
+          </tr>
+          <tr id="R">
+            <th>稀有</th>
+            <td class="number"></td>
+            <td class="probability"></td>
+          </tr>
+          <tr id="SR">
+            <th>激稀有</th>
+            <td class="number"></td>
+            <td class="probability"></td>
+          </tr>
+          <tr id="SSR">
+            <th>超激稀有</th>
+            <td class="number"></td>
+            <td class="probability"></td>
+          </tr>
+          <tr>
+            <th>等級</th>
+            <td id="www" style="font-weight:bold;font-size:20px" colspan="2"></td>
+          </tr>
+        </table>
       </div>
     </div>
-
-    <iframe src="https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html"></iframe>
 
 
     <div class="modal fade" id="helpModal" role="dialog">
@@ -55,18 +89,19 @@
       </div>
     </div>
 
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../public/js/html2canvas.min.js"></script>
-    <script src="../public/js/index.js"></script>
     <script src="../public/js/class.js"></script>
     <script src="../public/js/overall.js"></script>
-    <script src="../js/jquery.easing.1.3.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="../public/js/gacha.js"></script>
     <script src="../public/js/firebaseConfig.js"></script>
+    <script src="../public/js/jquery.easing.1.3.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

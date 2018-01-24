@@ -123,3 +123,12 @@
 }
 .ability_tip{width: 200px;text-align: center;}
 .gacha_search{display: none;}
+.compareSorce td{
+  cursor: pointer;
+  font-weight: bold;
+}
+.compareSorce td:hover{color: rgb(246, 159, 63)}
+.compareSorce td i{
+  font-size: 20px;
+  padding-left: 5px;
+}

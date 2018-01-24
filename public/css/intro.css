@@ -17,7 +17,7 @@
 .screen{
   flex:3;
   overflow-y:hidden;
-  height: 100%;
+  height: 101%;
 }
 .screen::-webkit-scrollbar {
     width: 0px;
@@ -115,4 +115,5 @@ td span:hover{
   .screen{
     margin-bottom: 25px
   }
+  .navigation{display: none;}
 }

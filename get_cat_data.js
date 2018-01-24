@@ -28,7 +28,7 @@ var config = {
   }
   // aibot("你好")
 
-  var i=399,j=1;
+  var i=60,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -65,7 +65,7 @@ var config = {
         obj.freq = Number(row_1.children().eq(7).children().eq(0).text()/30);
         obj.atk = Number(row_2.children().eq(1).children().eq(0).text().split(",").join(""));
         obj.atk = ToOriginal(obj.atk,obj.rarity);
-        obj.speed = Number(row_2.children().eq(3).children().eq(0).text().split(",").join(""));
+        obj.speed = Number(row_2.children().eq(3).text());
         obj.atk_speed = Number(row_2.children().eq(5).children().eq(0).text())/30;
         obj.dps = obj.atk/obj.freq ;
         obj.range = Number(row_3.children().eq(5).text().split(",").join(""));
@@ -74,18 +74,22 @@ var config = {
         obj.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
         obj.cd = Number(row_4.children().eq(7).children().eq(0).text())/30;
         parseChar(row_5.children().eq(1),obj);
-        parseCondition(row_7,row_8,obj);
+        // parseCondition(row_7,row_8,obj);
 
         console.log(AddZero(i)+"-"+j);
         console.log(obj);
-        database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj)
+        database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj);
         if(j<bro) {j++;getData(i,j);}
         else{
-          j=1;i++;
+          j=1;
+          // i++;
           if( i == 183 || i == 203 || i == 214 || i == 201 ||
               i == 286 || i == 321 || i == 340 || i == 354 ||
               i == 383) i++;
-          getData(i,j);
+          // getData(wwww[k],j);
+          setTimeout(function () {
+            process.exit()
+          },1000)
         }
 
       }
@@ -231,8 +235,11 @@ var config = {
           for(let j in ene){
             if(obj.tag.indexOf("對"+ene[j].substring(0,2))==-1&&ene!="")
             obj.tag.push("對"+ene[j].substring(0,2));
+            if(aa.indexOf("除く）")!=-1&&aa.indexOf(" 全ての敵（白")==-1) obj.tag.push("對白色")
           }
             obj.tag.push(abi.split(" ")[0]);
+            if(aa.indexOf("除く）")!=-1&&aa.indexOf(" 全ての敵（白")==-1) ene = ene.concat(["白色敵人"]);
+            console.log(ene);
             obj.char.push({
               type:abi.split(" ")[0],
               period:tim?tim:null,

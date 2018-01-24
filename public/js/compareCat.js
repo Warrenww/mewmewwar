@@ -132,7 +132,7 @@ $(document).ready(function () {
     $('.comparedatahead tbody').children().each(function () {
       let name = $(this).children().attr("id");
       if(!name||name==undefined) return ;
-      console.log(name);
+      // console.log(name);
       if(name == 'multi'){
         $(".comparedata").each(function () {
           if($(this).find("#"+name).text() == '範圍') $(this).find("#"+name).attr('class','best') ;
@@ -234,4 +234,46 @@ $(document).ready(function () {
       }
     }
   }
+
+  $(document).on("click","#snapshot",function () {
+    let target = $(".compareTable");
+    let max_height = -10;
+    $(".comparedata").each(function () {
+      let height = $(this).children("table")[0].offsetHeight
+      if(height > max_height) max_height = height ;
+    });
+    console.log(max_height);
+    target.css("height",max_height);
+    target = target[0];
+    snapshot(target);
+  });
+  var nav_timeout ;
+  $("#nav_main").hover(function () {
+    $(this).siblings().fadeIn().css("display",'flex');
+    $("#nav_zoom_in").css("transform","translate(-77.28px,-20.72px)");
+    $("#nav_zoom_out").css("transform","translate(-56.57px,56.57px)");
+    $("#nav_org").css("transform","translate(20.72px,77.28px)");
+  },function () {
+    nav_timeout = setTimeout(function () {hideZoom()},3000);
+  });
+  $(".compareNav div[id!='nav_main']").hover(function () {
+    clearTimeout(nav_timeout);
+  },function () {
+    nav_timeout = setTimeout(function () {hideZoom()},1500);
+  });
+  function hideZoom() {
+    $("#nav_zoom_in").css("transform","translate(0px,0px)").fadeOut();
+    $("#nav_zoom_out").css("transform","translate(0px,0px)").fadeOut();
+    $("#nav_org").css("transform","translate(0px,0px)").fadeOut();
+  }
+  var scale = 1 ;
+  $(document).on('click','.compareNav div',function () {
+    let type = $(this).attr("id").split("nav_")[1];
+    if(type == 'zoom_in'){
+      scale = scale>1.5?scale:scale+.1;
+    } else if(type == 'zoom_out'){
+      scale = scale<.11?scale:scale-.1;
+    } else if(type == 'org') scale = 1 ;
+    $(".compareTable").css('transform','scale('+scale+','+scale+')');
+  });
 });

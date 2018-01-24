@@ -20,11 +20,13 @@ $(document).ready(function () {
     let r = confirm("所有貓咪等級將重設為"+current_user_data.setting.default_cat_lv+"等");
     if(!r) return
     socket.emit("reset cat level",current_user_data.uid);
+    window.parent.reloadIframe('all');
   });
   $(document).on("click","#reset_own_cat",function () {
     let r = confirm("要重置所有擁有的貓咪嗎?");
     if(!r) return
     socket.emit("reset owned cat",current_user_data.uid);
+    window.parent.reloadIframe('all');
   });
   $(document).on("click","#logout",function () {
     if(!confirm("確定要登出嗎")) return
@@ -41,6 +43,16 @@ $(document).ready(function () {
       uid:current_user_data.uid,
       state:$(this).prop("checked")
     });
+    if(type.indexOf("cat")!=-1 || type == 'ability_text' ||type == 'more_option')
+      window.parent.reloadIframe('cat');
+    if(type.indexOf("enemy")!=-1 || type =='more_option')
+      window.parent.reloadIframe('enemy');
+    // window.parent.reloadIframe('stage');
+  });
+  $(document).on('click',"#show_miner",function () {
+    setTimeout(function () {
+      window.parent.location.assign("/");
+    },1000);
   });
 
   let cat_history_show = 0;
@@ -88,7 +100,10 @@ $(document).ready(function () {
         cat : id,
         history:true
       });
-      location.assign("/view/cat.html");
+      // location.assign("/view/cat.html");
+      window.parent.changeIframe('cat');
+      window.parent.reloadIframe('cat');
+
     } else if(type == 'enemy'){
       socket.emit("display enemy",{
         uid:current_user_data.uid,
@@ -96,6 +111,8 @@ $(document).ready(function () {
         history:true
       });
       location.assign("/view/enemy.html");
+      window.parent.changeIframe('enemy');
+      window.parent.reloadIframe('enemy');
     }
   });
 
@@ -119,6 +136,10 @@ $(document).ready(function () {
     for(let i in data){
       if(i == "default_cat_lv"){
         $("#default_cat_lv").attr('value',data.default_cat_lv);
+      } else if(i == 'mine_alert'){
+        console.log(data[i].count);
+        let count = data[i].count/1000
+        $("#total_hash").text(count.toFixed(0)+"kH")
       } else {
         $("#"+i).prop('checked',data[i]);
       }

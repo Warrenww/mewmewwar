@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <nav>
+    <!-- <nav>
       <a href="\">
         <img src="../public/css/footage/title.png"/>
       </a>
@@ -28,7 +28,7 @@
     <div class="m_nav_panel">
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
-    </div>
+    </div> -->
 
     <div class="page_1">
       <div class="setting_container">
@@ -46,12 +46,16 @@
             </label>
           </div>
           <div class="setting_item">
+            <span>重設我擁有的貓咪</span>
+            <button id="reset_own_cat">重設</button>
+          </div>
+          <!-- <div class="setting_item">
             <span>隱藏客服</span>
             <label class="switch">
               <input type="checkbox" id="show_more_service" >
               <span class="slider_but"></span>
             </label>
-          </div>
+          </div> -->
           <div class="setting_item">
             <span>登出</span>
             <button id="logout">登出</button>
@@ -126,7 +130,7 @@
           <div id="history_ene"></div>
         </div>
 
-        <h4>我擁有的貓咪</h4>
+        <!-- <h4>我擁有的貓咪</h4>
         <div class="setting_element">
           <div class="setting_item">
             <span>重設我擁有的貓咪</span>
@@ -137,10 +141,21 @@
             <i class="material-icons" id="own_cat">arrow_drop_down</i>
           </div>
           <div id="cat_own"></div>
-        </div>
+        </div> -->
 
-        <h4>客服系統</h4>
+        <h4>其他設定</h4>
         <div class="setting_element">
+          <div class="setting_item">
+            <span>開始支持本網站(將重新整理)</span>
+            <label class="switch">
+              <input type="checkbox" id="show_miner" >
+              <span class="slider_but"></span>
+            </label>
+          </div>
+          <div class="setting_item">
+            <span>你的累計支持度</span>
+            <h3 id="total_hash" style="margin:0"></h3>
+          </div>
           <a class="setting_item" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform">
             <span>前往客服表單</span>
             <i class="material-icons">&#xe895;</i>

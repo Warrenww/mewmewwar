@@ -286,21 +286,32 @@ $(document).ready(function () {
       cat : $(this).attr('id'),
       history : true
     });
-    location.assign("/view/cat.html");
+    // location.assign("/view/cat.html");
+    window.parent.changeIframe('cat');
+    window.parent.reloadIframe('cat');
   });
   $(document).on('click','.enemy',function () {
     let id = $(this).attr("id"),
         multiple = $(this).next().text().split("％")[0];
-    $("body").append(
-      "<div class='float'><iframe src='"+
-      location.origin+"/view/once.html?q=enemy&"+
-      id+"&"+multiple+"'></iframe></div>"
-    );
-    $(".float_BG").fadeIn();
-    $(".float_BG").click(function () {
-      $(this).fadeOut();
-      $(".float").remove();
+
+    socket.emit("display enemy",{
+      uid : current_user_data.uid,
+      id : $(this).attr('id'),
+      history : true
     });
+    window.parent.changeIframe('enemy');
+    window.parent.reloadIframe('enemy');
+
+    // $("body").append(
+    //   "<div class='float'><iframe src='"+
+    //   location.origin+"/view/once.html?q=enemy&"+
+    //   id+"&"+multiple+"'></iframe></div>"
+    // );
+    // $(".float_BG").fadeIn();
+    // $(".float_BG").click(function () {
+    //   $(this).fadeOut();
+    //   $(".float").remove();
+    // });
   });
 
 

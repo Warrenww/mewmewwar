@@ -66,7 +66,9 @@ $(document).ready(function () {
       cat : $(this).attr('value'),
       history:true
     });
-    location.assign("/view/cat.html");
+    // location.assign("/view/cat.html");
+    window.parent.changeIframe('cat');
+    window.parent.reloadIframe('cat');
   });
 
   function searchCombo(arr) {

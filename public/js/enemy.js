@@ -299,7 +299,7 @@ function displayenemyHtml(data) {
   "</tr>" :
   "<tr>"+
   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-  image_url_enemy+data.id+".png'"
+  image_url_enemy+data.id+".png' style='height:100%'"
   +"</tr><tr>"+
   "<th colspan='6' id='name'>"+data.name+"</th>"+
   "</tr>" ;

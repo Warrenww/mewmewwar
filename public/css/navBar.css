@@ -6,7 +6,7 @@ nav{
     width: 100%;
     z-index: 999
 }
-nav a img{
+nav img{
    width:120px;
    height:60px;
    margin-left:20px;
@@ -39,8 +39,8 @@ nav a img{
   cursor: pointer;
   transition: .4s ease-in-out
 }
-.settingBox #setting:hover,
-.m_settingBox #setting:hover{
+.settingBox #setting:hover i,
+.m_settingBox #setting:hover i{
   color:rgb(226, 152, 41) ;
   animation-name: test ;
   animation-duration: 2s

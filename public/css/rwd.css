@@ -97,9 +97,10 @@ nav .mobile,
     width: 30px;
     height: 30px;
   }
-  .navigation .tag{height: 30px;margin-bottom: 15%}
-  .navigation .text{font-size: 16px}
-  .navigation .tagBG{left: -50%}
+  .navigation .tag{font-size: 15px}
+
+  #snapshot {width: 60px;height: 60px}
+  #snapshot i {font-size: 30px}
   /* TEMP:  */
   #year_event{padding: 5% 0}
 
@@ -115,13 +116,19 @@ nav .mobile,
     height: 7px;
     margin: 3px
   }
+  #snapshot{
+    bottom: 30px;
+    right: 30px;
+  }
+  .compareNav div{right: 40px;top: 70px}
 }
 @media screen and (max-width:425px) {
-  .navigation{display: none;}
+  /* .navigation{display: none;} */
   .window{flex-direction: column;}
   .select,
   .display,
   .content
   {padding-top: 15%}
   .navigation_m{display: flex}
+  .iframe_box iframe{width: 100%;}
 }

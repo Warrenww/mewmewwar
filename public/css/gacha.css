@@ -1,0 +1,130 @@
+.window{
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  height: 100%
+}
+.page_1{overflow-y: hidden;}
+.navigation{
+  flex:1;
+  padding-top: 5%;
+  border-right: 10px solid rgb(241, 171, 36);
+  background-color: rgba(0,0,0,.3);
+  overflow-y:scroll;
+}
+.screen{
+  flex:3;
+  overflow-y:hidden;
+  height: 101%;
+}
+.screen::-webkit-scrollbar,
+.navigation::-webkit-scrollbar {
+    width: 0px;
+}
+.tag,.title{
+  width: 100%;
+  height: 40px;
+  padding: 1% 5% ;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  background-color: rgba(255,255,255,.7);
+  transition: .4s ease-in-out;
+}
+.tag{border-bottom: 1px solid lightgray}
+.tag:hover,.tag[value~='1']{background-color: rgba(242, 198, 85, 0.85)}
+.title{background-color: rgba(242, 132, 85, 0.85)}
+.iframe_box{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+iframe{
+  width: 75%;
+  height: 100%;
+  position: absolute;
+  transition:.4s ease-in-out;
+}
+.navigation_m{
+  width: 100%;
+  flex-direction: column;
+  font-size: 25px;
+  text-align: center;
+  overflow: hidden;
+  position: fixed;
+  font-weight: bold;
+  bottom: 0;
+  color: white;
+  display: none;
+  z-index: 2;
+}
+.choose{
+  background-color: rgba(0, 0, 0, .9);
+}
+.choose i{transition: .4s ease-in-out}
+
+
+#test,#test_2,#test_3{
+  margin: 50px;
+  font-size: 40px;
+}
+.but_group{
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 80%;
+  width: 100%
+}
+.result{
+  width:100%;
+  padding:5%;
+  display:flex;
+  flex-wrap: wrap;
+  margin:5% 0;
+  justify-content: center;
+}
+#scoreboard{
+  position: fixed;
+  top: 50px;
+  right:20px;
+  background-color: rgba(0,0,0,.7);
+  width: 30%;
+  color: white;
+  padding: 1%;
+}
+#scoreboard table{color: white}
+#scoreboard h2{text-align: center;margin: 0;cursor: pointer;}
+@media screen and (max-width: 1024px){#scoreboard{width: 36%}}
+@media screen and (max-width: 768px){
+  #test,#test_2,#test_3{
+    margin: 10px;
+    font-size: 20px;
+  }
+  #scoreboard{width: 40%}
+  .but_group{top: 85%}
+}
+@media screen and (max-width:425px) {
+  .navigation{
+    position: fixed;
+    z-index: 2;
+    width: 100%;
+    border: 0;
+    bottom: 35px;
+    height: 200px;
+    padding-top: 0;
+    justify-content: center;
+    transition: .4s ease-in-out;
+    height: 0
+  }
+  .tag{background-color: rgba(255,255,255,.95);justify-content: center;}
+  .tag:hover,.tag[value~='1']{background-color: rgba(242, 198, 85, 0.95);justify-content: center;}
+  .title{background-color: rgba(242, 132, 85, 0.95);justify-content: center;}
+  #scoreboard{width: 60%}
+  .result{padding: 20% 5%}
+  .screen{
+    margin-bottom: 25px
+  }
+}

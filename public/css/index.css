@@ -1,4 +1,4 @@
-#login{
+#login,#mine_alert{
   display: none;
   position: fixed;
   height: 100%;
@@ -7,6 +7,7 @@
   background-color: rgba(0, 0, 0, 0.5);
   top: 0;
 }
+html,body{overflow: hidden;}
 .login_box{
   position: relative;
   top: 40%;
@@ -64,3 +65,36 @@
   padding: 2%;
   margin: 3%;
 }
+#iframe_holder{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+iframe{
+  transition: .4s ease-in-out;
+  position: absolute;
+  top: 0;
+  right: -100%;
+}
+nav a{cursor: pointer;}
+#mine_alert .content div{
+  margin: 2%;
+  padding: 2%;
+  font-size: 20px;
+  width: 50%;
+  background-color: rgba(255,255,255,.8);
+  font-weight: bold;
+  border-radius: 10px;
+}
+#mine_alert span{
+  display: flex;
+  width: 50%;
+  justify-content: center;
+}
+#support{background: linear-gradient(rgb(156, 237, 109),rgb(22, 159, 68))}
+#nottoday{background: linear-gradient(rgb(164, 164, 164),rgb(108, 108, 108))}
+#mine_alert .content .success,
+#mine_alert .content .fail,
+#mine_alert .content .not_accept,
+#mine_alert .content #ok
+{display: none;}

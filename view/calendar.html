@@ -3,14 +3,13 @@
     <meta charset='utf-8'/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>關卡資訊</title>
-    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_event.png">
+    <title>活動日程</title>
+    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_calender.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/overall.css" />
-    <link rel="stylesheet" href="../public/css/stage.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
@@ -26,7 +25,9 @@
         <i class="material-icons" id="m_nav_menu">menu</i>
       </div>
     </nav>
-    <div id="m_nav_panel_BG"></div>
+    <div id="m_nav_panel_BG">
+
+    </div>
     <div class="m_nav_panel">
       <div class="m_navLinkBox">
       </div>
@@ -34,33 +35,8 @@
       </div>
     </div> -->
 
-    <div class="page_1" >
-      <div class="select">
-        <!-- <div class="search" >
-          <input type="text" id="searchBox" placeholder="Search for Cats...">
-          <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
-        </div> -->
+    <iframe src="https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html"></iframe>
 
-        <div id="selector">
-          <div class="select_chapter_holder">
-            <div class="select_chapter"></div>
-          </div>
-          <div class="lv_sg_box" >
-            <div id="select_stage" ></div>
-            <div id="select_level" ></div>
-          </div>
-        </div>
-
-        <div class="display">
-          <table class="dataTable"></table>
-        </div>
-
-    </div>
-    <div class="float_BG"></div>
-    <div id='snapshot'><i class="material-icons">&#xe439;</i></div>
-    <div id="canvas_holder">
-      <div class="picture"></div>
-    </div>
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">
@@ -79,18 +55,16 @@
       </div>
     </div>
 
-
-
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../public/js/html2canvas.min.js"></script>
+    <script src="../public/js/index.js"></script>
     <script src="../public/js/class.js"></script>
     <script src="../public/js/overall.js"></script>
-    <script src="../public/js/stage.js"></script>
-    <script src="../public/js/jquery.easing.1.3.js"></script>
+    <script src="../js/jquery.easing.1.3.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="../public/js/firebaseConfig.js"></script>
     <script src="/socket.io/socket.io.js"></script>

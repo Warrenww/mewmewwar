@@ -132,7 +132,7 @@ io.on('connection', function(socket){
 
                 if( type == 'cat' &&
                     (load_data[i].tag.indexOf(cFilter[j]) != -1 ||
-                    ((cFilter[j] != "對白色" || cFilter[j] != "對鋼鐵") &&
+                    ((cFilter[j] != "對白色" && cFilter[j] != "對鋼鐵") &&
                     load_data[i].tag.indexOf("對全部") != -1))
                 ) {
                   buffer_1.push(load_data[i]);
@@ -180,13 +180,23 @@ io.on('connection', function(socket){
             }
           } else buffer_2 = buffer_1 ;
           buffer_1 = [] ;
-          for(let i in buffer_2) {
-            let obj = {
-              id : buffer_2[i].id,
-              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
+          if(type == 'cat' && !showJP){
+            for(let i in buffer_2) {
+              let obj = {
+                id : buffer_2[i].id,
+                name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
+              }
+              if(buffer_2[i].region.indexOf("[TW]")==-1) continue
+              else buffer_1.push(obj) ;
             }
-            if(type == 'cat' && (!showJP&&buffer_2[i].region.indexOf("[JP]")==-1)) continue
-            else buffer_1.push(obj) ;
+          } else {
+            for(let i in buffer_2) {
+              let obj = {
+                id : buffer_2[i].id,
+                name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
+              }
+              buffer_1.push(obj);
+            }
           }
           console.log("Result length:",buffer_1.length);
           socket.emit("search result",buffer_1);
@@ -352,7 +362,7 @@ io.on('connection', function(socket){
           history : {cat:"",enemy:"",combo:"",stage:""},
           compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
           setting : {default_cat_lv:30},
-          variable : {cat:""},
+          variable : {cat:"",enemy:"",stage:""},
           folder : {owned:""},
           Anonymous : user.isAnonymous
         }
@@ -367,10 +377,11 @@ io.on('connection', function(socket){
         console.log(data);
         database.ref('/user/'+user.uid).set(data) ;
       }
-    }).then(function () {
-      clearTimeout(timeout);
-      arrangeUserData();
-    });
+    })
+    // .then(function () {
+    //   clearTimeout(timeout);
+    //   arrangeUserData();
+    // });
 
   });
   socket.on("user connect",function (user){
@@ -382,23 +393,23 @@ io.on('connection', function(socket){
     console.log("user "+user.uid+" connect");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
-      if(snapshot.val().first_login == null){
-        console.log('null user');
-        let data = {
-          name : "匿名貓咪",
-          nickname : "匿名貓咪",
-          first_login : timer,
-          last_login : timer,
-          history : {cat:"",enemy:"",combo:"",stage:""},
-          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
-          setting : {default_cat_lv:30},
-          variable : {cat:{}},
-          folder : {owned:""},
-          Anonymous : true
-        }
-        database.ref('/user/'+user.uid).set(data) ;
-        return
-      }
+      // if(snapshot.val().first_login == null){
+      //   console.log('null user');
+      //   let data = {
+      //     name : "匿名貓咪",
+      //     nickname : "匿名貓咪",
+      //     first_login : timer,
+      //     last_login : timer,
+      //     history : {cat:"",enemy:"",combo:"",stage:""},
+      //     compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
+      //     setting : {default_cat_lv:30},
+      //     variable : {cat:{},enemy:{},stage:{}},
+      //     folder : {owned:""},
+      //     Anonymous : true
+      //   }
+      //   database.ref('/user/'+user.uid).set(data) ;
+      //   return
+      // }
       let history = snapshot.val().history ;
       last_cat = history.last_cat;
       last_enemy = history.last_enemy;
@@ -423,6 +434,7 @@ io.on('connection', function(socket){
       socket.emit("current_user_data",{
         name : snapshot.val().nickname,
         uid : user.uid,
+        first_login: snapshot.val().first_login,
         last_cat : last_cat,
         last_combo : last_combo,
         last_enemy : last_enemy,
@@ -430,6 +442,7 @@ io.on('connection', function(socket){
         last_cat_search : last_cat_search,
         last_enemy_search : last_enemy_search,
         compare_c2c: arr,
+        folder: snapshot.val().folder,
         setting : snapshot.val().setting,
         fight : fight
       });
@@ -470,11 +483,6 @@ io.on('connection', function(socket){
 
     });
   });
-  socket.on("user name",function (id) {
-    database.ref("/user/"+id+"/nickname").once("value",function (snapshot) {
-      socket.emit("user name",snapshot.val());
-    });
-  });
   socket.on("rename",function (data) {
     database.ref("/user/"+data.uid+"/nickname").set(data.name);
   });
@@ -500,6 +508,21 @@ io.on('connection', function(socket){
     database.ref("/user/"+data.uid+"/variable/cat/"+gross).update({lv:data.lv});
   });
   socket.on("mark own",function (data) {
+    if(data.arr){
+      let brr = data.arr ;
+      console.log("batch add",brr.length);
+      database.ref("/user/"+data.uid+"/folder").once("value",function (snapshot) {
+        let folder = snapshot.val(),
+            arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
+        for(let i in brr){
+          database.ref("/user/"+data.uid+"/variable/cat/"+brr[i])
+          .update({own:true});
+          if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
+        }
+        database.ref("/user/"+data.uid+"/folder").update({owned:arr});
+      });
+      return
+    }
     console.log(data.uid+" claim he/she "+
         (data.mark?"does":"doesn't")+" own "+data.cat);
     database.ref("/user/"+data.uid+"/variable/cat/"+data.cat)
@@ -548,6 +571,9 @@ io.on('connection', function(socket){
         (data.state?"show":"hide")+" it's "+data.type);
     database.ref("/user/"+data.uid+"/setting/show_"+data.type)
         .set(data.state);
+    if(data.type == 'miner'){
+      database.ref("/user/"+data.uid+"/setting/mine_alert").update({time:new Date().getTime()})
+    }
   });
 
   socket.on("required stage name",function (chapter) {
@@ -656,6 +682,46 @@ io.on('connection', function(socket){
     database.ref("/user/"+data.uid+"/compare/cat2enemy").update(data.target)
   });
 
+  socket.on("notice mine",function (data) {
+    let timer = new Date().getTime();
+    database.ref("/user/"+data.uid+"/setting/mine_alert").set({
+      time : timer,
+      state : true,
+      accept : data.accept
+    });
+  });
+  socket.on("mine count",function (data) {
+    console.log('1000 hash');
+    database.ref("/user/"+data.uid+"/setting/mine_alert").once('value',function (snapshot) {
+      let count = snapshot.val().count?snapshot.val().count:0;
+      count += data.count ;
+      database.ref("/user/"+data.uid+"/setting/mine_alert").update({count:count});
+    });
+  });
+
+  socket.on("required owned",function (data) {
+    console.log(data.uid,"owned",data.owned.length,"cat");
+    let arr = [];
+    for(let i in data.owned){
+      let own = catdata[data.owned[i]+"-1"],
+          own2 = catdata[data.owned[i]+"-2"],
+          own3 = catdata[data.owned[i]+"-3"];
+      let tag = own.tag?own.tag:[];
+      if(own2) tag = tag.concat(own2.tag);
+      if(own3) tag = tag.concat(own3.tag);
+      let obj = {
+        id:own.id,
+        name:own.name?own.name:own.jp_name,
+        tag:tag,
+        rarity:own.rarity
+      };
+      arr.push(obj);
+    }
+    socket.emit("owned data",arr);
+  });
+
+
+
   socket.on('disconnect', function(){
     // console.log('user disconnected');
   });
@@ -720,7 +786,14 @@ function arrangeUserData() {
         }
         if(!userdata[i].variable) {
           console.log("user "+i+" no variable");
-          database.ref('/user/'+i+"/variable").set({cat:""});
+          database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
+        }
+        if(userdata[i].setting.mine_alert){
+          let mine = userdata[i].setting.mine_alert;
+          if(!mine.accept&&((timer - mine.time)>3*86400000)&&Math.random()>0.1){
+            console.log("3 days ago try re-ask for mine");
+            database.ref('/user/'+i+"/setting/mine_alert/state").set(false);
+          }
         }
       }
     }
@@ -781,7 +854,7 @@ function NextEventDay(y,m,d) {
         if(event_get_count<10) NextEventDay(y,m,d);
         else console.log("There are no event update for later 10 days.");
       }
-    } else {console.log(e);}
+    } else {console.log(e);return}
   });
 }
 function PrevEventDay(y,m,d) {

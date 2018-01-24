@@ -6,41 +6,12 @@ $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
-  var current_user_data = {};
 
-//get user data
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user connect",user);
-    } else {
-      if(location.pathname == '/view/once.html') {
-
-      }
-      else if(location.pathname != '/') {
-        alert("登入以獲得更多功能!!!");
-        location.assign("/");
-      }
-    }
-  });
-  socket.on("current_user_data",function (data) {
-    current_user_data = data ;
-    let name = data.name ;
-    $(".current_user_name").text("Hi, "+name);
-    if( location.pathname != "/view/calender.html"&&
-    location.pathname != "/view/event.html"&&
-    location.pathname != "/view/setting.html"&&
-    location.pathname != "/view/once.html"&&
-    !data.setting.show_more_service
-    ){
-      $("body").append("<div id='service'></div>");
-    }
-  });
 
 //coustomer service
   $(document).on("click","#service",function () {
     let url = "https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform";
-    let time = new Date().getTime(),
-        uid = current_user_data.uid;
+    let time = new Date().getTime();
     // window.open(url,"_blank");
     $("body").append(
       "<div id='service_window_holder'>"+
@@ -165,6 +136,17 @@ $(document).ready(function () {
     // $(this).attr('active',true).siblings().attr('active',false);
   });
 
+  //snapshot
+  $(document).on("click","#snapshot",function () {
+    let target = $(".dataTable")[0];
+    if(!target) return
+    snapshot(target);
+  });
+  $("#canvas_holder").click(function () {
+    $(this).fadeOut().children(".picture").empty();
+  });
+
+
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
       nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
@@ -173,41 +155,26 @@ $(document).ready(function () {
 
   var nav_html_panel = "" ,
       nav_html = '';
-  for (let i in nav_site_1){
-    nav_html_panel += "<a href='"+(location.pathname == "/"?"/view/":"")+
-    nav_site_1[i]+".html' id='a_"+nav_site_1[i]+"'>"+nav_text_1[i]+"</a>";
-  }
-  nav_html += "<span class='show_panel'>資料庫</span><div class='nav_panel'>"+nav_html_panel+"</div>"
-  for (let i in nav_site_2){
-    nav_html += "<a href='"+(location.pathname == "/"?"/view/":"")+
-    nav_site_2[i]+".html' id='a_"+nav_site_2[i]+"'>"+nav_text_2[i]+"</a>";
-  }
-
-  $("nav .navLinkBox").html(nav_html) ;
-  $(".m_navLinkBox").html(nav_html) ;
+  // for (let i in nav_site_1){
+  //   nav_html_panel += "<a href='"+(location.pathname == "/"?"/view/":"")+
+  //   nav_site_1[i]+".html' id='a_"+nav_site_1[i]+"'>"+nav_text_1[i]+"</a>";
+  // }
+  // nav_html += "<span class='show_panel'>資料庫</span><div class='nav_panel'>"+nav_html_panel+"</div>"
+  // for (let i in nav_site_2){
+  //   nav_html += "<a href='"+(location.pathname == "/"?"/view/":"")+
+  //   nav_site_2[i]+".html' id='a_"+nav_site_2[i]+"'>"+nav_text_2[i]+"</a>";
+  // }
+  //
+  // $("nav .navLinkBox").html(nav_html) ;
+  // $(".m_navLinkBox").html(nav_html) ;
 
   var setting_html = '<a class="current_user_name"></a><div style="display:flex;justify-content:center">'+
       '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
       '<a href="'+(location.pathname == "/"?"/view/":"")+
       'setting.html"><i class="material-icons" id="setting">settings</i></a></div>' ;
-  $("nav .settingBox").html(setting_html);
-  $(".m_settingBox").html(setting_html);
-  $(".m_settingBox").children("div").append("<div id='service'></div>");
-
-  var xmlhttp = new XMLHttpRequest() ;
-  var url = "../public/update_dialog.html";
-  var update_dialog ;
-
-  xmlhttp.open("GET", url, true);
-  xmlhttp.send();
-  xmlhttp.onreadystatechange = function(){
-    if (this.readyState == 4 && this.status == 200){
-      update_dialog = this.responseText ;
-      $("#helpModal").find(".modal-body").html(update_dialog);
-      $("#helpModal").find(".modal-header .title").text("更新紀錄");
-      $("#helpModal").find(".modal-footer").html("本網站資料來源主要為<a href='https://cnhv.co/rnwe' target='blank'>超絕攻略網</a>");
-    }
-  }
+  // $("nav .settingBox").html(setting_html);
+  // $(".m_settingBox").html(setting_html);
+  // $(".m_settingBox").children("div").append("<div id='service'></div>");
 
 
   socket.on("connet",function (data) {
@@ -231,7 +198,7 @@ $(window).load(function () {
   var nav_panel = 0, nav_panel_timeout,close_nav_panel;
   $(".show_panel").hover(function () {
     nav_panel_timeout = setTimeout(function () {
-      $(".nav_panel").css("height",screen.width>768?200:160);
+      $(".nav_panel").css("height",screen.width>768?250:200);
       nav_panel = 1;
     },200);
   },function () {
@@ -243,7 +210,7 @@ $(window).load(function () {
   }) ;
   $(".show_panel").click(function () {
     if(nav_panel) $(".nav_panel").css("height",0);
-    else $(".nav_panel").css("height",screen.width>768?200:160);
+    else $(".nav_panel").css("height",screen.width>768?250:200);
     nav_panel = nav_panel ? 0 :1 ;
   });
   $(".nav_panel").hover(function () {
@@ -315,6 +282,64 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 
 gtag('config', 'UA-111466284-1');
+
+function snapshot(target) {
+
+  html2canvas(target,{
+    backgroundColor:"#60e6f9",
+    allowTaint:true
+  }).then(function(canvas) {
+    $('#canvas_holder').css("display",'flex');
+    $('#canvas_holder .picture').append(canvas);
+    $("#canvas_holder .picture canvas").css("transform",'scale(0,0)');
+    setTimeout(function () {
+      $("#canvas_holder canvas").css("transform",'scale(0.75,0.75)');
+    },100);
+    $('#canvas_holder .picture').append("<a><i class='material-icons'>&#xe2c0;</i></a>")
+    $('#canvas_holder .picture').append("<span id='zoom_in'><i class='material-icons'>&#xe145;</i></span>")
+    $('#canvas_holder .picture').append("<span id='zoom_out'><i class='material-icons'>&#xe15b;</i></span>")
+    let link = canvas.toDataURL('image/jpg');
+    $('#canvas_holder .pacture a').attr({'href':link,'download':'screenshot.jpg'});
+    if(link.length>1e6){
+      $('#canvas_holder a').bind("click",function () {
+        alert("圖片過大，請用右鍵>另存圖片");
+        return false
+      });
+    }
+    var scale = .75 ;
+    $('#canvas_holder span').bind("click",function (e) {
+      e.stopPropagation();
+      if($(this).attr("id")=='zoom_in') scale = scale<.25?.25:(scale>2?scale:scale+.25);
+      else scale = scale<.26?(scale<.1?scale:scale-.05):scale-.25;
+      $("#canvas_holder canvas").css("transform",'scale('+scale+','+scale+')');
+    });
+    $('#canvas_holder canvas').bind("click",function (e) {e.stopPropagation();});
+  });
+
+}
+
+function parseRarity(s) {
+  switch (s) {
+    case 'B':
+      s = '基本'
+      break;
+    case 'R':
+      s = '稀有'
+      break;
+    case 'SR':
+      s = '激稀有'
+      break;
+    case 'SR_alt':
+      s = '激稀有狂亂'
+      break;
+    case 'SSR':
+      s = '超激稀有'
+      break;
+    default:
+      s = s
+  }
+  return s
+}
 
 
 function levelToValue(origin,rarity,lv) {

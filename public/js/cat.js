@@ -3,6 +3,7 @@ $(document).ready(function () {
   var compare = [] ;
   var socket = io.connect();
   var current_cat_data = {};
+  var current_search = [];
   var current_user_data = {
     setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
   };
@@ -16,7 +17,7 @@ $(document).ready(function () {
   });
 
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     current_user_data = data ;
     if(data.last_cat && location.pathname.indexOf('once') == -1)
     socket.emit("display cat",{
@@ -93,7 +94,7 @@ $(document).ready(function () {
   $(document).on("click",".select_ability .button",function () {
     let text = $(this).children("span").text(),
         val = $(this).attr('value')=='1'?true:false;
-        console.log(val);
+        // console.log(val);
     if((!current_user_data.setting.show_ability_text||screen.width<768)&&val){
       clearTimeout(tip_fadeOut);
       $(".ability_tip").remove();
@@ -168,7 +169,9 @@ $(document).ready(function () {
       uid:current_user_data.uid,
       id:[$(this).attr('val')]
     }) ;
-    location.assign('combo.html')
+    // location.assign('combo.html');
+    window.parent.changeIframe('combo');
+    window.parent.reloadIframe('combo');
   }) ;
   $(document).on("click","#share",function () {
     let id = $(this).parents("#more_option").siblings().attr("id"),
@@ -206,7 +209,7 @@ $(document).ready(function () {
   var number_page,page_factor ;
   socket.on("search result",function (data) {
     console.log("recive search result");
-    console.log(data);
+    // console.log(data);
     number_page = 0 ;
     page_factor = 1 ;
     $("#selected").empty();
@@ -312,7 +315,7 @@ $(document).ready(function () {
     color = $(".select_color [value=1]"),
     ability = $(".select_ability [value=1]"),
     gacha = $(".gacha_search td .button[value=1]");
-    console.log(more_gacha);
+    // console.log(more_gacha);
     let rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
@@ -367,10 +370,44 @@ $(document).ready(function () {
         name+'</span>' ;
         now = current ;
         number_page ++ ;
+        current_search.push(current);
       }
     }
+    $(".compareSorce #result_count").find("span").text(number_page);
     return html ;
   }
+  var result_expand = 0,originHeight;
+  $(document).on('click','.compareSorce td',function () {
+    let type = $(this).attr("id");
+    if(type == 'result_snapshot'){
+      let target = $("#selected")[0];
+      snapshot(target);
+    } else if(type == 'result_expand'){
+      let trueHeight = $("#selected")[0].scrollHeight;
+          console.log(trueHeight,originHeight);
+      if(!result_expand){
+        originHeight = $("#selected")[0].offsetHeight;
+        $("#selected").css("height",trueHeight);
+        $(this).html("收合<i class='material-icons'>&#xe240;</i>");
+      } else {
+        $("#selected").css("height",originHeight);
+        $(this).html("展開<i class='material-icons'>&#xe240;</i>");
+      }
+      result_expand = result_expand?0:1;
+    } else if(type == 'batch_own'){
+      console.log(current_search);
+      socket.emit("mark own",{
+        uid:current_user_data.uid,
+        arr:current_search,
+        mark:true
+      });
+      $("#batch_alert").css("left",-10);
+      setTimeout(function () {
+        $("#batch_alert").css("left",-250);
+      },2600);
+    }
+
+  });
   $(document).on("click","#mark_own",function () {
     let val = Number($(this).attr("value"))?0:1,
         cat = $(this).parents("#more_option").siblings().attr("id").substring(0,3);
@@ -661,11 +698,11 @@ $(document).ready(function () {
     $("#compare_number").text(compare.length);
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
-  $('#a_compareCat ').bind('click',function () {
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-    location.assign('/compareCat.html');
-  });
+  // $('#a_compareCat ').bind('click',function () {
+  //   compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+  //   socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+  //   location.assign('/compareCat.html');
+  // });
 
   function changeSlider() {
     let target = $("#"+filter_name+".filter_option");
@@ -699,11 +736,11 @@ $(document).ready(function () {
       default:
       limit = 60 ;
     }
-    console.log(val+","+rarity+","+ori+","+limit);
+    // console.log(val+","+rarity+","+ori+","+limit);
     lv = val/ori*10-8 ;
     lv = lv/2 > limit ? lv-limit : lv/2 ;
     lv = Math.ceil(lv) ;
-    console.log(lv);
+    // console.log(lv);
     if(lv > 100){
       alert("超出範圍!!!");
       $('#level').slider('option','value',100);
@@ -719,6 +756,7 @@ $(document).ready(function () {
     }
 
   }
+
 
 });
 

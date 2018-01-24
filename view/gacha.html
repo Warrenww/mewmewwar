@@ -1,24 +1,28 @@
 <html>
   <head>
-    <meta charset='utf-8' />
+    <meta charset='utf-8'/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>稀有轉蛋</title>
-    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_gacha.png">
+    <title>轉蛋資料庫</title>
+    <link rel="Shortcut Icon" type="image" href="../public/css/footage/question-mark.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="../public/css/overall.css" />
     <link rel="stylesheet" href="../public/css/navBar.css" />
+    <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/gacha.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   </head>
   <body>
-    <nav>
+    <!-- <nav>
       <a href="\">
-        <img src="../public/css/footage/title.png"/>
+        <img src="../public/css/footage/title.png" />
       </a>
-      <div class="navLinkBox"></div>
-      <div class="settingBox"></div>
+      <div class="navLinkBox">
+      </div>
+      <div class="settingBox">
+      </div>
       <div class="mobile">
         <i class="material-icons" id="m_nav_menu">menu</i>
       </div>
@@ -27,84 +31,61 @@
     <div class="m_nav_panel">
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
-    </div>
-    <style>
-      #test,#test_2,#test_3{
-        margin: 50px;
-        font-size: 40px;
-      }
-      .but_group{
-        display: flex;
-        justify-content: center;
-        position: fixed;
-        top: 80%;
-        width: 100%
-      }
-      .result{
-        margin:5% 0;
-        justify-content: center;
-      }
-      #scoreboard{
-        position: fixed;
-        top: 60px;
-        right:20px;
-        background-color: rgba(0,0,0,.7);
-        width: 20%;
-        color: white;
-        padding: 1%;
-      }
-      #scoreboard table{color: white}
-      #scoreboard h2{text-align: center;margin: 0;cursor: pointer;}
-      @media screen and (max-width: 1024px){#scoreboard{width: 30%}}
-      @media screen and (max-width: 768px){
-        #test,#test_2,#test_3{
-          margin: 10px;
-          font-size: 20px;
-        }
-        #scoreboard{width: 40%}
-        .but_group{top: 90%}
-      }
-      @media screen and (max-width: 425px){#scoreboard{width: 60%}}
-    </style>
+    </div> -->
 
     <div class="page_1">
-      <div class="but_group">
-        <button id='test' >轉蛋</button>
-        <button id='test_2' >11抽</button>
-        <button id='test_3' >清空</button>
-      </div>
-      <div class="result" style="width:100%;padding:5%;display:flex;flex-wrap: wrap;"></div>
-      <div id="scoreboard">
-        <h2>轉蛋結果<i class="material-icons">&#xe15b;</i><i class="material-icons" style="display:none">&#xe145;</i></h2>
-        <table>
-          <tr>
-            <th>稀有度</th>
-            <th>數量</th>
-            <th>機率</th>
-          </tr>
-          <tr id="R">
-            <th>稀有</th>
-            <td class="number"></td>
-            <td class="probability"></td>
-          </tr>
-          <tr id="SR">
-            <th>激稀有</th>
-            <td class="number"></td>
-            <td class="probability"></td>
-          </tr>
-          <tr id="SSR">
-            <th>超激稀有</th>
-            <td class="number"></td>
-            <td class="probability"></td>
-          </tr>
-          <tr>
-            <th>等級</th>
-            <td id="www" style="font-weight:bold;font-size:20px" colspan="2"></td>
-          </tr>
-        </table>
-      </div>
-    </div>
+        <div class="window">
+          <div class="navigation">
+            <div class="tag" id="monitor" value='1'>轉蛋模擬器</div>
+            <div class="title">常駐轉蛋</div>
+            <div style="width:100%">
+              <div class="tag" id="R141" value='0'>傳說的不明貓一族</div>
+              <div class="tag" id="R142" value='0'>超激烈爆彈</div>
+              <div class="tag" id="R151" value='0'>超破壞大帝 龍皇因佩拉斯</div>
+              <div class="tag" id="R154" value='0'>超古代勇者 超級靈魂勇者</div>
+              <div class="tag" id="R157" value='0'>逆襲的戰士 黑暗英雄</div>
+              <div class="tag" id="R177" value='0'>戰國武神 巴薩拉斯</div>
+              <div class="tag" id="R188" value='0'>電腦學園銀河美少女團</div>
+              <div class="tag" id="R198" value='0'>革命軍隊鋼鐵戰團</div>
+            </div>
+            <div class="title">限定轉蛋</div>
+            <div style="width:100%;display:none">
+              <span id="R096" class="tag" value="0">萬聖節轉蛋</span>
+              <span id="R127" class="tag" value="0">聖誕美少女</span>
+              <span id="R166" class="tag" value="0">紅色破壞者</span>
+              <span id="R167" class="tag" value="0">飄浮破壞者</span>
+              <span id="R168" class="tag" value="0">超級貓咪祭</span>
+              <span id="R172" class="tag" value="0">復活節嘉年華轉蛋</span>
+              <span id="R197" class="tag" value="0">夏日美少女團</span>
+              <span id="R202" class="tag" value="0">特級貓咪祭</span>
+              <span id="R205" class="tag" value="0">鋼鐵破壞者</span>
+            </div>
+            <div class="title">其他</div>
+            <div style="width:100%;display:none">
+              <span id="R204" class="tag" value="0">絕命美少女怪物萌娘隊</span>
+              <span id="R208" class="tag" value="0">古靈精怪元素小精靈</span>
+            </div>
+            <div class="title">活動轉蛋</div>
+            <div style="width:100%;display:none">
+              <span id="R045" class="tag" value="0">越南大戰 合作活動</span>
+              <span id="R185" class="tag" value="0">梅露可物語 合作活動</span>
+              <span id="R186" class="tag" value="0">蛋黃哥 合作活動</span>
+            </div>
+          </div>
+          <div class="navigation_m">
+            <div class="choose">
+              <span>轉蛋模擬器</span>
+              <i class="material-icons" style="transform:rotate(-90deg)">&#xe315;</i>
+            </div>
+          </div>
+          <div class="screen">
+            <div class="iframe_box">
+              <iframe id="monitor" src="/view/gacha_monitor.html" style="bottom:0%"></iframe>
+            </div>
+          </div>
+        </div>
 
+    </div>
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">
@@ -124,8 +105,8 @@
     </div>
 
 
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -134,8 +115,9 @@
     <script src="../public/js/class.js"></script>
     <script src="../public/js/overall.js"></script>
     <script src="../public/js/gacha.js"></script>
-    <script src="../public/js/firebaseConfig.js"></script>
     <script src="../public/js/jquery.easing.1.3.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="../public/js/firebaseConfig.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

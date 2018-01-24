@@ -16,6 +16,7 @@ body::-webkit-scrollbar {
     width: 8px;
 }
 body::-webkit-scrollbar-track {
+  background-color: rgba(0,0,0,.8);
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 }
 body::-webkit-scrollbar-thumb {
@@ -163,7 +164,7 @@ td, th {
   flex-wrap: wrap;
   justify-content: center;
   overflow: hidden;
-  transition: .5 ease-in-out;
+  transition: .5s ease-in-out;
   background-color: rgba(255,255,255,.5)
 }
 .card-group{margin: 0 8px}
@@ -222,11 +223,6 @@ table {
   height: 80px;
   width: 120px;
 }
-.compareTable{display: flex;}
-.best{
-  color:rgb(247, 175, 67);
-  font-weight: bolder;
-}
 .filter_option{
   width: 100px
 }
@@ -271,22 +267,6 @@ table {
   overflow-y: scroll;
 }
 #helpModal .title{font-size: 20px;font-weight: bold;}
-.compareDisplay{
-  display: flex;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  padding-top: 70px;
-  overflow: scroll;
-}
-.compareDisplay::-webkit-scrollbar {width: 0}
-.compareTable{width: 100%}
-.comparedataholder{
-  display: flex;
-  flex: 3;
-  width: 90%;
-}
-.comparedata{max-width: 250px}
 #compare_number{
   position: relative;
   top: -40px;
@@ -337,22 +317,6 @@ table {
   background-color: rgba(0,0,0,.7);
   z-index: 10;
 }
-.start_holder {
-  width: 100%;
-  text-align: center;
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  height: 100%;
-  background-color: rgba(0,0,0,.5);
-  overflow: hidden;
-}
-.start_holder p{
-  width: 100%;
-  position: relative;
-  top: 100%;
-}
-
 #year_event{
   width: 100%;
   height: 100%;
@@ -361,19 +325,6 @@ table {
   top: 0;
   z-index: 12;
   overflow: scroll;
-}
-#year_event::-webkit-scrollbar {
-    width: 0px;
-}
-#year_event th{background-color: rgba(242, 174, 103, 0.81);color:white}
-#year_event td{background-color: rgba(255, 255, 255, 0.81);font-size: 20px}
-#year_event_BG{
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  background-color: rgba(0,0,0,.7);
-  z-index: 10;
 }
 #service{
   width: 60px;
@@ -448,6 +399,7 @@ table {
 #more_option td:hover{color:rgb(230, 155, 56)}
 #copy_alert,
 #fight_alert,
+#batch_alert,
 .ability_tip{
   font-size: 20px;
   background-color: rgb(31, 149, 145);
@@ -471,4 +423,61 @@ table {
   animation-name: blink;
   animation-duration: .5s ;
   animation-iteration-count: infinite;
+}
+#canvas_holder{
+  position: fixed;
+  top: 0;
+  display: none;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,.8);
+  z-index: 3;
+  align-items: center;
+  transition: .4s ease-in-out;
+}
+canvas{transition: .4s ease-in-out}
+#canvas_holder a,
+#snapshot,
+#canvas_holder span,
+.compareNav div{
+  color: white;
+  background-color: #1f9591;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  transition: .4s ease-in-out;
+  cursor: pointer;
+}
+#canvas_holder span{
+  width: 48px;
+  height: 48px;
+  right: 64px;
+  bottom: 140px;
+}
+#canvas_holder #zoom_in{bottom: 200px;}
+#canvas_holder a i,#snapshot i{font-size: 36px}
+#canvas_holder a:hover,
+#canvas_holder span:hover,
+#snapshot:hover,
+.compareNav div:hover{
+  text-decoration: none;
+  background-color: rgb(242, 163, 70)
+}
+#snapshot{position: fixed}
+#www{
+animation-name: blink;
+animation-duration: .5s ;
+animation-iteration-count: infinite;
+}
+@keyframes blink {
+  0%{color: rgb(255, 93, 46)}
+  50%{color: rgb(250, 204, 86)}
+  100%{color: rgb(255, 72, 40)}
 }

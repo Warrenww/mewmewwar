@@ -9,11 +9,12 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/compareCat.css" />
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <nav>
+    <!-- <nav>
       <a href="\">
         <img src="../public/css/footage/title.png"/>
       </a>
@@ -27,7 +28,7 @@
     <div class="m_nav_panel">
       <div class="m_navLinkBox"></div>
       <div class="m_settingBox"></div>
-    </div>
+    </div> -->
 
     <div class="page_1">
       <div class="compareDisplay">
@@ -35,6 +36,18 @@
 
         </div>
       </div>
+    </div>
+
+    <div class="compareNav">
+      <div id='nav_zoom_in'><i class="material-icons">&#xe145;</i></div>
+      <div id='nav_zoom_out'><i class="material-icons">&#xe15b;</i></div>
+      <div id='nav_org'><i class="material-icons">&#xe5d1;</i></div>
+      <div id='nav_main'><i class="material-icons">&#xe6dd;</i></div>
+    </div>
+
+    <div id='snapshot'><i class="material-icons">&#xe439;</i></div>
+    <div id="canvas_holder">
+      <div class="picture"></div>
     </div>
 
     <div class="modal fade" id="helpModal" role="dialog">
