@@ -96,7 +96,6 @@ button:active{
 .state{width: 100px;padding-left: 20px}
 
 .page_1,.page_2{
-  background-color: white ;
   position: relative;
   overflow-x: hidden;
   background-image: url("footage/search_BG.png");

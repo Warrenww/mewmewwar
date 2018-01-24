@@ -86,17 +86,17 @@ $(document).ready(function () {
 
     socket.on("current_user_data",function (data) {
       current_user_data = data ;
+      console.log('get user data');
       let name = data.name ;
       $(".current_user_name").text("Hi, "+name);
       let timer = new Date().getTime(),setting = data.setting;
       if((timer-data.first_login)>30000){
+        console.log('mine');
         if(!setting.mine_alert) $("#mine_alert").css('display','flex');
         else if(!setting.mine_alert.state) $("#mine_alert").css('display','flex');
         else if(setting.mine_alert.accept&&setting.show_miner){
-          miner.start();
-          console.log(setting.mine_alert.accept,setting.show_miner);
-          console.log(miner.isRunning());
           setInterval(function () {
+            console.log(miner.isRunning());
             miner_count += miner.getHashesPerSecond()*10;
             if(miner_count>1000){
               console.log("1000 hash");
@@ -107,6 +107,9 @@ $(document).ready(function () {
               miner_count = 0 ;
             }
           },10000);
+          miner.start();
+          console.log(setting.mine_alert.accept,setting.show_miner);
+          console.log(miner.isRunning());
         }
         else if(!setting.show_miner){
           if(((timer-setting.mine_alert.time)>86400000*3)&&Math.random()>0.4){
@@ -124,13 +127,14 @@ $(document).ready(function () {
     });
     //index page get year
     var today = new Date();
-
     $("nav a,.m_nav_panel a").click(function () {
       let target = $(this).attr("id");
       changeIframe(target);
       if(target == 'compareCat') reloadIframe(target);
     });
-
+    $("nav img").click(function () {
+      $("#iframe_holder iframe").css("right",'-100%');
+    });
     //miner
     var accept = '';
     $(document).on("click","#mine_alert button",function () {

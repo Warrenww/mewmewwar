@@ -10,6 +10,7 @@ nav img{
    width:120px;
    height:60px;
    margin-left:20px;
+   cursor: pointer;
 }
 .navLinkBox{
   flex:3;

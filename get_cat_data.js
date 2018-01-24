@@ -28,7 +28,7 @@ var config = {
   }
   // aibot("你好")
 
-  var i=60,j=1;
+  var i=339,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");

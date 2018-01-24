@@ -73,6 +73,7 @@ $(document).ready(function () {
     setTimeout(function () {
       $(".select_chapter button[value=1]").attr("value",0);
     },4000);
+    $("#select_stage").empty();
     $("#select_level").empty();
     console.log(chapter);
     $("#select_stage").attr("chapter",chapter);

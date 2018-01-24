@@ -573,7 +573,8 @@ io.on('connection', function(socket){
     database.ref("/user/"+data.uid+"/setting/show_"+data.type)
         .set(data.state);
     if(data.type == 'miner'){
-      database.ref("/user/"+data.uid+"/setting/mine_alert").update({time:new Date().getTime()})
+      database.ref("/user/"+data.uid+"/setting/mine_alert")
+        .update({time:new Date().getTime(),accept:data.state});
     }
   });
 
