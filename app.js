@@ -376,6 +376,7 @@ io.on('connection', function(socket){
         }
         console.log(data);
         database.ref('/user/'+user.uid).set(data) ;
+        socket.emit("login complete");
       }
     })
     // .then(function () {
@@ -393,23 +394,23 @@ io.on('connection', function(socket){
     console.log("user "+user.uid+" connect");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     database.ref('/user/'+user.uid).once("value",function (snapshot) {
-      // if(snapshot.val().first_login == null){
-      //   console.log('null user');
-      //   let data = {
-      //     name : "匿名貓咪",
-      //     nickname : "匿名貓咪",
-      //     first_login : timer,
-      //     last_login : timer,
-      //     history : {cat:"",enemy:"",combo:"",stage:""},
-      //     compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
-      //     setting : {default_cat_lv:30},
-      //     variable : {cat:{},enemy:{},stage:{}},
-      //     folder : {owned:""},
-      //     Anonymous : true
-      //   }
-      //   database.ref('/user/'+user.uid).set(data) ;
-      //   return
-      // }
+      if(snapshot.val().first_login == null){
+        console.log('null user');
+        let data = {
+          name : "匿名貓咪",
+          nickname : "匿名貓咪",
+          first_login : timer,
+          last_login : timer,
+          history : {cat:"",enemy:"",combo:"",stage:""},
+          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
+          setting : {default_cat_lv:30},
+          variable : {cat:{},enemy:{},stage:{}},
+          folder : {owned:""},
+          Anonymous : true
+        }
+        database.ref('/user/'+user.uid).set(data) ;
+        return
+      }
       let history = snapshot.val().history ;
       last_cat = history.last_cat;
       last_enemy = history.last_enemy;
@@ -739,6 +740,9 @@ function arrangeUserData() {
     userdata = snapshot.val();
     for(let i in userdata){
       // console.log(i);
+      process.stdout.clearLine();
+      process.stdout.cursorTo(0);
+      process.stdout.write(i);
       if(i == undefined|| i == "undefined"){
         console.log("remove "+i);
         database.ref('/user/'+i).remove();
@@ -775,6 +779,7 @@ function arrangeUserData() {
         for(let j in edit){
           for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
           if (arr.length > 20){
+            process.stdout.write("\n");
             console.log(i+" too many "+edit[j]);
             let l=0 ;
             for(let k in userdata[i].history[edit[j]]){
@@ -797,6 +802,7 @@ function arrangeUserData() {
         }
       }
     }
+    process.stdout.write("\n");
     console.log("there are "+count+" users!!");
   });
 }

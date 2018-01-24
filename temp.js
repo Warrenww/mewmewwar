@@ -26,7 +26,6 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
-
 // database.ref("/catdata").once("value",function (snapshot) {
 //   catdata = snapshot.val();
 //   console.log("cat data load complete");

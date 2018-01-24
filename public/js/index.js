@@ -80,6 +80,10 @@ $(document).ready(function () {
         console.log('did not sign in');
       }
     });
+    socket.on("login complete",function () {
+      $("#login").fadeOut();
+    });
+
     socket.on("current_user_data",function (data) {
       current_user_data = data ;
       let name = data.name ;
