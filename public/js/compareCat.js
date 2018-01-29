@@ -2,7 +2,8 @@ $(document).ready(function () {
   const image_url =  "../public/css/footage/cat/u" ;
   var compare = [] ;
   var socket = io.connect();
-  var current_user_data = {};
+  var current_user_data = {},
+      current_compare_cat = {};
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -13,7 +14,6 @@ $(document).ready(function () {
   });
   socket.on("current_user_data",function (data) {
     console.log(data);
-    current_user_data = data ;
     if(data.compare_c2c) {
       let buffer = [] ;
       for(let i in data.compare_c2c){
@@ -53,6 +53,7 @@ $(document).ready(function () {
       let data = new Cat(compare[i].data),
           lv = compare[i].lv;
       // console.log(data);
+      current_compare_cat[data.id] = data;
       $(".comparedatabody").append(
         "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
         "<table>"+
@@ -111,9 +112,9 @@ $(document).ready(function () {
   });
   $(document).on('blur', '.comparedata #level input', changeCompareLevel);
   function changeCompareLevel() {
-      let level = Number($(this).val());
-      let rarity = $(this).parent().attr('rarity');
-      let id = $(this).parents('.comparedata').attr('id');
+      let level = Number($(this).val()),
+          id = $(this).parents('.comparedata').attr('id'),
+          data = current_compare_cat[id];
 
       if (level && level < 101 && level > 0) {
         $(this).parent().html(level);
@@ -121,7 +122,7 @@ $(document).ready(function () {
         for(let i in change){
           let target = $('.compareTable #'+id).find('#'+change[i]) ;
           let original = target.attr('original');
-          target.html(levelToValue(original,rarity,level).toFixed(0))
+          target.html(data.Tovalue(change[i],level))
                 .css('background-color',' rgba(242, 213, 167, 0.93)');
           setTimeout(function () {
             target.css('background-color','rgba(255, 255, 255, .9)');

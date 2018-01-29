@@ -72,6 +72,7 @@ database.ref("/").once("value",function (snapshot) {
 arrangeUserData();
 geteventDay();
 
+
 io.on('connection', function(socket){
   socket.on("search",function (data) {
         console.log("searching "+data.type+"....");
