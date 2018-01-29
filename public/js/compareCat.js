@@ -93,6 +93,15 @@ $(document).ready(function () {
     }
     highlightTheBest();
   });
+  $(document).on('click','.comparedata img',function () {
+    let id = $(this).parents('.comparedata').attr('id');
+    socket.emit("display cat",{
+      uid : current_user_data.uid,
+      cat : id,
+      history:true
+    }) ;
+    window.parent.reloadIframe('cat');
+  });
 
   var input_org ;
   $(document).on('click',".comparedata #level",function () {

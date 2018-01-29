@@ -51,28 +51,6 @@ $(document).ready(function () {
     })
   }
 
-  //mobile navigation reaction
-  var showMobilePanel = 1 ;
-  $(document).on('click','#m_nav_menu',function () {
-    if(showMobilePanel){
-      $(".m_nav_panel").css('right',0);
-      $("#m_nav_panel_BG").fadeIn();
-      showMobilePanel = 0 ;
-    }
-    else{
-      $(".m_nav_panel").css('right',-180);
-      $("#m_nav_panel_BG").fadeOut();
-      showMobilePanel = 1 ;
-    }
-  });
-  $(document).on('click','#m_nav_panel_BG',function () {
-    if(!showMobilePanel){
-      $(".m_nav_panel").css('right',-180);
-      $("#m_nav_panel_BG").fadeOut();
-      showMobilePanel = 1 ;
-    }
-  });
-
   //table th reaction
   $(document).on('click','#upper_table th',function () {
     let on = $(this).siblings().children('[value=1]') ;

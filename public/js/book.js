@@ -158,12 +158,12 @@ $(document).ready(function () {
   $("#edit").click(function () {
     editOn = Number($("#edit").attr("value"));
     if(!editOn) {
-      $(this).css("position",'fixed');
+      // $(this).css("position",'fixed');
       $("body").find(".card").each(function () {
         $(this).addClass("edit")
       });
     } else {
-      $(this).css("position",'absolute');
+      // $(this).css("position",'absolute');
       $("body").find(".card").each(function () {
         $(this).removeClass("edit");
       });

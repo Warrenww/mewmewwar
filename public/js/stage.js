@@ -40,17 +40,17 @@ $(document).ready(function () {
   });
 
   var chapter = {
+    j:{name : '狂亂系列',id : 'crazy',show : true},
+    g:{name : '極難關',id : 'hard',show : true},
+    b:{name : '傳說故事',id : 'story',show : true},
+    c:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
+    d:{name : '世界篇',id : 'world',show : true},
+    e:{name : '未來篇',id : 'future',show : true},
+    f:{name : '宇宙篇',id : 'universe',show : true},
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
-    a0:{name : '傳說故事',id : 'story',show : true},
-    a1:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
-    b:{name : '世界篇',id : 'world',show : true},
-    c:{name : '未來篇',id : 'future',show : true},
-    d:{name : '宇宙篇',id : 'universe',show : true},
-    f:{name : '極難關',id : 'hard',show : false},
-    g:{name : '月間關',id : 'month',show : false},
-    h:{name : '開眼關',id : 'openEye',show : false},
-    j:{name : '狂亂貓',id : 'crazy',show : false},
-    k:{name : '大狂亂貓',id : 'bigCrazy',show : false}
+    h:{name : '月間關',id : 'month',show : false},
+    i:{name : '開眼關',id : 'openEye',show : false},
+    l:{name : '開眼小小貓',id : 'smallCat',show : false},
   };
   let chapter_count = 0;
   for(let i in chapter) {

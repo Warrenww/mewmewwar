@@ -125,16 +125,46 @@ $(document).ready(function () {
         }
       }
     });
+
+    //mobile navigation reaction
+    var showMobilePanel = 1 ;
+    $(document).on('click','#m_nav_menu',function () {
+      if(showMobilePanel){
+        $(".m_nav_panel").css('right',0);
+        $("#m_nav_panel_BG").fadeIn();
+        showMobilePanel = 0 ;
+      }
+      else{
+        $(".m_nav_panel").css('right',-180);
+        $("#m_nav_panel_BG").fadeOut();
+        showMobilePanel = 1 ;
+      }
+    });
+    $(document).on('click','#m_nav_panel_BG',function () {
+      if(!showMobilePanel){
+        $(".m_nav_panel").css('right',-180);
+        $("#m_nav_panel_BG").fadeOut();
+        showMobilePanel = 1 ;
+      }
+    });
+
     //index page get year
     var today = new Date();
     $("nav a,.m_nav_panel a").click(function () {
       let target = $(this).attr("id");
       changeIframe(target);
       if(target == 'compareCat') reloadIframe(target);
+
+      $(".m_nav_panel").css('right',-180);
+      $("#m_nav_panel_BG").fadeOut();
+      showMobilePanel = 1 ;
     });
     $("nav img").click(function () {
       $("#iframe_holder iframe").css("right",'-100%');
     });
+
+
+
     //miner
     var accept = '';
     $(document).on("click","#mine_alert button",function () {
@@ -207,6 +237,7 @@ function changeIframe(target) {
   $("#iframe_holder").find("#"+target).css("right","0%").siblings().css("right",'-100%');
 }
 function reloadIframe(target) {
-    let src = $("#iframe_holder").find("#"+target).attr("src");
-    $("#iframe_holder").find("#"+target).attr('src',src);
+  if(!$("#iframe_holder").find("#"+target)[0]) changeIframe(target);
+  let src = $("#iframe_holder").find("#"+target).attr("src");
+  $("#iframe_holder").find("#"+target).attr('src',src);
 }

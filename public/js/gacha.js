@@ -18,6 +18,26 @@ $(document).ready(function () {
     console.log(data);
     current_user_data = data ;
   });
+  $(".tag").each(function () {
+    if($(this).attr("id")!='monitor'){
+      $(this).append("<span id='search'>篩選</span>");
+    }
+  });
+  $(document).on("click",'.tag span',function (e) {
+    e.stopPropagation();
+    let id = $(this).parent().attr('id');
+    socket.emit("search",{
+      uid:current_user_data.uid,
+      rFilter:[],
+      cFilter:[],
+      aFilter:[],
+      gFilter:[id],
+      filterObj:[],
+      type:"cat"
+    });
+    window.parent.reloadIframe('cat');
+  });
+
 
   var expand = 0 ;
   $(document).on("click",'.tag',function () {

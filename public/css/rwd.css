@@ -131,4 +131,5 @@ nav .mobile,
   {padding-top: 15%}
   .navigation_m{display: flex}
   .iframe_box iframe{width: 100%;}
+  #bulletin .main{width: 95%;font-size: 15px}
 }

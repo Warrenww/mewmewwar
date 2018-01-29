@@ -81,6 +81,10 @@
   top: 40px;
   z-index: 3;
 }
+#edit[value~='1']{
+  position: fixed;
+  background: linear-gradient(rgb(241, 130, 130),rgb(203, 61, 61))
+}
 .edit{
   animation-name: jump;
   animation-duration: .2s;

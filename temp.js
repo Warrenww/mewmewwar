@@ -26,17 +26,17 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
-// database.ref("/catdata").once("value",function (snapshot) {
-//   catdata = snapshot.val();
-//   console.log("cat data load complete");
-//   for(let i in catdata){
-//     process.stdout.clearLine();
-//     process.stdout.cursorTo(0);
-//     process.stdout.write(i);
-//     database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
-//   }
-//   console.log("finish");
-// });
+database.ref("/newCatData").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  console.log("cat data load complete");
+  // for(let i in catdata){
+  //   process.stdout.clearLine();
+  //   process.stdout.cursorTo(0);
+  //   process.stdout.write(i);
+  //   database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
+  // }
+  console.log("finish");
+});
 
 // database.ref("/enemydata").once("value",function (snapshot) {
 //   let enemydata = snapshot.val();
@@ -81,30 +81,28 @@ console.log('start');
 //     count++;
 //   }
 // });
+//
+database.ref("/stagedata/crazy").once('value',function (snapshot) {
+  let data = snapshot.val();
+    for(let i in data){
+      for(let j in data[i] ){
+        if(j == 'name') continue
+        let reward = data[i][j].reward[0];
+        console.log(reward);
+        database.ref("/stagedata/crazy/"+i+"/"+j+"/reward")
+        .update({'0':{chance:"",limit:"",prize:reward}});
+      }
+      // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+      // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+      // arr = arr.concat(target.reward);
+      // for(let i in target.reward){
+      //   if(target.reward[i].prize.name.indexOf("u")!=-1)
+      //   console.log(target.name,target.reward[i].prize.amount);
+      // }
+    }
 
-// database.ref("/stagedata/world/s03000").once('value',function (snapshot) {
-//   let data = snapshot.val(),
-//       data26 = data[26],
-//       data28 = data[28];
-//
-//     console.log(data26.name,data28.name);
-//     console.log(data26.reward,data28.reward);
-//
-//     //
-//     // for(let j in data){
-//     //   if(j == "name") continue
-//     //
-//     //   let target = data[j],
-//     //       arr=[{chance:"",limit:"",prize:{amount:"",name:'寶物'}}];
-//     //   // arr = arr.concat(target.reward);
-//     //   for(let i in target.reward){
-//     //     if(target.reward[i].prize.name.indexOf("u")!=-1)
-//     //     console.log(target.name,target.reward[i].prize.amount);
-//     //   }
-//
-//     // }
-//
-// });
+
+});
 
 var t = new Date(),
     y = t.getFullYear(),

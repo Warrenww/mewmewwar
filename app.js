@@ -574,7 +574,7 @@ io.on('connection', function(socket){
         .set(data.state);
     if(data.type == 'miner'){
       database.ref("/user/"+data.uid+"/setting/mine_alert")
-        .update({time:new Date().getTime(),accept:data.state});
+        .update({time:new Date().getTime(),accept:data.state,state:true});
     }
   });
 
@@ -693,7 +693,7 @@ io.on('connection', function(socket){
     });
   });
   socket.on("mine count",function (data) {
-    console.log('1000 hash');
+    console.log(data.uid,'1000 hash');
     database.ref("/user/"+data.uid+"/setting/mine_alert").once('value',function (snapshot) {
       let count = snapshot.val().count?snapshot.val().count:0;
       count += data.count ;

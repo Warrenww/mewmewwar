@@ -1,4 +1,4 @@
-var request = require("request");
+﻿var request = require("request");
 var cheerio = require("cheerio");
 var firebase = require("firebase");
 var config = {
@@ -12,12 +12,14 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  var i=3,j=1;
+  var i=25,j=1,chap='crazy',stage='010';
+  // j = 'ex';
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
+    let url = "https://battlecats-db.com/stage/s"+stage+AddZero(i)+"-"+AddZero(j)+".html";
     request({
-      url: "https://battlecats-db.com/stage/s0300"+i+"-"+AddZero(j)+".html",
+      url: url,
       method: "GET"
     }, function(e,r,b) {
       let obj = {
@@ -31,14 +33,15 @@ var config = {
         enemy : [],
         final : "",
         "continue" : "",
-        id:"future-s0300"+i+"-"+j
+        id:chap+"-s"+stage+AddZero(i)+"-"+j
       };
       if(!e){
         // console.log("get data");
         process.stdout.clearLine();
         process.stdout.cursorTo(0);
+        process.stdout.write(url+" ");
         process.stdout.write(obj.id+"---");
-        process.stdout.write((j/48*100).toFixed(1).toString()+"%");
+        process.stdout.write((j/8*100).toFixed(1).toString()+"%");
         $ = cheerio.load(b);
         let content = $(".maincontents table"),
         final = content.children().length == 6 ? true : false,
@@ -79,12 +82,22 @@ var config = {
           });
         }
         // console.log(obj);
-        database.ref("/stagedata/future/s0300"+i+"/"+j).set(obj);
+        database.ref("/stagedata/"+chap+"/s"+stage+AddZero(i)+"/"+j).update(obj);
         j++;
         // if(final){j=1;i++}
-        // if(!final) getData(i,j);
-        if(j<49) getData(i,j);
-        else {i++;j=1;if(i<6)getData(i,j);}
+        if(!final) getData(i,j);
+        // if(j<49) getData(i,j);
+        else {
+          setTimeout(function () {
+            process.exit();
+          },1000);
+          
+          // i++;j=1;
+          // if(i<39) getData(i,j);
+          // else setTimeout(function () {
+          //   process.exit();
+          // },1000)
+        }
       }
       else {
         // console.log("error s070"+AddZero(i)+"-0"+j);
@@ -99,7 +112,8 @@ var config = {
     if(s.indexOf("XP+")!=-1){
       obj.name = "經驗值";
       obj.amount = s.substring(3);
-    } else if(s.indexOf("個")!=-1||s.indexOf("枚")!=-1){
+    }
+    else if(s.indexOf("個")!=-1||s.indexOf("枚")!=-1){
       if(s.split(" ")[0].indexOf('マタタビ')!=-1){
         let arr = s.split(" ")[0].split("マタタビ") ;
         switch (arr[0]) {
@@ -181,8 +195,9 @@ var config = {
         }
       }
       obj.amount = s.split(" ")[1];
-    } else if(p.children("img").attr("src")) {
-      obj.name = "u" + p.children("img").attr("src").split("/")[3].split(".png")[0]
+    }
+    else if(p.children("a").attr("href")) {
+      obj.name = "u" + p.children("a").attr("href").split("/")[2].split(".html")[0]
     } else {
       obj.name = s;
     }

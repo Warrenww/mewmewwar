@@ -138,8 +138,9 @@ $(document).ready(function () {
         $("#default_cat_lv").attr('value',data.default_cat_lv);
       } else if(i == 'mine_alert'){
         console.log(data[i].count);
-        let count = data[i].count/1000
-        $("#total_hash").text(count.toFixed(0)+"kH")
+        let count = data[i].count,ww;
+        ww = count>1e5?count/1e6:count/1e3 ;
+        $("#total_hash").text(ww.toFixed(1)+(count>1e5?"MH":"kH"))
       } else {
         $("#"+i).prop('checked',data[i]);
       }

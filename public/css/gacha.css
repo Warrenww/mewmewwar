@@ -33,9 +33,19 @@
   cursor: pointer;
   background-color: rgba(255,255,255,.7);
   transition: .4s ease-in-out;
+  justify-content: space-between;
 }
 .tag{border-bottom: 1px solid lightgray}
 .tag:hover,.tag[value~='1']{background-color: rgba(242, 198, 85, 0.85)}
+.tag span{
+  font-size: 14px;
+  float: right;
+  padding: 2px 5px;
+  border: 1px solid;
+  border-radius: 6px;
+  transition: .4s ease-in-out;
+}
+.tag span:hover{background-color: rgb(59, 168, 246)}
 .title{background-color: rgba(242, 132, 85, 0.85)}
 .iframe_box{
   display: flex;
