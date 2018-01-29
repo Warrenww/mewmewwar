@@ -61,48 +61,51 @@ database.ref("/newCatData").once("value",function (snapshot) {
 //     },2000)
 // });
 
+let uid = 'DkKutbEzyWbeO1A074Kcinygxgs2';
+database.ref("/user/"+uid).set(null);
+
 // database.ref("/user").once("value",function (snapshot) {
 //   console.log('get user data');
 //   userdata = snapshot.val();
 //   let count = 0 ;
 //   for(let i in userdata){
-//     let stage = userdata[i].history.stage;
-//     for(let j in stage){
-//       process.stdout.clearLine();
-//       process.stdout.cursorTo(0);
-//       process.stdout.write("loading user data "+i+" history "+j);
-//       process.stdout.write((Number(count)/688*100).toFixed(2).toString());
-//       process.stdout.write("%");
-//       // let arr = stage != "0" ? (stage[j].id).split("-") : [];
-//       if (j=="0") {
-//         // database.ref("/user/"+i+"/history/stage").set("0");
-//       }
-//     }
+//     // let stage = userdata[i].history.stage;
+//     // for(let j in stage){
+//     //   process.stdout.clearLine();
+//     //   process.stdout.cursorTo(0);
+//     //   process.stdout.write("loading user data "+i+" history "+j);
+//     //   process.stdout.write((Number(count)/688*100).toFixed(2).toString());
+//     //   process.stdout.write("%");
+//     //   // let arr = stage != "0" ? (stage[j].id).split("-") : [];
+//     //   if (j=="0") {
+//     //     // database.ref("/user/"+i+"/history/stage").set("0");
+//     //   }
+//     // }
 //     count++;
 //   }
 // });
 //
-database.ref("/stagedata/crazy").once('value',function (snapshot) {
-  let data = snapshot.val();
-    for(let i in data){
-      for(let j in data[i] ){
-        if(j == 'name') continue
-        let reward = data[i][j].reward[0];
-        console.log(reward);
-        database.ref("/stagedata/crazy/"+i+"/"+j+"/reward")
-        .update({'0':{chance:"",limit:"",prize:reward}});
-      }
-      // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-      // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-      // arr = arr.concat(target.reward);
-      // for(let i in target.reward){
-      //   if(target.reward[i].prize.name.indexOf("u")!=-1)
-      //   console.log(target.name,target.reward[i].prize.amount);
-      // }
-    }
-
-
-});
+// database.ref("/stagedata/crazy").once('value',function (snapshot) {
+//   let data = snapshot.val();
+//     for(let i in data){
+//       for(let j in data[i] ){
+//         if(j == 'name') continue
+//         let reward = data[i][j].reward[0];
+//         console.log(reward);
+//         database.ref("/stagedata/crazy/"+i+"/"+j+"/reward")
+//         .update({'0':{chance:"",limit:"",prize:reward}});
+//       }
+//       // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+//       // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+//       // arr = arr.concat(target.reward);
+//       // for(let i in target.reward){
+//       //   if(target.reward[i].prize.name.indexOf("u")!=-1)
+//       //   console.log(target.name,target.reward[i].prize.amount);
+//       // }
+//     }
+//
+//
+// });
 
 var t = new Date(),
     y = t.getFullYear(),
