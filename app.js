@@ -693,9 +693,9 @@ io.on('connection', function(socket){
     });
   });
   socket.on("mine count",function (data) {
-    console.log(data.uid,'1000 hash');
-    if(!data.uid) return
+    console.log(data.uid,data.count,' hash');
     database.ref("/user/"+data.uid+"/setting/mine_alert").once('value',function (snapshot) {
+      if(!snapshot.val()) return
       let count = snapshot.val().count?snapshot.val().count:0;
       count += data.count ;
       database.ref("/user/"+data.uid+"/setting/mine_alert").update({count:count});
