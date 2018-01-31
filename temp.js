@@ -61,8 +61,6 @@ database.ref("/newCatData").once("value",function (snapshot) {
 //     },2000)
 // });
 
-let uid = 'DkKutbEzyWbeO1A074Kcinygxgs2';
-database.ref("/user/"+uid).set(null);
 
 // database.ref("/user").once("value",function (snapshot) {
 //   console.log('get user data');
@@ -84,28 +82,27 @@ database.ref("/user/"+uid).set(null);
 //     count++;
 //   }
 // });
-//
-// database.ref("/stagedata/crazy").once('value',function (snapshot) {
-//   let data = snapshot.val();
-//     for(let i in data){
-//       for(let j in data[i] ){
-//         if(j == 'name') continue
-//         let reward = data[i][j].reward[0];
-//         console.log(reward);
-//         database.ref("/stagedata/crazy/"+i+"/"+j+"/reward")
-//         .update({'0':{chance:"",limit:"",prize:reward}});
-//       }
-//       // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-//       // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-//       // arr = arr.concat(target.reward);
-//       // for(let i in target.reward){
-//       //   if(target.reward[i].prize.name.indexOf("u")!=-1)
-//       //   console.log(target.name,target.reward[i].prize.amount);
-//       // }
-//     }
-//
-//
-// });
+
+database.ref("/stagedata/smallCat").once('value',function (snapshot) {
+  let data = snapshot.val();
+    for(let i in data){
+      for(let j in data[i] ){
+        if(j == 'name') continue
+        //
+        database.ref("/stagedata/smallCat/"+i+"/"+j+"/constrain")
+        .set("EX・稀有");
+      }
+      // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+      // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+      // arr = arr.concat(target.reward);
+      // for(let i in target.reward){
+      //   if(target.reward[i].prize.name.indexOf("u")!=-1)
+      //   console.log(target.name,target.reward[i].prize.amount);
+      // }
+    }
+
+
+});
 
 var t = new Date(),
     y = t.getFullYear(),

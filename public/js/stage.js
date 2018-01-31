@@ -40,6 +40,7 @@ $(document).ready(function () {
   });
 
   var chapter = {
+    l:{name : '開眼小小貓',id : 'smallCat',show : true},
     j:{name : '狂亂系列',id : 'crazy',show : true},
     g:{name : '極難關',id : 'hard',show : true},
     b:{name : '傳說故事',id : 'story',show : true},
@@ -50,7 +51,6 @@ $(document).ready(function () {
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
     h:{name : '月間關',id : 'month',show : false},
     i:{name : '開眼關',id : 'openEye',show : false},
-    l:{name : '開眼小小貓',id : 'smallCat',show : false},
   };
   let chapter_count = 0;
   for(let i in chapter) {
@@ -86,7 +86,7 @@ $(document).ready(function () {
     for( let i in data )
       $("#select_stage").append(
         "<button value='0' style='width:180px;height:"+
-        (data[i].name.length>9?80:40)+"px;margin:5px' id='"+
+        (data[i].name.length>10?80:40)+"px;margin:5px' id='"+
         data[i].id+"'>"+data[i].name+"</button>"
       ).css("flex","3").siblings().css("flex","1");
   });

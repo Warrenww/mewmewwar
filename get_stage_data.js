@@ -12,7 +12,7 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  var i=25,j=1,chap='crazy',stage='010';
+  var i=30,j=1,chap='smallCat',stage='011';
   // j = 'ex';
   getData(i,j);
   function getData(i,j) {
@@ -88,15 +88,15 @@ var config = {
         if(!final) getData(i,j);
         // if(j<49) getData(i,j);
         else {
-          setTimeout(function () {
-            process.exit();
-          },1000);
-          
-          // i++;j=1;
-          // if(i<39) getData(i,j);
-          // else setTimeout(function () {
+          // setTimeout(function () {
           //   process.exit();
-          // },1000)
+          // },1000);
+
+          i++;j=1;
+          if(i<39) getData(i,j);
+          else setTimeout(function () {
+            process.exit();
+          },1000)
         }
       }
       else {

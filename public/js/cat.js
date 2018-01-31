@@ -510,7 +510,7 @@ $(document).ready(function () {
     $('.compare_panel').css('height',0);
     if(showcomparetarget) showhidecomparetarget();
     let id = $(".dataTable").attr('id'),
-        name = $(".dataTable").find("#name").text();
+        name = $(".dataTable").find("#name").text().split(" ")[1];
     compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
     if(compare.indexOf(id) != -1) {
       let repeat = $('.compareTarget').find('[value='+id+']') ;
@@ -599,13 +599,18 @@ $(document).ready(function () {
     showcomparetarget = showcomparetarget ? 0 : 1 ;
   }
   function toggleCatStage() {
-    let current = $(this).parent().children(".card:visible").next('.card').attr('value');
-    if(current != undefined){
-      $(this).parent().children(".card:visible").hide().next('.card').show();
-    }
-    else{
-      $(this).parent().children(".card:visible").hide().parent().children('.card').eq(0).show();
-    }
+    let group = $(this).parent(),
+        current = group.children(".card:visible").next('.card').attr('value');
+    group.css("transform","rotateY(90deg)");
+    setTimeout(function () {
+      group.css("transform","rotateY(0)");
+      if(current != undefined){
+        group.children(".card:visible").hide().next('.card').show();
+      }
+      else{
+        group.children(".card:visible").hide().parent().children('.card').eq(0).show();
+      }
+    },400);
   }
   var compare ;
   $('#selected').sortable('option',{
@@ -637,12 +642,11 @@ $(document).ready(function () {
     else if(ui.sender.is('#selected')){
       let id = input.attr('value'),
           name = input.text();
-      $(".compareTarget").append('<div class="compareTarget_child" value='+id+'>'+
-      '<i class="fa fa-trash"></i>'+
+      $(".compareTarget").append(
       '<span class="card" value="'+id+
       '" style="background-image:url('+
       image_url_cat+id+'.png'+
-      '">'+name+'</span></div>');
+      '">'+name+'</span>');
       $("#selected").sortable('cancel');
       $('.compareTarget_holder').animate({
         scrollTop : $('.compareTarget').height()
@@ -698,11 +702,6 @@ $(document).ready(function () {
     $("#compare_number").text(compare.length);
     socket.emit("compare cat",{id:current_user_data.uid,target:compare});
   });
-  // $('#a_compareCat ').bind('click',function () {
-  //   compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-  //   socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-  //   location.assign('/compareCat.html');
-  // });
 
   function changeSlider() {
     let target = $("#"+filter_name+".filter_option");

@@ -140,7 +140,7 @@ $(document).ready(function () {
         console.log(data[i].count);
         let count = data[i].count,ww;
         ww = count>1e5?count/1e6:count/1e3 ;
-        $("#total_hash").text(ww.toFixed(1)+(count>1e5?"MH":"kH"))
+        $("#total_hash").text(ww.toFixed(2)+(count>1e5?"MH":"kH"))
       } else {
         $("#"+i).prop('checked',data[i]);
       }

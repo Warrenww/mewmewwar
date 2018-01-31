@@ -132,3 +132,7 @@
   font-size: 20px;
   padding-left: 5px;
 }
+.card-group{
+  margin: 0 8px;
+  transition: .4s ease-in-out;
+}

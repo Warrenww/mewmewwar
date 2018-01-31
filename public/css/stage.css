@@ -19,6 +19,12 @@
   50%{border-color: yellow}
   100%{border-color: orange}
 }
+.select_chapter button{
+  background-size: 100%;
+  background-position: 0% 100%;
+  background-color: rgba(0,0,0,.6);
+  background-blend-mode: multiply;
+}
 #world,#future{
   background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
   background-blend-mode: color-burn;
@@ -46,24 +52,17 @@
 }
 #story{
   background-image: url("footage/story_BG.png");
-  background-size: 100%;
-  background-position: 0% 100%;
+  background-color: transparent;
 }
-#maylook{
-  background-image: url("footage/maylook_BG.png");
-  background-size: 100%;
-  background-position: 0% 100%;
-  background-color: rgba(0,0,0,.6);
-  background-blend-mode: multiply;
-}
-#crazy{
+#maylook{background-image: url("footage/maylook_BG.png");}
+#crazy,#hard,#smallCat{
   background-image: url("footage/crazy_BG.png");
-  background-size: 100%;
-  background-position: 0% 100%;
   background-color: rgba(0,0,0,.1);
-  background-blend-mode: multiply;
-  font-size: 0
+  font-size: 0;
 }
+#hard{background-image: url("footage/hard_BG.png");}
+#smallCat{background-image: url("footage/smallCat_BG.png");}
+#smallCat:hover{background-image: url("footage/smallCat_BG_alt.png");}
 
 
 .select_chapter{

@@ -166,7 +166,6 @@ td, th {
   transition: .5s ease-in-out;
   background-color: rgba(255,255,255,.5)
 }
-.card-group{margin: 0 8px}
 table {
   width: 100%;
   border-spacing: 3px;

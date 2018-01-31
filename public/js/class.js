@@ -5,7 +5,7 @@ class Cat{
     this.aoe = obj.aoe;
     this.atk = obj.atk;
     this.atk_period = obj.atk_period;
-    this.atk_speed = obj.atk_speed.toFixed(2);
+    this.atk_speed = Number(obj.atk_speed)?obj.atk_speed.toFixed(2):"-";
     this.cd = obj.cd.toFixed(1);
     this.char = obj.char;
     this.cost = obj.cost;
