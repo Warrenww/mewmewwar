@@ -11,9 +11,10 @@ var config = {
   };
   firebase.initializeApp(config);
   var database = firebase.database();
-
-  var i=30,j=1,chap='smallCat',stage='011';
-  // j = 'ex';
+  // var Arr = [6,7,78];
+  var i=18,j=1,chap='evolution',stage='011',ii=0;
+  j = '03ex05'
+  // i = Arr[ii];
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -33,7 +34,7 @@ var config = {
         enemy : [],
         final : "",
         "continue" : "",
-        id:chap+"-s"+stage+AddZero(i)+"-"+j
+        id:chap+"-s"+stage+AddZero(i)+"-"+j,
       };
       if(!e){
         // console.log("get data");
@@ -48,7 +49,7 @@ var config = {
         thead = content.children("thead").eq(0).children("tr"),
         tbody_1 = content.children("tbody").eq(final?1:0).children("tr"),
         tbody_2 = content.children("tbody").eq(final?2:1).children("tr");
-        // console.log(final);
+
         obj.final = final;
         obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
         obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
@@ -84,19 +85,18 @@ var config = {
         // console.log(obj);
         database.ref("/stagedata/"+chap+"/s"+stage+AddZero(i)+"/"+j).update(obj);
         j++;
-        // if(final){j=1;i++}
-        if(!final) getData(i,j);
-        // if(j<49) getData(i,j);
-        else {
-          // setTimeout(function () {
-          //   process.exit();
-          // },1000);
 
-          i++;j=1;
-          if(i<39) getData(i,j);
-          else setTimeout(function () {
-            process.exit();
-          },1000)
+        // if(final){j=1;i++}
+        // if(ii<6) getData(i,j);
+        if(!final) getData(i,j);
+        else {
+          setTimeout(function () {process.exit();},1000);
+
+          // ii++;i=Arr[ii];j=1;
+          // if(ii<Arr.length) getData(i,j);
+          // i++;j=1;
+          // if(i<53) getData(i,j);
+          // else setTimeout(function () {process.exit();},1000)
         }
       }
       else {

@@ -61,7 +61,6 @@ database.ref("/newCatData").once("value",function (snapshot) {
 //     },2000)
 // });
 
-
 // database.ref("/user").once("value",function (snapshot) {
 //   console.log('get user data');
 //   userdata = snapshot.val();
@@ -83,26 +82,26 @@ database.ref("/newCatData").once("value",function (snapshot) {
 //   }
 // });
 
-database.ref("/stagedata/smallCat").once('value',function (snapshot) {
-  let data = snapshot.val();
-    for(let i in data){
-      for(let j in data[i] ){
-        if(j == 'name') continue
-        //
-        database.ref("/stagedata/smallCat/"+i+"/"+j+"/constrain")
-        .set("EX・稀有");
-      }
-      // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-      // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-      // arr = arr.concat(target.reward);
-      // for(let i in target.reward){
-      //   if(target.reward[i].prize.name.indexOf("u")!=-1)
-      //   console.log(target.name,target.reward[i].prize.amount);
-      // }
-    }
-
-
-});
+// database.ref("/stagedata/smallCat").once('value',function (snapshot) {
+//   let data = snapshot.val();
+//     for(let i in data){
+//       for(let j in data[i] ){
+//         if(j == 'name') continue
+//         //
+//         database.ref("/stagedata/smallCat/"+i+"/"+j+"/constrain")
+//         .set("EX・稀有");
+//       }
+//       // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+//       // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
+//       // arr = arr.concat(target.reward);
+//       // for(let i in target.reward){
+//       //   if(target.reward[i].prize.name.indexOf("u")!=-1)
+//       //   console.log(target.name,target.reward[i].prize.amount);
+//       // }
+//     }
+//
+//
+// });
 
 var t = new Date(),
     y = t.getFullYear(),
@@ -135,25 +134,36 @@ var t = new Date(),
 function AddZero(n) {
   return n<10 ? "0"+n : n
 }
+var target = '41xMMgmvgqSFlGbH7oKgF97490w2';
+listAllUsers();
 function listAllUsers(nextPageToken) {
     let timer = new Date().getTime();
   // List batch of users, 1000 at a time.
-  admin.auth().listUsers(1, nextPageToken)
+  admin.auth().listUsers(100, nextPageToken)
     .then(function(listUsersResult) {
       listUsersResult.users.forEach(function(data) {
         // console.log(data.providerData[0].providerId);
-        console.log(data.uid, Date.parse(data.metadata.lastSignInTime));
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(data.uid);
+
+        if(data.uid == target){
+          process.stdout.write('\n');
+          console.log(data);
+          return
+        }
 
       });
-      // if (listUsersResult.pageToken) {
-      //   // List next batch of users.
-      //   listAllUsers(listUsersResult.pageToken)
-      // }
+      if (listUsersResult.pageToken) {
+        // List next batch of users.
+        listAllUsers(listUsersResult.pageToken)
+      }
     })
     .catch(function(error) {
       console.log("Error listing users:", error);
     });
 }
+
 // Start listing users from the beginning, 1000 at a time.
 // listAllUsers();
 //

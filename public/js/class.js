@@ -71,7 +71,7 @@ class Cat{
           (char[k].range?" "+char[k].range.join("~"):"")+
           (char[k].period?+char[k].period.toFixed(1)+"秒":"");
           if(char[k].arr){
-            html += "<span id='serial'>("+this.serialATK(lv)+")<span>"
+            html += "<span id='serial'>("+this.serialATK(lv)+")</span>"
           }
           html += "</br>";
         }

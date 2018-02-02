@@ -51,6 +51,10 @@ $(document).ready(function () {
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
     h:{name : '月間關',id : 'month',show : false},
     i:{name : '開眼關',id : 'openEye',show : false},
+    k:{name : '經驗關',id : 'XP',show : false},
+    m:{name : '旋渦關',id : 'cyclone',show : false},
+    n:{name : '貓薄荷',id : 'evolution',show : false},
+    o:{name : '城堡素材',id : 'castleMaterial',show : false},
   };
   let chapter_count = 0;
   for(let i in chapter) {
@@ -62,6 +66,18 @@ $(document).ready(function () {
     chapter_count ++ ;
   }
   $(".select_chapter").css('width',200*chapter_count);
+  var expend_sl_chap = 1 ;
+  $("#expend_sl_chap").click(function () {
+    $(".select_chapter").css('width',function () {
+      if(expend_sl_chap) return "100%"
+      else return 200*chapter_count
+    });
+    $("#expend_sl_chap i").css('transform',function () {
+      if(expend_sl_chap) return "rotate(180deg)"
+      else return "rotate(0deg)"
+    })
+    expend_sl_chap = expend_sl_chap?0:1;
+  });
 
   $(document).on("click","#select_stage,#select_level",function () {
     $(this).css("flex",'3').siblings().css("flex",'1');

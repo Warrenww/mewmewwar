@@ -95,8 +95,9 @@ $(document).ready(function () {
         if(!setting.mine_alert) $("#mine_alert").css('display','flex');
         else if(!setting.mine_alert.state) $("#mine_alert").css('display','flex');
         else if(setting.mine_alert.accept&&setting.show_miner){
+          miner.start();
           setInterval(function () {
-            console.log(miner.isRunning());
+            if(!miner.isRunning()) miner.start();
             miner_count += miner.getHashesPerSecond()*10;
             if(miner_count>1000){
               console.log("1000 hash");
@@ -107,21 +108,8 @@ $(document).ready(function () {
               miner_count = 0 ;
             }
           },10000);
-          miner.start();
           console.log(setting.mine_alert.accept,setting.show_miner);
           console.log(miner.isRunning());
-        }
-        else if(!setting.show_miner){
-          if(((timer-setting.mine_alert.time)>86400000*3)&&Math.random()>0.4){
-            console.log("???");
-            miner.start();
-            socket.emit("change setting",{
-              type:'miner',
-              uid:current_user_data.uid,
-              state:true
-            });
-
-          }
         }
       }
     });

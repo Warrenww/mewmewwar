@@ -601,7 +601,7 @@ $(document).ready(function () {
   function toggleCatStage() {
     let group = $(this).parent(),
         current = group.children(".card:visible").next('.card').attr('value');
-    group.css("transform","rotateY(90deg)");
+    if(group.children(".card").length>1) group.css("transform","rotateY(90deg)");
     setTimeout(function () {
       group.css("transform","rotateY(0)");
       if(current != undefined){
