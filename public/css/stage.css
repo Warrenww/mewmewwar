@@ -63,6 +63,7 @@
 #hard{background-image: url("footage/hard_BG.png");}
 #smallCat{background-image: url("footage/smallCat_BG.png");}
 #smallCat:hover{background-image: url("footage/smallCat_BG_alt.png");}
+#XP{background-blend-mode: normal;}
 
 
 .select_chapter{

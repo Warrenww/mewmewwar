@@ -217,6 +217,9 @@ var config = {
     else if(c.indexOf("スロット1ページ目のみ")!=-1){
       c = "出陣列表:僅限第一頁";
     }
+    else if(c.indexOf("一回クリアのみ")!=-1){
+      c = "僅限通關一次";
+    }
     else {
       c = c.split("レア").join("稀有");
     }

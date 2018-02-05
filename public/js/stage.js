@@ -40,6 +40,7 @@ $(document).ready(function () {
   });
 
   var chapter = {
+    k:{name : '經驗關',id : 'XP',show : true},
     l:{name : '開眼小小貓',id : 'smallCat',show : true},
     j:{name : '狂亂系列',id : 'crazy',show : true},
     g:{name : '極難關',id : 'hard',show : true},
@@ -51,7 +52,6 @@ $(document).ready(function () {
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
     h:{name : '月間關',id : 'month',show : false},
     i:{name : '開眼關',id : 'openEye',show : false},
-    k:{name : '經驗關',id : 'XP',show : false},
     m:{name : '旋渦關',id : 'cyclone',show : false},
     n:{name : '貓薄荷',id : 'evolution',show : false},
     o:{name : '城堡素材',id : 'castleMaterial',show : false},
