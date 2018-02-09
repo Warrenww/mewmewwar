@@ -97,7 +97,7 @@ nav .mobile,
     width: 30px;
     height: 30px;
   }
-  .navigation .tag{font-size: 15px}
+
 
   #snapshot {width: 60px;height: 60px}
   #snapshot i {font-size: 30px}
@@ -123,8 +123,6 @@ nav .mobile,
   .compareNav div{right: 40px;top: 70px}
 }
 @media screen and (max-width:425px) {
-  /* .navigation{display: none;} */
-  .window{flex-direction: column;}
   .select,
   .display,
   .content

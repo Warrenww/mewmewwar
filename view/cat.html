@@ -40,156 +40,162 @@
 
 
     <div class="page_1">
-      <div class="select">
-        <div class="search" >
-          <input type="text" id="searchBox" placeholder="Search for Cats...">
-          <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
+      <div class="content">
+        <div class="search_type">
+          <span class="button" value='1' id="normal_search">一般篩選</span>
+          <span class="button" value='0' id="gacha_search">轉蛋篩選</span>
+          <span class="button" value='0' id="value_search">數值篩選</span>
+          <div class="search" >
+            <input type="text" id="searchBox" placeholder="Search for Cats...">
+            <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
+          </div>
         </div>
-        <table id="upper_table">
+        <div class="search_table">
+          <table id="upper_table">
             <tr>
-                <th colspan="2">稀有度</th>
-                <td colspan="4" class="select_rarity">
-                  <span class='button' name='B' value='0' >基本</span>
-                  <span class='button' name='EX' value='0' >EX</span>
-                  <span class='button' name='R' value='0' >稀有</span>
-                  <span class='button' name='SR' value='0' >激稀有</span>
-                  <span class='button' name='SR_alt' value='0' >激稀有狂亂</span>
-                  <span class='button' name='SSR' value='0' >超激稀有</span>
-                </td>
-            </tr>
-            <tr>
-                <th colspan="2">屬性</th>
-                <td colspan="4" class="select_color">
-                  <span class='button' name='對紅色' value='0' >紅色敵人</span>
-                  <span class='button' name='對漂浮' value='0' >漂浮敵人</span>
-                  <span class='button' name='對黑色' value='0' >黑色敵人</span>
-                  <span class='button' name='對鋼鐵' value='0' >鋼鐵敵人</span>
-                  <span class='button' name='對天使' value='0' >天使</span>
-                  <span class='button' name='對外星' value='0' >異星戰士</span>
-                  <span class='button' name='對不死' value='0' >不死生物</span>
-                  <span class='button' name='對白色' value='0' >白色敵人</span>
-                  <span class='button' name='對全部' value='0' >全部敵人</span>
-                </td>
-            </tr>
-            <tr>
-                <th colspan="2" rowspan="2">能力</th>
-                <td colspan="4" rowspan="2" class="select_ability">
-                  <span class='button'name='降攻'value='0'><i id='atkdown'class="ability_icon"></i><span> 使攻擊力下降</span></span>
-                  <span class='button'name='增攻'value='0'><i id='atkup'class="ability_icon"></i><span> 攻擊力上升</span></span>
-                  <span class='button'name='免疫降攻'value='0'><i id='noatkdown'class="ability_icon"></i><span> 攻擊力下降無效</span></span>
-                  <span class='button'name='善於攻擊'value='0'><i id='goodat'class="ability_icon"></i><span> 善於攻擊</span></span>
-                  <span class='button'name='很耐打'value='0'><i id='morehp'class="ability_icon"></i><span> 很耐打</span></span>
-                  <span class='button'name='超大傷害'value='0'><i id='bighurt'class="ability_icon"></i><span> 超大傷害</span></span>
-                  <span class='button'name='爆擊'value='0'><i id='criticalhit'class="ability_icon"></i><span> 會心一擊</span></span>
-                  <span class='button'name='擊退'value='0'><i id='goaway'class="ability_icon"></i><span> 打飛敵人</span></span>
-                  <span class='button'name='免疫擊退'value='0'><i id='nogoaway'class="ability_icon"></i><span> 打飛無效</span></span>
-                  <span class='button'name='連續攻擊'value='0'><i id='serialatk'class="ability_icon"></i><span> 連續攻擊</span></span>
-                  <span class='button'name='不死剋星'value='0'><i id='killdeath'class="ability_icon"></i><span> 不死剋星</span></span>
-                  <span class='button'name='緩速'value='0'><i id='slow'class="ability_icon"></i><span> 使動作變慢</span></span>
-                  <span class='button'name='免疫緩速'value='0'><i id='noslow'class="ability_icon"></i><span> 使動作變慢無效</span></span>
-                  <span class='button'name='暫停'value='0'><i id='stop'class="ability_icon"></i><span> 使動作停止</span></span>
-                  <span class='button'name='免疫暫停'value='0'><i id='nostop'class="ability_icon"></i><span> 使動作停止無效</span></span>
-                  <span class='button'name='遠方攻擊'value='0'><i id='faratk'class="ability_icon"></i><span> 遠方攻擊</span></span>
-                  <span class='button'name='復活'value='0'><i id='surive'class="ability_icon"></i><span> 死前存活</span></span>
-                  <span class='button'name='波動'value='0'><i id='wave'class="ability_icon"></i><span> 波動</span></span>
-                  <span class='button'name='免疫波動'value='0'><i id='nowave'class="ability_icon"></i><span> 波動傷害無效</span></span>
-                  <span class='button'name='抵銷波動'value='0'><i id='stopwave'class="ability_icon"></i><span> 波動滅止</span></span>
-                  <span class='button'name='2倍金錢'value='0'><i id='2money'class="ability_icon"></i><span> 得到很多金錢</span></span>
-                  <span class='button'name='攻城'value='0'><i id='castle'class="ability_icon"></i><span> 善於攻城</span></span>
-                  <span class='button'name='免疫傳送'value='0'><i id='notrans'class="ability_icon"></i><span> 傳送無效</span></span>
-                  <span class='button'name='破盾'value='0'><i id='breakshell'class="ability_icon"></i><span> 破壞護盾</span></span>
-                  <span class='button'name='一次攻擊'value='0'><i id='1atk'class="ability_icon"></i><span> 一次攻擊</span></span>
-                </td>
-            </tr>
-
-        </table>
-        <table id="lower_table">
-          <tbody>
-            <tr>
-              <th rowspan="2" id="selectAll">
-                全選
-              </th>
-              <th colspan="8">
-                更多篩選器
-              </th>
-            </tr>
-            <tr>
-              <th class="filter_option" id="hp" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">體力</th>
-              <th class="filter_option" id="lv1dps" lv-bind="true" value="3000" reverse="false" range="[100,10000]" step="100" active="false">DPS</th>
-              <th class="filter_option" id="speed" lv-bind="false" value="10" reverse="false" range="[1,100]" step="1" active="false">速度</th>
-              <th class="filter_option" id="cost" lv-bind="false" value="1000" reverse="false" range="[0,5000]" step="10" active="false">花費</th>
-              <th class="filter_option" id="freq" lv-bind="false" value="5" reverse="false" range="[0,20]" step="0.5" active="false">攻頻</th>
-              <th class="filter_option" id="atk" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">攻撃力</th>
-              <th class="filter_option" id="range" lv-bind="false" value="300" reverse="false" range="[10,1000]" step="10" active="false">射程</th>
-              <th class="filter_option" id="cd" lv-bind="false" value="5" reverse="false" range="[2,300]" step="1" active="false">再生産</th>
-            </tr>
-            <tr id="slider_holder">
-              <td class="active"></td>
-              <td colspan="6">
-                <div class="slider"></div>
+              <th colspan="2">稀有度</th>
+              <td colspan="4" class="select_rarity">
+                <span class='button' name='B' value='0' >基本</span>
+                <span class='button' name='EX' value='0' >EX</span>
+                <span class='button' name='R' value='0' >稀有</span>
+                <span class='button' name='SR' value='0' >激稀有</span>
+                <span class='button' name='SR_alt' value='0' >激稀有狂亂</span>
+                <span class='button' name='SSR' value='0' >超激稀有</span>
               </td>
-              <td class="value_display"></td>
-              <td class="reverse"></td>
             </tr>
-          </tbody>
-        </table>
-        <table id="gacha_table">
-          <tr>
-            <th id="more_gacha_search" colspan="2">
-              <div style="display:flex;align-items:center;justify-content:center">
-                依轉蛋分類搜尋(獨立於篩選器)
-                <i class="material-icons" style="transform:rotate(90deg)">&#xe315;</i>
-              </div>
-            </th>
-          </tr>
-          <tr class="gacha_search">
-            <th>常駐轉蛋</th>
-            <td>
-              <span id="R141" class="button" value="0">傳說的不明貓一族</span>
-              <span id="R142" class="button" value="0">超激烈爆彈</span>
-              <span id="R151" class="button" value="0">超破壞大帝 龍皇因佩拉斯</span>
-              <span id="R154" class="button" value="0">超古代勇者 超級靈魂勇者</span>
-              <span id="R157" class="button" value="0">逆襲的戰士 黑暗英雄</span>
-              <span id="R177" class="button" value="0">戰國武神 巴薩拉斯</span>
-              <span id="R188" class="button" value="0">電腦學園銀河美少女團</span>
-              <span id="R239" class="button" value="0">革命軍隊鋼鐵戰團</span>
-            </td>
-          </tr>
-          <tr class="gacha_search">
-            <th>限定轉蛋</th>
-            <td>
-              <span id="R096" class="button" value="0">萬聖節轉蛋</span>
-              <span id="R127" class="button" value="0">聖誕美少女</span>
-              <span id="R166" class="button" value="0">紅色破壞者</span>
-              <span id="R167" class="button" value="0">飄浮破壞者</span>
-              <span id="R168" class="button" value="0">超級貓咪祭</span>
-              <span id="R172" class="button" value="0">復活節嘉年華轉蛋</span>
-              <span id="R197" class="button" value="0">夏日美少女團</span>
-              <span id="R202" class="button" value="0">特級貓咪祭</span>
-              <span id="R205" class="button" value="0">鋼鐵破壞者</span>
-            </td>
-          </tr>
-          <tr class="gacha_search">
-            <th>其他</th>
-            <td>
-              <span id="R204" class="button" value="0">絕命美少女怪物萌娘隊</span>
-              <span id="R208" class="button" value="0">古靈精怪元素小精靈</span>
-            </td>
-          </tr>
-          <tr class="gacha_search">
-            <th>活動轉蛋</th>
-            <td>
-              <span id="R045" class="button" value="0">越南大戰 合作活動</span>
-              <span id="R185" class="button" value="0">梅露可物語 合作活動</span>
-              <span id="R186" class="button" value="0">蛋黃哥 合作活動</span>
+            <tr>
+              <th colspan="2">屬性</th>
+              <td colspan="4" class="select_color">
+                <span class='button' name='對紅色' value='0' >紅色敵人</span>
+                <span class='button' name='對漂浮' value='0' >漂浮敵人</span>
+                <span class='button' name='對黑色' value='0' >黑色敵人</span>
+                <span class='button' name='對鋼鐵' value='0' >鋼鐵敵人</span>
+                <span class='button' name='對天使' value='0' >天使</span>
+                <span class='button' name='對外星' value='0' >異星戰士</span>
+                <span class='button' name='對不死' value='0' >不死生物</span>
+                <span class='button' name='對白色' value='0' >白色敵人</span>
+                <span class='button' name='對全部' value='0' >全部敵人</span>
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2" rowspan="2">能力</th>
+              <td colspan="4" rowspan="2" class="select_ability">
+                <span class='button'name='降攻'value='0'><i id='atkdown'class="ability_icon"></i><span> 使攻擊力下降</span></span>
+                <span class='button'name='增攻'value='0'><i id='atkup'class="ability_icon"></i><span> 攻擊力上升</span></span>
+                <span class='button'name='免疫降攻'value='0'><i id='noatkdown'class="ability_icon"></i><span> 攻擊力下降無效</span></span>
+                <span class='button'name='善於攻擊'value='0'><i id='goodat'class="ability_icon"></i><span> 善於攻擊</span></span>
+                <span class='button'name='很耐打'value='0'><i id='morehp'class="ability_icon"></i><span> 很耐打</span></span>
+                <span class='button'name='超大傷害'value='0'><i id='bighurt'class="ability_icon"></i><span> 超大傷害</span></span>
+                <span class='button'name='爆擊'value='0'><i id='criticalhit'class="ability_icon"></i><span> 會心一擊</span></span>
+                <span class='button'name='擊退'value='0'><i id='goaway'class="ability_icon"></i><span> 打飛敵人</span></span>
+                <span class='button'name='免疫擊退'value='0'><i id='nogoaway'class="ability_icon"></i><span> 打飛無效</span></span>
+                <span class='button'name='連續攻擊'value='0'><i id='serialatk'class="ability_icon"></i><span> 連續攻擊</span></span>
+                <span class='button'name='不死剋星'value='0'><i id='killdeath'class="ability_icon"></i><span> 不死剋星</span></span>
+                <span class='button'name='緩速'value='0'><i id='slow'class="ability_icon"></i><span> 使動作變慢</span></span>
+                <span class='button'name='免疫緩速'value='0'><i id='noslow'class="ability_icon"></i><span> 使動作變慢無效</span></span>
+                <span class='button'name='暫停'value='0'><i id='stop'class="ability_icon"></i><span> 使動作停止</span></span>
+                <span class='button'name='免疫暫停'value='0'><i id='nostop'class="ability_icon"></i><span> 使動作停止無效</span></span>
+                <span class='button'name='遠方攻擊'value='0'><i id='faratk'class="ability_icon"></i><span> 遠方攻擊</span></span>
+                <span class='button'name='復活'value='0'><i id='surive'class="ability_icon"></i><span> 死前存活</span></span>
+                <span class='button'name='波動'value='0'><i id='wave'class="ability_icon"></i><span> 波動</span></span>
+                <span class='button'name='免疫波動'value='0'><i id='nowave'class="ability_icon"></i><span> 波動傷害無效</span></span>
+                <span class='button'name='抵銷波動'value='0'><i id='stopwave'class="ability_icon"></i><span> 波動滅止</span></span>
+                <span class='button'name='2倍金錢'value='0'><i id='2money'class="ability_icon"></i><span> 得到很多金錢</span></span>
+                <span class='button'name='攻城'value='0'><i id='castle'class="ability_icon"></i><span> 善於攻城</span></span>
+                <span class='button'name='免疫傳送'value='0'><i id='notrans'class="ability_icon"></i><span> 傳送無效</span></span>
+                <span class='button'name='破盾'value='0'><i id='breakshell'class="ability_icon"></i><span> 破壞護盾</span></span>
+                <span class='button'name='一次攻擊'value='0'><i id='1atk'class="ability_icon"></i><span> 一次攻擊</span></span>
+              </td>
+            </tr>
 
-            </td>
-          </tr>
-        </table>
+          </table>
+          <table id="gacha_table" style="display:none">
+            <tr class="gacha_search">
+              <th>常駐轉蛋</th>
+              <td>
+                <span class="button" id="R217" value='0'>傳說的不明貓一族</span>
+                <span class="button" id="R220" value='0'>超激烈爆彈</span>
+                <span class="button" id="R223" value='0'>戰國武神 巴薩拉斯</span>
+                <span class="button" id="R226" value='0'>電腦學園銀河美少女團</span>
+                <span class="button" id="R229" value='0'>超破壞大帝 龍皇因佩拉斯</span>
+                <span class="button" id="R232" value='0'>超古代勇者 超級靈魂勇者</span>
+                <span class="button" id="R235" value='0'>逆襲的戰士 黑暗英雄</span>
+                <span class="button" id="R238" value='0'>究極降臨 巨神宙斯</span>
+                <span class="button" id="R241" value='0'>革命軍隊鋼鐵戰團</span>
+              </td>
+            </tr>
+            <tr class="gacha_search">
+              <th>限定轉蛋</th>
+              <td>
+                <span id="R245" class="button" value="0">紅色破壞者</span>
+                <span id="R246" class="button" value="0">飄浮破壞者</span>
+                <span id="R247" class="button" value="0">鋼鐵破壞者</span>
+                <span id="R255" class="button" value="0">特級貓咪祭</span>
+                <span id="R257" class="button" value="0">萬聖節轉蛋</span>
+                <span id="R258" class="button" value="0">聖誕美少女</span>
+                <span id="R259" class="button" value="0">復活節嘉年華轉蛋</span>
+                <span id="R260" class="button" value="0">夏日美少女團</span>
+                <span id="R261" class="button" value="0">超級貓咪祭</span>
+              </td>
+            </tr>
+            <tr class="gacha_search">
+              <th>其他</th>
+              <td>
+                  <span id="R244" class="button" value="0">古靈精怪元素小精靈</span>
+                  <span id="R250" class="button" value="0">絕命美少女怪物萌娘隊</span>
+                  <span id="R251" class="button" value="0">超強精選</span>
+                  <span id="R252" class="button" value="0">無敵精選</span>
+                  <span id="R253" class="button" value="0">超級選拔祭</span>
+                  <span id="R264" class="button" value="0">白金轉蛋</span>
+              </td>
+            </tr>
+            <tr class="gacha_search">
+              <th>活動轉蛋</th>
+              <td>
+                <span id="R045" class="button" value="0">越南大戰 合作活動</span>
+                <span id="R077" class="button" value="0">消滅都市 ｘ 貓咪大戰爭</span>
+                <span id="R171" class="button" value="0">Crash Fever 合作活動</span>
+                <span id="R185" class="button" value="0">梅露可物語 合作活動</span>
+                <span id="R187" class="button" value="0">蛋黃哥 合作活動</span>
+              </td>
+            </tr>
+          </table>
+          <table id="lower_table" style="display:none">
+            <tbody>
+              <tr>
+                <th rowspan="2" id="selectAll">
+                  全選
+                </th>
+                <th colspan="8">
+                  更多篩選器
+                </th>
+              </tr>
+              <tr>
+                <th class="filter_option" id="hp" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">體力</th>
+                <th class="filter_option" id="lv1dps" lv-bind="true" value="3000" reverse="false" range="[100,10000]" step="100" active="false">DPS</th>
+                <th class="filter_option" id="speed" lv-bind="false" value="10" reverse="false" range="[1,100]" step="1" active="false">速度</th>
+                <th class="filter_option" id="cost" lv-bind="false" value="1000" reverse="false" range="[0,5000]" step="10" active="false">花費</th>
+                <th class="filter_option" id="freq" lv-bind="false" value="5" reverse="false" range="[0,20]" step="0.5" active="false">攻頻</th>
+                <th class="filter_option" id="atk" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">攻撃力</th>
+                <th class="filter_option" id="range" lv-bind="false" value="300" reverse="false" range="[10,1000]" step="10" active="false">射程</th>
+                <th class="filter_option" id="cd" lv-bind="false" value="5" reverse="false" range="[2,300]" step="1" active="false">再生産</th>
+              </tr>
+              <tr id="slider_holder">
+                <td class="active"></td>
+                <td colspan="6">
+                  <div class="slider"></div>
+                </td>
+                <td class="value_display"></td>
+                <td class="reverse"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <div style="display:flex;margin:1%">
-          <button id="search_ability" >GO</button>
+          <button id="search_ability" value='normal'>GO</button>
         </div>
+
         <div style="display:flex;width:100%">
           <div class="compareSorce">
             <table style="padding:3%;padding-bottom:0">

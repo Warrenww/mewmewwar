@@ -6,18 +6,111 @@
 }
 .page_1{overflow-y: hidden;}
 .navigation{
-  flex:1;
+  width: 350px;
   padding-top: 5%;
-  border-right: 10px solid rgb(241, 171, 36);
-  background-color: rgba(0,0,0,.3);
+  background-color: rgba(255,255,255,.3);
   overflow-y:scroll;
+  transition: .8s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  height: 100%;
 }
-.screen{
-  flex:3;
-  overflow-y:hidden;
-  height: 101%;
+#nav_tag{
+  font-size: 10px;
+  font-weight: bolder;
+  width: 15px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 350px;
+  background-color: rgba(255, 144, 29, 0.9);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .8s ease-in-out;
+  cursor: pointer;
 }
-.screen::-webkit-scrollbar,
+#nav_tag i {transition: .8s ease-in-out;}
+.monitor{
+  width: 100%;
+  background: linear-gradient(rgb(51, 1, 82),rgb(159, 108, 195))
+}
+#foot{
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 50px;
+  z-index: 3;
+}
+#elevent{height: 100%;  cursor: pointer;}
+#once{height: 85%;  cursor: pointer;}
+.button_holder{
+  position: absolute;
+  height: 130px;
+  bottom: 70px;
+  right: 70px;
+  display: flex;
+  z-index: 2;
+  align-items: baseline;
+}
+#once:hover,#elevent:hover{
+  animation-name: jump;
+  animation-duration: .4s;
+  animation-iteration-count: infinite;
+}
+@keyframes jump {
+  0%{transform: translateY(0);}
+  50%{transform: translateY(-12px);}
+  100%{transform: translateY(0);}
+}
+#info{
+  position: absolute;
+  top: 50px;
+  right: 30px;
+  cursor: pointer;
+  width: 45px;
+  height: 45px;
+  background-color: green;
+  background: linear-gradient(rgb(12, 91, 14),rgb(39, 193, 23));
+  border: 4px solid white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: yellow;
+  transition: .2s ease-in-out;
+  z-index: 2;
+}
+#info:hover{transform: scale(1.2,1.2);}
+.iframe_holder{
+  position: fixed;
+  top: 0;
+  background-color: rgba(0,0,0,.7);
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+.iframe_holder iframe{
+  width: 80%;
+  height: 80%;
+}
+#result{
+  display: flex;
+  width: 100%;
+  max-height: 80%;
+  overflow: scroll;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+#result::-webkit-scrollbar,
 .navigation::-webkit-scrollbar {
     width: 0px;
 }
@@ -52,50 +145,8 @@
   width: 100%;
   flex-direction: column;
 }
-iframe{
-  width: 75%;
-  height: 100%;
-  position: absolute;
-  transition:.4s ease-in-out;
-}
-.navigation_m{
-  width: 100%;
-  flex-direction: column;
-  font-size: 25px;
-  text-align: center;
-  overflow: hidden;
-  position: fixed;
-  font-weight: bold;
-  bottom: 0;
-  color: white;
-  display: none;
-  z-index: 2;
-}
-.choose{
-  background-color: rgba(0, 0, 0, .9);
-}
-.choose i{transition: .4s ease-in-out}
 
 
-#test,#test_2,#test_3{
-  margin: 50px;
-  font-size: 40px;
-}
-.but_group{
-  display: flex;
-  justify-content: center;
-  position: fixed;
-  top: 80%;
-  width: 100%
-}
-.result{
-  width:100%;
-  padding:5%;
-  display:flex;
-  flex-wrap: wrap;
-  margin:5% 0;
-  justify-content: center;
-}
 #scoreboard{
   position: fixed;
   top: 50px;
@@ -106,35 +157,31 @@ iframe{
   padding: 1%;
 }
 #scoreboard table{color: white}
-#scoreboard h2{text-align: center;margin: 0;cursor: pointer;}
-@media screen and (max-width: 1024px){#scoreboard{width: 36%}}
-@media screen and (max-width: 768px){
-  #test,#test_2,#test_3{
-    margin: 10px;
-    font-size: 20px;
-  }
+#scoreboard h2{text-align: center;margin: 0;}
+#scoreboard tbody tr{cursor: pointer;}
+#scoreboard tbody tr:hover{color:rgb(241, 165, 37)}
+#toggleScore{
+  position: fixed;
+  z-index: 4;
+  bottom: -5px;
+  left: 0;
+}
+
+@media screen and (max-width: 1024px){
+  .button_holder{height: 120px;}
+}
+@media screen and (max-width:768px) {
   #scoreboard{width: 40%}
-  .but_group{top: 85%}
+  .button_holder{height: 100px;right: 50px;}
+  #toggleScore{bottom: 0px}
+  .iframe_holder iframe{width: 100%}
+  .navigation .tag{font-size: 15px}
+  .navigation{width: 250px}
+  #nav_tag{left: 250px}
 }
 @media screen and (max-width:425px) {
-  .navigation{
-    position: fixed;
-    z-index: 2;
-    width: 100%;
-    border: 0;
-    bottom: 35px;
-    height: 200px;
-    padding-top: 0;
-    justify-content: center;
-    transition: .4s ease-in-out;
-    height: 0
-  }
-  .tag{background-color: rgba(255,255,255,.95);justify-content: center;}
-  .tag:hover,.tag[value~='1']{background-color: rgba(242, 198, 85, 0.95);justify-content: center;}
-  .title{background-color: rgba(242, 132, 85, 0.95);justify-content: center;}
   #scoreboard{width: 60%}
-  .result{padding: 20% 5%}
-  .screen{
-    margin-bottom: 25px
-  }
+  .button_holder{height: 100px;right: 30px;}
+  #toggleScore{bottom: 3px;left:30%}
+  #foot{left:0}
 }

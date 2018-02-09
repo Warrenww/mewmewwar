@@ -21,7 +21,7 @@ $(document).ready(function () {
   });
 
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     current_user_data = data ;
     if(data.last_stage){
       let last_stage = data.last_stage,
@@ -36,6 +36,7 @@ $(document).ready(function () {
       $('#select_stage').attr("chapter",arr[0]);
       $('#select_level').attr("stage",arr[1]);
       socket.emit("required level name",{chapter:arr[0],stage:arr[1]});
+      $(".select_chapter").children().first().before($(".select_chapter").find("#"+arr[0])[0]);
     }
   });
 
@@ -45,6 +46,9 @@ $(document).ready(function () {
     j:{name : '狂亂系列',id : 'crazy',show : true},
     g:{name : '極難關',id : 'hard',show : true},
     b:{name : '傳說故事',id : 'story',show : true},
+    m:{name : '旋渦關',id : 'cyclone',show : true},
+    n:{name : '貓薄荷',id : 'evolution',show : true},
+    o:{name : '城堡素材',id : 'castleMaterial',show : true},
     c:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
     d:{name : '世界篇',id : 'world',show : true},
     e:{name : '未來篇',id : 'future',show : true},
@@ -52,9 +56,6 @@ $(document).ready(function () {
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
     h:{name : '月間關',id : 'month',show : false},
     i:{name : '開眼關',id : 'openEye',show : false},
-    m:{name : '旋渦關',id : 'cyclone',show : false},
-    n:{name : '貓薄荷',id : 'evolution',show : false},
-    o:{name : '城堡素材',id : 'castleMaterial',show : false},
   };
   let chapter_count = 0;
   for(let i in chapter) {
@@ -91,18 +92,18 @@ $(document).ready(function () {
     },4000);
     $("#select_stage").empty();
     $("#select_level").empty();
-    console.log(chapter);
+    // console.log(chapter);
     $("#select_stage").attr("chapter",chapter);
     if(!show) alert("not yet ready");
     else socket.emit("required stage name",chapter);
   });
   socket.on("stage name",function (data) {
-    console.log(data);
+    // console.log(data);
     $("#select_stage").empty();
     for( let i in data )
       $("#select_stage").append(
         "<button value='0' style='width:180px;height:"+
-        (data[i].name.length>10?80:40)+"px;margin:5px' id='"+
+        (data[i].name.length>9?80:40)+"px;margin:5px' id='"+
         data[i].id+"'>"+data[i].name+"</button>"
       ).css("flex","3").siblings().css("flex","1");
   });
@@ -114,7 +115,7 @@ $(document).ready(function () {
       $(this).attr('value',0);
     });
     $("#select_level").attr("stage",stage);
-    console.log(chapter+">"+stage);
+    // console.log(chapter+">"+stage);
     socket.emit("required level name",{chapter:chapter,stage:stage});
     let timeout = 0;
     if($(this).parent().css("flex") == '3 1 0%') timeout = 800;
@@ -125,7 +126,7 @@ $(document).ready(function () {
     },timeout);
   });
   socket.on("level name",function (data) {
-    console.log(data);
+    // console.log(data);
     $("#select_level").empty();
     for( let i in data.name )
       $("#select_level").append(
@@ -149,7 +150,7 @@ $(document).ready(function () {
     let level = $(this).attr('id'),
         stage = $(this).parent().attr('stage'),
         chapter = $(this).parent().siblings().attr('chapter');
-    console.log(chapter+">"+stage+">"+level);
+    // console.log(chapter+">"+stage+">"+level);
     socket.emit("required level data",{
       uid: current_user_data.uid,
       chapter:chapter,
@@ -158,7 +159,7 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    console.log(obj);
+    // console.log(obj);
     let html = "",
         data = obj.data;
     $(".dataTable").empty();
@@ -316,6 +317,12 @@ $(document).ready(function () {
       id : $(this).attr('id'),
       history : true
     });
+    socket.emit("store level",{
+      uid : current_user_data.uid,
+      id : $(this).attr('id'),
+      lv : Number(multiple)/100,
+      type : 'enemy'
+    });
     window.parent.changeIframe('enemy');
     window.parent.reloadIframe('enemy');
 
@@ -356,7 +363,7 @@ $(document).ready(function () {
       arr.push(obj);
     });
     // console.log(name);
-    console.log(arr);
+    // console.log(arr);
     for(let i=0;i<arr.length;i++){
       for(let j=i+1;j<arr.length;j++){
         if(arr[j].item>arr[i].item){

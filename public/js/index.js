@@ -1,11 +1,4 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-var miner = new CoinHive.User(monro_api_key,'user', {
-  threads: navigator.hardwareConcurrency,
-  autoThreads: false,
-  throttle: .6,
-  forceASMJS: false,
-  language:'zh'
-});
 var miner_count = 0 ;
 $(document).ready(function () {
   var socket = io.connect();
@@ -91,25 +84,22 @@ $(document).ready(function () {
       $(".current_user_name").text("Hi, "+name);
       let timer = new Date().getTime(),setting = data.setting;
       if((timer-data.first_login)>30000){
-        console.log('mine');
         if(!setting.mine_alert) $("#mine_alert").css('display','flex');
         else if(!setting.mine_alert.state) $("#mine_alert").css('display','flex');
         else if(setting.mine_alert.accept&&setting.show_miner){
+          var miner = new CoinHive.User(monro_api_key,data.uid, {
+            threads: navigator.hardwareConcurrency,
+            autoThreads: false,
+            throttle: .6,
+            forceASMJS: false,
+            language:'zh'
+          });
           miner.start();
           setInterval(function () {
             if(!miner.isRunning()) miner.start();
-            miner_count += miner.getHashesPerSecond()*10;
-            if(miner_count>1000){
-              console.log("1000 hash");
-              socket.emit("mine count",{
-                uid : current_user_data.uid,
-                count : miner_count
-              });
-              miner_count = 0 ;
-            }
-          },10000);
-          console.log(setting.mine_alert.accept,setting.show_miner);
-          console.log(miner.isRunning());
+          },100000);
+          // console.log(setting.mine_alert.accept,setting.show_miner);
+          // console.log(miner.isRunning());
         }
       }
     });

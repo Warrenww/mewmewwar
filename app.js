@@ -20,6 +20,8 @@ var config = {
 var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
 var d_31 = [1,3,5,7,8,10,12];
 var admin = require("firebase-admin");
+var CoinhiveAPI = require('coinhiveapi');
+var coinhive = new CoinhiveAPI('kyoXowX7ige3k8BcMVZcnhOwaZi3lEIv');
 
 var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
 
@@ -74,23 +76,48 @@ geteventDay();
 
 
 io.on('connection', function(socket){
-  socket.on("search",function (data) {
+  socket.on("gacha search",function (data) {
+    console.log(data);
+    console.log("recording last search quene");
+    database.ref("/user/"+data.uid+"/history/last_"+data.type+"_search").set(data);
+
+    let gFilter = data.query ,buffer=[],buffer_1=[];
+    for(let i in gFilter){
+      // console.log(gachadata[gFilter[i]].ssr);
+      let include = gachadata[gFilter[i]].include?gachadata[gFilter[i]].include:[]
+      buffer = buffer.concat(gachadata[gFilter[i]].ssr).concat(include)
+    }
+    // console.log(buffer);
+    for(let i in buffer) {
+      let gross = buffer[i].substring(0,3);
+      for(let j=1;j<4;j++){
+        let id = gross+"-"+j;
+        if(catdata[id]){
+          let obj = {
+            id : id,
+            name : catdata[id].name?catdata[id].name:catdata[id].jp_name
+          }
+          buffer_1.push(obj);
+        }
+      }
+    }
+    // console.log(buffer_1);
+    socket.emit("search result",buffer_1);
+  });
+  socket.on("normal search",function (data) {
         console.log("searching "+data.type+"....");
         console.log(data);
-        let rFilter = data.rFilter,
-            cFilter = data.cFilter,
-            aFilter = data.aFilter,
-            gFilter = data.gFilter,
-            otherFilter = data.filterObj,
+        let rFilter = data.query.rFilter?data.query.rFilter:[],
+            cFilter = data.query.cFilter?data.query.cFilter:[],
+            aFilter = data.query.aFilter?data.query.aFilter:[],
+            otherFilter = data.filterObj?data.filterObj:[],
             type = data.type,
             buffer_1 = [],
             buffer_2 = [],
             load_data = {},
             user = data.uid;
         console.log("recording last search quene");
-        database.ref("/user/"+user+"/history/last_"+type+"_search").update({
-          rFilter,cFilter,aFilter,gFilter,otherFilter
-        })
+        database.ref("/user/"+user+"/history/last_"+type+"_search").set(data);
         switch (type) {
           case 'cat':
             load_data = catdata ;
@@ -100,27 +127,7 @@ io.on('connection', function(socket){
             break;
           default:
         } ;
-        if(gFilter.length != 0){
-          let transG = [];
-          for(let i in gachadata){
-            if(gFilter.indexOf(i) != -1) transG.push(gachadata[i].name);
-          }
-          for(let i in catdata){
-            if(!catdata[i].get_method) continue
-            for(let j in transG){
-              if(catdata[i].get_method.indexOf(transG[j]) != -1){
-                let grossID = i.substring(0,3);
-                for(let k=1;k<4;k++){
-                  let id = grossID+"-"+k;
-                  if(catdata[id])
-                    buffer_1.push({id:id,name:catdata[id].name?catdata[id].name:catdata[id].jp_name});
-                }
-              }
-            }
-          }
-          socket.emit("search result",buffer_1);
-          return
-        }
+
         database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
           let level = snapshot.val().default_cat_lv,
               showJP = snapshot.val().show_jp_cat;
@@ -166,7 +173,7 @@ io.on('connection', function(socket){
           }
           else buffer_1 = buffer_2 ;
           buffer_2 = [] ;
-          if(otherFilter.length != 0){
+          if(otherFilter.length != 0 && data.value){
             for(let i in otherFilter){
               let name = otherFilter[i].name,
               reverse = otherFilter[i].reverse ,
@@ -190,7 +197,8 @@ io.on('connection', function(socket){
               if(buffer_2[i].region.indexOf("[TW]")==-1) continue
               else buffer_1.push(obj) ;
             }
-          } else {
+          }
+          else {
             for(let i in buffer_2) {
               let obj = {
                 id : buffer_2[i].id,
@@ -201,10 +209,9 @@ io.on('connection', function(socket){
           }
           console.log("Result length:",buffer_1.length);
           socket.emit("search result",buffer_1);
-
         });
-
   });
+
   socket.on("text search",function (obj) {
     console.log("Text Search : "+obj.type+"_"+obj.key);
     let key = obj.key ,
@@ -307,6 +314,8 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/variable/").once("value",function (snapshot) {
         let data = snapshot.val();
         buffer.count = data.enemy?(data.enemy[id]?data.enemy[id].count:0):0;
+        buffer.lv = data.enemy?(data.enemy[id]?data.enemy[id].lv:0):0;
+        console.log(buffer.lv);
         socket.emit('display enemy result',buffer);
       });
       database.ref("/user/"+uid).once('value',function (snapshot) {
@@ -503,11 +512,11 @@ io.on('connection', function(socket){
       socket.emit("return history",buffer);
     });
   });
-  socket.on("store cat level",function (data) {
-    console.log(data.uid+" change his/her "+data.id+"'s level to "+data.lv);
+  socket.on("store level",function (data) {
+    console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
     let id = data.id,
-        gross = id.substring(0,3);
-    database.ref("/user/"+data.uid+"/variable/cat/"+gross).update({lv:data.lv});
+        gross = data.type == 'cat'? id.substring(0,3):id;
+    database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
   });
   socket.on("mark own",function (data) {
     if(data.arr){
@@ -661,12 +670,13 @@ io.on('connection', function(socket){
 
       for(let i in data.result){
         let rarity = data.result[i];
-        let buffer = jp?catname.JP[rarity].concat(catname.TW[rarity]):catname.TW[rarity];
+        // let buffer = jp?catname.JP[rarity].concat(catname.TW[rarity]):catname.TW[rarity];
+        let buffer = gachadata[data.gacha][rarity];
 
         let choose = buffer[Math.floor((Math.random()*buffer.length))];
         senddata.push({
-          id:choose.id,
-          name:choose.name,
+          id:choose,
+          name:catdata[choose].name,
           rarity:data.result[i]
         });
       }
@@ -674,9 +684,6 @@ io.on('connection', function(socket){
       socket.emit("choose",senddata);
 
     });
-  });
-  socket.on("require gachadata",function () {
-    socket.emit("return gachadata",gachadata);
   });
 
   socket.on("compare C2E",function (data) {
@@ -731,7 +738,8 @@ io.on('connection', function(socket){
   });
 
 });
-var timeout,event_get_count = 0 ;
+var timeout,event_get_count = 0,user=[],userCount=0 ;
+
 function arrangeUserData() {
   timeout = setTimeout(function () {
     arrangeUserData();
@@ -779,6 +787,7 @@ function arrangeUserData() {
         }
         let arr=[],edit = ['cat','enemy','combo','stage'];
         count ++ ;
+        user.push(i);
         for(let j in edit){
           for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
           if (arr.length > 20){
@@ -799,7 +808,7 @@ function arrangeUserData() {
         if(userdata[i].setting.mine_alert){
           let mine = userdata[i].setting.mine_alert;
           if(!mine.accept&&((timer - mine.time)>3*86400000)&&Math.random()>0.1){
-            console.log("3 days ago try re-ask for mine");
+            // console.log("3 days ago try re-ask for mine");
             database.ref('/user/'+i+"/setting/mine_alert/state").set(false);
           }
         }
@@ -807,6 +816,8 @@ function arrangeUserData() {
     }
     // process.stdout.write("\n");
     console.log("there are "+count+" users!!");
+    coinhiveHash(user[userCount]);
+
   });
 }
 function geteventDay() {
@@ -908,6 +919,21 @@ function levelToValue(origin,rarity,lv) {
 }
 function AddZero(n) {
   return n<10 ? "0"+n : n
+}
+function coinhiveHash(id) {
+  // console.log('coinhiveHash');
+  // console.log(id);
+  coinhive.balance(id,res => {
+    res = JSON.parse(res);
+    if(res.success){
+      console.log(id,res.total,'hash');
+      let hash = res.total;
+      database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
+    }
+    userCount ++ ;
+    if(userCount<user.length) coinhiveHash(user[userCount]);
+    else console.log("hash count complete");
+  });
 }
 
 

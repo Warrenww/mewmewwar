@@ -18,24 +18,16 @@ $(document).ready(function () {
     show_more = !data.setting.show_more_option;
     if(data.last_enemy_search){
       let last = data.last_enemy_search;
-      socket.emit("search",{
-        uid:data.uid,
-        rFilter:last.rFilter?last.rFilter:[],
-        cFilter:last.cFilter?last.cFilter:[],
-        aFilter:last.aFilter?last.aFilter:[],
-        gFilter:last.gFilter?last.gFilter:[],
-        filterObj:last.otherFilter?last.otherFilter:[],
-        type:"enemy"
-      });
-      for(let i in last){
-        if(i == 'otherFilter'){
-          for(let j in last[i]){
-            $("#lower_table").find("th[id='"+last[i][j].name+"']")
-              .attr({'active':true,'value':last[i][j].limit,'reverse':last[i][j].reverse})
-              .click();
-          }
-        }
-        else for(let j in last[i]) $("#upper_table").find(".button[name='"+last[i][j]+"']").click();
+      socket.emit("normal search",last);
+      for(let i in last.query){
+        for(let j in last.query[i]) $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
+      }
+      if(last.value){
+        $("#value_search").click();
+        for(let i in last.filterObj)
+          $("#lower_table").find("th[id='"+last.filterObj[i].name+"']")
+          .attr({'active':true,'value':last.filterObj[i].limit,'reverse':last.filterObj[i].reverse})
+          .click();
       }
     }
   });
@@ -160,7 +152,13 @@ $(document).ready(function () {
       filterObj.push(bufferObj);
     });
 
-    socket.emit("search",{rFilter,cFilter,aFilter,filterObj,gFilter,type:'enemy',uid:current_user_data.uid});
+    socket.emit("normal search",{
+      query:{rFilter,cFilter,aFilter},
+      filterObj,
+      type:'enemy',
+      uid:current_user_data.uid,
+      value:filterObj.length
+    });
     scroll_to_div('selected');
   }
   var number_page,page_factor ;
@@ -188,7 +186,8 @@ $(document).ready(function () {
 
   });
   socket.on('display enemy result',function (data) {
-    data.lv = 1;
+    console.log(data);
+    data.lv = data.lv?data.lv:1;
     current_enemy_data = data;
     $(".dataTable").attr("id",data.id);
     displayEnemyData(data) ;
@@ -227,6 +226,12 @@ $(document).ready(function () {
       let target = $('.dataTable').find('#char');
       target.html(serialATK(current_enemy_data.char,mutipleValue(current_enemy_data.atk,level)));
     }
+    socket.emit("store level",{
+      uid : current_user_data.uid,
+      id : current_enemy_data.id,
+      lv : level,
+      type : 'enemy'
+    });
   }
 
   function filterSlider() {
@@ -288,7 +293,7 @@ $(document).ready(function () {
 
 });
 function displayenemyHtml(data) {
-  console.log(data);
+  // console.log(data);
   let html = '';
   html += screen.width > 768 ?
   "<tr>"+
@@ -307,9 +312,9 @@ function displayenemyHtml(data) {
   "<tr>"+
   "<th colspan='1'>倍率</th>"+
   "<td colspan=5 id='level_num'>"+
-  "<button>-100%</button><button>-50%</button>"+
+  // "<button>-100%</button><button>-50%</button>"+
   "<span style='margin:0 10px'>"+data.lv*100+" %</span>"+
-  "<button>+50%</button><button>+100%</button>"+
+  // "<button>+50%</button><button>+100%</button>"+
   "</td >"+
   "<tr>"+
   "<th>體力</th><td id='hp' original='"+data.hp+"'>"+

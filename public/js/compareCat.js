@@ -13,7 +13,8 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
+    current_user_data = data;
     if(data.compare_c2c) {
       let buffer = [] ;
       for(let i in data.compare_c2c){
@@ -134,6 +135,12 @@ $(document).ready(function () {
         if(original && original.indexOf("連續攻擊") != -1) target.html(serialATK(original,levelToValue(atk,rarity,level)))
         highlightTheBest();
         $('.comparedatahead').find('th').css('border-left','0px solid');
+        socket.emit("store level",{
+          uid : current_user_data.uid,
+          id : id,
+          lv : level,
+          type : 'cat'
+        });
       }
       else $(this).parent().html(input_org);
   }
@@ -204,7 +211,7 @@ $(document).ready(function () {
       arr.push(obj);
     });
     // console.log(name);
-    console.log(arr);
+    // console.log(arr);
     for(let i=0;i<arr.length;i++){
       for(let j=i+1;j<arr.length;j++){
         if(arr[j].item>arr[i].item){
@@ -252,7 +259,7 @@ $(document).ready(function () {
       let height = $(this).children("table")[0].offsetHeight
       if(height > max_height) max_height = height ;
     });
-    console.log(max_height);
+    // console.log(max_height);
     target.css("height",max_height);
     target = target[0];
     snapshot(target);

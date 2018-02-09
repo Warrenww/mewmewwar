@@ -5,6 +5,7 @@ $(document).ready(function () {
     setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
   };
   var gacha_url = 'https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/'
+  var r = sr = ssr = 0 ;
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -15,14 +16,10 @@ $(document).ready(function () {
   });
 
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     current_user_data = data ;
   });
-  $(".tag").each(function () {
-    if($(this).attr("id")!='monitor'){
-      $(this).append("<span id='search'>篩選</span>");
-    }
-  });
+
   $(document).on("click",'.tag span',function (e) {
     e.stopPropagation();
     let id = $(this).parent().attr('id');
@@ -37,129 +34,140 @@ $(document).ready(function () {
     });
     window.parent.reloadIframe('cat');
   });
-
+  var nav_expand = 0 ;
+  $(document).on('click','#nav_tag',showhideNav);
 
   var expand = 0 ;
   $(document).on("click",'.tag',function () {
     let name = $(this).attr("id"),
-        target = name,
-        offset = $(".screen")[0].offsetLeft;
-    if(name == 'monitor') $(this).attr("value",1).siblings().find(".tag").attr("value",0);
-    else {
-      $("#monitor").attr("value",0);
-      $(this).attr('value',1).siblings().attr("value",0)
+        target = name;
+    $(".monitor").attr('id',name);
+    $(this).attr("value",1).siblings(".tag").attr("value",0)
       .parent().siblings().find(".tag").attr("value",0);
-    }
-    let arr = [];
-    $(".iframe_box").children().each(function () {
-      arr.push($(this).attr("id"));
-    });
-    if(arr.indexOf(target)==-1&&target){
-      $(".iframe_box").append(
-        "<iframe id='"+target+"' src='"+gacha_url+target+".html'></iframe>"
-      );
-      $(".iframe_box").find("#"+target+"").load(function () {
-        $(this).css("bottom","0%").siblings().css("bottom","-100%");
-      });
-    }
-    else
-    $(".iframe_box").find("#"+target).css("bottom","0%").siblings().css("bottom","-100%");
-
-    $(".choose").find("span").text($(this).text());
-    if(screen.width<426){
-      $(this).parents(".navigation").css("height",0);
-      expand = 0 ;
-      $('.choose').find("i").css("transform",function () {
-        if(expand) return 'rotate(90deg)'
-        else return 'rotate(-90deg)'
-      });
-    }
+    $("#result").empty();
+    $("#scoreboard").children("h2").text($(this).text())
+      .parent().find("td").empty();
+    ssr = sr = r = 0 ;
   });
   $(document).on("click",".title",function () {
     $(this).next().toggle(400);
-  });
-  $(document).on('click','.choose',function () {
-    expand = expand?0:1;
-    $(".navigation").css("height",function () {
-      if(expand) return 240
-      else return 0
-    });
-    $(this).find("i").css("transform",function () {
-      if(expand) return 'rotate(90deg)'
-      else return 'rotate(-90deg)'
-    });
+    $(this).siblings('.title').next().hide(400);
   });
 
-
-  var r = sr = ssr = 0 ;
-  $(document).on('click','#test',function () {
-    www(1)
+  $(document).on('click','#info',function () {
+    let id = $(".monitor").attr("id");
+    if(!id) {alert("尚未選擇轉蛋");showhideNav(null,0);}
+    else $(".iframe_holder").fadeIn()
+            .append("<iframe src='"+gacha_url+id+".html'>")
+            .css("display",'flex');
   });
-  $(document).on('click','#test_2',function () {
-    www(11)
-  });
-  $(document).on('click','#test_3',function () {
-    $(".result").empty();
-    $(".number,.probability,#www").text("");
-    r = sr = ssr = 0 ;
+  $(".iframe_holder").click(function () {
+    $(this).empty().fadeOut();
   });
 
-  $(document).on('click','#scoreboard h2',function () {
-    $(this).children("i").toggle().parent().siblings('table').toggle();
+  $(document).on('click','#once',function () {gacha(1);});
+  $(document).on('click','#elevent',function () {gacha(11);});
+
+  $(document).on('click','#toggleScore',function () {
+    $("#scoreboard").toggle(400);
   });
 
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user connect",user);
-    } else {
-      console.log('did not sign in');
-    }
-  });
-  socket.on("current_user_data",function (data) {
-    console.log(data);
-    current_user_data = data ;
-  });
+  function gacha(n) {
+    let data=[],
+        id = $(".monitor").attr('id'),
+        c = [0.05,0.3];
 
-  function www(n) {
-    let data=[];
+    if(!id){alert("尚未選擇轉蛋");showhideNav(null,0);return}
+    showhideNav(null,1);
+    if(id == 'R255' || id == 'R261') c = [0.09,0.39] ;
     for(let i=0;i<n;i++){
       let result = Math.random();
-      if(result<0.05) {data.push("SSR");ssr++;}
-      if(0.05<result&&result<0.3) {data.push("SR");sr++;}
-      if(0.3<result) {data.push("R");r++;}
+      // console.log(result.toFixed(3));
+      if(result<c[0]||id=='R264') {data.push("ssr");ssr++;}
+      else if(c[0]<result&&result<c[1]) {data.push("sr");sr++;}
+      else if(c[1]<result) {data.push("r");r++;}
     }
     socket.emit("gacha",{
       uid:current_user_data.uid,
+      gacha:id,
       result:data
     });
   }
+  function showhideNav(e,n) {
+    if(n == undefined)
+      nav_expand = nav_expand?0:1;
+    else nav_expand = n ;
+    let dist = screen.width>768?350:250;
+    $(".navigation").css("left",function () {
+      if(nav_expand) return -dist
+      else return 0
+    });
+    $("#nav_tag").css('left',function () {
+      if(nav_expand) return 0
+      else return dist
+    }).children("i").css('transform',function(){
+      if(nav_expand) return 'rotate(0deg)'
+      else return 'rotate(-180deg)'
+    });
+  }
+
   socket.on("choose",function (data) {
     // console.log(data);
     for(let i in data){
-      $(".result").append('<span class="card" value="'+data[i].id+'" '+
-      'style="background-image:url('+
-      image_url_cat+data[i].id+'.png);'+
-      (screen.width>768?"width:180;height:120;":"width:90;height:60;")+"margin:5px;"+
-      "border-color:"+(data[i].rarity == 'SSR' ?"rgb(241, 71, 71)":
-      data[i].rarity == 'SR' ?"rgb(231, 184, 63)":"rgb(139, 214, 31)" )
-      +'">'+data[i].name+'</span>');
+      let color = "rgb(139, 214, 31)";
+      switch (data[i].rarity) {
+        case 'ssr':
+          color = "rgb(241, 71, 71)";
+          break;
+        case 'sr':
+          color = "rgb(231, 184, 63)";
+          break;
+        default:
+      }
+      $("#result").append('<span class="card" value="'+
+      data[i].id+'" rarity="'+data[i].rarity+'" '+
+       'style="background-image:url('+
+       image_url_cat+data[i].id+'.png);'+
+       "margin:5px;transform:scale(0);"+
+       "border-color:"+color+
+       '">'+data[i].name+'</span>');
     }
-    $('body').animate({
-      scrollTop : $('.result')[0].offsetHeight
+    setTimeout(function () {
+      $("#result").find("span").css("transform","scale(1)").fadeIn();
+      $("#scoreboard tbody tr").attr("val",0);
+    },100);
+    $('#result').animate({
+      scrollTop : $('#result')[0].scrollHeight
     },1000,"easeInOutCubic");
     let total = r+sr+ssr,africa = ssr/total;
-    $("#scoreboard").find("#R").children(".number")
+    $("#scoreboard").find("#r").children(".number")
       .text(r).next().text((r/total*100).toFixed(0)+"%");
-    $("#scoreboard").find("#SR").children(".number")
+    $("#scoreboard").find("#sr").children(".number")
       .text(sr).next().text((sr/total*100).toFixed(0)+"%");
-    $("#scoreboard").find("#SSR").children(".number")
+    $("#scoreboard").find("#ssr").children(".number")
       .text(ssr).next().text((ssr/total*100).toFixed(0)+"%");
+    $("#scoreboard").find("#total").text(total).next().text("100%");
 
     if(africa == 0) $("#www").text("非洲大酋長");
     else if(africa<0.04) $("#www").text("非洲土著");
     else if(africa>0.09) $("#www").text("歐皇");
     else if(africa>0.06) $("#www").text("歐洲人");
     else $("#www").text("普通人");
+  });
+  $(document).on("click","#scoreboard tbody tr",function () {
+    let id = $(this).attr("id"),val = Number($(this).attr("val"));
+    if(!id) return
+    $("#result").children().each(function () {
+      $(this).fadeIn(100);
+    });
+    val = val?0:1;
+    // console.log(id,val);
+    if(val){
+      $("#result").children("span[rarity!="+id+"]").each(function () {
+        $(this).fadeOut(100);
+      });
+    }
+    $(this).attr("val",val).siblings().attr("val",!val);
   });
   $(document).on('click','.card',function () {
     let id = $(this).attr('value');
@@ -174,6 +182,5 @@ $(document).ready(function () {
 
 
   });
-
 
 });

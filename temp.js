@@ -37,6 +37,25 @@ database.ref("/newCatData").once("value",function (snapshot) {
   // }
   console.log("finish");
 });
+test()
+function test() {
+  try{
+    if(catdata) console.log('ok');
+    else throw 'novalue'
+  }
+  catch(err){
+    if(err == 'novalue') {
+      console.log('novalue');
+      setTimeout(test,100)
+    }
+  }
+}
+
+// database.ref("/gachadata").once("value",function (snapshot) {
+//   for(let i in snapshot.val()){
+//     console.log(i,snapshot.val()[i].name);
+//   }
+// });
 
 // database.ref("/enemydata").once("value",function (snapshot) {
 //   let enemydata = snapshot.val();
@@ -110,32 +129,32 @@ var t = new Date(),
     url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
     // console.log(url+y+m+d+".html");
 
-// request({
-//   url: "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/rank/tw/index.html",
-//   method: "GET"
-// },function (e,r,b) {
-//   if(!e){
-//     $ = cheerio.load(b);
-//     // console.log($("tbody").html());
-//     $("tr").each(function () {
-//       let rank = $(this).children("td").eq(0).text();
-//       let name = $(this).children("td").eq(1).text().split("\n");
-//       let www = '';
-//       for(let i in name){
-//         www += name[i].trim();
-//       }
-//       console.log(rank,www);
-//       database.ref("/rankdata/"+rank).set(www);
-//       // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
-//     });
-//   }
-// });
+request({
+  url: "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/rank/tw/index.html",
+  method: "GET"
+},function (e,r,b) {
+  if(!e){
+    $ = cheerio.load(b);
+    // console.log($("tbody").html());
+    $("tr").each(function () {
+      let rank = $(this).children("td").eq(0).text();
+      let name = $(this).children("td").eq(1).text().split("\n");
+      let www = '';
+      for(let i in name){
+        www += name[i].trim();
+      }
+      console.log(rank,www);
+      database.ref("/rankdata/"+rank).set(www);
+      // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
+    });
+  }
+});
 
 function AddZero(n) {
   return n<10 ? "0"+n : n
 }
 var target = '41xMMgmvgqSFlGbH7oKgF97490w2';
-listAllUsers();
+// listAllUsers();
 function listAllUsers(nextPageToken) {
     let timer = new Date().getTime();
   // List batch of users, 1000 at a time.
@@ -167,35 +186,3 @@ function listAllUsers(nextPageToken) {
 // Start listing users from the beginning, 1000 at a time.
 // listAllUsers();
 //
-// encode('cat&273-1&50')
-// function encode(str) {
-//   let code = [];
-//   for (let i in str){
-//     process.stdout.write(str[i]);
-//     code.push(str.charCodeAt(i))
-//   }
-//   process.stdout.write('\n');
-//   console.log(code);
-//   let output=[]
-//   for(let i in code){
-//     code[i] += 8;
-//     output.push(String.fromCharCode(code[i]));
-//   }
-//   console.log(output.join(''));
-// }
-// decode('mk~0<A=7;0?:')
-// function decode(str) {
-//   let code = [];
-//   for (let i in str){
-//     process.stdout.write(str[i]);
-//     code.push(str.charCodeAt(i))
-//   }
-//   process.stdout.write('\n');
-//   console.log(code);
-//   let output=[]
-//   for(let i in code){
-//     code[i] -= 8;
-//     output.push(String.fromCharCode(code[i]));
-//   }
-//   console.log(output.join(''));
-// }

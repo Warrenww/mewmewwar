@@ -45,7 +45,8 @@ iframe{
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  width: 100%;
+  /* width: 100%; */
+  flex: 3;
   padding: 10px
 }
 .search input{
@@ -100,7 +101,7 @@ button:active{
   overflow-x: hidden;
   background-image: url("footage/search_BG.png");
 }
-.display,.select,.content{
+.display,.content{
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -116,7 +117,7 @@ td, th {
   text-align: center;
   transition: .3s ease-in-out
 }
-.select th{
+.content th{
   cursor: pointer;
   width: 10%;
 }
@@ -130,10 +131,10 @@ td, th {
   width:100%;
   justify-content: center;
 }
-.dataTable th,.select th,.compareTable th{
+.dataTable th,.content th,.compareTable th{
   background-color: rgba(242, 213, 167, 0.93);
 }
-.dataTable td,.select td,.compareTable td{
+.dataTable td,.content td,.compareTable td{
     background-color: rgba(255, 255, 255, 0.9);
 }
 .card{

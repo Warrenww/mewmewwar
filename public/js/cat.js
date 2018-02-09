@@ -40,28 +40,23 @@ $(document).ready(function () {
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;
-      socket.emit("search",{
-        uid:data.uid,
-        rFilter:last.rFilter?last.rFilter:[],
-        cFilter:last.cFilter?last.cFilter:[],
-        aFilter:last.aFilter?last.aFilter:[],
-        gFilter:last.gFilter?last.gFilter:[],
-        filterObj:last.otherFilter?last.otherFilter:[],
-        type:"cat"
-      });
-      for(let i in last){
-        if(i == 'otherFilter'){
-          for(let j in last[i]){
-            $("#lower_table").find("th[id='"+last[i][j].name+"']")
-              .attr({'active':true,'value':last[i][j].limit,'reverse':last[i][j].reverse})
-              .click();
-          }
-        }
-        else if(i=='gFilter'){
-          for(let j in last[i]) $("#gacha_table").find(".button[id='"+last[i][j]+"']").click();
-          $("#more_gacha_search").click();
-        }
-        else for(let j in last[i]) $("#upper_table").find(".button[name='"+last[i][j]+"']").click();
+
+      socket.emit(last.query_type+" search",last);
+      if(last.query_type=='gacha'){
+        $("#gacha_search").click();
+        for(let i in last.query)
+          $("#gacha_table").find(".button[id='"+last.query[i]+"']").click();
+      } else {
+        for(let i in last.query)
+         for(let j in last.query[i])
+          $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
+      }
+      if(last.value){
+        $("#value_search").click();
+        for(let i in last.filterObj)
+          $("#lower_table").find("th[id='"+last.filterObj[i].name+"']")
+          .attr({'active':true,'value':last.filterObj[i].limit,'reverse':last.filterObj[i].reverse})
+          .click();
       }
     }
     show_more = !data.setting.show_more_option;
@@ -75,21 +70,7 @@ $(document).ready(function () {
       $("#loading").fadeOut();
     },2500);
   });
-  socket.emit("require gachadata");
-  socket.on("return gachadata",function (data) {
-    // console.log(data);
-    // for(let i in data){
-    //   // console.log(i,data[i].name);
-    //   $("#gacha_search").append("<span id='"+i+"' class='button' value = 0>"+data[i].name.split(" 稀有轉蛋")[0]+"</span>").toggle();
-    // }
-  });
-  var more_gacha = 0 ;
-  $(document).on("click","#more_gacha_search",function () {
-    if(more_gacha) $(this).find("i").css("transform","rotate(90deg)");
-    else $(this).find("i").css("transform","rotate(-90deg)");
-    $(".gacha_search").toggle();
-    more_gacha = more_gacha?0:1;
-  });
+
   var tip_fadeOut;
   $(document).on("click",".select_ability .button",function () {
     let text = $(this).children("span").text(),
@@ -105,6 +86,24 @@ $(document).ready(function () {
       tip_fadeOut = setTimeout(function () {
         $(".ability_tip").css("left",-250)
       },2000);
+    }
+  });
+  $(document).on('click','.search_type .button',function () {
+    let type = $(this).attr('id').split("_")[0];
+    if(type == 'normal'){
+      $(this).attr("value",1);
+      $("#gacha_search").attr("value",0);
+      $("#gacha_table").hide(200);
+      $("#upper_table").show(200);
+      $("#search_ability").attr("value",type);
+    } else if(type == 'gacha'){
+      $(this).attr("value",1);
+      $("#normal_search").attr("value",0);
+      $("#upper_table").hide(200);
+      $("#gacha_table").show(200);
+      $("#search_ability").attr("value",type);
+    } else {
+      $("#lower_table").toggle(300);
     }
   });
 
@@ -132,7 +131,7 @@ $(document).ready(function () {
       ga('send', 'event', 'cat', 'search', 'text',{text:val});
     }
   });
-  $(document).on('click',"#upper_table .button",function () {
+  $(document).on('click',".search_table .button",function () {
     $("body").bind('keypress',quickSearch);
     setTimeout(function () {
       $("body").unbind('keypress',quickSearch);
@@ -196,7 +195,7 @@ $(document).ready(function () {
   });
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
-    console.log(result) ;
+    // console.log(result) ;
     let data = new Cat(result.this),
         arr = result.bro,
         brr = result.combo,
@@ -281,10 +280,11 @@ $(document).ready(function () {
     $("#level").on("slidechange", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
-      socket.emit("store cat level",{
+      socket.emit("store level",{
         uid : current_user_data.uid,
         id : $(this).parents(".dataTable").attr("id"),
-        lv : ui.value
+        lv : ui.value,
+        type : 'cat'
       });
     });
     $("#level").on("slide", function(e,ui) {
@@ -312,18 +312,17 @@ $(document).ready(function () {
   }
   function search() {
     let rarity = $(".select_rarity [value=1]"),
-    color = $(".select_color [value=1]"),
-    ability = $(".select_ability [value=1]"),
-    gacha = $(".gacha_search td .button[value=1]");
-    // console.log(more_gacha);
-    let rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
+        color = $(".select_color [value=1]"),
+        ability = $(".select_ability [value=1]"),
+        gacha = $(".gacha_search td .button[value=1]"),
+        type = $("#search_ability").attr("value"),
+        value_search = Number($("#value_search").attr("value"));
+    let rFilter = [], cFilter = [], aFilter = [],gFilter = [], filterObj = [] ;
+
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
-    if(more_gacha)
-      for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
-
-    let  filterObj = [] ;
+    for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
     $(".filter_option[active='true']").each(function () {
       let name = $(this).attr('id'),
           reverse = $(this).attr('reverse') == 'true' ? true : false ,
@@ -337,10 +336,14 @@ $(document).ready(function () {
           } ;
       filterObj.push(bufferObj);
     });
-    socket.emit("search",{
+    // console.log(type);
+    socket.emit(type+" search",{
       uid:current_user_data.uid,
-      rFilter,cFilter,aFilter,gFilter,filterObj,
-      type:"cat"
+      query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
+      query_type:type,
+      filterObj,
+      type:"cat",
+      value:value_search&&filterObj.length
     });
     scroll_to_div('selected');
   }
@@ -384,7 +387,7 @@ $(document).ready(function () {
       snapshot(target);
     } else if(type == 'result_expand'){
       let trueHeight = $("#selected")[0].scrollHeight;
-          console.log(trueHeight,originHeight);
+          // console.log(trueHeight,originHeight);
       if(!result_expand){
         originHeight = $("#selected")[0].offsetHeight;
         $("#selected").css("height",trueHeight);
@@ -395,7 +398,7 @@ $(document).ready(function () {
       }
       result_expand = result_expand?0:1;
     } else if(type == 'batch_own'){
-      console.log(current_search);
+      // console.log(current_search);
       socket.emit("mark own",{
         uid:current_user_data.uid,
         arr:current_search,
