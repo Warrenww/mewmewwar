@@ -40,8 +40,8 @@ $(document).ready(function () {
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;
-
-      socket.emit(last.query_type+" search",last);
+      if(last.query) 
+        socket.emit(last.query_type+" search",last);
       if(last.query_type=='gacha'){
         $("#gacha_search").click();
         for(let i in last.query)

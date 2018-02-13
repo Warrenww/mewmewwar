@@ -14,11 +14,12 @@ $(document).ready(function () {
     console.log(data);
     current_user_data = data ;
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
-    socket.emit("display enemy",{uid:data.uid,id:data.last_enemy,history:true});
+      socket.emit("display enemy",{uid:data.uid,id:data.last_enemy,history:true});
     show_more = !data.setting.show_more_option;
     if(data.last_enemy_search){
       let last = data.last_enemy_search;
-      socket.emit("normal search",last);
+      if(last.query)
+        socket.emit("normal search",last);
       for(let i in last.query){
         for(let j in last.query[i]) $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
       }
@@ -31,14 +32,6 @@ $(document).ready(function () {
       }
     }
   });
-
-  var color = ['紅敵','浮敵','黑敵','鋼鐵敵','天使敵','外星敵','外星敵(星)','不死敵','白敵','無屬性敵'];
-  for(let i in color) $(".select_color").append("<span class='button' name='["+color[i]+"]' value='0'>"+color[i]+"</span>") ;
-
-  var ability = ['增攻','降攻','免疫降攻','爆擊','擊退','免疫擊退','連續攻擊',
-                '緩速','免疫緩速','暫停','免疫暫停','遠方攻擊','復活','波動','免疫波動',
-                '攻城','傳送','盾'];
-  for(let i in ability) $(".select_ability").append("<span class='button' name='["+ability[i]+"]' value='0'>"+ability[i]+"</span>") ;
 
   $(document).on('click','.filter_option',filterSlider);
   $(document).on('click','#searchBut',function () {
@@ -60,17 +53,7 @@ $(document).ready(function () {
       history:true
     });
   });
-  $(document).on('click',"#level_num button",function () {
-    let n = $(this).text().split("%")[0],
-        buffer = org = $(this).siblings("span").text().split(" ")[0];
-    org = Number(org)+Number(n);
-    if(org<100||org>1e6){
-      $(this).siblings("span").text(buffer+" %");
-    } else {
-      $(this).siblings("span").text(org+" %");
-      updateState(org/100);
-    }
-  });
+
   var original_lv ;
   $(document).on('click',"#level_num span",function () {
     let org = $(this).text().split(" ")[0];
@@ -186,8 +169,8 @@ $(document).ready(function () {
 
   });
   socket.on('display enemy result',function (data) {
+    data = new Enemy(data);
     console.log(data);
-    data.lv = data.lv?data.lv:1;
     current_enemy_data = data;
     $(".dataTable").attr("id",data.id);
     displayEnemyData(data) ;
@@ -215,16 +198,15 @@ $(document).ready(function () {
     for(let i in change){
       let target = $('.dataTable').find('#'+change[i]) ;
       let original = target.attr('original');
-      target.html(mutipleValue(original,level).toFixed(0))
+      target.html(current_enemy_data.Tovalue(change[i],level))
             .css('background-color',' rgba(242, 213, 167, 0.93)');
       setTimeout(function () {
         target.css('background-color','rgba(255, 255, 255, .9)');
       },500);
     }
-    if(current_enemy_data.tag.indexOf("連續攻擊") != -1){
-      console.log("!!");
+    if(current_enemy_data.serial){
       let target = $('.dataTable').find('#char');
-      target.html(serialATK(current_enemy_data.char,mutipleValue(current_enemy_data.atk,level)));
+      target.html(current_enemy_data.CharHtml(level));
     }
     socket.emit("store level",{
       uid : current_user_data.uid,
@@ -293,18 +275,17 @@ $(document).ready(function () {
 
 });
 function displayenemyHtml(data) {
-  // console.log(data);
   let html = '';
   html += screen.width > 768 ?
   "<tr>"+
   "<th style='height:80px;padding:0'><img src='"+
-  image_url_enemy+data.id+'.png'
-  +"' style='height:100%'></th>"+
+  data.imgURL+
+  "' style='height:100%'></th>"+
   "<th colspan=5 id='name'>"+data.name+"</th>"+
   "</tr>" :
   "<tr>"+
   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-  image_url_enemy+data.id+".png' style='height:100%'"
+  data.imgURL+".png' style='height:100%'"
   +"</tr><tr>"+
   "<th colspan='6' id='name'>"+data.name+"</th>"+
   "</tr>" ;
@@ -317,30 +298,27 @@ function displayenemyHtml(data) {
   // "<button>+50%</button><button>+100%</button>"+
   "</td >"+
   "<tr>"+
-  "<th>體力</th><td id='hp' original='"+data.hp+"'>"+
-  mutipleValue(data.hp,data.lv).toFixed(0)+"</td>"+
+  "<th>體力</th><td id='hp'>"+
+  data.Tovalue('hp')+"</td>"+
   "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-  "<th>硬度</th><td id='hardness' original='"+(data.hp/data.kb)+"'>"+
-  mutipleValue(data.hp/data.kb,data.lv).toFixed(0)+"</td>"+
+  "<th>硬度</th><td id='hardness'>"+
+  data.Tovalue('hardness')+"</td>"+
   "</tr><tr>"+
-  "<th>攻擊力</th><td id='atk' original='"+data.atk+"'>"+
-  mutipleValue(data.atk,data.lv).toFixed(0)+"</td>"+
-  "<th>DPS</th><td id='DPS' original='"+data.dps+"'>"+
-  mutipleValue(data.dps,data.lv).toFixed(0)+"</td>"+
+  "<th>攻擊力</th><td id='atk'>"+
+  data.Tovalue('hp')+"</td>"+
+  "<th>DPS</th><td id='DPS'>"+
+  data.Tovalue('dps')+"</td>"+
   "<th>射程</th><td id='range'>"+data.range+"</td>"+
   "</tr><tr>"+
   "<th>攻頻</th><td id='freq'>"+data.freq.toFixed(1)+" s</td>"+
   "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
-  "<td colspan='2' rowspan='2' id='multi'>"+data.multi+"</td>"+
+  "<td colspan='2' rowspan='2' id='aoe'>"+data.Aoe+"</td>"+
   "</tr><tr>"+
   "<th>獲得金錢</th><td id='reward'>"+data.reward+"</td>"+
-  "<th>屬性</th><td id='color'>"+addColor(data.color)+"</td>"+
+  "<th>屬性</th><td id='color'>"+data.Color+"</td>"+
   "</tr><tr>"+
-  "<td colspan='6' id='char' "+(
-  data.char.indexOf("連續攻撃") != -1 ?
-  "original='"+data.char+"'>"+
-  serialATK(data.char,mutipleValue(data.atk,data.lv)) :
-  ">"+data.char)+
+  "<td colspan='6' id='char'>"+
+  data.CharHtml()+
   "</td>"+
   "</tr><tr>"
   return html

@@ -57,15 +57,15 @@ database.ref("/").once("value",function (snapshot) {
       most_search_cat = i;
       count = catdata[i].count
     }
-
-    let current = i.substring(0,3),rarity = catdata[i].rarity;
-    if(current == exist) continue
-    exist = current;
-    if(rarity=="SSR"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1){
-      let name = catdata[i].name?catdata[i].name:catdata[i].jp_name,
-          region = catdata[i].region.indexOf('[TW]')!=-1?'TW':'JP';
-      catname[region][rarity].push({id:i,name:name})
-    }
+    // 
+    // let current = i.substring(0,3),rarity = catdata[i].rarity;
+    // if(current == exist) continue
+    // exist = current;
+    // if(rarity=="SSR"||catdata[i].get_method.indexOf("稀有轉蛋")!=-1){
+    //   let name = catdata[i].name?catdata[i].name:catdata[i].jp_name,
+    //       region = catdata[i].region.indexOf('[TW]')!=-1?'TW':'JP';
+    //   catname[region][rarity].push({id:i,name:name})
+    // }
   }
   console.log('most search',catdata[most_search_cat].name,count);
   // console.log(catname.R.length,catname.SR.length,catname.SSR.length);
@@ -136,7 +136,7 @@ io.on('connection', function(socket){
             for(let i in load_data){
               for(let j in cFilter){
                 if(type == 'cat' && !load_data[i].tag) break;
-                if(type == 'enemy' && load_data[i]['color'] == '[無]') break;
+                if(type == 'enemy' && !load_data[i].color) break;
 
                 if( type == 'cat' &&
                     (load_data[i].tag.indexOf(cFilter[j]) != -1 ||
@@ -146,7 +146,7 @@ io.on('connection', function(socket){
                   buffer_1.push(load_data[i]);
                   break;
                 }
-                if(type == 'enemy' && load_data[i]['color'].indexOf(cFilter[j]) != -1 ) {
+                if(type == 'enemy' && load_data[i].color.indexOf(cFilter[j]) != -1 ) {
                   buffer_1.push(load_data[i]);
                   break;
                 }
@@ -550,9 +550,19 @@ io.on('connection', function(socket){
 
   socket.on("require setting",function (id) {
     console.log("require "+id+"'s setting");
-    database.ref("/user/"+id+"/setting").once("value",function (snapshot) {
-      socket.emit("user setting",snapshot.val());
-    });
+    coinhive.balance(id,res => {
+        res = JSON.parse(res);
+        if(res.success){
+          console.log(id,res.total,'hash');
+          let hash = res.total;
+          database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
+        }
+        console.log("hash count complete");
+        database.ref("/user/"+id+"/setting").once("value",function (snapshot) {
+          socket.emit("user setting",snapshot.val());
+        });
+      });
+
   });
   socket.on("set default cat level",function (data) {
     console.log("set "+data.uid+"'s default_cat_lv to "+data.lv);
@@ -576,7 +586,6 @@ io.on('connection', function(socket){
     });
     database.ref("/user/"+id+"/folder/owned").set("0");
   });
-
   socket.on("change setting",function (data) {
     console.log(data.uid+" want to "+
         (data.state?"show":"hide")+" it's "+data.type);
@@ -700,15 +709,6 @@ io.on('connection', function(socket){
       accept : data.accept
     });
   });
-  socket.on("mine count",function (data) {
-    console.log(data.uid,data.count,' hash');
-    database.ref("/user/"+data.uid+"/setting/mine_alert").once('value',function (snapshot) {
-      if(!snapshot.val()) return
-      let count = snapshot.val().count?snapshot.val().count:0;
-      count += data.count ;
-      database.ref("/user/"+data.uid+"/setting/mine_alert").update({count:count});
-    });
-  });
 
   socket.on("required owned",function (data) {
     console.log(data.uid,"owned",data.owned.length,"cat");
@@ -816,7 +816,6 @@ function arrangeUserData() {
     }
     // process.stdout.write("\n");
     console.log("there are "+count+" users!!");
-    coinhiveHash(user[userCount]);
 
   });
 }
@@ -919,21 +918,6 @@ function levelToValue(origin,rarity,lv) {
 }
 function AddZero(n) {
   return n<10 ? "0"+n : n
-}
-function coinhiveHash(id) {
-  // console.log('coinhiveHash');
-  // console.log(id);
-  coinhive.balance(id,res => {
-    res = JSON.parse(res);
-    if(res.success){
-      console.log(id,res.total,'hash');
-      let hash = res.total;
-      database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
-    }
-    userCount ++ ;
-    if(userCount<user.length) coinhiveHash(user[userCount]);
-    else console.log("hash count complete");
-  });
 }
 
 

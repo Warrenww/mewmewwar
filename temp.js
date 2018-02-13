@@ -26,30 +26,17 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
-database.ref("/newCatData").once("value",function (snapshot) {
-  catdata = snapshot.val();
-  console.log("cat data load complete");
-  // for(let i in catdata){
-  //   process.stdout.clearLine();
-  //   process.stdout.cursorTo(0);
-  //   process.stdout.write(i);
-  //   database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
-  // }
-  console.log("finish");
-});
-test()
-function test() {
-  try{
-    if(catdata) console.log('ok');
-    else throw 'novalue'
-  }
-  catch(err){
-    if(err == 'novalue') {
-      console.log('novalue');
-      setTimeout(test,100)
-    }
-  }
-}
+// database.ref("/newCatData").once("value",function (snapshot) {
+//   catdata = snapshot.val();
+//   console.log("cat data load complete");
+//   // for(let i in catdata){
+//   //   process.stdout.clearLine();
+//   //   process.stdout.cursorTo(0);
+//   //   process.stdout.write(i);
+//   //   database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
+//   // }
+//   console.log("finish");
+// });
 
 // database.ref("/gachadata").once("value",function (snapshot) {
 //   for(let i in snapshot.val()){
@@ -57,49 +44,51 @@ function test() {
 //   }
 // });
 
-// database.ref("/enemydata").once("value",function (snapshot) {
-//   let enemydata = snapshot.val();
-//   let count = 0;
-//     for(let i in enemydata){
-//       count ++;
-//       // process.stdout.clearLine();
-//       // process.stdout.cursorTo(0);
-//       // process.stdout.write("update enemy "+i+"---");
-//       // process.stdout.write((count/382*100).toFixed(2).toString());
-//       // process.stdout.write("%");
-//
-//       if(enemydata[i].全名) {
-//         console.log(enemydata[i].全名,enemydata[i].name);
-//         // database.ref("/enemydata/"+i).update({全名:null});
-//       }
-//       // database.ref("/catdata/"+i+"/攻撃力").remove();
-//       // database.ref("/catdata/"+i+"/體力").remove();
-//     }
-//     setTimeout(function () {
-//       process.exit()
-//     },2000)
-// });
+database.ref("/enemydata").once("value",function (snapshot) {
+  let enemydata = snapshot.val();
+  let count = 0;
+    for(let i in enemydata){
+      count ++;
+      // process.stdout.clearLine();
+      // process.stdout.cursorTo(0);
+      // process.stdout.write("update enemy "+i+"---");
+      // process.stdout.write((count/382*100).toFixed(2).toString());
+      // process.stdout.write("%");
 
-// database.ref("/user").once("value",function (snapshot) {
-//   console.log('get user data');
-//   userdata = snapshot.val();
-//   let count = 0 ;
-//   for(let i in userdata){
-//     // let stage = userdata[i].history.stage;
-//     // for(let j in stage){
-//     //   process.stdout.clearLine();
-//     //   process.stdout.cursorTo(0);
-//     //   process.stdout.write("loading user data "+i+" history "+j);
-//     //   process.stdout.write((Number(count)/688*100).toFixed(2).toString());
-//     //   process.stdout.write("%");
-//     //   // let arr = stage != "0" ? (stage[j].id).split("-") : [];
-//     //   if (j=="0") {
-//     //     // database.ref("/user/"+i+"/history/stage").set("0");
-//     //   }
-//     // }
-//     count++;
-//   }
-// });
+      // if(enemydata[i].全名) {
+        // console.log(enemydata[i].全名,enemydata[i].name);
+        database.ref("/enemydata/"+i).update({multi:null});
+      // }
+      // database.ref("/catdata/"+i+"/攻撃力").remove();
+      // database.ref("/catdata/"+i+"/體力").remove();
+    }
+    setTimeout(function () {
+      process.exit()
+    },2000)
+});
+
+database.ref("/user").once("value",function (snapshot) {
+  console.log('get user data');
+  userdata = snapshot.val();
+  let count = 0 ;
+  for(let i in userdata){
+    // let stage = userdata[i].history.stage;
+    // for(let j in stage){
+    //   process.stdout.clearLine();
+    //   process.stdout.cursorTo(0);
+    //   process.stdout.write("loading user data "+i+" history "+j);
+    //   process.stdout.write((Number(count)/688*100).toFixed(2).toString());
+    //   process.stdout.write("%");
+    //   // let arr = stage != "0" ? (stage[j].id).split("-") : [];
+    //   if (j=="0") {
+    //     // database.ref("/user/"+i+"/history/stage").set("0");
+    //   }
+    // }
+    // database.ref("/user/"+i+"/setting/mine_alert/count").set(0)
+    count++;
+  }
+  console.log('finfish');
+});
 
 // database.ref("/stagedata/smallCat").once('value',function (snapshot) {
 //   let data = snapshot.val();

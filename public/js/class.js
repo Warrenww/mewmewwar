@@ -60,7 +60,7 @@ class Cat{
         if(char[k].type=='波動'){
           html+=char[k].chance+"%的機率 發出Lv"+
           char[k].percent+"的<span id ='type'>"+char[k].type+"</span> (射程:"+
-          (132.5+200*char[k].percent)+")"
+          (132.5+200*char[k].percent)+")</br>"
         }else{
           html +=
           (char[k].against?"對<span id='color'>"+char[k].against+"</span>":"")+
@@ -96,6 +96,101 @@ class Cat{
     }
     result = lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
     return result.toFixed(0)
+  }
+  serialATK(lv){
+    var nothing = true ;
+    for(let i in this.char){
+      if(this.char[i].arr){
+        nothing = false ;
+        var arr = this.char[i].arr,brr=[];
+        for(let j in arr) brr[j] = (arr[j]*this.Tovalue('atk',lv)).toFixed(0);
+        return brr
+      }
+    }
+    return ""
+  }
+}
+
+class Enemy{
+  constructor(obj){
+    this.id = obj.id;
+    this.name = obj.name;
+    this.aoe = obj.aoe;
+    this.atk = obj.atk;
+    this.atk_speed = Number(obj.atk_speed)?obj.atk_speed.toFixed(2):"-";
+    this.char = obj.char;
+    this.color = obj.color;
+    this.count = obj.count;
+    this.dps = obj.dps;
+    this.freq = obj.freq;
+    this.get_method = obj.get_method;
+    this.hardness = obj.hardness;
+    this.hp = obj.hp;
+    this.jp_name = obj.jp_name;
+    this.kb = obj.kb;
+    this.lv = obj.lv;
+    this.range = obj.range;
+    this.reward = obj.reward;
+    this.speed = obj.speed;
+    this.tag = obj.tag;
+  }
+  get Color(){
+    let html = '';
+    for(let i in this.color) html+=this.color[i]+"</br>"
+    return html
+  }
+  get Aoe(){
+    return this.aoe?"範圍":"單體"
+  }
+  get imgURL(){
+    return "../public/css/footage/enemy/e"+this.id+".png"
+  }
+  get serial(){
+    for(let i in this.char){
+      if(this.char[i].arr) return true
+    }
+    return false
+  }
+  CharHtml(lv){
+    lv=lv?lv:this.lv;
+    let html = '',char = this.char;
+
+    if(!this.tag) html = '無'
+    else{
+      for(let k in char){
+        if(char[k].type=='波動'){
+          html+=char[k].chance+"%的機率 發出Lv"+
+          char[k].percent+"的<span id ='type'>"+char[k].type+"</span> (射程:"+
+          (132.5+200*char[k].percent)+")</br>"
+        }else{
+          html +=
+          (char[k].chance?char[k].chance+"%的機率":"")+
+          (char[k].lower?"體力小於"+char[k].lower+"%時":"")+
+          (char[k].hp?"擊倒後以"+char[k].hp+"%體力":"")+
+          (char[k].delay?char[k].delay.toFixed(1)+"秒"+(char[k].hp?"後":"的"):"")+
+          "<span id='type'>"+char[k].type+"</span>"+
+          (char[k].percent?char[k].percent+"%":"")+
+          (char[k].times?char[k].times+"次":"")+
+          (char[k].dist?"至後方"+char[k].dist+"("+char[k].time+"F)":"")+
+          (char[k].hard?"("+char[k].hard+")":"")+
+          (char[k].range?" "+char[k].range.join("~"):"")+
+          (char[k].period?+char[k].period.toFixed(1)+"秒":"");
+          if(char[k].arr){
+            html += "<span id='serial'>("+this.serialATK(lv)+")</span>"
+          }
+          html += "</br>";
+        }
+      }
+    }
+    return html
+  }
+  Tovalue(type,lv){
+    var origin = this[type],
+        result,
+        lv_bind = ['hp','dps','hardness','atk',] ;
+    lv = lv?lv:this.lv;
+    if(lv_bind.indexOf(type)==-1) return origin
+    else return (origin*lv).toFixed(0)
   }
   serialATK(lv){
     var nothing = true ;

@@ -41,6 +41,7 @@ $(document).ready(function () {
   });
 
   var chapter = {
+    p:{name : '實況野球</br>合作關卡',id : 'baseball',show : true},
     k:{name : '經驗關',id : 'XP',show : true},
     l:{name : '開眼小小貓',id : 'smallCat',show : true},
     j:{name : '狂亂系列',id : 'crazy',show : true},
@@ -131,7 +132,7 @@ $(document).ready(function () {
     for( let i in data.name )
       $("#select_level").append(
         "<span class='card'style='"+
-        "background-image:url(\"../public/css/footage/fight_BG_0"+
+        "background-image:url(\"../public/css/footage/stage/fight_BG_0"+
         (Math.ceil(Math.random()*5))+".png\")"+
         "' id='"+data.name[i].id+"'>"+data.name[i].name+"</span>"
       ).css("flex","3").siblings().css("flex","1");

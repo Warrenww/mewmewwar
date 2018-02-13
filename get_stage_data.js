@@ -12,8 +12,7 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
   // var Arr = [6,7,78];
-  var i=18,j=1,chap='evolution',stage='011',ii=0;
-  j = '03ex05'
+  var i=58,j=3,chap='baseball',stage='020',ii=0;
   // i = Arr[ii];
   getData(i,j);
   function getData(i,j) {
@@ -95,7 +94,7 @@ var config = {
           // ii++;i=Arr[ii];j=1;
           // if(ii<Arr.length) getData(i,j);
           // i++;j=1;
-          // if(i<53) getData(i,j);
+          // if(i<64) getData(i,j);
           // else setTimeout(function () {process.exit();},1000)
         }
       }

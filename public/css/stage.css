@@ -51,19 +51,19 @@
   background-position: 50% 10%;
 }
 #story{
-  background-image: url("footage/story_BG.png");
+  background-image: url("footage/stage/story_BG.png");
   background-color: transparent;
 }
-#maylook{background-image: url("footage/maylook_BG.png");}
+#maylook{background-image: url("footage/stage/maylook_BG.png");}
 #crazy,#hard,#smallCat{
-  background-image: url("footage/crazy_BG.png");
+  background-image: url("footage/stage/crazy_BG.png");
   background-color: rgba(0,0,0,.1);
   font-size: 0;
 }
-#hard{background-image: url("footage/hard_BG.png");}
-#smallCat{background-image: url("footage/smallCat_BG.png");}
-#smallCat:hover{background-image: url("footage/smallCat_BG_alt.png");}
-#XP,#cyclone,#evolution,#castleMaterial{background-blend-mode: normal;}
+#hard{background-image: url("footage/stage/hard_BG.png");}
+#smallCat{background-image: url("footage/stage/smallCat_BG.png");}
+#smallCat:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
+#XP,#cyclone,#evolution,#castleMaterial,#baseball{background-blend-mode: normal;}
 
 
 .select_chapter{
@@ -99,8 +99,8 @@
   flex-wrap: wrap;
   padding: 30px 10px;
 }
-#select_stage{background-image: url("footage/select_stage_BG.png")}
-#select_level{background-image: url("footage/select_level_BG.png")}
+#select_stage{background-image: url("footage/stage/select_stage_BG.png")}
+#select_level{background-image: url("footage/stage/select_level_BG.png")}
 #select_stage button{padding: 0}
 #select_stage button[value~='1']{
   background: linear-gradient(rgb(222, 168, 30), rgb(213, 97, 14));
