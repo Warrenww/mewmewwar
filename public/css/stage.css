@@ -55,6 +55,11 @@
   background-color: transparent;
 }
 #maylook{background-image: url("footage/stage/maylook_BG.png");}
+#baseball{
+  background-image: url("footage/stage/pawapuro_BG.jpg");
+  background-size: cover;
+  background-position: center;
+}
 #crazy,#hard,#smallCat{
   background-image: url("footage/stage/crazy_BG.png");
   background-color: rgba(0,0,0,.1);
@@ -63,7 +68,8 @@
 #hard{background-image: url("footage/stage/hard_BG.png");}
 #smallCat{background-image: url("footage/stage/smallCat_BG.png");}
 #smallCat:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
-#XP,#cyclone,#evolution,#castleMaterial,#baseball{background-blend-mode: normal;}
+#XP,#cyclone,#evolution,#castleMaterial,#ticket
+{background-blend-mode: normal;}
 
 
 .select_chapter{
@@ -152,4 +158,9 @@
 #expend_sl_chap i{transition: .4s ease-in-out;}
 #expend_sl_chap:hover{
   background-color: rgba(170, 170, 170, 0.7);
+}
+.display #next,
+.display #prev{
+  font-weight: bold;
+  cursor: pointer;
 }

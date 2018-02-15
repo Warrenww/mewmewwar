@@ -74,7 +74,7 @@ $(document).ready(function () {
   }
   socket.on('display enemy result',function (data) {
     let html = '';
-    console.log(data);
+    data = new Enemy(data);
     data.lv = search[2]/100 ;
     $(".dataTable").empty();
     html += "<tr><td colspan = 2 style='background-color:transparent'></td>"+

@@ -122,8 +122,7 @@ class Enemy{
     this.color = obj.color;
     this.count = obj.count;
     this.dps = obj.dps;
-    this.freq = obj.freq;
-    this.get_method = obj.get_method;
+    this.freq = Number(obj.freq)?Number(obj.freq).toFixed(2):"-";
     this.hardness = obj.hardness;
     this.hp = obj.hp;
     this.jp_name = obj.jp_name;

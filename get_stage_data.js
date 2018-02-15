@@ -12,7 +12,7 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
   // var Arr = [6,7,78];
-  var i=58,j=3,chap='baseball',stage='020',ii=0;
+  var i=69,j=1,chap='hard',stage='010',ii=0;
   // i = Arr[ii];
   getData(i,j);
   function getData(i,j) {

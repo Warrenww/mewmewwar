@@ -3,6 +3,8 @@ $(document).ready(function () {
   var timer = new Date().getTime();
   var current_user_data = {};
   var current_enemy_data = {};
+  var current_search = [];
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",user);
@@ -31,6 +33,19 @@ $(document).ready(function () {
           .click();
       }
     }
+    if(data.compare_e2e) {
+      $(".compareTarget").empty();
+      $("#compare_number").text(data.compare_e2e.length)
+      for(let i in data.compare_e2e){
+        let id = data.compare_e2e[i].id,
+            name = data.compare_e2e[i].name;
+        $(".compareTarget").append(
+        '<span class="card" value="'+id+
+        '" style="background-image:url('+
+        image_url_enemy+id+'.png'+
+        '">'+name+'</span>');
+      }
+    }
   });
 
   $(document).on('click','.filter_option',filterSlider);
@@ -47,13 +62,68 @@ $(document).ready(function () {
   });
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','.card',function () {
-    socket.emit("display enemy",{
-      uid:current_user_data.uid,
-      id:$(this).attr('value'),
-      history:true
-    });
+    if($(this).parent().parent().attr("class")=='compareTarget_holder') return
+    else
+      socket.emit("display enemy",{
+        uid:current_user_data.uid,
+        id:$(this).attr('value'),
+        history:true
+      });
   });
 
+  $(document).on('click','#char #type',function () {
+    let type = $(this).text(),
+        reverse = ReverseType(type),
+        norev = ['增攻','會心一擊','復活','地中移動','對貓咪城傷害x4','遠方攻擊'];
+
+    if(type.indexOf('連續攻擊')==-1&&type.indexOf('免疫')==-1&&norev.indexOf(type)==-1){
+      socket.emit("normal search",{
+        uid:current_user_data.uid,
+        query:{rFilter:[],cFilter:[],aFilter:[reverse]},
+        query_type:'normal',
+        filterObj:[],
+        type:"cat",
+        value:0
+      });
+      window.parent.changeIframe('cat');
+      window.parent.reloadIframe('cat');
+    }
+  });
+  function ReverseType(c) {
+    c = c.split("(")[0] ;
+    switch (c) {
+      case '護盾':
+        c = '破盾'
+        break;
+      case '鋼鐵 ':
+        c = '爆擊'
+        break;
+      case '重生':
+        c = '不死剋星'
+        break;
+      default:
+        c = '免疫'+c
+    }
+    return c
+  }
+  $(document).on('click','#color',function () {
+    let type = current_enemy_data.color;
+    for(let i in type){
+      if(type[i].indexOf("(星)")!=-1) type[i] == ''
+      else type[i] = '對'+type[i].substring(0,2);
+    }
+    socket.emit("normal search",{
+      uid:current_user_data.uid,
+      query:{rFilter:[],cFilter:type,aFilter:[]},
+      query_type:'normal',
+      filterObj:[],
+      type:"cat",
+      value:0
+    });
+    window.parent.changeIframe('cat');
+    window.parent.reloadIframe('cat');
+
+  })
   var original_lv ;
   $(document).on('click',"#level_num span",function () {
     let org = $(this).text().split(" ")[0];
@@ -102,15 +172,62 @@ $(document).ready(function () {
     for(let i in data){
       let name = data[i].name;
       let id = data[i].id ;
-      html += '<span class="card" value="'+id+'" '+
+      html += '<span class="card-group">'+
+      '<span class="glyphicon glyphicon-shopping-cart"></span>'+
+      '<span class="card" value="'+id+'" '+
       'style="background-image:url('+
        image_url_enemy+id+'.png'
       +')">'+
-      name+'</span>'
+      name+'</span></span>'
       number_page ++ ;
+      current_search.push(id);
     }
+    $(".compareSorce #result_count").find("span").text(number_page);
     return html ;
   }
+  var result_expand = 0,originHeight;
+  $(document).on('click','.compareSorce td',function () {
+    let type = $(this).attr("id");
+    if(type == 'result_snapshot'){
+      let target = $("#selected")[0];
+      if(!result_expand) {
+        $("#result_expand").click();
+        setTimeout(function () {
+          snapshot(target);
+        },500)
+        setTimeout(function () {
+          $("#result_expand").click();
+        },500)
+      } else snapshot(target);
+    } else if(type == 'result_expand'){
+      let trueHeight = $("#selected")[0].scrollHeight;
+          // console.log(trueHeight,originHeight);
+      if(!result_expand){
+        originHeight = $("#selected")[0].offsetHeight;
+        $("#selected").css("height",trueHeight);
+        $(this).html("收合<i class='material-icons'>&#xe240;</i>");
+      } else {
+        $("#selected").css("height",originHeight);
+        $(this).html("展開<i class='material-icons'>&#xe240;</i>");
+      }
+      result_expand = result_expand?0:1;
+    } else if(type == 'batch_compare'){
+      console.log(current_search);
+      let r = confirm("確定覆蓋現有比較序列?!");
+      if(!r) return
+      if(current_search.length<10){
+        socket.emit("compare enemy",{id:current_user_data.uid,target:current_search});
+        $(".compareTarget").empty();
+        $("#selected").children().each(function () {
+          $(this).children(".card").clone().appendTo('.compareTarget');
+        });
+        if(showcomparetarget) showhidecomparetarget();
+        $("#compare_number").text(current_search.length);
+      }
+      else alert("超過10隻!!!");
+    }
+
+  });
   function search() {
     let color = $(".select_color [value=1]"),
         ability = $(".select_ability [value=1]");
@@ -136,7 +253,7 @@ $(document).ready(function () {
     });
 
     socket.emit("normal search",{
-      query:{rFilter,cFilter,aFilter},
+      query:{cFilter,aFilter},
       filterObj,
       type:'enemy',
       uid:current_user_data.uid,
@@ -145,8 +262,7 @@ $(document).ready(function () {
     scroll_to_div('selected');
   }
   var number_page,page_factor ;
-  socket.on("search result",function (result) {
-    $("#selected").height(screen.width > 768 ?280:200);
+  socket.on("search result enemy",function (result) {
     console.log(result);
     number_page = 0 ;
     page_factor = 1 ;
@@ -158,7 +274,7 @@ $(document).ready(function () {
     $(".button_group").css('display','flex');
     scroll_to_div("selected");
     let select_width = $("#selected").innerWidth(),
-        card_width = screen.width > 1024 ? 200 :140,
+        card_width = screen.width > 1024 ? 216 :140,
         per_page = Math.floor(select_width/card_width)*2;
 
     number_page = Math.ceil(number_page/per_page) ;
@@ -272,6 +388,119 @@ $(document).ready(function () {
     },2600);
   });
 
+  $('body').append("<div id='compare_panel_BG'></div>");
+  $(document).on('click','#compare_panel_BG',function () {
+    $("#compare_panel_BG").fadeOut();
+    $('.compare_panel').css('height',0);
+  });
+  var compare = [];
+  $(document).on('click','.glyphicon-shopping-cart',addToCompare);
+  function addToCompare() {
+    $('.compare_panel').css('height',0);
+    if(showcomparetarget) showhidecomparetarget();
+    let target = $(this).parent().children(".card");
+
+    $(".compareTarget").children().each(function () {
+      compare.push($(this).attr("value"));
+    });
+    if(compare.indexOf(target.attr('value')) != -1) {
+      let repeat = $('.compareTarget').find('[value='+target.attr('value')+']') ;
+      repeat.css('border-color','rgb(237, 179, 66)');
+      $(".compareTarget_holder").animate({
+        scrollTop : repeat[0].offsetTop-100
+      },800,'easeInOutCubic');
+      setTimeout(function () {
+        repeat.css('border-color','white');
+      },1000);
+    } else {
+      target.clone().appendTo('.compareTarget');
+      $('.compareTarget_holder').animate({
+        scrollTop : $('.compareTarget').height()
+      },500,'easeInOutCubic');
+      compare = [];
+      $(".compareTarget").children().each(function () {
+        compare.push($(this).attr("value"));
+      });
+      $("#compare_number").text(compare.length);
+      socket.emit("compare enemy",{id:current_user_data.uid,target:compare});
+    }
+  }
+  $(document).on('click','.compareTarget .card',function (e) {
+    let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;
+    $('.compare_panel').remove();
+    $("#compare_panel_BG").fadeIn();
+    $('body').append(
+      "<div class='compare_panel' id='"+
+      $(this).attr('value')+
+      "'><span id='show'>顯示</span><span id='del'>刪除</span></div>");
+    $('.compare_panel').css({top:pos_y,left:pos_x}).animate({height:60},400);
+    $('.compare_panel #show').click(function () {
+      socket.emit("display enemy",{
+        uid : current_user_data.uid,
+        id : $(this).parent().attr('id'),
+        history:true
+      });
+      showhidecomparetarget();
+      $("#compare_panel_BG").fadeOut();
+      $('.compare_panel').css('height',0);
+    });
+    $('.compare_panel #del').click(function () {
+      let target = $(".compareTarget .card[value='"+$(this).parent().attr('id')+"']");
+      let r = confirm("確定要將"+target.text()+"從比較列中移除?") ;
+      if(!r) return
+      target.remove();
+      $(".compareTarget").children().each(function () {
+        compare.push($(this).attr("value"));
+      });
+      $("#compare_number").text(compare.length);
+      socket.emit("compare enemy",{id:current_user_data.uid,target:compare});
+      $("#compare_panel_BG").fadeOut();
+      $('.compare_panel').css('height',0);
+    });
+  });
+  $(document).on('click',"#addcart", function () {
+    $('.compare_panel').css('height',0);
+    if(showcomparetarget) showhidecomparetarget();
+    let id = $(".dataTable").attr('id'),
+        name = $(".dataTable").find("#name").text();
+    $(".compareTarget").children().each(function () {
+      compare.push($(this).attr("value"));
+    });
+    if(compare.indexOf(id) != -1) {
+      let repeat = $('.compareTarget').find('[value='+id+']') ;
+      repeat.css('border-color','rgb(237, 179, 66)');
+      $(".compareTarget_holder").animate({
+        scrollTop : repeat[0].offsetTop-100
+      },800,'easeInOutCubic');
+      setTimeout(function () {
+        repeat.css('border-color','white');
+      },1000);
+    } else {
+      $(".compareTarget").append(
+          '<span class="card" value="'+id+
+          '" style="background-image:url('+
+          image_url_enemy+id+'.png'+
+          '">'+name+'</span>');
+      $('.compareTarget_holder').animate({
+        scrollTop : $('.compareTarget').height()
+      },500,'easeInOutCubic');
+      $(".compareTarget").children().each(function () {
+        compare.push($(this).attr("value"));
+      });
+      $("#compare_number").text(compare.length);
+      socket.emit("compare enemy",{id:current_user_data.uid,target:compare});
+    }
+
+  });
+  $("#clear_compare").click(function () {
+    let r = confirm("確定要移除所有敵人?!");
+    if(!r)return
+    showhidecomparetarget();
+    $(this).siblings().html("");
+    compare = [];
+    $("#compare_number").text(compare.length);
+    socket.emit("compare enemy",{id:current_user_data.uid,target:compare});
+  });
 
 });
 function displayenemyHtml(data) {
@@ -305,12 +534,12 @@ function displayenemyHtml(data) {
   data.Tovalue('hardness')+"</td>"+
   "</tr><tr>"+
   "<th>攻擊力</th><td id='atk'>"+
-  data.Tovalue('hp')+"</td>"+
+  data.Tovalue('atk')+"</td>"+
   "<th>DPS</th><td id='DPS'>"+
   data.Tovalue('dps')+"</td>"+
   "<th>射程</th><td id='range'>"+data.range+"</td>"+
   "</tr><tr>"+
-  "<th>攻頻</th><td id='freq'>"+data.freq.toFixed(1)+" s</td>"+
+  "<th>攻頻</th><td id='freq'>"+data.freq+" s</td>"+
   "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
   "<td colspan='2' rowspan='2' id='aoe'>"+data.Aoe+"</td>"+
   "</tr><tr>"+

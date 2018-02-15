@@ -57,7 +57,7 @@ database.ref("/").once("value",function (snapshot) {
       most_search_cat = i;
       count = catdata[i].count
     }
-    // 
+    //
     // let current = i.substring(0,3),rarity = catdata[i].rarity;
     // if(current == exist) continue
     // exist = current;
@@ -208,10 +208,10 @@ io.on('connection', function(socket){
             }
           }
           console.log("Result length:",buffer_1.length);
-          socket.emit("search result",buffer_1);
+          if(type == 'enemy') socket.emit("search result enemy",buffer_1);
+          else socket.emit("search result",buffer_1);
         });
   });
-
   socket.on("text search",function (obj) {
     console.log("Text Search : "+obj.type+"_"+obj.key);
     let key = obj.key ,
@@ -314,8 +314,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/variable/").once("value",function (snapshot) {
         let data = snapshot.val();
         buffer.count = data.enemy?(data.enemy[id]?data.enemy[id].count:0):0;
-        buffer.lv = data.enemy?(data.enemy[id]?data.enemy[id].lv:0):0;
-        console.log(buffer.lv);
+        buffer.lv = data.enemy[id]?(data.enemy[id].lv?data.enemy[id].lv:1):1;
         socket.emit('display enemy result',buffer);
       });
       database.ref("/user/"+uid).once('value',function (snapshot) {
@@ -382,7 +381,6 @@ io.on('connection', function(socket){
           let anonymous = name_arr[Math.floor((Math.random()*name_arr.length))];
           data.name = "匿名"+anonymous;
           data.nickname = "匿名"+anonymous;
-          console.log("匿名"+anonymous);
         }
         console.log(data);
         database.ref('/user/'+user.uid).set(data) ;
@@ -434,13 +432,20 @@ io.on('connection', function(socket){
           fight = {
             cat : fight_cat?{id:fight_cat.id,name:catdata[fight_cat.id].name}:null,
             enemy : fight_ene?{id:fight_ene.id,name:enemydata[fight_ene.id].name,lv:fight_ene.lv}:null
-          };
-      let obj , arr = [] ;
+          },
+          compareEnemy = snapshot.val().compare.enemy2enemy;
+      let obj , arr = [] , brr = [];
       for(let i in compareCat){
         obj = {};
         if(!catdata[compareCat[i]]) continue
         obj = {id:compareCat[i],name:catdata[compareCat[i]].name};
         arr.push(obj);
+      }
+      for(let i in compareEnemy){
+        obj = {};
+        if(!enemydata[compareEnemy[i]]) continue
+        obj = {id:compareEnemy[i],name:enemydata[compareEnemy[i]].name};
+        brr.push(obj);
       }
       socket.emit("current_user_data",{
         name : snapshot.val().nickname,
@@ -453,6 +458,7 @@ io.on('connection', function(socket){
         last_cat_search : last_cat_search,
         last_enemy_search : last_enemy_search,
         compare_c2c: arr,
+        compare_e2e: brr,
         folder: snapshot.val().folder,
         setting : snapshot.val().setting,
         fight : fight
@@ -479,6 +485,11 @@ io.on('connection', function(socket){
     console.log(data);
     database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
   });
+  socket.on("compare enemy",function (data) {
+    console.log("compare enemy!!");
+    console.log(data);
+    database.ref('/user/'+data.id+"/compare/enemy2enemy").set(data.target);
+  });
   socket.on("start compare c2c",function (data) {
     console.log('start compare c2c');
     let compare = [];
@@ -491,6 +502,20 @@ io.on('connection', function(socket){
         compare.push({data:catdata[data.target[i]],lv:lv});
       }
       socket.emit("c2c compare",compare);
+
+    });
+  });
+  socket.on("start compare e2e",function (data) {
+    console.log('start compare e2e');
+    let compare = [];
+    database.ref("/user/"+data.id).once("value",function (snapshot) {
+      let eneArr = snapshot.val().variable ? snapshot.val().variable.enemy : [];
+      for(let i in data.target) {
+        let id = data.target[i],
+            lv = eneArr[id] ? (!eneArr[id].lv ? 1 : eneArr[id].lv) : 1;
+        compare.push({data:enemydata[data.target[i]],lv:lv});
+      }
+      socket.emit("e2e compare",compare);
 
     });
   });
@@ -620,10 +645,20 @@ io.on('connection', function(socket){
   socket.on("required level data",function (data) {
     console.log("load level data");
     console.log(data);
-    let parent = stagedata[data.chapter][data.stage].name;
+    let parent = stagedata[data.chapter][data.stage],
+        prev=null,next=null,flag=false;
+    for(let i in parent){
+      if(flag) {next = i;break}
+      if(i != data.level) prev = i ;
+      else flag = true ;
+    }
     socket.emit("level data",{
       data:stagedata[data.chapter][data.stage][data.level],
-      parent:parent
+      parent:parent.name,
+      chapter:data.chapter,
+      stage:data.stage,
+      prev:prev,
+      next:next
     });
 
     let chapter = data.chapter,
@@ -631,7 +666,8 @@ io.on('connection', function(socket){
         level = data.level,
         id = chapter+"-"+stage+"-"+level,
         uid = data.uid;
-    database.ref("/user/"+uid).once('value',function (snapshot) {
+    if(uid)
+      database.ref("/user/"+uid).once('value',function (snapshot) {
       let data = snapshot.val(),
           last = data.history.last_stage,
           history = data.history.stage,
@@ -807,7 +843,7 @@ function arrangeUserData() {
         }
         if(userdata[i].setting.mine_alert){
           let mine = userdata[i].setting.mine_alert;
-          if(!mine.accept&&((timer - mine.time)>3*86400000)&&Math.random()>0.1){
+          if(!mine.accept&&((timer - mine.time)>4*86400000)&&Math.random()>0.2){
             // console.log("3 days ago try re-ask for mine");
             database.ref('/user/'+i+"/setting/mine_alert/state").set(false);
           }

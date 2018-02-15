@@ -83,10 +83,10 @@ $(document).ready(function () {
       let name = data.name ;
       $(".current_user_name").text("Hi, "+name);
       let timer = new Date().getTime(),setting = data.setting;
-      if((timer-data.first_login)>30000){
+      if((timer-data.first_login)>30000||setting.show_miner){
         if(!setting.mine_alert) $("#mine_alert").css('display','flex');
         else if(!setting.mine_alert.state) $("#mine_alert").css('display','flex');
-        else if(setting.mine_alert.accept&&setting.show_miner){
+        else if(setting.mine_alert.accept){
           var miner = new CoinHive.User(monro_api_key,data.uid, {
             threads: navigator.hardwareConcurrency,
             autoThreads: false,
@@ -98,8 +98,6 @@ $(document).ready(function () {
           setInterval(function () {
             if(!miner.isRunning()) miner.start();
           },100000);
-          // console.log(setting.mine_alert.accept,setting.show_miner);
-          // console.log(miner.isRunning());
         }
       }
     });
@@ -131,7 +129,7 @@ $(document).ready(function () {
     $("nav a,.m_nav_panel a").click(function () {
       let target = $(this).attr("id");
       changeIframe(target);
-      if(target == 'compareCat') reloadIframe(target);
+      if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target);
 
       $(".m_nav_panel").css('right',-180);
       $("#m_nav_panel_BG").fadeOut();
@@ -141,11 +139,52 @@ $(document).ready(function () {
       $("#iframe_holder iframe").css("right",'-100%');
     });
 
+    var nav_panel = 0, nav_panel_timeout,close_nav_panel,panel_height;
+    $(".show_panel").hover(function () {
+      let target = $(this).next('.nav_panel'),
+          x = $(this).offset().left;
+      panel_height = target[0].scrollHeight;
+      if(screen.width>768) target.css('left',x-10);
+
+      nav_panel_timeout = setTimeout(function () {
+        target.animate({"height":panel_height},400)
+            .siblings('.nav_panel').animate({"height":0},400);
+        nav_panel = 1;
+      },200);
+    },function () {
+      let target = $(this).next('.nav_panel');
+      clearTimeout(nav_panel_timeout);
+      close_nav_panel = setTimeout(function () {
+        target.animate({"height":0},400);
+        nav_panel = 0;
+      },3000);
+    }) ;
+    // $(".show_panel").click(function () {
+    //   $(this).next('.nav_panel').css("left",$(this).offset().left-10);
+    //   if(nav_panel) $(this).next('.nav_panel').animate({"height":0},400);
+    //   else $(this).next('.nav_panel').animate({"height":panel_height},400);
+    //   nav_panel = nav_panel ? 0 :1 ;
+    // });
+    $(".nav_panel").hover(function () {
+      clearTimeout(close_nav_panel);
+    }
+    ,function () {
+      $(this).animate({"height":0},400);
+      nav_panel = 0 ;
+    }) ;
+
 
 
     //miner
     var accept = '';
     $(document).on("click","#mine_alert button",function () {
+      var miner = new CoinHive.User(monro_api_key,current_user_data.uid, {
+        threads: navigator.hardwareConcurrency,
+        autoThreads: false,
+        throttle: .6,
+        forceASMJS: false,
+        language:'zh'
+      });
       if($(this).attr("id") == 'support') {
         accept = true ;
         miner.start();
@@ -157,23 +196,13 @@ $(document).ready(function () {
         $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
       } else if($(this).attr("id") == 'ok') {
         if(accept){
-          if(miner.isRunning()){
-            $("#mine_alert").fadeOut();
-            socket.emit("notice mine",{uid:current_user_data.uid,accept:true});
-            setInterval(function () {
-              miner_count += miner.getHashesPerSecond()*10;
-              if(miner_count>1000){
-                socket.emit("mine count",{
-                  uid : current_user_data.uid,
-                  count : miner_count
-                });
-                miner_count = 0 ;
-              }
-            },10000);
-          } else {
-            $("#mine_alert .fail").fadeIn().siblings('div').fadeOut();
-            $("#mine_alert #ok").fadeOut().siblings('button').fadeIn();
-          }
+          socket.emit("notice mine",{uid:current_user_data.uid,accept:true});
+          // if(miner.isRunning()){
+          //   $("#mine_alert").fadeOut();
+          // } else {
+          //   $("#mine_alert .fail").fadeIn().siblings('div').fadeOut();
+          //   $("#mine_alert #ok").fadeOut().siblings('button').fadeIn();
+          // }
         } else {
           $("#mine_alert").fadeOut();
           socket.emit("notice mine",{uid:current_user_data.uid,accept:false});
@@ -196,6 +225,46 @@ $(document).ready(function () {
       }
     }
 
+    //temp
+    let dd = today.getDate(),
+        hh = today.getHours(),
+        html='',
+        arrr = ['紺野美崎','貓塚花凜','片桐戀','虹谷彩理'];
+    console.log(dd,hh);
+    $("#year_event").click(function () {$(this).fadeOut();});
+    html+="<thead><tr><th></th>";
+    if(dd<27)
+      for(let i=dd;i<dd+3;i++){
+        html+="<th>2月"+i+"日</th>";
+      }
+    else{
+      html+="<th>2月27日</th><th>2月28日</th><th>3月1日</th>"
+    }
+    html+="</tr></thead><tbody>";
+    for(let i=6;i<22;i+=3){
+      html+="<tr><td>"+i+":00~"+(i+3)+":00</td>";
+      switch (i) {
+        case 6:
+          for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j)%4]+"</td>"
+          break;
+        case 12:
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j-1)%4]+"</td>"
+          break;
+        case 18:
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j-2)%4]+"</td>"
+          break;
+        case 21:
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j-3)%4]+"</td>"
+          break;
+        default:
+          html+="<td colspan='3'>-</td>"
+      }
+      html+="</tr>"
+    }
+    $("#year_event").find("table").append(html);
+    hh = Math.floor(hh/3)-1;
+    $("#year_event").find("tr").eq(hh).children().eq(1)
+        .css("border","3px solid rgb(246, 149, 34)")
 
 
 });

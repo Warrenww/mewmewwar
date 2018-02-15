@@ -1,7 +1,7 @@
 const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
 const image_url_icon =  "../public/css/footage/gameIcon/" ;
-
+var showcomparetarget = 1 ;
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
@@ -22,8 +22,9 @@ $(document).ready(function () {
 
   var today = new Date();
 
-  if(screen.width < 768){
+  if(screen.width < 769){
     $("#lower_table .value_display").attr("colspan",7);
+    $("#dataTable").find("#level_num").parent().attr("colspan",7);
   }
 
   //input reaction
@@ -124,6 +125,10 @@ $(document).ready(function () {
     $(this).fadeOut().children(".picture").empty();
   });
 
+//compare tag for cat and enemy
+  $(document).on('click','#compareTarget_tag',showhidecomparetarget);
+
+
 
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
@@ -133,71 +138,22 @@ $(document).ready(function () {
 
   var nav_html_panel = "" ,
       nav_html = '';
-  // for (let i in nav_site_1){
-  //   nav_html_panel += "<a href='"+(location.pathname == "/"?"/view/":"")+
-  //   nav_site_1[i]+".html' id='a_"+nav_site_1[i]+"'>"+nav_text_1[i]+"</a>";
-  // }
-  // nav_html += "<span class='show_panel'>資料庫</span><div class='nav_panel'>"+nav_html_panel+"</div>"
-  // for (let i in nav_site_2){
-  //   nav_html += "<a href='"+(location.pathname == "/"?"/view/":"")+
-  //   nav_site_2[i]+".html' id='a_"+nav_site_2[i]+"'>"+nav_text_2[i]+"</a>";
-  // }
-  //
-  // $("nav .navLinkBox").html(nav_html) ;
-  // $(".m_navLinkBox").html(nav_html) ;
 
   var setting_html = '<a class="current_user_name"></a><div style="display:flex;justify-content:center">'+
       '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
       '<a href="'+(location.pathname == "/"?"/view/":"")+
       'setting.html"><i class="material-icons" id="setting">settings</i></a></div>' ;
-  // $("nav .settingBox").html(setting_html);
-  // $(".m_settingBox").html(setting_html);
-  // $(".m_settingBox").children("div").append("<div id='service'></div>");
+
 
 
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
-  //temp
-  if(0)$("body").append("<div id='year_event'>"+yearevent()+"</div><div id='year_event_BG'></div>");
-  $("#year_event").click(function () {
-    $(this).fadeOut();
-    $("#year_event_BG").fadeOut();
-  });
-  let hr = today.getHours(),
-      y_h = $("#year_event tr[id="+hr+"]")[0] ? $("#year_event tr[id="+hr+"]")[0].offsetTop : 0;
-  $("#year_event").animate({
-    scrollTop : y_h-200
-  },800,"easeInOutCubic");
+  
 
 });
 
 $(window).load(function () {
-  var nav_panel = 0, nav_panel_timeout,close_nav_panel;
-  $(".show_panel").hover(function () {
-    nav_panel_timeout = setTimeout(function () {
-      $(".nav_panel").css("height",screen.width>768?250:200);
-      nav_panel = 1;
-    },200);
-  },function () {
-    clearTimeout(nav_panel_timeout);
-    close_nav_panel = setTimeout(function () {
-      $(".nav_panel").css("height",0);
-      nav_panel = 0;
-    },3000);
-  }) ;
-  $(".show_panel").click(function () {
-    if(nav_panel) $(".nav_panel").css("height",0);
-    else $(".nav_panel").css("height",screen.width>768?250:200);
-    nav_panel = nav_panel ? 0 :1 ;
-  });
-  $(".nav_panel").hover(function () {
-    clearTimeout(close_nav_panel);
-  }
-  ,function () {
-    $(".nav_panel").css("height",0);
-    nav_panel = 0 ;
-  }) ;
   $('#slider_holder').children('.active').click(function () {
     let target = $("#"+filter_name+".filter_option");
     target.attr('active',target.attr('active')=='true'?'false':'true');
@@ -295,7 +251,6 @@ function snapshot(target) {
   });
 
 }
-
 function parseRarity(s) {
   switch (s) {
     case 'B':
@@ -318,8 +273,6 @@ function parseRarity(s) {
   }
   return s
 }
-
-
 function levelToValue(origin,rarity,lv) {
   let limit ;
   switch (rarity) {
@@ -334,15 +287,17 @@ function levelToValue(origin,rarity,lv) {
   }
   return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
 }
-// function serialATK(prop,atk) {
-//     let b = prop.split("（")[0];
-//     let arr = prop.split("（")[1].split("）")[0].split(","),
-//         c = prop.split("（")[1].split("）")[1];
-//     // console.log(b+"("+arr.join()+")")
-//     for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
-//     return b+"（"+arr.join(' ')+"）"+c ;
-//
-// }
+function showhidecomparetarget() {
+  $('.compare_panel').css('height',0);
+  if(showcomparetarget){
+    $('.compareTarget_holder').css('left',0);
+    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
+  } else {
+    $('.compareTarget_holder').css('left',-180);
+    $('#compareTarget_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
+  }
+  showcomparetarget = showcomparetarget ? 0 : 1 ;
+}
 function scroll_to_div(div_id){
   $('html,body').animate(
     {scrollTop: $("#"+div_id).offset().top-100},

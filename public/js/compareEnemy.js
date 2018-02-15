@@ -2,7 +2,7 @@ $(document).ready(function () {
   var compare = [] ;
   var socket = io.connect();
   var current_user_data = {},
-      current_compare_cat = {};
+      current_compare_enemy = {};
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -14,23 +14,25 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     current_user_data = data;
-    if(data.compare_c2c) {
+    if(data.compare_e2e) {
       let buffer = [] ;
-      for(let i in data.compare_c2c){
-        let id = data.compare_c2c[i].id ;
+      for(let i in data.compare_e2e){
+        let id = data.compare_e2e[i].id ;
         buffer.push(id);
       }
-      socket.emit("start compare c2c",{id:data.uid,target:buffer});
+      socket.emit("start compare e2e",{id:data.uid,target:buffer});
     }
   });
 
-  socket.on("c2c compare", function (compare){
+  socket.on("e2e compare", function (compare){
+    console.log(compare);
     $(".compareTable").append(
       "<div class='comparedatahead'>"+
       "<table>"+
-      "<tr>"+"<th>Level</th>"+
+      "<tr>"+"<th>倍率</th>"+
       "</tr><tr>"+"<th style='height:80px;'>Picture</th>"+
       "</tr><tr>"+"<th id='name'>全名</th>"+
+      "</tr><tr>"+"<th id='color'>屬性</th>"+
       "</tr><tr>"+"<th id='hp'>體力</th>"+
       "</tr><tr>"+"<th id='kb'>KB</th>"+
       "</tr><tr>"+"<th id='hardness'>硬度</th>"+
@@ -40,8 +42,7 @@ $(document).ready(function () {
       "</tr><tr>"+"<th id='freq'>攻頻</th>"+
       "</tr><tr>"+"<th id='speed'>跑速</th>"+
       "</tr><tr>"+"<th id='multi'>範圍</th>"+
-      "</tr><tr>"+"<th id='cost'>花費</th>"+
-      "</tr><tr>"+"<th id='cd'>再生産</th>"+
+      "</tr><tr>"+"<th id='cost'>獲得金錢</th>"+
       "</tr><tr>"+"<th id='char'>特性</th>"+
       "</tr>"+"</table>"+"</div>"+
       "<div class='comparedataholder'>"+
@@ -50,19 +51,21 @@ $(document).ready(function () {
 
     );
     for(let i in compare){
-      let data = new Cat(compare[i].data),
+      let data = new Enemy(compare[i].data),
           lv = compare[i].lv;
       // console.log(data);
-      current_compare_cat[data.id] = data;
+      current_compare_enemy[data.id] = data;
       $(".comparedatabody").append(
         "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
         "<table>"+
         "<tr>"+
-        "<th id='level'>"+lv+"</th>"+
+        "<th id='level'>"+lv*100+"%</th>"+
         "</tr><tr>"+
         "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
         "</tr><tr>"+
-        "<th id='name'>"+data.Name+"</th>"+
+        "<th id='name'>"+data.name+"</th>"+
+        "</tr><tr>"+
+        "<th id='color'>"+data.color+"</th>"+
         "</tr><tr>"+
         "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
         "</tr><tr>"+
@@ -76,15 +79,13 @@ $(document).ready(function () {
         "</tr><tr>"+
         "<td id='range'>"+data.range+"</td>"+
         "</tr><tr>"+
-        "<td id='freq'>"+data.Freq+"</td>"+
+        "<td id='freq'>"+data.freq+"</td>"+
         "</tr><tr>"+
         "<td id='speed'>"+data.speed+"</td>"+
         "</tr><tr>"+
         "<td id='multi'>"+data.Aoe+"</td>"+
         "</tr><tr>"+
-        "<td id='cost'>"+data.cost+"</td>"+
-        "</tr><tr>"+
-        "<td id='cd'>"+data.cd+"</td>"+
+        "<td id='cost'>"+data.reward+"</td>"+
         "</tr><tr>"+
         "<td id='char'>"+data.CharHtml(lv)+"</td>"+
         "</tr>"+
@@ -96,29 +97,30 @@ $(document).ready(function () {
   });
   $(document).on('click','.comparedata img',function () {
     let id = $(this).parents('.comparedata').attr('id');
-    socket.emit("display cat",{
+    socket.emit("display enemy",{
       uid : current_user_data.uid,
-      cat : id,
+      id : id,
       history:true
     }) ;
-    window.parent.reloadIframe('cat');
+    window.parent.reloadIframe('enemy');
   });
 
   var input_org ;
   $(document).on('click',".comparedata #level",function () {
     input_org = $(this).text();
-    $(this).html('<input type="text" value="' +input_org+ '"></input>');
+    $(this).html('<input type="number" value="' +input_org.split("%")[0]+ '"></input>');
     $(this).find('input').select();
   });
   $(document).on('blur', '.comparedata #level input', changeCompareLevel);
   function changeCompareLevel() {
       let level = Number($(this).val()),
           id = $(this).parents('.comparedata').attr('id'),
-          data = current_compare_cat[id];
+          data = current_compare_enemy[id];
 
-      if (level && level < 101 && level > 0) {
-        $(this).parent().html(level);
+      if ( level > 0) {
+        $(this).parent().html(level+"%");
         let change = ['hp','hardness','atk','DPS'] ;
+        level /= 100;
         for(let i in change){
           let target = $('.compareTable #'+id).find('#'+change[i]) ;
           let original = target.attr('original');
@@ -138,7 +140,7 @@ $(document).ready(function () {
           uid : current_user_data.uid,
           id : id,
           lv : level,
-          type : 'cat'
+          type : 'enemy'
         });
       }
       else $(this).parent().html(input_org);
@@ -192,8 +194,8 @@ $(document).ready(function () {
       // $(".compareTable").children("#"+min.id).find("#"+name).css('color','rgb(82, 174, 219)');
     });
   }
-  $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
-  function sortCompareCat() {
+  $(document).on('click','.compareTable .comparedatahead th',sortCompareEnemy);
+  function sortCompareEnemy() {
     let name = $(this).attr("id");
     var arr = [] ;
     let flag = true ;

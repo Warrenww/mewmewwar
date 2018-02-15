@@ -23,7 +23,7 @@ nav img{
 .navLinkBox span{
   font-size: 20px;
   color: white ;
-  margin:10px
+  padding:10px
 }
 .settingBox,
 .m_settingBox{
@@ -56,7 +56,7 @@ nav img{
     position: absolute;
     top: 40px;
     background-color: rgba(0,0,0,.7);
-    width: 150px;
+    min-width: 150px;
     text-align: center;
     height: 0;
     overflow: hidden;

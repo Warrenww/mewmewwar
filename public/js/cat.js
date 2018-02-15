@@ -40,7 +40,7 @@ $(document).ready(function () {
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;
-      if(last.query) 
+      if(last.query)
         socket.emit(last.query_type+" search",last);
       if(last.query_type=='gacha'){
         $("#gacha_search").click();
@@ -350,9 +350,11 @@ $(document).ready(function () {
   function condenseCatName(data) {
     console.log('condensing....');
     let now = '000' ;
+    console.log(data);
 
     let html = '<span class="card-group" hidden>' ;
     for(let i in data){
+      if(!data[i].id) continue
       let name = data[i].name;
       let id = data[i].id ;
       let current = id.substring(0,3) ;
@@ -384,7 +386,15 @@ $(document).ready(function () {
     let type = $(this).attr("id");
     if(type == 'result_snapshot'){
       let target = $("#selected")[0];
-      snapshot(target);
+      if(!result_expand) {
+        $("#result_expand").click();
+        setTimeout(function () {
+          snapshot(target);
+        },500)
+        setTimeout(function () {
+          $("#result_expand").click();
+        },500)
+      } else snapshot(target);
     } else if(type == 'result_expand'){
       let trueHeight = $("#selected")[0].scrollHeight;
           // console.log(trueHeight,originHeight);
@@ -464,10 +474,13 @@ $(document).ready(function () {
         if($(this).attr('name')==ww||$(this).attr('value')=='1') $(this).click() ;
       });
     }
-    socket.emit("search",{
+    socket.emit("normal search",{
       uid:current_user_data.uid,
-      rFilter,cFilter,aFilter,gFilter,filterObj,
-      type:"cat"
+      query:{rFilter,cFilter,aFilter},
+      query_type:type,
+      filterObj:[],
+      type:"cat",
+      value:0
     });
   });
   function filterSlider() {
@@ -588,19 +601,7 @@ $(document).ready(function () {
     },2600);
   });
 
-  var showcomparetarget = 1 ;
-  $(document).on('click','#compareTarget_tag',showhidecomparetarget);
-  function showhidecomparetarget() {
-    $('.compare_panel').css('height',0);
-    if(showcomparetarget){
-      $('.compareTarget_holder').css('left',0);
-      $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
-    } else {
-      $('.compareTarget_holder').css('left',-180);
-      $('#compareTarget_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
-    }
-    showcomparetarget = showcomparetarget ? 0 : 1 ;
-  }
+
   function toggleCatStage() {
     let group = $(this).parent(),
         current = group.children(".card:visible").next('.card').attr('value');

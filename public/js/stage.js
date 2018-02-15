@@ -1,16 +1,9 @@
 $(document).ready(function () {
   var timer = new Date().getTime();
-  var compare = [] ;
-  var setting = {
-        compare_max : 4 ,
-        display_id : false
-      } ;
   var filter_name = '' ;
-  const image_url =  "../public/css/footage/cat/u" ;
   var socket = io.connect();
-  var current_user_data = {
-    setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
-  };
+  var current_user_data = {};
+  var current_level_data = {};
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -38,6 +31,8 @@ $(document).ready(function () {
       socket.emit("required level name",{chapter:arr[0],stage:arr[1]});
       $(".select_chapter").children().first().before($(".select_chapter").find("#"+arr[0])[0]);
     }
+    if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
+    else $("#more_option").css("height",0);
   });
 
   var chapter = {
@@ -54,6 +49,7 @@ $(document).ready(function () {
     d:{name : '世界篇',id : 'world',show : true},
     e:{name : '未來篇',id : 'future',show : true},
     f:{name : '宇宙篇',id : 'universe',show : true},
+    q:{name : '貓咪卷關卡',id : 'ticket',show : true},
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
     h:{name : '月間關',id : 'month',show : false},
     i:{name : '開眼關',id : 'openEye',show : false},
@@ -160,20 +156,27 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    // console.log(obj);
+    console.log(obj);
+    current_level_data = obj;
     let html = "",
-        data = obj.data;
+        data = obj.data,
+        prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
+        next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
     $(".dataTable").empty();
     html += "<tr>"+
-            (screen.width > 768 ?"<td colspan=2 style='background:transparent'></td>":"")+
+            (screen.width > 768 ?
+              "<td id='prev' query='"+JSON.stringify(prev_stage)+"'>"+
+              "<i class='material-icons' style='transform:rotate(180deg)'>&#xe154;</i>上一關</td>"+
+              "<td id='next' query='"+JSON.stringify(next_stage)+"'>下一關"+
+              "<i class='material-icons'>&#xe154;</i></td>":"")+
             "<th>接關</th><td>"+(data.continue?"可以":"不行")+"</td>"+
             "<td colspan=2><a target='blank' href='http://battlecats-db.com/stage/"+
             (data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
     html += screen.width > 768 ?
             ( "<tr>"+
-              "<th rowspan=2 colspan=1 id='chapter' value='"+data.id.split("-")[0]+"'>"
-              +chapterName(data.id)+"</th>"+
-              "<th rowspan=2 colspan=1 id='stage' value='"+data.id.split("-")[1]+"'>"
+              "<th rowspan=2 colspan=1 id='chapter' value='"+obj.chapter+"'>"
+              +chapterName(obj.chapter)+"</th>"+
+              "<th rowspan=2 colspan=1 id='stage' value='"+obj.stage+"'>"
               +obj.parent+"</th>"+
               "<th rowspan=2 colspan=2>"+data.name+"</th>"+
               "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
@@ -189,7 +192,7 @@ $(document).ready(function () {
               "<th colspan=6>過關獎勵</th>"+
               "</tr><tr>"+Addreward(data.reward,data.integral)+
               "</tr><tr>"+
-              "<th colspan=6>關卡敵人</th>"+
+              "<th colspan=5>關卡敵人</th><th id ='AddToCompare'>加入比較序列</th>"+
               "</tr><tr>"+
               "<th>敵人</th><th class='enemy_head' id='multiple'>倍率</th>"+
               "<th class='enemy_head' id='amount'>數量</th>"+
@@ -200,9 +203,9 @@ $(document).ready(function () {
               "</tr><tr>"+
               "</tr>" ):(
               "<tr>"+
-              "<th colspan=1 id='chapter' value='"+data.id.split("-")[0]+"'>"
-              +chapterName(data.id)+"</th>"+
-              "<th colspan=1 id='stage' value='"+data.id.split("-")[1]+"'>"
+              "<th colspan=1 id='chapter' value='"+obj.chapter+"'>"
+              +chapterName(obj.chapter)+"</th>"+
+              "<th colspan=1 id='stage' value='"+obj.stage+"'>"
               +obj.parent+"</th>"+
               "<th colspan=2>"+data.name+"</th>"+
               "</tr><tr>"+
@@ -229,6 +232,38 @@ $(document).ready(function () {
     // $(".display_BG").css('background-image','url(\"../public/css/footage/fight_BG_02.png\")');
 
     scroll_to_class('display',0);
+  });
+  $(document).on("click",'#prev,#next',function () {
+    let data = JSON.parse($(this).attr('query'));
+    console.log(data.level);
+    if(data.level)
+      socket.emit("required level data",{
+        uid: current_user_data.uid,
+        chapter:data.chapter,
+        stage:data.stage,
+        level:data.level
+      });
+  })
+  $(document).on("click","#AddToCompare",function () {
+    let enemy = current_level_data.data.enemy,
+        arr = [];
+    for(let i in enemy){
+      let id = enemy[i].id,
+          lv = Number(enemy[i].multiple.split("％")[0])/100;
+      if(arr.indexOf(id) != -1) continue
+      else {
+        socket.emit("store level",{
+          uid : current_user_data.uid,
+          id : id,
+          lv : lv,
+          type : 'enemy'
+        });
+        arr.push(id)
+      }
+    }
+    socket.emit("compare enemy",{id:current_user_data.uid,target:arr});
+    window.parent.changeIframe('compareEnemy');
+    window.parent.reloadIframe('compareEnemy');
   });
   $(document).on("click",".dataTable #chapter",function () {
     scroll_to_div('selector');
@@ -284,9 +319,8 @@ $(document).ready(function () {
     return html
   }
   function chapterName(s) {
-    let c = s.split("-")[0];
     for(let i in chapter){
-       if (chapter[i].id == c) return chapter[i].name ;
+       if (chapter[i].id == s) return chapter[i].name ;
     }
     return
   }

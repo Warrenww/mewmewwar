@@ -12,7 +12,7 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
   var map = {};
-  var i = 171,exist = [];
+  var i = 265,exist = [];
 
   database.ref("/newCatData").once('value',function (snapshot) {
     console.log('loading cat data');
@@ -55,7 +55,7 @@ var config = {
 
           ssr_holder.each(function () {
             let ssr = $(this).find(".txt02").eq(0).find(".t02").text();
-            // console.log(ssr);
+            console.log(ssr);
             obj.ssr.push(map[ssr]);
           });
           $(".mt10").each(function () {
