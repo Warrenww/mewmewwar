@@ -112,7 +112,7 @@ nav a{cursor: pointer;}
   padding: 5% 20%;
   position: fixed;
   top: 0;
-  z-index: 12;
+  z-index: 2;
   overflow: scroll;
   background-color: rgba(0,0,0,.7)
 }

@@ -139,7 +139,7 @@ $(document).ready(function () {
       $("#iframe_holder iframe").css("right",'-100%');
     });
 
-    var nav_panel = 0, nav_panel_timeout,close_nav_panel,panel_height;
+    var nav_panel_timeout,close_nav_panel,panel_height;
     $(".show_panel").hover(function () {
       let target = $(this).next('.nav_panel'),
           x = $(this).offset().left;
@@ -147,30 +147,33 @@ $(document).ready(function () {
       if(screen.width>768) target.css('left',x-10);
 
       nav_panel_timeout = setTimeout(function () {
+        target.prev('.show_panel').attr('value',1).siblings(".show_panel").attr("value",0);
         target.animate({"height":panel_height},400)
             .siblings('.nav_panel').animate({"height":0},400);
-        nav_panel = 1;
       },200);
     },function () {
       let target = $(this).next('.nav_panel');
       clearTimeout(nav_panel_timeout);
       close_nav_panel = setTimeout(function () {
         target.animate({"height":0},400);
-        nav_panel = 0;
+        target.prev('.show_panel').attr('value',0)
       },3000);
     }) ;
-    // $(".show_panel").click(function () {
-    //   $(this).next('.nav_panel').css("left",$(this).offset().left-10);
-    //   if(nav_panel) $(this).next('.nav_panel').animate({"height":0},400);
-    //   else $(this).next('.nav_panel').animate({"height":panel_height},400);
-    //   nav_panel = nav_panel ? 0 :1 ;
-    // });
+    $(".show_panel").click(function () {
+      let nav_panel = Number($(this).attr('value'));
+      if(screen.width>768) $(this).next('.nav_panel').css("left",$(this).offset().left-10);
+      if(nav_panel) $(this).next('.nav_panel').animate({"height":0},400);
+      else $(this).next('.nav_panel').animate({"height":panel_height},400);
+      $(this).attr('value',function () {
+        return nav_panel ? 0 : 1 ;
+      });
+    });
     $(".nav_panel").hover(function () {
       clearTimeout(close_nav_panel);
     }
     ,function () {
       $(this).animate({"height":0},400);
-      nav_panel = 0 ;
+      $(this).prev('.show_panel').attr('value',0);
     }) ;
 
 
@@ -231,7 +234,11 @@ $(document).ready(function () {
         html='',
         arrr = ['紺野美崎','貓塚花凜','片桐戀','虹谷彩理'];
     console.log(dd,hh);
+
     $("#year_event").click(function () {$(this).fadeOut();});
+    $('nav,.m_nav_panel').click(function () {
+      $("#year_event").fadeOut();
+    });
     html+="<thead><tr><th></th>";
     if(dd<27)
       for(let i=dd;i<dd+3;i++){
@@ -245,16 +252,16 @@ $(document).ready(function () {
       html+="<tr><td>"+i+":00~"+(i+3)+":00</td>";
       switch (i) {
         case 6:
-          for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j)%4]+"</td>"
+          for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j)%4]+"</td>"
           break;
         case 12:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j-1)%4]+"</td>"
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j-1)%4]+"</td>"
           break;
         case 18:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j-2)%4]+"</td>"
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j-2)%4]+"</td>"
           break;
         case 21:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[(dd%4+j-3)%4]+"</td>"
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j-3)%4]+"</td>"
           break;
         default:
           html+="<td colspan='3'>-</td>"
