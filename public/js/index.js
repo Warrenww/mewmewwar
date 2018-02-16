@@ -252,16 +252,16 @@ $(document).ready(function () {
       html+="<tr><td>"+i+":00~"+(i+3)+":00</td>";
       switch (i) {
         case 6:
-          for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j)%4]+"</td>"
+          for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4)%4]+"</td>"
           break;
         case 12:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j-1)%4]+"</td>"
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4-1)%4]+"</td>"
           break;
         case 18:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j-2)%4]+"</td>"
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4-2)%4]+"</td>"
           break;
         case 21:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j-3)%4]+"</td>"
+        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4-3)%4]+"</td>"
           break;
         default:
           html+="<td colspan='3'>-</td>"
