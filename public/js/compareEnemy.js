@@ -26,72 +26,12 @@ $(document).ready(function () {
 
   socket.on("e2e compare", function (compare){
     console.log(compare);
-    $(".compareTable").append(
-      "<div class='comparedatahead'>"+
-      "<table>"+
-      "<tr>"+"<th>倍率</th>"+
-      "</tr><tr>"+"<th style='height:80px;'>Picture</th>"+
-      "</tr><tr>"+"<th id='name'>全名</th>"+
-      "</tr><tr>"+"<th id='color'>屬性</th>"+
-      "</tr><tr>"+"<th id='hp'>體力</th>"+
-      "</tr><tr>"+"<th id='kb'>KB</th>"+
-      "</tr><tr>"+"<th id='hardness'>硬度</th>"+
-      "</tr><tr>"+"<th id='atk'>攻擊力</th>"+
-      "</tr><tr>"+"<th id='DPS'>DPS</th>"+
-      "</tr><tr>"+"<th id='range'>射程</th"+
-      "</tr><tr>"+"<th id='freq'>攻頻</th>"+
-      "</tr><tr>"+"<th id='speed'>跑速</th>"+
-      "</tr><tr>"+"<th id='multi'>範圍</th>"+
-      "</tr><tr>"+"<th id='cost'>獲得金錢</th>"+
-      "</tr><tr>"+"<th id='char'>特性</th>"+
-      "</tr>"+"</table>"+"</div>"+
-      "<div class='comparedataholder'>"+
-      "<div style='display:flex' class='comparedatabody'></div>"
-      +"</div>"
-
-    );
     for(let i in compare){
       let data = new Enemy(compare[i].data),
           lv = compare[i].lv;
       // console.log(data);
       current_compare_enemy[data.id] = data;
-      $(".comparedatabody").append(
-        "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
-        "<table>"+
-        "<tr>"+
-        "<th id='level'>"+lv*100+"%</th>"+
-        "</tr><tr>"+
-        "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
-        "</tr><tr>"+
-        "<th id='name'>"+data.name+"</th>"+
-        "</tr><tr>"+
-        "<th id='color'>"+data.color+"</th>"+
-        "</tr><tr>"+
-        "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='KB'>"+data.kb+"</td>"+
-        "</tr><tr>"+
-        "<td id='hardness'>"+data.Tovalue('hardness',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='DPS'>"+data.Tovalue('dps',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='range'>"+data.range+"</td>"+
-        "</tr><tr>"+
-        "<td id='freq'>"+data.freq+"</td>"+
-        "</tr><tr>"+
-        "<td id='speed'>"+data.speed+"</td>"+
-        "</tr><tr>"+
-        "<td id='multi'>"+data.Aoe+"</td>"+
-        "</tr><tr>"+
-        "<td id='cost'>"+data.reward+"</td>"+
-        "</tr><tr>"+
-        "<td id='char'>"+data.CharHtml(lv)+"</td>"+
-        "</tr>"+
-        "</table>"+
-        "</div>"
-      );
+      $(".comparedatabody").append(AddCompareData(data,lv));
     }
     highlightTheBest();
   });
@@ -113,7 +53,7 @@ $(document).ready(function () {
   });
   $(document).on('blur', '.comparedata #level input', changeCompareLevel);
   function changeCompareLevel() {
-      let level = Number($(this).val()),
+      let level = (Number($(this).val())/50).toFixed(0)*50,
           id = $(this).parents('.comparedata').attr('id'),
           data = current_compare_enemy[id];
 
@@ -266,32 +206,74 @@ $(document).ready(function () {
     snapshot(target);
   });
   var nav_timeout ;
-  $("#nav_main").hover(function () {
-    $(this).siblings().fadeIn().css("display",'flex');
-    $("#nav_zoom_in").css("transform","translate(-77.28px,-20.72px)");
-    $("#nav_zoom_out").css("transform","translate(-56.57px,56.57px)");
-    $("#nav_org").css("transform","translate(20.72px,77.28px)");
+  $(".side_bar").hover(function () {
+    let i = 1 ;
+    $(this).children().each(function () {
+      $(this).animate({right:0},100*i);
+      i++
+    });
   },function () {
-    nav_timeout = setTimeout(function () {hideZoom()},3000);
-  });
-  $(".compareNav div[id!='nav_main']").hover(function () {
-    clearTimeout(nav_timeout);
-  },function () {
-    nav_timeout = setTimeout(function () {hideZoom()},1500);
+    hideZoom()
   });
   function hideZoom() {
-    $("#nav_zoom_in").css("transform","translate(0px,0px)").fadeOut();
-    $("#nav_zoom_out").css("transform","translate(0px,0px)").fadeOut();
-    $("#nav_org").css("transform","translate(0px,0px)").fadeOut();
+    let i = 1 ;
+    $('.side_bar').children().each(function () {
+      $(this).animate({right:-100},100*i);
+      i++
+    });
   }
   var scale = 1 ;
-  $(document).on('click','.compareNav div',function () {
-    let type = $(this).attr("id").split("nav_")[1];
-    if(type == 'zoom_in'){
+  $(document).on('click','.floatbutton',function () {
+    let type = $(this).attr("id");
+    if(type == 'nav_zoom_in'){
       scale = scale>1.5?scale:scale+.1;
-    } else if(type == 'zoom_out'){
+    } else if(type == 'nav_zoom_out'){
       scale = scale<.11?scale:scale-.1;
-    } else if(type == 'org') scale = 1 ;
+    } else if(type == 'nav_org') scale = 1 ;
+    else if(type == 'showall'){
+      $('.comparedata').show(400);
+    }
     $(".compareTable").css('transform','scale('+scale+','+scale+')');
   });
+
+  function AddCompareData(data,lv) {
+    let html = '';
+    html +=
+    "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
+    "<table>"+
+    "<tr>"+
+    "<th id='level'>"+lv*100+"%</th>"+
+    "</tr><tr>"+
+    "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
+    "</tr><tr>"+
+    "<th id='name'>"+data.name+"</th>"+
+    "</tr><tr>"+
+    "<th id='color'>"+data.color+"</th>"+
+    "</tr><tr>"+
+    "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
+    "</tr><tr>"+
+    "<td id='KB'>"+data.kb+"</td>"+
+    "</tr><tr>"+
+    "<td id='hardness'>"+data.Tovalue('hardness',lv)+"</td>"+
+    "</tr><tr>"+
+    "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
+    "</tr><tr>"+
+    "<td id='DPS'>"+data.Tovalue('dps',lv)+"</td>"+
+    "</tr><tr>"+
+    "<td id='range'>"+data.range+"</td>"+
+    "</tr><tr>"+
+    "<td id='freq'>"+data.freq+"</td>"+
+    "</tr><tr>"+
+    "<td id='speed'>"+data.speed+"</td>"+
+    "</tr><tr>"+
+    "<td id='multi'>"+data.Aoe+"</td>"+
+    "</tr><tr>"+
+    "<td id='cost'>"+data.reward+"</td>"+
+    "</tr><tr>"+
+    "<td id='char'>"+(data.tag?data.tag.join("/"):"無")+"</td>"+
+    "</tr>"+
+    "</table>"+
+    "</div>";
+    return html
+  }
 });

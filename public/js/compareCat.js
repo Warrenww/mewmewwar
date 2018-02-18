@@ -25,75 +25,111 @@ $(document).ready(function () {
   });
 
   socket.on("c2c compare", function (compare){
-    $(".compareTable").append(
-      "<div class='comparedatahead'>"+
-      "<table>"+
-      "<tr>"+"<th>Level</th>"+
-      "</tr><tr>"+"<th style='height:80px;'>Picture</th>"+
-      "</tr><tr>"+"<th id='name'>全名</th>"+
-      "</tr><tr>"+"<th id='hp'>體力</th>"+
-      "</tr><tr>"+"<th id='kb'>KB</th>"+
-      "</tr><tr>"+"<th id='hardness'>硬度</th>"+
-      "</tr><tr>"+"<th id='atk'>攻擊力</th>"+
-      "</tr><tr>"+"<th id='DPS'>DPS</th>"+
-      "</tr><tr>"+"<th id='range'>射程</th"+
-      "</tr><tr>"+"<th id='freq'>攻頻</th>"+
-      "</tr><tr>"+"<th id='speed'>跑速</th>"+
-      "</tr><tr>"+"<th id='multi'>範圍</th>"+
-      "</tr><tr>"+"<th id='cost'>花費</th>"+
-      "</tr><tr>"+"<th id='cd'>再生産</th>"+
-      "</tr><tr>"+"<th id='char'>特性</th>"+
-      "</tr>"+"</table>"+"</div>"+
-      "<div class='comparedataholder'>"+
-      "<div style='display:flex' class='comparedatabody'></div>"
-      +"</div>"
-
-    );
     for(let i in compare){
       let data = new Cat(compare[i].data),
-          lv = compare[i].lv;
+          lv = compare[i].lv,
+          bro = compare[i].bro;
       // console.log(data);
       current_compare_cat[data.id] = data;
-      $(".comparedatabody").append(
-        "<div style='flex:1' class='comparedata' id='"+data.id+"'>"+
-        "<table>"+
-        "<tr>"+
-        "<th id='level'>"+lv+"</th>"+
-        "</tr><tr>"+
-        "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
-        "</tr><tr>"+
-        "<th id='name'>"+data.Name+"</th>"+
-        "</tr><tr>"+
-        "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='KB'>"+data.kb+"</td>"+
-        "</tr><tr>"+
-        "<td id='hardness'>"+data.Tovalue('hardness',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='DPS'>"+data.Tovalue('dps',lv)+"</td>"+
-        "</tr><tr>"+
-        "<td id='range'>"+data.range+"</td>"+
-        "</tr><tr>"+
-        "<td id='freq'>"+data.Freq+"</td>"+
-        "</tr><tr>"+
-        "<td id='speed'>"+data.speed+"</td>"+
-        "</tr><tr>"+
-        "<td id='multi'>"+data.Aoe+"</td>"+
-        "</tr><tr>"+
-        "<td id='cost'>"+data.cost+"</td>"+
-        "</tr><tr>"+
-        "<td id='cd'>"+data.cd+"</td>"+
-        "</tr><tr>"+
-        "<td id='char'>"+data.CharHtml(lv)+"</td>"+
-        "</tr>"+
-        "</table>"+
-        "</div>"
-      );
+      $(".comparedatabody").append(AddCompareData(data,lv,bro));
     }
     highlightTheBest();
   });
+  $(document).on('click',"#level i",function () {
+    let width = $(this).parent()[0].offsetWidth,
+        top = $(this).parent().offset().top+$(this).parent()[0].offsetHeight,
+        left = $(this).parent().offset().left,
+        value = Number($(".panel").attr('value')),
+        id = $(this).parents('.comparedata').attr("id"),
+        panel_id = $(".panel").attr('id');
+    $(".panel").css({
+      width:width,
+      top:top,
+      left:left,
+      height:id==panel_id?(value?0:100):100
+    }).attr({
+      id:$(this).parents('.comparedata').attr("id"),
+      value:id==panel_id?(value?0:1):1
+    });
+    $(this).css('transform',function () {
+      return Number($(".panel").attr('value'))?'rotate(180deg)':'rotate(0deg)'
+    }).parents('.comparedata').siblings().each(function () {
+      $(this).find("#level i").css('transform','rotate(0deg)');
+    });
+    $('.panel #switch').html("切換階級");
+  });
+  $(document).on("click",'.panel span',function () {
+    let action = $(this).attr("id"),id = $('.panel').attr("id");
+    if(action == 'del'){
+      let arr = [];
+      $(".comparedataholder").find("#"+id).remove();
+      $(".comparedata").each(function () {
+        let a = $(this).attr("id");
+        if(a != id) arr.push(a);
+      });
+      socket.emit("compare cat",{id:current_user_data.uid,target:arr});
+      colsePanel();
+    }
+    else if(action == 'hide'){
+      $(".comparedataholder").find("#"+id).hide(400);
+      colsePanel();
+    }
+    else if(action == 'switch'){
+      let bro = $('.comparedataholder').find("#"+id).attr("bro").split(",");
+      if(bro.length>1){
+        let html = '';
+        for(let i in bro) html+='<span id="'+bro[i]+'">'+bro[i].split("-")[1]+'階</span>';
+        $(this).html(html);
+      } else {
+        socket.emit("display cat",{
+          uid : current_user_data.uid,
+          cat : bro[0],
+          history:false
+        });
+      }
+    }
+    else {
+      socket.emit("mark own",{
+        uid:current_user_data.uid,
+        cat:id.substring(0,3),
+        mark:true
+      });
+      colsePanel();
+    }
+  });
+  $(document).on('click','.panel #switch span',function () {
+    socket.emit("display cat",{
+      uid : current_user_data.uid,
+      cat : $(this).attr('id'),
+      history:false
+    });
+  })
+  socket.on("display cat result",function (result) {
+    // console.log(result) ;
+    let data = new Cat(result.this),
+        arr = result.bro,
+        lv = result.lv,
+        id = data.id.substring(0,3),
+        brr=[];
+    $(".comparedata").each(function () {
+      let a = $(this).attr("id").substring(0,3),
+          _this = $(this);
+      if(a == id) {
+        $(AddCompareData(data,lv,arr)).insertBefore(this);
+        $(this).remove();
+      }
+    });
+    highlightTheBest();
+    $(".comparedata").each(function () {brr.push($(this).attr("id"))});
+    socket.emit("compare cat",{id:current_user_data.uid,target:brr});
+    colsePanel();
+  });
+  $('.compareDisplay').on("scroll",colsePanel);
+  function colsePanel() {
+    $('.panel').css("height",0).attr('value',0);
+    $("#level i").css("transform",'rotate(0deg)');
+  }
+
   $(document).on('click','.comparedata img',function () {
     let id = $(this).parents('.comparedata').attr('id');
     socket.emit("display cat",{
@@ -105,7 +141,7 @@ $(document).ready(function () {
   });
 
   var input_org ;
-  $(document).on('click',".comparedata #level",function () {
+  $(document).on('click',".comparedata #level span",function () {
     input_org = $(this).text();
     $(this).html('<input type="text" value="' +input_org+ '"></input>');
     $(this).find('input').select();
@@ -264,32 +300,74 @@ $(document).ready(function () {
     snapshot(target);
   });
   var nav_timeout ;
-  $("#nav_main").hover(function () {
-    $(this).siblings().fadeIn().css("display",'flex');
-    $("#nav_zoom_in").css("transform","translate(-77.28px,-20.72px)");
-    $("#nav_zoom_out").css("transform","translate(-56.57px,56.57px)");
-    $("#nav_org").css("transform","translate(20.72px,77.28px)");
+  $(".side_bar").hover(function () {
+    let i = 1 ;
+    $(this).children().each(function () {
+      $(this).animate({right:0},100*i);
+      i++
+    });
   },function () {
-    nav_timeout = setTimeout(function () {hideZoom()},3000);
-  });
-  $(".compareNav div[id!='nav_main']").hover(function () {
-    clearTimeout(nav_timeout);
-  },function () {
-    nav_timeout = setTimeout(function () {hideZoom()},1500);
+    hideZoom()
   });
   function hideZoom() {
-    $("#nav_zoom_in").css("transform","translate(0px,0px)").fadeOut();
-    $("#nav_zoom_out").css("transform","translate(0px,0px)").fadeOut();
-    $("#nav_org").css("transform","translate(0px,0px)").fadeOut();
+    let i = 1 ;
+    $('.side_bar').children().each(function () {
+      $(this).animate({right:-100},100*i);
+      i++
+    });
   }
   var scale = 1 ;
-  $(document).on('click','.compareNav div',function () {
-    let type = $(this).attr("id").split("nav_")[1];
-    if(type == 'zoom_in'){
+  $(document).on('click','.floatbutton',function () {
+    let type = $(this).attr("id");
+    if(type == 'nav_zoom_in'){
       scale = scale>1.5?scale:scale+.1;
-    } else if(type == 'zoom_out'){
+    } else if(type == 'nav_zoom_out'){
       scale = scale<.11?scale:scale-.1;
-    } else if(type == 'org') scale = 1 ;
+    } else if(type == 'nav_org') scale = 1 ;
+    else if(type == 'showall'){
+      $('.comparedata').show(400);
+    }
     $(".compareTable").css('transform','scale('+scale+','+scale+')');
   });
+
+  function AddCompareData(data,lv,bro) {
+    let html = '';
+    html +=
+      "<div style='flex:1' class='comparedata' id='"+data.id+"' bro='"+bro+"'>"+
+      "<table>"+
+      "<tr>"+
+      "<th id='level'><span>"+lv+"</span><i class='material-icons'>&#xe5c5;</i></th>"+
+      "</tr><tr>"+
+      "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
+      "</tr><tr>"+
+      "<th id='name'>"+data.Name+"</th>"+
+      "</tr><tr>"+
+      "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
+      "</tr><tr>"+
+      "<td id='KB'>"+data.kb+"</td>"+
+      "</tr><tr>"+
+      "<td id='hardness'>"+data.Tovalue('hardness',lv)+"</td>"+
+      "</tr><tr>"+
+      "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
+      "</tr><tr>"+
+      "<td id='DPS'>"+data.Tovalue('dps',lv)+"</td>"+
+      "</tr><tr>"+
+      "<td id='range'>"+data.range+"</td>"+
+      "</tr><tr>"+
+      "<td id='freq'>"+data.Freq+"</td>"+
+      "</tr><tr>"+
+      "<td id='speed'>"+data.speed+"</td>"+
+      "</tr><tr>"+
+      "<td id='multi'>"+data.Aoe+"</td>"+
+      "</tr><tr>"+
+      "<td id='cost'>"+data.cost+"</td>"+
+      "</tr><tr>"+
+      "<td id='cd'>"+data.cd+"</td>"+
+      "</tr><tr>"+
+      "<td id='char'>"+(data.tag?data.tag.join("/"):"無")+"</td>"+
+      "</tr>"+
+      "</table>"+
+      "</div>";
+      return html
+  }
 });

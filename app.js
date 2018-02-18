@@ -498,8 +498,13 @@ io.on('connection', function(socket){
           catArr = snapshot.val().variable ? snapshot.val().variable.cat : [];
       for(let i in data.target) {
         let id = data.target[i].substring(0,3),
-            lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def;
-        compare.push({data:catdata[data.target[i]],lv:lv});
+            lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def,
+            bro = [];
+        for(let j=1;j<4;j++){
+          let a = id+"-"+j ;
+          if(a != data.target[i]) if(catdata[a]) bro.push(a) ;
+        }
+        compare.push({data:catdata[data.target[i]],lv:lv,bro:bro});
       }
       socket.emit("c2c compare",compare);
 

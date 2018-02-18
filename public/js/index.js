@@ -150,6 +150,7 @@ $(document).ready(function () {
         target.prev('.show_panel').attr('value',1).siblings(".show_panel").attr("value",0);
         target.animate({"height":panel_height},400)
             .siblings('.nav_panel').animate({"height":0},400);
+        clearTimeout(close_nav_panel);
       },200);
     },function () {
       let target = $(this).next('.nav_panel');
@@ -233,12 +234,13 @@ $(document).ready(function () {
         hh = today.getHours(),
         html='',
         arrr = ['紺野美崎','貓塚花凜','片桐戀','虹谷彩理'];
-    console.log(dd,hh);
+    // console.log(dd,hh);
 
     $("#year_event").click(function () {$(this).fadeOut();});
     $('nav,.m_nav_panel').click(function () {
       $("#year_event").fadeOut();
     });
+
     html+="<thead><tr><th></th>";
     if(dd<27)
       for(let i=dd;i<dd+3;i++){

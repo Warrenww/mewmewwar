@@ -28,7 +28,7 @@ var config = {
   }
   // aibot("你好")
 
-  var i=364;
+  var i=390;
   getData(i);
   function getData(i) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -79,7 +79,7 @@ var config = {
         database.ref("/enemydata/"+AddZero(i)).update(obj);
 
         i++;
-        if(i<390)
+        if(i<394)
           getData(i);
         else
           setTimeout(function () {

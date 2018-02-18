@@ -28,7 +28,7 @@ var config = {
   }
   // aibot("你好")
 
-  var i=100,j=1;
+  var i=400,j=1;
   getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
@@ -73,20 +73,23 @@ var config = {
         obj.aoe = row_4.children().eq(3).children().eq(0).text() == "単体" ? false : true;
         obj.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
         obj.cd = Number(row_4.children().eq(7).children().eq(0).text())/30;
+        obj.region = '[JP]';
+        obj.id = AddZero(i)+"-"+j;
         parseChar(row_5.children().eq(1),obj);
-        // parseCondition(row_7,row_8,obj);
+        parseCondition(row_7,row_8,obj);
 
         console.log(AddZero(i)+"-"+j);
         console.log(obj);
-        // database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj);
+        database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj);
         if(j<bro) {j++;getData(i,j);}
         else{
           j=1;
-          // i++;
-          if( i == 183 || i == 203 || i == 214 || i == 201 ||
-              i == 286 || i == 321 || i == 340 || i == 354 ||
-              i == 383) i++;
-          // getData(wwww[k],j);
+          i++;
+          // if( i == 183 || i == 203 || i == 214 || i == 201 ||
+          //     i == 286 || i == 321 || i == 340 || i == 354 ||
+          //     i == 383) i++;
+          if(i<403)getData(i,j);
+          else
           setTimeout(function () {
             process.exit()
           },1000)

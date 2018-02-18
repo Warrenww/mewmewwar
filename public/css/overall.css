@@ -408,7 +408,7 @@ canvas{transition: .4s ease-in-out}
 #canvas_holder a,
 #snapshot,
 #canvas_holder span,
-.compareNav div{
+.floatbutton{
   color: white;
   background-color: #1f9591;
   width: 72px;
@@ -434,7 +434,7 @@ canvas{transition: .4s ease-in-out}
 #canvas_holder a:hover,
 #canvas_holder span:hover,
 #snapshot:hover,
-.compareNav div:hover{
+.floatbutton:hover{
   text-decoration: none;
   background-color: rgb(242, 163, 70)
 }

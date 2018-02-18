@@ -121,3 +121,11 @@ nav a{cursor: pointer;}
 }
 #year_event th{background-color: rgba(242, 174, 103, 0.81);color:white}
 #year_event td{background-color: rgba(255, 255, 255, 0.81);font-size: 20px}
+#year_event::before{
+  content:"X";
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  color: white;
+  font-size: 30px;
+}
