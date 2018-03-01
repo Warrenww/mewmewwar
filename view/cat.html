@@ -7,6 +7,15 @@
         enable_page_level_ads: true
       });
     </script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-111466284-1', 'auto');
+      ga('send', 'pageview');
+    </script>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,23 +31,6 @@
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <!-- <nav>
-      <a href="\">
-        <img src="../public/css/footage/title.png"/>
-      </a>
-      <div class="navLinkBox"></div>
-      <div class="settingBox"></div>
-      <div class="mobile">
-        <i class="material-icons" id="m_nav_menu">menu</i>
-      </div>
-    </nav>
-    <div id="m_nav_panel_BG"></div>
-    <div class="m_nav_panel">
-      <div class="m_navLinkBox"></div>
-      <div class="m_settingBox"></div>
-    </div> -->
-
-
     <div class="page_1">
       <div class="content">
         <div class="search_type">
@@ -270,6 +262,55 @@
         </div>
       </div>
     </div>
+
+    <div class="survey_holder">
+      <div class="survey">
+        <div id="name">
+          <h2>問卷調查:<span></span></h2>
+        </div>
+        <div>
+          你對這隻貓的暱稱是:
+          <input type='text' placeholder="多個暱稱請用半形空格隔開" />
+        </div>
+        <div>
+          你覺得這隻貓的定位是?<i class="material-icons">&#xe887;</i></br>
+          <span class="button" value='0'>肉盾</span>
+          <span class="button" value='0'>砲灰</span>
+          <span class="button" value='0'>坦攻</span>
+          <span class="button" value='0'>控場</span>
+          <span class="button" value='0'>攻擊手</span>
+          <span class="button" value='0'>快攻手</span>
+          <ul style="display:none">
+            <li><b>肉盾</b>:有高血量可以有效阻擋戰線被推進</li>
+            <li><b>砲灰</b>:便宜且生產快速，可以拖延戰線的推進</li>
+            <li><b>坦攻</b>:高血量且具有一定攻擊力，可以坦入敵人射程內給予傷害</li>
+            <li><b>控場</b>:以各種妨礙效果阻止敵人推進</li>
+            <li><b>攻擊手</b>:主要為我方推線的角色</li>
+            <li><b>快攻手</b>:跑速快，通常有擊退反擊特性，可以迅速衝入敵人射程，給予重創</li>
+          </ul>
+        </div>
+        <div>
+          你對這隻貓的實用度評分是?</br>
+          <span>
+            <i class="material-icons" value='1' no='1'>&#xe885;</i>
+            <i class="material-icons" value='1' no='2'>&#xe885;</i>
+            <i class="material-icons" value='1' no='3'>&#xe885;</i>
+            <i class="material-icons" value='0' no='4'>&#xe885;</i>
+            <i class="material-icons" value='0' no='5'>&#xe885;</i>
+          </span>
+        </div>
+        <div>
+          簡單的敘述一下評價吧(40字以內)</br>
+          <textarea maxlength='40'></textarea>
+        </div>
+        <span style="width:100%;display:flex;justify-content:center">
+          <button id='submit'>提交</button>
+          <button id='cancel'>取消</button>
+        </span>
+      </div>
+      <div class="survey_BG"></div>
+    </div>
+
     <style>
       #loading{
         position:fixed;

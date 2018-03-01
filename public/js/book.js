@@ -5,14 +5,14 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connect",user);
+      socket.emit("user connect",{user:user,page:location.pathname});
     } else {
       console.log('did not sign in');
     }
   });
 
   socket.on("current_user_data",function (data) {
-    // console.log(data);
+    console.log(data);
     current_user_data = data ;
     if(data.folder.owned)
       socket.emit("required owned",{uid:data.uid,owned:data.folder.owned});

@@ -7,7 +7,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connect",user);
+      socket.emit("user connect",{user:user,page:location.pathname});
     } else {
       console.log('did not sign in');
     }
@@ -514,7 +514,7 @@ function displayenemyHtml(data) {
   "</tr>" :
   "<tr>"+
   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-  data.imgURL+".png' style='height:100%'"
+  data.imgURL+"' style='height:100%'"
   +"</tr><tr>"+
   "<th colspan='6' id='name'>"+data.name+"</th>"+
   "</tr>" ;

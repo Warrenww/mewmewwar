@@ -10,7 +10,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connect",user);
+      socket.emit("user connect",{user:user,page:location.pathname});
     } else {
       console.log('did not sign in');
     }
@@ -122,13 +122,14 @@ $(document).ready(function () {
   $(document).on('click','#searchBut',function () {
     let keyword = $(this).siblings().val();
     socket.emit("text search",{key:keyword,type:'cat'});
+    ga('send', 'event', 'search', 'text search','cat');
   });
   $(document).on('keypress','#searchBox',function (e) {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) {
       let keyword = $(this).val();
       socket.emit("text search",{key:keyword,type:'cat'});
-      ga('send', 'event', 'cat', 'search', 'text',{text:val});
+      ga('send', 'event', 'search', 'text search','cat');
     }
   });
   $(document).on('click',".search_table .button",function () {
@@ -141,6 +142,7 @@ $(document).ready(function () {
     let code = (e.keyCode ? e.keyCode : e.which);
     if (code == 13) search();
     $("body").unbind('keypress',quickSearch);
+    ga('send', 'event', 'search', 'quick search','cat');
   }
 
   var input_org ;
@@ -201,7 +203,7 @@ $(document).ready(function () {
         brr = result.combo,
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
         own = result.own;
-
+    if(!result.survey&&Math.random()>0.5) $(".survey_holder").css("display",'flex');
     displayCatData(data,arr,brr,lv,result.count,own) ;
     current_cat_data = data;
   });
@@ -251,6 +253,9 @@ $(document).ready(function () {
     $(".dataTable").attr('id',data.id).append(html);
     initialSlider(data,lv);
     scroll_to_class("display",0);
+    $(".survey").attr("id",data.id)
+      .find("#name").css("background-image",'url('+data.imgURL+')').find("span").text(data.Name);
+
     if(data.id == "334-2"&&(Math.random()<0.4)) {
       $(".dataTable").append(
         '<div class="animate_cat">'+
@@ -350,7 +355,7 @@ $(document).ready(function () {
   function condenseCatName(data) {
     console.log('condensing....');
     let now = '000' ;
-    console.log(data);
+    // console.log(data);
 
     let html = '<span class="card-group" hidden>' ;
     for(let i in data){
@@ -599,6 +604,68 @@ $(document).ready(function () {
       $(this).find("input").remove();
       $("#fight_alert").css("left",-250);
     },2600);
+  });
+
+  $(".survey span i").click(function () {
+    let a = $(this).attr("no");
+    $(".survey i").each(function () {
+      let b = $(this).attr("no");
+
+      if (b>a) $(this).attr('value',0);
+      else $(this).attr('value',1);
+    });
+  });
+  $(".survey div i").click(function () {
+    $(this).siblings('ul').toggle(400)
+  });
+  $(document).on('click','.survey #cancel,.survey_BG',function () {
+    let r = confirm("確定不填寫問卷?");
+    if(r) $('.survey_holder').fadeOut();
+    ga('send', 'event', 'survey', 'deny', '');
+    // ga('send', {
+    //   hitType: 'event',
+    //   eventCategory: 'survey',
+    //   eventAction: 'deny',
+    //   // eventLabel: 'Fall Campaign'
+    // });
+  });
+  $(document).on("click",'.survey #submit',function () {
+    let survey = $(this).parent().parent(),
+        id = survey.attr('id'),
+        obj = {
+          nickname : survey.find('input').val().split(" "),
+          application : {
+            shield : Number(survey.find(".button").eq(0).attr("value"))?true:false,
+            ash : Number(survey.find(".button").eq(1).attr("value"))?true:false,
+            tank : Number(survey.find(".button").eq(2).attr("value"))?true:false,
+            control : Number(survey.find(".button").eq(3).attr("value"))?true:false,
+            attack : Number(survey.find(".button").eq(4).attr("value"))?true:false,
+            fastatk : Number(survey.find(".button").eq(5).attr("value"))?true:false
+          },
+          rank : 0,
+          narration : survey.find("textarea").val()
+        };
+    survey.find("i").each(function () {
+      if(Number($(this).attr('value'))) obj.rank ++ ;
+    });
+    console.log(id,obj);
+    let r = confirm("確定提交問卷");
+    if(r){
+      socket.emit("cat survey",{
+        uid : current_user_data.uid,
+        id : id,
+        obj
+      });
+      alert("感謝您填寫問卷<3");
+      if(r) $('.survey_holder').fadeOut();
+      ga('send', {
+        hitType: 'event',
+        eventCategory: 'survey',
+        eventAction: 'submit',
+        // eventLabel: 'Fall Campaign'
+      });
+    }
+
   });
 
 

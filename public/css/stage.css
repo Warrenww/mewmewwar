@@ -60,7 +60,7 @@
   background-size: cover;
   background-position: center;
 }
-#crazy,#hard,#smallCat{
+#crazy,#hard,#smallCat,#XP{
   background-image: url("footage/stage/crazy_BG.png");
   background-color: rgba(0,0,0,.1);
   font-size: 0;
@@ -68,7 +68,8 @@
 #hard{background-image: url("footage/stage/hard_BG.png");}
 #smallCat{background-image: url("footage/stage/smallCat_BG.png");}
 #smallCat:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
-#XP,#cyclone,#evolution,#castleMaterial,#ticket
+#XP{background-image: url("footage/stage/XP_BG.png");}
+#cyclone,#evolution,#castleMaterial,#ticket
 {background-blend-mode: normal;}
 
 

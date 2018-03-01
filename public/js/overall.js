@@ -149,7 +149,7 @@ $(document).ready(function () {
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
-  
+
 
 });
 
@@ -214,8 +214,8 @@ $(window).load(function () {
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-
 gtag('config', 'UA-111466284-1');
+
 
 function snapshot(target) {
 

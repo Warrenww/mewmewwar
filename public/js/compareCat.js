@@ -6,7 +6,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connect",user);
+      socket.emit("user connect",{user:user,page:location.pathname});
     } else {
       console.log('did not sign in');
     }
@@ -25,6 +25,7 @@ $(document).ready(function () {
   });
 
   socket.on("c2c compare", function (compare){
+    $(".comparedatabody").empty();
     for(let i in compare){
       let data = new Cat(compare[i].data),
           lv = compare[i].lv,
@@ -111,6 +112,7 @@ $(document).ready(function () {
         lv = result.lv,
         id = data.id.substring(0,3),
         brr=[];
+    current_compare_cat[data.id] = data;
     $(".comparedata").each(function () {
       let a = $(this).attr("id").substring(0,3),
           _this = $(this);
@@ -229,11 +231,26 @@ $(document).ready(function () {
     });
   }
   $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
+  var char_detail = 0 ;
   function sortCompareCat() {
     let name = $(this).attr("id");
     var arr = [] ;
     let flag = true ;
-    if(name == 'Picture' || name == 'name' ||name == 'char' || name =='multi' || name == 'KB') return ;
+    if(name == 'char'){
+      // console.log(current_compare_cat);
+      $(".comparedata").each(function () {
+        // console.log(char_detail);
+        let id = $(this).attr('id'),
+        data = current_compare_cat[id],
+        lv = Number($(this).find("#level").children('span').text()),
+        char = data.CharHtml(lv),
+        tag = data.tag?data.tag.join("/"):"無";
+        $(this).find("#char").html(char_detail?tag:char);
+      });
+      char_detail = char_detail?0:1;
+      return
+    }
+    if(name == 'Picture' || name == 'name' || name =='multi' || name == 'KB') return ;
     $(this).css('border-left','5px solid rgb(246, 132, 59)')
             .parent().siblings().children().css('border-left','0px solid');
 
@@ -364,7 +381,9 @@ $(document).ready(function () {
       "</tr><tr>"+
       "<td id='cd'>"+data.cd+"</td>"+
       "</tr><tr>"+
-      "<td id='char'>"+(data.tag?data.tag.join("/"):"無")+"</td>"+
+      "<td id='char'>"+
+      (char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"))+
+      "</td>"+
       "</tr>"+
       "</table>"+
       "</div>";

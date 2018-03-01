@@ -27,12 +27,21 @@ var config = {
     request.end();
   }
   // aibot("你好")
+  var stdin = process.openStdin();
+  var i = 0;
+  stdin.addListener("data", function(d) {
+      // note:  d is an object, and when converted to a string it will
+      // end with a linefeed.  so we (rather crudely) account for that
+      // with toString() and then trim()
+      let arr = d.toString().trim().split(",");
+      console.log(arr);
+      getData(i,1,arr);
 
-  var i=400,j=1;
-  getData(i,j);
-  function getData(i,j) {
+    });
+  // var i=107,j=1;
+  function getData(i,j,seq) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
-    let url = "https://battlecats-db.com/unit/"+AddZero(i)+".html";
+    let url = "https://battlecats-db.com/unit/"+AddZero(seq[i])+".html";
     // console.log(url);
     request({
       url: url,
@@ -73,26 +82,27 @@ var config = {
         obj.aoe = row_4.children().eq(3).children().eq(0).text() == "単体" ? false : true;
         obj.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
         obj.cd = Number(row_4.children().eq(7).children().eq(0).text())/30;
-        obj.region = '[JP]';
+        obj.region = '[TW][JP]';
         obj.id = AddZero(i)+"-"+j;
         parseChar(row_5.children().eq(1),obj);
         parseCondition(row_7,row_8,obj);
 
-        console.log(AddZero(i)+"-"+j);
+        console.log(AddZero(seq[i])+"-"+j);
         console.log(obj);
-        database.ref("/newCatData/"+AddZero(i)+"-"+j).update(obj);
-        if(j<bro) {j++;getData(i,j);}
+        database.ref("/newCatData/"+AddZero(seq[i])+"-"+j).update(obj);
+        if(j<bro) {j++;getData(i,j,seq);}
         else{
           j=1;
           i++;
           // if( i == 183 || i == 203 || i == 214 || i == 201 ||
           //     i == 286 || i == 321 || i == 340 || i == 354 ||
           //     i == 383) i++;
-          if(i<403)getData(i,j);
+          if(i<seq.length)
+            getData(i,j,seq);
           else
-          setTimeout(function () {
-            process.exit()
-          },1000)
+            setTimeout(function () {
+              process.exit()
+            },1000);
         }
 
       }

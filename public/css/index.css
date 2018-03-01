@@ -129,3 +129,12 @@ nav a{cursor: pointer;}
   color: white;
   font-size: 30px;
 }
+.new::after{
+  content: "NEW";
+  font-size: 10px;
+  position: relative;
+  top: -10px;
+  animation-name: blink;
+  animation-duration: .5s ;
+  animation-iteration-count: infinite;
+}

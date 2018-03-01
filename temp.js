@@ -44,51 +44,50 @@ console.log('start');
 //   }
 // });
 
-database.ref("/enemydata").once("value",function (snapshot) {
-  let enemydata = snapshot.val();
-  let count = 0;
-    for(let i in enemydata){
-      count ++;
-      // process.stdout.clearLine();
-      // process.stdout.cursorTo(0);
-      // process.stdout.write("update enemy "+i+"---");
-      // process.stdout.write((count/382*100).toFixed(2).toString());
-      // process.stdout.write("%");
+// database.ref("/enemydata").once("value",function (snapshot) {
+//   let enemydata = snapshot.val();
+//   let count = 0;
+//     for(let i in enemydata){
+//       count ++;
+//       // process.stdout.clearLine();
+//       // process.stdout.cursorTo(0);
+//       // process.stdout.write("update enemy "+i+"---");
+//       // process.stdout.write((count/382*100).toFixed(2).toString());
+//       // process.stdout.write("%");
+//
+//       // if(enemydata[i].全名) {
+//         // console.log(enemydata[i].全名,enemydata[i].name);
+//         // database.ref("/enemydata/"+i).update({multi:null});
+//       // }
+//       // database.ref("/catdata/"+i+"/攻撃力").remove();
+//       // database.ref("/catdata/"+i+"/體力").remove();
+//     }
+//     setTimeout(function () {
+//       process.exit()
+//     },2000)
+// });
 
-      // if(enemydata[i].全名) {
-        // console.log(enemydata[i].全名,enemydata[i].name);
-        database.ref("/enemydata/"+i).update({multi:null});
-      // }
-      // database.ref("/catdata/"+i+"/攻撃力").remove();
-      // database.ref("/catdata/"+i+"/體力").remove();
-    }
-    setTimeout(function () {
-      process.exit()
-    },2000)
-});
-
-database.ref("/user").once("value",function (snapshot) {
-  console.log('get user data');
-  userdata = snapshot.val();
-  let count = 0 ;
-  for(let i in userdata){
-    // let stage = userdata[i].history.stage;
-    // for(let j in stage){
-    //   process.stdout.clearLine();
-    //   process.stdout.cursorTo(0);
-    //   process.stdout.write("loading user data "+i+" history "+j);
-    //   process.stdout.write((Number(count)/688*100).toFixed(2).toString());
-    //   process.stdout.write("%");
-    //   // let arr = stage != "0" ? (stage[j].id).split("-") : [];
-    //   if (j=="0") {
-    //     // database.ref("/user/"+i+"/history/stage").set("0");
-    //   }
-    // }
-    // database.ref("/user/"+i+"/setting/mine_alert/count").set(0)
-    count++;
-  }
-  console.log('finfish');
-});
+// database.ref("/user").once("value",function (snapshot) {
+//   console.log('get user data');
+//   userdata = snapshot.val();
+//   let count = 0 ;
+//   for(let i in userdata){
+//     process.stdout.clearLine();
+//     process.stdout.cursorTo(0);
+//     process.stdout.write("loading user data "+i);
+//     process.stdout.write((Number(count)/811*100).toFixed(2).toString());
+//     process.stdout.write("%");
+//     let owned = userdata[i].folder!='0'&&userdata[i].folder?
+//         (userdata[i].folder.owned!="0"&&userdata[i].folder.owned?userdata[i].folder.owned:[]):[];
+//     let arr = [];
+//     for(let j in owned){
+//       if(arr.indexOf(owned[j])==-1)arr.push(owned[j])
+//     }
+//     database.ref("/user/"+i+"/folder/owned").set(arr)
+//     count++;
+//   }
+//   console.log('finfish');
+// });
 
 // database.ref("/stagedata/smallCat").once('value',function (snapshot) {
 //   let data = snapshot.val();
@@ -115,29 +114,70 @@ var t = new Date(),
     y = t.getFullYear(),
     m = AddZero(t.getMonth()+1),
     d = AddZero(t.getDate()),
-    url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
-    // console.log(url+y+m+d+".html");
+    url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
+    root = 'https://forum.gamer.com.tw/';
+
+      // console.log(url+y+m+d+".html");
 
 request({
-  url: "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/rank/tw/index.html",
+  url: url,
   method: "GET"
 },function (e,r,b) {
   if(!e){
     $ = cheerio.load(b);
     // console.log($("tbody").html());
-    $("tr").each(function () {
-      let rank = $(this).children("td").eq(0).text();
-      let name = $(this).children("td").eq(1).text().split("\n");
-      let www = '';
-      for(let i in name){
-        www += name[i].trim();
+    let title = $(".b-list__row");
+    let today = y+m+d;
+    let arr = [];
+    console.log(today);
+    title.each(function () {
+      let a = $(this).children(".b-list__main").find("a");
+      if(a.text().indexOf("活動資訊")!=-1){
+        let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
+        for(let i in b){
+          b[i] = b[i].split("/");
+          for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
+          b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
+        }
+        if(b[1]>today){
+          console.log(a.text());
+          console.log(b);
+          arr.push(root+a.attr("href"));
+        }
       }
-      console.log(rank,www);
-      database.ref("/rankdata/"+rank).set(www);
-      // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
     });
+    console.log(arr[0]);
+    parsePrediction(arr[0]);
   }
 });
+function parsePrediction(url) {
+  request({
+    url:url,
+    method:"GET"
+  },function (e,r,b) {
+    let obj = {
+      source_1 : url
+    }
+    if(!e){
+      $ = cheerio.load(b);
+      let gachaP = $("section").eq(0).find(".c-article__content"),
+          eventP = $("section").eq(1).find(".c-article__content");
+      // console.log(gachaP.text());
+      // console.log(eventP.text());
+      console.log(gachaP.find('a').attr("href"));
+      gachaP.children("div").each(function () {
+        let content = $(this).text();
+        if(content&&content.length<30){
+          // console.log(content);
+          let arr = content.split(' ');
+          // console.log(arr);
+          let brr = arr[0].split("~");
+          console.log(brr,arr[1],arr[2]);
+        }
+      });
+    }
+  });
+}
 
 function AddZero(n) {
   return n<10 ? "0"+n : n

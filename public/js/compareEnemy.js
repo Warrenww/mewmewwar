@@ -6,7 +6,7 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connect",user);
+      socket.emit("user connect",{user:user,page:location.pathname});
     } else {
       console.log('did not sign in');
     }
@@ -26,6 +26,7 @@ $(document).ready(function () {
 
   socket.on("e2e compare", function (compare){
     console.log(compare);
+    $(".comparedatabody").empty();
     for(let i in compare){
       let data = new Enemy(compare[i].data),
           lv = compare[i].lv;
@@ -135,11 +136,25 @@ $(document).ready(function () {
     });
   }
   $(document).on('click','.compareTable .comparedatahead th',sortCompareEnemy);
+  var char_detail = 0 ;
   function sortCompareEnemy() {
     let name = $(this).attr("id");
     var arr = [] ;
     let flag = true ;
-    if(name == 'Picture' || name == 'name' ||name == 'char' || name =='multi' || name == 'KB') return ;
+    if(name == 'char'){
+      $(".comparedata").each(function () {
+        // console.log(char_detail);
+        let id = $(this).attr('id'),
+        data = current_compare_enemy[id],
+        lv = Number($(this).find("#level").text())/100,
+        char = data.CharHtml(lv),
+        tag = data.tag?data.tag.join("/"):"無";
+        $(this).find("#char").html(char_detail?tag:char);
+      });
+      char_detail = char_detail?0:1;
+      return
+    }
+    if(name == 'Picture' || name == 'name' || name =='multi' || name == 'KB') return ;
     $(this).css('border-left','5px solid rgb(246, 132, 59)')
             .parent().siblings().children().css('border-left','0px solid');
 
@@ -270,7 +285,9 @@ $(document).ready(function () {
     "</tr><tr>"+
     "<td id='cost'>"+data.reward+"</td>"+
     "</tr><tr>"+
-    "<td id='char'>"+(data.tag?data.tag.join("/"):"無")+"</td>"+
+    "<td id='char'>"+
+    (char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"))+
+    "</td>"+
     "</tr>"+
     "</table>"+
     "</div>";

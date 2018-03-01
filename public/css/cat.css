@@ -151,3 +151,57 @@
   width: 100%;
   display: flex;
 }
+.survey_holder{
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: fixed;
+  top: 0;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+}
+.survey_BG{
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,.7);
+  position: fixed;
+  top: 0;
+}
+.survey{
+  background-color: rgba(255, 255, 255,1);
+  background-image: url("https://pre00.deviantart.net/f5e0/th/pre/i/2005/258/c/4/paper_texture_v5_by_bashcorpo.jpg");
+  padding: 20px 10px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 2;
+}
+.survey div{
+  border-bottom: 1px solid rgba(0,0,0,.9);
+  padding: 5px;
+}
+.survey input{
+  border: 0;
+  border-bottom: 1px solid rgb(39, 11, 93);
+  background-color: transparent;
+}
+.survey textarea{
+  background-color: rgba(255,255,255,.4);
+  border: 2px solid rgb(237, 137, 33);
+  font-size: 16px;
+}
+.survey i{cursor: pointer;}
+.survey i[value~='1']{color: rgb(235, 209, 68);text-shadow: 2px 2px 5px black;}
+.survey #name{
+  border: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: rgba(0,0,0,.6);
+  background-blend-mode: multiply;
+  color: white;
+  background-position: 100%;
+}
+.survey #cancel{
+  background: linear-gradient(rgb(139, 147, 147),rgb(91, 86, 99))
+}

@@ -1,22 +1,20 @@
 $(document).ready(function () {
   var socket = io.connect();
   var rank_data;
-  var current_user_data = {
-    setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
-  };
+  var current_user_data = {};
 
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user connect",user);
-    } else {
-      console.log('did not sign in');
-    }
-  });
-
-  socket.on("current_user_data",function (data) {
-    console.log(data);
-    current_user_data = data ;
-  });
+  // auth.onAuthStateChanged(function(user) {
+  //   if (user) {
+  //     socket.emit("user connect",user);
+  //   } else {
+  //     console.log('did not sign in');
+  //   }
+  // });
+  //
+  // socket.on("current_user_data",function (data) {
+  //   console.log(data);
+  //   current_user_data = data ;
+  // });
 
   socket.emit("rankdata");
   socket.on("recive rank data",function (data) {

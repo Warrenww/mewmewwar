@@ -66,7 +66,7 @@ $(document).ready(function () {
     auth.onAuthStateChanged(function(user) {
       if (user) {
         setTimeout(function (data) {
-          socket.emit("user connect",user);
+          socket.emit("user connect",{user:user,page:location.pathname});
         },1000);
       } else {
         $("#login").fadeIn();
@@ -207,6 +207,7 @@ $(document).ready(function () {
           //   $("#mine_alert .fail").fadeIn().siblings('div').fadeOut();
           //   $("#mine_alert #ok").fadeOut().siblings('button').fadeIn();
           // }
+          $("#mine_alert").fadeOut();
         } else {
           $("#mine_alert").fadeOut();
           socket.emit("notice mine",{uid:current_user_data.uid,accept:false});
@@ -228,6 +229,14 @@ $(document).ready(function () {
         $("#helpModal").find(".modal-footer").html("本網站資料來源主要為<a href='https://cnhv.co/rnwe' target='blank'>超絕攻略網</a>");
       }
     }
+    socket.emit('get event date');
+    socket.on('true event date',function (data) {
+      let a = data.now,
+          b = today.getFullYear()+"/"+AddZero(today.getMonth()+1)+"/"+AddZero(today.getDate());
+      if(a == b){
+        $("nav").find("#event").addClass("new");
+      }
+    });
 
     //temp
     let dd = today.getDate(),
@@ -270,10 +279,10 @@ $(document).ready(function () {
       }
       html+="</tr>"
     }
-    $("#year_event").find("table").append(html);
+    // $("#year_event").find("table").append(html);
     hh = Math.floor(hh/3)-1;
-    $("#year_event").find("tr").eq(hh).children().eq(1)
-        .css("border","3px solid rgb(246, 149, 34)")
+    // $("#year_event").find("tr").eq(hh).children().eq(1)
+    //     .css("border","3px solid rgb(246, 149, 34)")
 
 
 });

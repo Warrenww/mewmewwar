@@ -119,20 +119,21 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
-      socket.emit("user connect",user);
+      socket.emit("user connect",{user:user,page:location.pathname});
       socket.emit("require setting",user.uid);
     } else {
       console.log('did not sign in');
     }
   });
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     current_user_data = data ;
     socket.emit("history",data.uid);
     $("#userName").attr('value',data.name);
   });
   socket.on("user setting",function (data) {
-    console.log(data);
+    // console.log(data);
+    let exp = 0 ;
     for(let i in data){
       if(i == "default_cat_lv"){
         $("#default_cat_lv").attr('value',data.default_cat_lv);
@@ -140,16 +141,21 @@ $(document).ready(function () {
         console.log(data[i].count);
         let count = data[i].count,ww;
         ww = count>1e5?count/1e6:count/1e3 ;
+        exp += count;
         $("#total_hash").text(ww.toFixed(2)+(count>1e5?"MH":"kH"))
+      } else if(i == 'cat_survey_count') {
+        $("#total_survey").text(data[i]);
+        exp += 1000*Number(data[i]);
       } else {
         $("#"+i).prop('checked',data[i]);
       }
     }
+    console.log(Math.log(exp));
 });
 
 
   socket.on("return history",function (history) {
-    console.log(history);
+    // console.log(history);
     for(let i in history.cat){
       $("#history_cat").append(
         '<span class="card" type="cat" value="'+history.cat[i].id+'" '+
