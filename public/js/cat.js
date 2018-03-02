@@ -350,6 +350,8 @@ $(document).ready(function () {
       type:"cat",
       value:value_search&&filterObj.length
     });
+    ga('send', 'event', 'search', type,'cat');
+
     scroll_to_div('selected');
   }
   function condenseCatName(data) {

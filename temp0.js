@@ -18,19 +18,13 @@ var database = firebase.database();
 console.log('start');
 var stdin = process.openStdin();
 
-stdin.addListener("data", function(d) {
-    // note:  d is an object, and when converted to a string it will
-    // end with a linefeed.  so we (rather crudely) account for that
-    // with toString() and then trim()
-    console.log("you entered: [" +
-        d.toString().trim() + "]");
-  });
+
 database.ref("/newCatData").once("value",function (snapshot) {
   console.log('load complete');
   catdata = snapshot.val();
   for(let i in catdata){
     // console.log(catdata[i].speed);
-    if(catdata[i].speed == '0'){
+    if(catdata[i].id != i){
       console.log(i,catdata[i].name);
     }
   }

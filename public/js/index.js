@@ -23,7 +23,7 @@ $(document).ready(function () {
         var user = result.user;
         // console.log(user);
         socket.emit("user login",result.user) ;
-        $("#login").fadeOut();
+        //$("#login").fadeOut();
         // window.location.assign("/");
       }).catch(function(error) {
         console.log(error);
@@ -45,7 +45,7 @@ $(document).ready(function () {
         // ...
       })
       .then(function () {
-        $("#login").fadeOut();
+        //$("#login").fadeOut();
         firebase.auth().onAuthStateChanged(function(user) {
           if (user) {
             // console.log(user);
