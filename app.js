@@ -408,7 +408,7 @@ io.on('connection', function(socket){
         last_enemy = '',
         last_stage = '',
         user = data.user,
-        userdata = {uid : user.uid},
+        userdata = {uid : user?user.uid:data.uid},
         page = data.page=='/'?'index':data.page.split("/")[2].split(".")[0];
     console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
