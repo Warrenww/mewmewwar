@@ -402,13 +402,14 @@ io.on('connection', function(socket){
   });
   socket.on("user connect",function (data){
     // console.log(data);
+    if(!data.user||!data.page) return
     let timer = new Date().getTime(),
         last_cat = '',
         last_combo = [],
         last_enemy = '',
         last_stage = '',
         user = data.user,
-        userdata = {uid : user?user.uid:data.uid},
+        userdata = {uid : user.uid},
         page = data.page=='/'?'index':data.page.split("/")[2].split(".")[0];
     console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
