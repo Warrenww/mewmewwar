@@ -214,7 +214,8 @@
   text-align: center;
   color: white;
   font-size: 20px;
-  min-width: 1000px
+  min-width: 1000px;
+  z-index: 9
 }
 @media screen and (max-width:768px){
   .bulletin span{
