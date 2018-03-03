@@ -203,7 +203,7 @@ $(document).ready(function () {
         brr = result.combo,
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
         own = result.own;
-    if(!result.survey&&Math.random()>0.5) $(".survey_holder").css("display",'flex');
+    // if(!result.survey&&Math.random()>0.5) $(".survey_holder").css("display",'flex');
     displayCatData(data,arr,brr,lv,result.count,own) ;
     current_cat_data = data;
   });
