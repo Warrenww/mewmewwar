@@ -4,14 +4,14 @@ class Cat{
     this.name = obj.name;
     this.aoe = obj.aoe;
     this.atk = obj.atk;
-    this.atk_period = obj.atk_period;
+    this.atk_period = Number(obj.atk_period)?obj.atk_period.toFixed(2):"-";
     this.atk_speed = Number(obj.atk_speed)?obj.atk_speed.toFixed(2):"-";
     this.cd = obj.cd.toFixed(1);
     this.char = obj.char;
     this.cost = obj.cost;
     this.count = obj.count;
     this.dps = obj.dps;
-    this.freq = obj.freq;
+    this.freq = Number(obj.freq)?obj.freq.toFixed(2):"-";
     this.get_method = obj.get_method;
     this.hardness = obj.hardness;
     this.hp = obj.hp;
@@ -22,6 +22,7 @@ class Cat{
     this.region = obj.region;
     this.speed = obj.speed;
     this.tag = obj.tag;
+    this.statistic = obj.statistic;
   }
   get Rarity(){
     var arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'],
@@ -33,10 +34,6 @@ class Cat{
   }
   get imgURL(){
     return "../public/css/footage/cat/u"+this.id+".png"
-  }
-  get Freq(){
-    if(this.freq) return this.freq.toFixed(1)
-    else return "-"
   }
   get Period(){
     if(this.atk_period) return this.atk_period.toFixed(2)

@@ -1,0 +1,196 @@
+﻿0PGqsCCnCQWqorSijrrRyvLO2hX2 270-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+0PGqsCCnCQWqorSijrrRyvLO2hX2 270-2
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+0PGqsCCnCQWqorSijrrRyvLO2hX2 319-2
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+0PGqsCCnCQWqorSijrrRyvLO2hX2 379-2
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+19fHsUZbjUMsqjODdlh3Tz8Qb9k2 259-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+19fHsUZbjUMsqjODdlh3Tz8Qb9k2 045-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":1},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 308-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 325-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 011-3
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 014-3
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 044-3
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":1},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 058-3
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+1ZSR3rcz2NNHSPLwZ0cSyGKGYcY2 082-2
+
+{"application":{"ash":1,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+2TTmn0Bu3SgGVhcgwHRNgY2ubpB2 043-1
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+BQTEyCsj4YTPdtTahs8h4FNKo9G2 100-3
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":1},"nickname":[{"nickname":"大狂巨神","owner":"BQTEyCsj4YTPdtTahs8h4FNKo9G2"}],"rank":[null,0,0,0,0,0]}
+
+FUBJQZy207WOvootG3smGBu7Hax1 138-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+IxSgHr2YQUf5fKheiEoPQoOqk842 200-2
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+IxSgHr2YQUf5fKheiEoPQoOqk842 200-3
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"nickname":[{"nickname":"漂流貓","owner":"IxSgHr2YQUf5fKheiEoPQoOqk842"}],"rank":[null,0,0,0,0,0]}
+
+OwRyaW6uuObIY4OuivyFnI0QVDW2 203-1
+
+{"application":{"ash":1,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+TdyPMpkyCFXVkJtct5Y57KVxBjx1 352-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+VWs7LbTkF2W7VwgWHADmvIe4Y8M2 211-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 100-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 145-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 151-1
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 151-2
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 159-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 151-3
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 159-3
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 200-1
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 200-3
+
+{"application":{"ash":0,"attack":0,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 031-1
+
+{"application":{"ash":0,"attack":1,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 031-3
+
+{"application":{"ash":0,"attack":1,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 033-2
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 033-3
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 041-2
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+Vwc9MBpztMhs4rJzOhFqfn90ijt1 041-3
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+X3FxASkivfVfedxOWviSMo7zlj92 045-3
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"shield":0,"tank":1},"rank":{"atk":[null,0,0,0,0,1],"control":[null,1,0,0,0,0],"cost":[null,0,1,0,0,0],"hp":[null,0,0,0,0,1],"range":[null,1,0,0,0,0],"speed":[null,0,1,0,0,0],"total":[null,0,0,0,1,0]}}
+
+et2eOjqLBrRpTqoP7PNm93Ji8XG3 129-3
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+iSoFuvVGYMhhHvEvbXYUMpkjPDw2 001-2
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"nickname":[{"nickname":"健美貓","owner":"iSoFuvVGYMhhHvEvbXYUMpkjPDw2"}],"rank":[null,0,0,0,0,0]}
+
+keCJambhDyMfxxc9mW2TgpN4CpC3 004-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+keCJambhDyMfxxc9mW2TgpN4CpC3 039-2
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+m94KqwdcEudl65Ncyoxui0lFwDG2 245-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+m94KqwdcEudl65Ncyoxui0lFwDG2 274-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+m94KqwdcEudl65Ncyoxui0lFwDG2 362-1
+
+{"application":{"ash":0,"attack":1,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+m94KqwdcEudl65Ncyoxui0lFwDG2 402-1
+
+{"application":{"ash":0,"attack":1,"control":1,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+p9QJUuwvleNSgRloVBdpEvXb1B92 377-1
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+p9QJUuwvleNSgRloVBdpEvXb1B92 388-2
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"tank":0},"rank":[null,0,0,0,0,0]}
+
+zB56cQVSuOdBEdCZmn6bl4AA8wx1 200-3
+
+{"rank":{"atk":[null,0,0,1,0,0],"control":[null,0,0,0,0,1],"cost":[null,0,0,1,0,0],"hp":[null,0,0,0,1,0],"range":[null,0,0,1,0,0],"speed":[null,0,1,0,0,0],"total":[null,0,0,0,1,0]}}
+
+zB56cQVSuOdBEdCZmn6bl4AA8wx1 045-3
+
+{"application":{"ash":0,"attack":0,"control":0,"fastatk":0,"shield":0,"tank":1},"nickname":[{"nickname":"鬼神","owner":"zB56cQVSuOdBEdCZmn6bl4AA8wx1"}],"rank":{"atk":[null,0,0,0,0,1],"control":[null,1,0,0,0,0],"cost":[null,0,0,1,0,0],"hp":[null,0,0,0,1,0],"range":[null,0,1,0,0,0],"speed":[null,0,0,1,0,0],"total":[null,0,0,0,0,1]}}
+

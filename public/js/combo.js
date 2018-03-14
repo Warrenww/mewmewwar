@@ -67,7 +67,7 @@ $(document).ready(function () {
       history:true
     });
     // location.assign("/view/cat.html");
-    window.parent.changeIframe('cat');
+    // window.parent.changeIframe('cat');
     window.parent.reloadIframe('cat');
   });
 

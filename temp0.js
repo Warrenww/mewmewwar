@@ -19,62 +19,47 @@ console.log('start');
 var stdin = process.openStdin();
 
 
-database.ref("/newCatData").once("value",function (snapshot) {
-  console.log('load complete');
-  catdata = snapshot.val();
-  for(let i in catdata){
-    // console.log(catdata[i].speed);
-    if(catdata[i].id != i){
-      console.log(i,catdata[i].name);
+// database.ref("/newCatData").once("value",function (snapshot) {
+//   console.log('load complete');
+//   catdata = snapshot.val();
+//   for(let i in catdata){
+//     if(catdata[i].survey){
+//       console.log(i,catdata[i].survey);
+//       // let survey = catdata[i].survey;
+//       // survey.rank = {atk:"",control:"",cost:"",hp:"",range:"",speed:"",total:""};
+//       // for(let j in survey.rank){
+//       //   survey.rank[j] = {1:0,2:0,3:0,4:0,5:0}
+//       // }
+//       // database.ref("/newCatData/"+i+"/statistic").set(survey);
+//     }
+//   }
+// });
+
+database.ref('/user').once("value",function (snapshot) {
+  console.log('finish');
+  userdata = snapshot.val();
+  let buffer = []
+  for(let i in userdata){
+    let data = userdata[i];
+    for(let j in data.variable.cat){
+      let cat = data.variable.cat[j];
+      if(cat.survey){
+        for(let k in cat.survey){
+          // console.log(i,k);
+          // console.log(cat.survey[k]);
+          let str = i+" "+k+"\n\n"+JSON.stringify(cat.survey[k])+"\n\n";
+          fs.appendFile('survey.txt', str, function (err) {
+            if (err) throw err;
+            console.log('Updated!',i,k);
+          });
+          // database.ref("/newCatData/"+k+"/survey").set(obj);
+          // database.ref("/user/"+i+"/variable/cat/"+j+"/survey/"+k).set(obj);
+
+
+        }
+      }
     }
   }
-  let id = "186" ;
-  let url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R"+id+".html"
-  // request({
-  //   url:url,
-  //   method: "GET"
-  // },function (e,r,b) {
-  //   if(!e){
-  //     $ = cheerio.load(b);
-  //     // let name = $(".mb10").text().split("「")[1].split("」")[0]+" 稀有轉蛋";
-  //     let name = "蛋黃哥 合作活動 稀有轉蛋";
-  //     let obj = {ssr:[],sr:[],r:[]};
-  //     console.log(name);
-  //     let count = 0;
-  //     $(".block").children(".chara_block01").each(function () {
-  //       count++;
-  //       let a = $(this).find(" table tr").eq(1).children("td").eq(0),
-  //       c = a.children(".name").children(".t02").text();
-  //       for(let i in catdata){
-  //         if(catdata[i].name == c){
-  //           console.log(i,c);
-  //           database.ref("/catdata/"+i+"/get_method").set(name);
-  //           obj.ssr.push(i);
-  //         }
-  //       }
-  //     });
-  //     let w = "sr"
-  //     $(".block").children(".apc_chara01").each(function () {
-  //       let d = $(this).children(".apc_name").text().trim().split(", ");
-  //       console.log(d);
-  //       console.log(w);
-  //       for(let i in catdata){
-  //         if(d.indexOf(catdata[i].name)!=-1){
-  //            console.log(i,catdata[i].name);
-  //            database.ref("/catdata/"+i+"/get_method").set(name);
-  //            obj[w].push(i);
-  //          }
-  //       }
-  //       w = 'r';
-  //     });
-  //     database.ref("/gachadata/R"+id).set({name:name,content:obj});
-  //     console.log("count:",count);
-  //     setTimeout(function () {
-  //       process.exit();
-  //     },2000);
-  //   }else{console.log(e);}
-  // });
-
 });
 
 // function getthewww(i) {

@@ -62,6 +62,49 @@ nav img{
     overflow: hidden;
     transition: .4s ease-in-out
 }
+.navBox{
+  flex:1;
+  display: flex;
+  color: white;
+  justify-content: flex-end;
+  align-items: center;
+}
+.navBox i{
+  margin: 0 10px;
+  cursor: pointer;
+  transition: .3s ease-in-out;
+  font-size: 30px
+}
+.navBox i:hover{color: rgb(71, 197, 219)}
+.alt-tab{
+  width: 300px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: -300px;
+  display: flex;
+  flex-direction: column;
+  padding-top: 50px;
+}
+.alt-tab div{
+  background-color: rgba(255, 255, 255, 0.77);
+  text-align: center;
+  font-size: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  margin: 20px;
+  font-weight: bold;
+  transition: .4s ease-in-out;
+  position: relative;
+  right: -300px;
+  cursor: pointer;
+}
+.alt-tab div:hover{background-color: rgba(249, 194, 2, 0.76)}
+@media screen and (max-width:1024px) {
+  .navLinkBox{flex:5}
+  .settingBox{flex:2}
+  .navBox i{margin: 0 5px}
+}
 @keyframes test {
   from{transform: rotate(0deg);}
   to{transform: rotate(180deg);}

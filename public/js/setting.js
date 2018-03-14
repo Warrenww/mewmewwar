@@ -101,7 +101,7 @@ $(document).ready(function () {
         history:true
       });
       // location.assign("/view/cat.html");
-      window.parent.changeIframe('cat');
+      // window.parent.changeIframe('cat');
       window.parent.reloadIframe('cat');
 
     } else if(type == 'enemy'){
@@ -111,7 +111,7 @@ $(document).ready(function () {
         history:true
       });
       location.assign("/view/enemy.html");
-      window.parent.changeIframe('enemy');
+      // window.parent.changeIframe('enemy');
       window.parent.reloadIframe('enemy');
     }
   });

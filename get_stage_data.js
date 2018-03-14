@@ -12,9 +12,25 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
   // var Arr = [6,7,78];
-  var i=69,j=1,chap='hard',stage='010',ii=0;
+  var stdin = process.openStdin();
+  var chap = stage = i = j = 0;
+  console.log('chapter,stage,i');
+  stdin.addListener("data", function(d) {
+      // note:  d is an object, and when converted to a string it will
+      // end with a linefeed.  so we (rather crudely) account for that
+      // with toString() and then trim()
+      let arr = d.toString().trim().split(",");
+      console.log(arr);
+      chap = arr[0]
+      stage = arr[1]
+      i = arr[2]
+      j = arr.length == 4?arr[3]:1
+      getData(i,j);
+
+    });
+  // var i=69,j=1,chap='hard',stage='010',ii=0;
   // i = Arr[ii];
-  getData(i,j);
+  // getData(i,j);
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
     let url = "https://battlecats-db.com/stage/s"+stage+AddZero(i)+"-"+AddZero(j)+".html";

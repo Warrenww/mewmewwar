@@ -55,8 +55,8 @@ var catdata,
     stagedata,
     gachadata,
     rankdata,
-    catname = {TW:{R:[],SR:[],SSR:[]},JP:{R:[],SR:[],SSR:[]}},
-    most_search_cat ='' ;
+    most_search_cat ='',
+    stage_count = [] ;
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().newCatData ;
   combodata = snapshot.val().combodata ;
@@ -66,6 +66,8 @@ database.ref("/").once("value",function (snapshot) {
   rankdata = snapshot.val().rankdata ;
   console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
 
+  arrangeUserData();
+  geteventDay();
   var exist='000',current='',count=0;
   for(let i in catdata) {
     if(catdata[i].count > count){
@@ -75,8 +77,32 @@ database.ref("/").once("value",function (snapshot) {
   }
   console.log('most search',catdata[most_search_cat].name,count);
   // console.log(catname.R.length,catname.SR.length,catname.SSR.length);
-  arrangeUserData();
-  geteventDay();
+  var index = 0;
+  for(let i in stagedata){
+    if (i == 'name') continue
+    stage_count.push({name:i,count:0});
+    for(let j in stagedata[i]){
+      if (j == 'name') continue
+      for(let k in stagedata[i][j]){
+        if (k == 'name') continue
+        if (stagedata[i][j][k].count)
+          stage_count[index].count += Number(stagedata[i][j][k].count) ;
+      }
+    }
+    index ++;
+  }
+  for(let i=0;i<stage_count.length;i++){
+    for(let j=i+1;j<stage_count.length;j++){
+      let a = stage_count[i],
+          b = stage_count[j],
+          c;
+      if(b.count>a.count){
+        c=b;stage_count[j]=a;stage_count[i]=c;
+      }
+    }
+  }
+  console.log(stage_count);
+
 });
 
 
@@ -231,6 +257,16 @@ io.on('connection', function(socket){
         break;
       default:
     } ;
+    if(Number(obj.key)){
+      for (var i in load_data) {
+        if (i.indexOf(obj.key)!=-1) {
+          buffer.push({
+            name : load_data[i].name?load_data[i].name:load_data[i].jp_name,
+            id : load_data[i].id
+          });
+        }
+      }
+    }
     for(let id in load_data){
       let name = load_data[id].name?load_data[id].name:load_data[id].jp_name;
       if(name.indexOf(key) != -1) {
@@ -280,8 +316,12 @@ io.on('connection', function(socket){
         result.lv = storge_lv ? storge_lv : default_lv  ;
         result.count = storge_count ? storge_count : 1;
         result.own = own;
-        result.survey = variable ? (variable.survey?(variable.survey[id]?true:false):false):false;
-        socket.emit("display cat result",result);
+        result.survey = variable ? (variable.survey?(variable.survey[id]?variable.survey[id]:false):false):false;
+        database.ref("/newCatData/"+id).once("value",function (snapshot) {
+          result.this.statistic = snapshot.val().statistic;
+          result.this.comment = snapshot.val().comment;
+          socket.emit("display cat result",result);
+        });
 
         database.ref("/user/"+uid).once('value',function (snapshot) {
           let data = snapshot.val(),
@@ -361,6 +401,7 @@ io.on('connection', function(socket){
         if(uid == user.uid){
           console.log("find same user");
           exist = true;
+          socket.emit("login complete");
           break;
         }
       }
@@ -496,7 +537,8 @@ io.on('connection', function(socket){
       else if(page == 'compareEnemy'){userdata.fight = fight;}
       else if(page == 'stage'){
         userdata.last_stage = last_stage;
-        userdata.setting = {show_more_option:setting.show_more_option}
+        userdata.setting = {show_more_option:setting.show_more_option};
+        userdata.stage_count = stage_count;
       }
       else if(page == 'setting'){
         userdata.setting = setting;
@@ -817,44 +859,47 @@ io.on('connection', function(socket){
 
   socket.on("cat survey",function (data) {
     let uid = data.uid,
-        cat = data.id,
-        obj = data.obj;
-    console.log(cat,"survey");
-    database.ref('/user/'+uid+'/variable/cat/'+cat.substring(0,3)+'/survey/'+cat).update(obj);
-    database.ref('/user/'+uid+'/setting/cat_survey_count').once('value',function (snapshot) {
-      let count = (snapshot.val()?Number(snapshot.val()):0)+1;
-      database.ref('/user/'+uid+'/setting/cat_survey_count').set(count);
-    });
-    database.ref("/newCatData/"+cat+"/survey").once('value',function (snapshot) {
-      console.log(data);
-      let org = snapshot.val()?snapshot.val():{application:{}},
-          survey = {
-            application : {
-              ash : org.application.ash?org.application.ash:0,
-              attack : org.application.attack?org.application.attack:0,
-              fastatk : org.application.fastatk?org.application.fastatk:0,
-              control : org.application.control?org.application.control:0,
-              shield : org.application.shield?org.application.shield:0,
-              tank : org.application.tank?org.application.tank:0
-            },
-            narration : org.narration?org.narration:[],
-            nickname : org.nickname?org.nickname:[],
-            rank : org.rank?org.rank:0,
-            count : org.count?org.count:0
-          };
-      survey.rank = (survey.rank*survey.count+data.obj.rank)/(survey.count+1);
-      survey.narration.push(data.obj.narration);
-      survey.count ++;
-      for(let i in data.obj.nickname){
-        if(survey.nickname.indexOf(data.obj.nickname[i])==-1)
-          survey.nickname.push(data.obj.nickname[i]);
+        cat = data.cat,
+        type = data.type,
+        val = data.add;
+
+    console.log(uid,"update",cat,"statistic",type);
+
+    database.ref("/user/"+uid).once("value",function (snapshot) {
+      let user = snapshot.val(),
+          setting = user.setting,
+          target = user.variable.cat[cat.substring(0,3)],
+          exist = target.survey?(target.survey[cat]?(target.survey[cat][type]?target.survey[cat][type]:false):false):false,
+          count = setting.cat_survey_count?setting.cat_survey_count:0;
+      if(!exist) count += 0.25;
+      database.ref("/user/"+uid+"/setting/cat_survey_count").set(count);
+      if(type == 'nickname'){
+        exist = exist?exist:[];
+        exist.push(val);
+        database.ref("/user/"+uid+"/variable/cat/"+
+          cat.substring(0,3)+"/survey/"+cat+"/"+type).set(exist);
+        database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
       }
-      for(let i in data.obj.application){
-        if(data.obj.application[i]) survey.application[i] ++ ;
+      else {
+        database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
+        database.ref("/user/"+uid+"/variable/cat/"+
+          cat.substring(0,3)+"/survey/"+cat+"/"+type).set(val);
       }
-      console.log(survey);
-      database.ref("/newCatData/"+cat+"/survey").update(survey);
     });
+  });
+  socket.on('comment cat',function (data) {
+    console.log(data.owner,'comment on',data.cat);
+    database.ref("/newCatData/"+data.cat+"/comment").push({
+      owner:data.owner,
+      comment:data.comment,
+      time:data.time
+    });
+    database.ref("/user/"+data.owner+"/variable/cat/"+data.cat.substring(0,3)+
+      "/survey/"+data.cat+"/comment").push({
+        owner:data.owner,
+        comment:data.comment,
+        time:data.time
+      });
   });
 
 

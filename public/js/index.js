@@ -1,5 +1,6 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
 var miner_count = 0 ;
+var explor_page = [],explor_index = 0;
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
@@ -128,12 +129,14 @@ $(document).ready(function () {
     var today = new Date();
     $("nav a,.m_nav_panel a").click(function () {
       let target = $(this).attr("id");
-      changeIframe(target);
+      explor_page.splice(0,explor_index);
       if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target);
+      else changeIframe(target);
 
       $(".m_nav_panel").css('right',-180);
       $("#m_nav_panel_BG").fadeOut();
       showMobilePanel = 1 ;
+      explor_index = 0;
     });
     $("nav img").click(function () {
       $("#iframe_holder iframe").css("right",'-100%');
@@ -177,6 +180,72 @@ $(document).ready(function () {
       $(this).prev('.show_panel').attr('value',0);
     }) ;
 
+    var altTab_timeout;
+    $(document).on('click','.navBox i',function () {
+      var type = $(this).attr("id");
+      // console.log(type);
+      if (type == 'prev'){
+        explor_index ++;
+        if (explor_index>=explor_page.length){
+          explor_index--;
+          return
+        }
+      }
+      else if (type == 'next') {
+        explor_index --;
+        if (explor_index<0){
+          explor_index++;
+          return
+        }
+      }
+      else{
+        let arr = [];
+        clearTimeout(altTab_timeout);
+        $("#iframe_holder").children('iframe').each(function () {
+          arr.push($(this).attr("id"));
+        });
+        $(".alt-tab").css('right',0).empty();
+        for(let i in arr){
+          $(".alt-tab").append("<div id="+arr[i]+">"+parse_iframe_name(arr[i])+"</div>");
+        }
+        let i = 0;
+        $('.alt-tab').children().each(function () {
+          $(this).animate({right:0},100*i);
+          i++
+        });
+        altTab_timeout =
+          setTimeout(function () {
+            $(".alt-tab").animate({'right':-300},1000);
+          },3000);
+        return
+      }
+      // console.log(explor_index);
+      changeIframe(explor_page[explor_index],false);
+    });
+    var iframeName = {
+      "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
+      "gacha":"轉蛋資訊", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
+      "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區"
+    }
+    function parse_iframe_name(str) {
+      return iframeName[str]
+    }
+    $(".alt-tab").hover(function () {
+      clearTimeout(altTab_timeout);
+      setTimeout(function () {
+        $(".alt-tab").animate({'right':-300},1000);
+      },5000);
+    },function () {
+      altTab_timeout =
+        setTimeout(function () {
+          $(".alt-tab").animate({'right':-300},1000);
+        },500);
+    });
+    $(document).on("click",".alt-tab div",function () {
+      let target = $(this).attr("id");
+      console.log(target);
+      changeIframe(target);
+    });
 
 
     //miner
@@ -286,7 +355,8 @@ $(document).ready(function () {
 
 
 });
-function changeIframe(target) {
+function changeIframe(target,record = true) {
+  if(!target) return
   let arr = [];
   $("#iframe_holder").children().each(function () {
     arr.push($(this).attr("id"));
@@ -300,9 +370,16 @@ function changeIframe(target) {
     });
   } else
   $("#iframe_holder").find("#"+target).css("right","0%").siblings().css("right",'-100%');
+  if(record) explor_page.splice(0,0,target);
+  // console.log(explor_page);
 }
 function reloadIframe(target) {
-  if(!$("#iframe_holder").find("#"+target)[0]) changeIframe(target);
-  let src = $("#iframe_holder").find("#"+target).attr("src");
-  $("#iframe_holder").find("#"+target).attr('src',src);
+  if(!$("#iframe_holder").find("#"+target)[0]) {
+    changeIframe(target);
+  }
+  else{
+    let src = $("#iframe_holder").find("#"+target).attr("src");
+    $("#iframe_holder").find("#"+target).attr('src',src);
+    explor_page.splice(0,0,target);
+  }
 }

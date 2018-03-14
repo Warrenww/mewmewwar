@@ -371,7 +371,7 @@ $(document).ready(function () {
       "</tr><tr>"+
       "<td id='range'>"+data.range+"</td>"+
       "</tr><tr>"+
-      "<td id='freq'>"+data.Freq+"</td>"+
+      "<td id='freq'>"+data.freq+"</td>"+
       "</tr><tr>"+
       "<td id='speed'>"+data.speed+"</td>"+
       "</tr><tr>"+

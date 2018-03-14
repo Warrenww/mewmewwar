@@ -29,14 +29,18 @@ $(document).ready(function () {
       $('#select_stage').attr("chapter",arr[0]);
       $('#select_level').attr("stage",arr[1]);
       socket.emit("required level name",{chapter:arr[0],stage:arr[1]});
-      $(".select_chapter").children().first().before($(".select_chapter").find("#"+arr[0])[0]);
+      // $(".select_chapter").children().first().before($(".select_chapter").find("#"+arr[0])[0]);
     }
+    console.log(data.stage_count);
+    for(let i in data.stage_count)
+      $('.select_chapter').children().last()
+        .after($('.select_chapter').find("#"+data.stage_count[i].name));
     if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
     else $("#more_option").css("height",0);
   });
 
   var chapter = {
-    p:{name : '實況野球</br>合作關卡',id : 'baseball',show : true},
+    r:{name : '懶得鳥你</br>合作關卡',id : 'lazybird',show : true},
     k:{name : '經驗關',id : 'XP',show : true},
     l:{name : '開眼小小貓',id : 'smallCat',show : true},
     j:{name : '狂亂系列',id : 'crazy',show : true},
@@ -51,8 +55,9 @@ $(document).ready(function () {
     f:{name : '宇宙篇',id : 'universe',show : true},
     q:{name : '貓咪卷關卡',id : 'ticket',show : true},
     a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
+    p:{name : '實況野球</br>合作關卡',id : 'baseball',show : true},
     h:{name : '月間關',id : 'month',show : false},
-    i:{name : '開眼關',id : 'openEye',show : false},
+    // i:{name : '開眼關',id : 'openEye',show : false},
   };
   let chapter_count = 0;
   for(let i in chapter) {
@@ -156,7 +161,7 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    console.log(obj);
+    // console.log(obj);
     current_level_data = obj;
     let html = "",
         data = obj.data,
@@ -235,7 +240,7 @@ $(document).ready(function () {
   });
   $(document).on("click",'#prev,#next',function () {
     let data = JSON.parse($(this).attr('query'));
-    console.log(data.level);
+    // console.log(data.level);
     if(data.level)
       socket.emit("required level data",{
         uid: current_user_data.uid,
@@ -262,7 +267,7 @@ $(document).ready(function () {
       }
     }
     socket.emit("compare enemy",{id:current_user_data.uid,target:arr});
-    window.parent.changeIframe('compareEnemy');
+    // window.parent.changeIframe('compareEnemy');
     window.parent.reloadIframe('compareEnemy');
   });
   $(document).on("click",".dataTable #chapter",function () {
@@ -340,7 +345,7 @@ $(document).ready(function () {
       history : true
     });
     // location.assign("/view/cat.html");
-    window.parent.changeIframe('cat');
+    // window.parent.changeIframe('cat');
     window.parent.reloadIframe('cat');
   });
   $(document).on('click','.enemy',function () {
@@ -358,7 +363,7 @@ $(document).ready(function () {
       lv : Number(multiple)/100,
       type : 'enemy'
     });
-    window.parent.changeIframe('enemy');
+    // window.parent.changeIframe('enemy');
     window.parent.reloadIframe('enemy');
 
     // $("body").append(

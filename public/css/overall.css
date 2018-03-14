@@ -109,6 +109,7 @@ button:active{
   padding: 5% 10% ;
   width: 100%
 }
+.display{padding: 5% }
 td, th {
   font-size: 16px;
   border-collapse: collapse;

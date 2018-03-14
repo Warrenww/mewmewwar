@@ -3,6 +3,8 @@ $(document).ready(function () {
   var compare = [] ;
   var socket = io.connect();
   var current_cat_data = {};
+  var current_cat_survey = {};
+  var current_cat_statistic = {};
   var current_search = [];
   var current_user_data = {
     setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
@@ -65,12 +67,19 @@ $(document).ready(function () {
           $(this).css({'padding':0,'border-radius':7,'overflow':'hidden'})
             .children("span").fadeOut().siblings("i").css({width:40,height:40});
         });
+    if(!data.setting.show_cat_id)
+      $('.display').find("#id").css({'background-color':'transparent','color':'transparent'})
+        .prev().css({'background-color':'transparent','color':'transparent'})
+    if(!data.setting.show_cat_count)
+      $('.display').find("#count").css({'background-color':'transparent','color':'transparent'})
+        .prev().css({'background-color':'transparent','color':'transparent'})
     }
     setTimeout(function () {
       $("#loading").fadeOut();
     },2500);
   });
 
+  if(screen.width<=768) $("#level_num").parent().attr("colspan",5);
   var tip_fadeOut;
   $(document).on("click",".select_ability .button",function () {
     let text = $(this).children("span").text(),
@@ -171,7 +180,6 @@ $(document).ready(function () {
       id:[$(this).attr('val')]
     }) ;
     // location.assign('combo.html');
-    window.parent.changeIframe('combo');
     window.parent.reloadIframe('combo');
   }) ;
   $(document).on("click","#share",function () {
@@ -202,9 +210,11 @@ $(document).ready(function () {
         arr = result.bro,
         brr = result.combo,
         lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
-        own = result.own;
+        own = result.own,
+        survey = result.survey;
     // if(!result.survey&&Math.random()>0.5) $(".survey_holder").css("display",'flex');
-    displayCatData(data,arr,brr,lv,result.count,own) ;
+    displayCatData(data,arr,brr,lv,result.count,own,survey) ;
+    append_comment(result.this.comment);
     current_cat_data = data;
   });
   var number_page,page_factor ;
@@ -230,7 +240,7 @@ $(document).ready(function () {
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
       $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
   });
-  function displayCatData(data,arr,brr,lv,count,own) {
+  function displayCatData(data,arr,brr,lv,count,own,survey) {
     let html = "",
         showID = current_user_data.setting.show_cat_id,
         showCount = current_user_data.setting.show_cat_count,
@@ -243,18 +253,31 @@ $(document).ready(function () {
     else $("#more_option #mark_own").attr({"value":0,"style":"color:rgb(224, 103, 103)"}).find("span").fadeIn();
     $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+grossID+".html");
 
-    html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
-            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+count+"</td>"+
-            "<td id='more' colspan='2'>更多選項</td></tr>";
+    // console.log(data);
 
-    html += displayCatHtml(data,arr,brr,lv,count);
-
-    $(".dataTable").empty();
-    $(".dataTable").attr('id',data.id).append(html);
+    for (let i in data){
+      if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
+        $(".dataTable").find("#"+i).text(data.Tovalue(i,lv));
+      else if(i == 'count')
+        $(".dataTable").find("#"+i).text(count);
+      else if(i == 'name')
+        $(".dataTable").find("."+i).text(data.Name);
+      else if(i == 'aoe')
+        $(".dataTable").find("#"+i).text(data.Aoe);
+      else if(i == 'char')
+        $(".dataTable").find("#"+i).html(data.CharHtml(lv));
+      else
+        $(".dataTable").find("#"+i).text(data[i]);
+    }
+    survey = survey?survey:{};
+    initial_survey();
+    addSurvey(data.statistic,survey);
+    $(".dataTable").attr('id',data.id).find('.bro').html(Thisbro(arr));
+    $(".dataTable").find('.img').children().attr('src',data.imgURL);
+    $(".dataTable").find(".combo").remove();
+    $(AddCombo(brr)).insertAfter('.dataTable #combo_head');
     initialSlider(data,lv);
     scroll_to_class("display",0);
-    $(".survey").attr("id",data.id)
-      .find("#name").css("background-image",'url('+data.imgURL+')').find("span").text(data.Name);
 
     if(data.id == "334-2"&&(Math.random()<0.4)) {
       $(".dataTable").append(
@@ -315,6 +338,34 @@ $(document).ready(function () {
       }
     }
   }
+
+  var toggle_combo = toggle_survey = toggle_comment = 0;
+  $('#combo_head,#survey_head,#comment_head').click(function () {
+    let type = $(this).attr("id").split("_head")[0];
+    $(this).find('i').css('transform',function () {
+      if(type == 'combo')
+        return toggle_combo?'rotate(-90deg)':'rotate(90deg)'
+      else if(type == 'survey')
+        return toggle_survey?'rotate(-90deg)':'rotate(90deg)'
+      else
+        return toggle_comment?'rotate(-90deg)':'rotate(90deg)'
+    })
+    if(type == 'combo'){
+      $(this).siblings('.combo').toggle();
+      toggle_combo = toggle_combo?0:1;
+    }else if(type == 'survey'){
+      $(this).siblings('.survey').each(function () {
+        let Class = $(this).attr('class').split(" ");
+        if(screen.width>425&&Class.indexOf("mobile")!=-1)return
+        if(screen.width<=425&&Class.indexOf("non_mobile")!=-1)return
+        $(this).toggle();
+      });
+      toggle_survey = toggle_survey?0:1;
+    }else{
+      $(this).siblings('.comment').toggle();
+      toggle_comment = toggle_comment?0:1;
+    }
+  });
   function search() {
     let rarity = $(".select_rarity [value=1]"),
         color = $(".select_color [value=1]"),
@@ -459,6 +510,7 @@ $(document).ready(function () {
         if(cFilter.indexOf($(this).attr('name'))==-1) $(this).attr('value',0);
         else $(this).attr('value',1);
       });
+
     }
     else {
       let ww = $(this).text().split(" ")[0].split("(")[0];
@@ -489,6 +541,7 @@ $(document).ready(function () {
       type:"cat",
       value:0
     });
+    if($('#normal_search').attr("value")!=1) $("#normal_search").click();
   });
   function filterSlider() {
     $("#slider_holder").show();
@@ -608,68 +661,345 @@ $(document).ready(function () {
     },2600);
   });
 
-  $(".survey span i").click(function () {
-    let a = $(this).attr("no");
-    $(".survey i").each(function () {
-      let b = $(this).attr("no");
+  function initial_survey() {
+    $(".survey #nickname div").text("暫無暱稱");
+    $("#rank i").attr('value',0);
+    $('#rank span').attr("new",'true');
+    $("#rank_c").find("path").remove();
+    $('#rank').parent().attr('colspan',function () { return screen.width>425?2:3 });
+    $('#rank_respec').parent().attr('colspan',function () { return screen.width>425?2:6 });
+    $('#rank_respec').parent().attr('rowspan',function () { return screen.width>425?6:1 });
+    d3.select("#rank_c").select('text').text('尚無評分')
+      .attr({
+        x:"26,46,26,46",y:"40",dy:'0,0,20',
+        style:"font-size:14px;font-weight:normal"
+      });
+    $('#rank_detail .detail').each(function () {
+      $(this).find(".char").css('width',"0%")
+        .siblings(".num").text(0);
+    });
+    var rank_respec_name = ['atk','control','cost','hp','range','speed'],
+        index=0;
+    $('.rank_respec').each(function () {
+      $(this).html('<span new="true" type="'+rank_respec_name[index]+'">'+
+        '<i class="material-icons" value="0" no="1">&#xe885;</i>'+
+        '<i class="material-icons" value="0" no="2">&#xe885;</i>'+
+        '<i class="material-icons" value="0" no="3">&#xe885;</i>'+
+        '<i class="material-icons" value="0" no="4">&#xe885;</i>'+
+        '<i class="material-icons" value="0" no="5">&#xe885;</i>'+
+        '</span>'
+      ).attr('colspan',function () { return screen.width>425?3:5 });
+      index++;
+    });
+    $("#rank_respec").find("path[id='char']").remove();
+    var application_name = ['ash','attack','control','fastatk','shield','tank'];
+    index = 0;
+    $(".survey").find('.application').each(function () {
+      $(this).html(
+        '<i class="material-icons">&#xe836;</i>'+
+        '<i class="material-icons" style="display:none">&#xe837;</i>'
+      ).attr({'type':application_name[index],'value':0})
+        .prev('.num').text('0票');
+      index ++;
+    });
+  }
+  function addSurvey(data,survey) {
+    // console.log(data,survey);
+    current_cat_survey = survey;
+    current_cat_statistic = data;
+    let arr = [];
+    if(!data) return
+    if(data.nickname){
+      for(let i in data.nickname)
+        arr.push(data.nickname[i].nickname);
+      $(".survey #nickname div").text(arr.join(","));
+    }
+    update_total_rank(data.rank);
+    update_respect_rank(data.rank);
+    update_application(data.application);
+    if(survey.rank){
+      for(let type in survey.rank){
+        if(survey.rank[type]){
+          let star =  $(".survey").find("span[type='"+type+"']").children("i"),
+              flag = false;
+          star.attr('value',1);
+          for(let i=5;i>0;i--){
+            if(survey.rank[type][i]) {flag=true;break}
+            star.eq(i-1).attr("value",0);
+          }
+          if(flag) star.parent().attr("new",'false');
+        }
+      }
+    }
+    if(survey.application){
+      for(let i in survey.application)
+        if(survey.application[i])
+          $('.survey .application[type="'+i+'"]').children().toggle();
+    }
+  }
+  $(document).on('click','#nickname span',function () {
+    let type = $(this).attr("id").split("_nick")[0],
+        quene = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
+        org = [];
+    for(let i in quene)
+      org.push(quene[i].nickname);
 
+    if(type == 'add'){
+      $(this).hide().siblings('span').show();
+      $(this).siblings('div')
+        .html('<input type="text" placeholder="請輸入暱稱" />')
+        .find('input').focus();
+      return
+    }
+    else if(type == 'confirm'){
+      let val = $('#nickname').find("input").val();
+      update_nickname(val,quene,org);
+    }
+    $(this).siblings('div').html(org.join(","))
+    $("#add_nick").show().siblings('span').hide();
+  });
+  $(document).on('keypress','#nickname div input',function (e) {
+    if(e.keyCode!=13) return
+    let val = $(this).val(),
+        quene = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
+        org = [];
+    for(let i in quene)
+      org.push(quene[i].nickname);
+    update_nickname(val,quene,org);
+    $(this).parent().html(org.join(","));
+    $("#add_nick").show().siblings('span').hide();
+  });
+  $(document).on('click',".survey #rank span i,.rank_respec span i",function () {
+    let a = $(this).attr("no"),
+        New = $(this).parents('span').attr('new'),
+        type = $(this).parents('span').attr('type');
+    $(this).parent().children('i').each(function () {
+      let b = $(this).attr("no");
       if (b>a) $(this).attr('value',0);
       else $(this).attr('value',1);
     });
-  });
-  $(".survey div i").click(function () {
-    $(this).siblings('ul').toggle(400)
-  });
-  $(document).on('click','.survey #cancel,.survey_BG',function () {
-    let r = confirm("確定不填寫問卷?");
-    if(r) $('.survey_holder').fadeOut();
-    ga('send', 'event', 'survey', 'deny', '');
-    // ga('send', {
-    //   hitType: 'event',
-    //   eventCategory: 'survey',
-    //   eventAction: 'deny',
-    //   // eventLabel: 'Fall Campaign'
-    // });
-  });
-  $(document).on("click",'.survey #submit',function () {
-    let survey = $(this).parent().parent(),
-        id = survey.attr('id'),
-        obj = {
-          nickname : survey.find('input').val().split(" "),
-          application : {
-            shield : Number(survey.find(".button").eq(0).attr("value"))?true:false,
-            ash : Number(survey.find(".button").eq(1).attr("value"))?true:false,
-            tank : Number(survey.find(".button").eq(2).attr("value"))?true:false,
-            control : Number(survey.find(".button").eq(3).attr("value"))?true:false,
-            attack : Number(survey.find(".button").eq(4).attr("value"))?true:false,
-            fastatk : Number(survey.find(".button").eq(5).attr("value"))?true:false
-          },
-          rank : 0,
-          narration : survey.find("textarea").val()
+    // console.log(type,a,New);
+    if(New == 'true'){
+      if(!current_cat_statistic.rank)
+        current_cat_statistic.rank = {
+          atk:{1:0,2:0,3:0,4:0,5:0},
+          control:{1:0,2:0,3:0,4:0,5:0},
+          cost:{1:0,2:0,3:0,4:0,5:0},
+          hp:{1:0,2:0,3:0,4:0,5:0},
+          range:{1:0,2:0,3:0,4:0,5:0},
+          speed:{1:0,2:0,3:0,4:0,5:0},
+          total:{1:0,2:0,3:0,4:0,5:0}
         };
-    survey.find("i").each(function () {
-      if(Number($(this).attr('value'))) obj.rank ++ ;
-    });
-    console.log(id,obj);
-    let r = confirm("確定提交問卷");
-    if(r){
-      socket.emit("cat survey",{
-        uid : current_user_data.uid,
-        id : id,
-        obj
-      });
-      alert("感謝您填寫問卷<3");
-      if(r) $('.survey_holder').fadeOut();
-      ga('send', {
-        hitType: 'event',
-        eventCategory: 'survey',
-        eventAction: 'submit',
-        // eventLabel: 'Fall Campaign'
-      });
+      current_cat_statistic.rank[type][a]++;
+      if(!current_cat_survey.rank)
+        current_cat_survey.rank = {
+          atk:{1:0,2:0,3:0,4:0,5:0},
+          control:{1:0,2:0,3:0,4:0,5:0},
+          cost:{1:0,2:0,3:0,4:0,5:0},
+          hp:{1:0,2:0,3:0,4:0,5:0},
+          range:{1:0,2:0,3:0,4:0,5:0},
+          speed:{1:0,2:0,3:0,4:0,5:0},
+          total:{1:0,2:0,3:0,4:0,5:0}
+        };
+      current_cat_survey.rank[type][a] = 1;
     }
+    else{
+      let org = 0;
+      for(let i in current_cat_survey.rank[type])
+        if(current_cat_survey.rank[type][i]) org = i;
+      if (org == a) return
+      current_cat_survey.rank[type][a] = 1;
+      current_cat_survey.rank[type][org] = 0;
+      current_cat_statistic.rank[type][a]++;
+      current_cat_statistic.rank[type][org]--;
+    }
+    update_total_rank(current_cat_statistic.rank);
+    update_respect_rank(current_cat_statistic.rank);
+    socket.emit("cat survey",{
+      uid : current_user_data.uid,
+      cat : current_cat_data.id,
+      type : 'rank',
+      add : current_cat_survey.rank,
+      all : current_cat_statistic.rank
+    });
+    $(this).parents('span').attr('new',false);
 
   });
+  $(document).on('click','.application i',function () {
+    let active = Number($(this).parent().attr('value')),
+        type = $(this).parent().attr('type');
+    $(this).hide().siblings().show().parent().attr('value',function () {
+      return active?0:1
+    });
+    if(!current_cat_statistic.application)
+      current_cat_statistic.application = {
+        ash:0,attack:0,control:0,fastatk:0,shield:0,tank:0
+      }
+    if(!current_cat_survey.application)
+      current_cat_survey.application = {
+        ash:0,attack:0,control:0,fastatk:0,shield:0,tank:0
+      }
+    current_cat_statistic.application[type] += (active?(-1):1);
+    current_cat_survey.application[type] = (active?0:1);
+    update_application(current_cat_statistic.application);
+    socket.emit("cat survey",{
+      uid : current_user_data.uid,
+      cat : current_cat_data.id,
+      type : 'application',
+      add : current_cat_survey.application,
+      all : current_cat_statistic.application
+    });
 
+  });
+  $(document).on("click",'#mobile_rank_respec',function () {
+    for(let i=0;i<6;i++){
+      if(i) $('.rank_respec').eq(i).parent().toggle();
+      else $('.rank_respec').eq(i).toggle().siblings().toggle();
+    }
+  });
+  $(document).on("click","#comment_submit",submitComment);
+  $(document).on('keypress','.comment_input textarea',function (e) {
+    if(e.keyCode == '13' && !e.shiftKey) {submitComment();return false}
+  });
+  function update_nickname(val,quene,org) {
+    let r = confirm('確定加入暱稱 : '+val+" ?");
+    if(!r) return
+    if(val == ''||!val){
+      alert("請輸入暱稱!");
+      return
+    }
+    for(let i in quene)
+      if(quene[i].nickname == val){
+        alert("暱稱已存在!");
+        return
+      }
+    let obj = {
+      owner:current_user_data.uid,
+      nickname:val
+    }
+    quene.push(obj);
+    org.push(val);
+    socket.emit("cat survey",{
+      uid : current_user_data.uid,
+      cat : current_cat_data.id,
+      type : 'nickname',
+      add : obj,
+      all : quene
+    });
+  }
+  function update_total_rank(rank) {
+    if(!rank) return
+    let total_rank = rank.total;
+    let count = sum = max = 0;
+    for(let i in total_rank){
+      count += total_rank[i];
+      sum += i*total_rank[i];
+      max = total_rank[i]>max?total_rank[i]:max;
+    }
+    let angle = 2*Math.PI*sum/count/5;
+    let arc = d3.svg.arc()
+                .innerRadius(37)
+                .outerRadius(43)
+                .startAngle(0)
+                .endAngle(angle);
+    $('#rank_c').find('path').remove();
+    d3.select("#rank_c").append('path').attr({
+      'd':arc,
+      'fill':'rgb(83, 245, 162)',
+      'style':'transform:translate(43px,43px)'
+    });
+    if(Number(sum/count))
+      d3.select("#rank_c").select('text')
+        .text((sum/count).toFixed(1))
+        .attr({
+          x:22,y:53,dy:0,
+          style:'font-size:30px;font-weight:bold'
+        });
+    let i = 5;
+    $('#rank_detail .detail').each(function () {
+      $(this).find(".char").css('width',function () {
+        return (total_rank[i]/max*100)+"%"
+      }).siblings(".num").text(total_rank[i]);
+      i -- ;
+    });
+  }
+  function update_respect_rank(rank) {
+    let eq = 0,pos=[];
+    for(let i in rank){
+      let sum = count = 0;
+      if(i == 'total') continue
+      for(let j in rank[i]){
+        sum += rank[i][j]*j;
+        count += rank[i][j];
+      }
+      // console.log(i,sum,count);
+      let a = Math.PI/3*eq+Math.PI/2,r = count?80*sum/count/5:0;
+      pos.push({x:r*Math.cos(a)+119.28,y:-r*Math.sin(a)+100})
+      eq++;
+    }
+    // console.log(pos);
+    var line = d3.svg.line()
+     .x(function(d) {return d.x;})
+     .y(function(d) {return d.y;})
+     .interpolate('linear-closed');
+    $("#rank_respec").find("path[id='char']").remove();
+    d3.select("#rank_respec").append('path')
+      .attr({
+        'd': line(pos),
+        'y': 0,
+        'stroke': '#ff8a11',
+        'stroke-width': '3px',
+        'fill': 'rgba(232, 185, 146, 0.6)',
+        'id':'char'
+      });
+  }
+  function update_application(app) {
+    for(let i in app)
+      $('.survey .application[type="'+i+'"]').prev(".num").text(app[i]+"票");
+  }
+  function append_comment(comment) {
+    // console.log(comment);
+    $(".comment_input").parents('tr').siblings(".comment").remove();
+    if(comment == undefined){
+      $("<tr class='comment'><td colspan='6'>尚無評論</td></tr>")
+        .insertAfter(".dataTable #comment_head");
+        return
+    }
+    let html = '';
+    for(let i in comment){
+      html +=
+        '<tr class="comment"><td colspan="6">'+
+        '<div class="comment_content">'+
+        '<span class="photo"></span>'+
+        '<div id="'+i+'">'+
+        '<span class="bubble">'+comment[i].comment.split("\n").join("</br>")+'</span>'+
+        '<span class="time">'+commentTime(comment[i].time)+'</span></div>'+
+        '</div></td></tr>'
+    }
+    $(html).insertAfter(".dataTable #comment_head");
+  }
+  function submitComment() {
+    let comment = $(".comment_input").find('textarea').val();
+    // console.log(comment);
+    if(!comment) return
+    socket.emit('comment cat',{
+      cat:current_cat_data.id,
+      owner:current_user_data.uid,
+      comment:comment,
+      time:new Date().getTime()
+    });
+    $(".comment_input").find('textarea').val('');
+  }
+  function commentTime(date) {
+    var now = new Date().getTime(),
+        d = now-date,
+        e = new Date(date);
+
+    if(d<60000) return (d/1000).toFixed(0)+"秒前"
+    else if(d<3600000) return (d/60000).toFixed(0)+"分鐘前"
+    else if(d<86400000) return (d/3600000).toFixed(0)+"小時前"
+    else return e.getFullYear+"/"+(e.getMonth+1)+"/"+e.getDate
+  }
 
   function toggleCatStage() {
     let group = $(this).parent(),
@@ -829,12 +1159,11 @@ $(document).ready(function () {
 
   }
 
-
 });
 
 function AddCombo(arr) {
   if(arr.length == 0){
-    return "</tr><tr><td colspan=6>無可用聯組</td>"
+    return "<tr><td colspan=6>無可用聯組</td></tr>"
   }
   let html = "",
       pic_html  ;
@@ -853,20 +1182,20 @@ function AddCombo(arr) {
     }
     pic_html += "</div>" ;
     html += screen.width > 768 ?
-            ("</tr><tr>"+
+            ("<tr class='combo'>"+
             "<th val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
             "<td>"+arr[i].name+"</td>"+
             "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
-            "</tr><tr>"+
+            "</tr><tr class='combo'>"+
             "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
-            ("</tr><tr>"+
+            ("</tr><tr class='combo'>"+
             "<th colspan=2 val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
             "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
-            "</tr><tr>"+
+            "</tr><tr class='combo'>"+
             "<td colspan=2 >"+arr[i].name+"</td>"+
-            "</tr><tr>"+
+            "</tr><tr class='combo'>"+
             "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
-            "</tr><tr>"
+            "</tr>"
           );
 
   }
@@ -884,63 +1213,6 @@ function Thisbro(arr) {
     +'"></span>'  ;
   }
   html += "</div>" ;
-  return html
-}
-function displayCatHtml(data,arr,brr,lv,count) {
-  let html = '';
-  html += screen.width > 768 ?
-  "<tr>"+
-  "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
-  "<th colspan=3 rarity='"+data.rarity+"' id='name'>["+data.Rarity+"] "+data.Name+"</th>"+
-  "<th colspan=2>"+Thisbro(arr)+"</th>"+
-  "</tr>" :
-  "<tr>"+
-  "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-  data.imgURL+"' style='height:100%'>"+Thisbro(arr)+"</th>"+
-  "</tr><tr>"+
-  "<th colspan='6' rarity='"+data.rarity+"' id='name'>["+data.Rarity+"] "+data.Name+"</th>"+
-  "</tr>" ;
-
-  html +=
-  "<tr>"+
-  "<th colspan='1'>等級</th>"+
-  "<td colspan='4' class='level'>"+
-  "<div id='level' class='slider'></div>"+
-  "</td>"+
-  "<td colspan='"+(screen.width < 768 ? 5 : 1)+"' >"+
-  "<span id='level_num'>30</span>"+
-  "</td >"+
-  "<tr>"+
-  "<th>體力</th><td id='hp'>"+
-  "<span class='editable'>"+data.Tovalue('hp',lv)+"</span></td>"+
-  "<th>KB</th><td id='KB'>"+data.Tovalue('kb',lv)+"</td>"+
-  "<th>硬度</th><td id='hardness'>"+
-  "<span class='editable'>"+data.Tovalue('hardness',lv)+"</span></td>"+
-  "</tr><tr>"+
-  "<th>攻擊力</th><td id='atk'>"+
-  "<span class='editable'>"+data.Tovalue('atk',lv)+"</span></td>"+
-  "<th>DPS</th><td id='dps'>"+
-  "<span class='editable'>"+data.Tovalue('dps',lv)+"</span></td>"+
-  "<th>射程</th><td id='range'>"+data.range+"</td>"+
-  "</tr><tr>"+
-  "<th>攻頻</th><td id='freq'>"+data.Freq+" s</td>"+
-  "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
-  "<td colspan='2' rowspan='3' id='aoe'>"+data.Aoe+"</td>"+
-  "</tr><tr>"+
-  "<th>攻擊週期</th><td id='cost'>"+data.Period+" s</td>"+
-  "<th>攻發時間</th><td id='cd'>"+data.atk_speed+" s</td>"+
-  "</tr><tr>"+
-  "<th>花費</th><td id='cost'>"+data.cost+"</td>"+
-  "<th>再生産</th><td id='cd'>"+data.cd+" s</td>"+
-  "</tr><tr>"+
-  "<th>取得方法</th>"+
-  "<td colspan='5' id='get_method'>"+data.get_method+"</td>"+
-  "</tr><tr>"+
-  "<td colspan = '6' id='char'>"+data.CharHtml(lv)+"</td>"+
-  "</tr><tr>"+
-  "<th colspan='6'>發動聯組</th>"+
-  AddCombo(brr)+
-  "</tr>"
   return html
 }
 
