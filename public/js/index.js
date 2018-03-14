@@ -225,7 +225,8 @@ $(document).ready(function () {
     var iframeName = {
       "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
       "gacha":"轉蛋資訊", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
-      "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區"
+      "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
+      "setting":"設定"
     }
     function parse_iframe_name(str) {
       return iframeName[str]

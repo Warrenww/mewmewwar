@@ -1163,7 +1163,7 @@ $(document).ready(function () {
 
 function AddCombo(arr) {
   if(arr.length == 0){
-    return "<tr><td colspan=6>無可用聯組</td></tr>"
+    return "<tr class='combo'><td colspan=6>無可用聯組</td></tr>"
   }
   let html = "",
       pic_html  ;
