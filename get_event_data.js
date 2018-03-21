@@ -14,70 +14,71 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
 
-  function aibot(text) {
-    var request = app.textRequest(text, {
-      sessionId: '35f29ddd-bf05-45b4-bb45-c0d840f72b47',
-    });
-    request.on('response', function(response) {
-      console.log(response);
-    });
-    request.on('error', function(error) {
-      console.log(error);
-    });
-    request.end();
-  }
+  var t = new Date(),
+      y = t.getFullYear(),
+      m = AddZero(t.getMonth()+1),
+      d = AddZero(t.getDate()),
+      url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
+      root = 'https://forum.gamer.com.tw/';
   // aibot("你好")
 
-  var i=100,j=1;
-  getData();
-  function getData() {
-    // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
-    let url = "https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7";
-    // console.log(url);
+
+  request({
+    url: url,
+    method: "GET"
+  },function (e,r,b) {
+    if(!e){
+      $ = cheerio.load(b);
+      // console.log($("tbody").html());
+      let title = $(".b-list__row");
+      let today = y+m+d;
+      let arr = [];
+      console.log(today);
+      title.each(function () {
+        let a = $(this).children(".b-list__main").find("a");
+        if(a.text().indexOf("活動資訊")!=-1){
+          let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
+          for(let i in b){
+            b[i] = b[i].split("/");
+            for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
+            b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
+          }
+          if(b[1]>today){
+            console.log(a.text());
+            console.log(b);
+            arr.push(root+a.attr("href"));
+          }
+        }
+      });
+      console.log(arr[0]);
+      parsePrediction(arr[0]);
+    }
+  });
+  function parsePrediction(url) {
     request({
-      url: url,
-      method: "GET"
-    }, function(e,r,b) {
-      let obj = {tag:[],char:[]};
+      url:url,
+      method:"GET"
+    },function (e,r,b) {
+      let obj = {
+        source_1 : url
+      }
       if(!e){
-        console.log("get data");
-        // process.stdout.clearLine();
-        // process.stdout.cursorTo(0);
-        // process.stdout.write(obj.id+"---");
-        // process.stdout.write((j/48*100).toFixed(1).toString()+"%");
         $ = cheerio.load(b);
-        let table = $("table[class='b-list']");
-        table.find(".b-list__row").each(function () {
-          let title = $(this).children(".b-list__main").find("a"),
-              text = title.text().trim(),
-              link = title.attr("href"),
-              edit_time = $(this).find('.b-list__time__edittime').text().split(" ")[0].trim(),
-              today = new Date().getDay();
-          if(text.indexOf("活動資訊")!=-1){
-            // console.log(edit_time);
-            if( edit_time == '今日' || edit_time == '昨日'){
-              console.log(text,link);
-              goToPage(link);
-            }
+        let gachaP = $("section").eq(0).find(".c-article__content"),
+            eventP = $("section").eq(1).find(".c-article__content");
+        // console.log(gachaP.text());
+        // console.log(eventP.text());
+        console.log(gachaP.find('a').attr("href"));
+        gachaP.children("div").each(function () {
+          let content = $(this).text();
+          if(content&&content.length<30){
+            // console.log(content);
+            let arr = content.split(' ');
+            // console.log(arr);
+            let brr = arr[0].split("~");
+            console.log(brr,arr[1],arr[2]);
           }
         });
       }
-      else {
-        // console.log("error s070"+AddZero(i)+"-0"+j);
-        console.log(e);
-      }
-    });
-  }
-
-  function goToPage(link) {
-    let url = 'https://forum.gamer.com.tw/'+link;
-    request({
-      url: url,
-      method: "GET"
-    }, function(e,r,b) {
-      if(!e){
-        $ = cheerio.load(b);
-
-      } else {console.log(e);}
     });
   }

@@ -524,7 +524,8 @@ $(document).ready(function () {
   $(document).on('click','.compareTarget .card',function (e) {
     let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;
     $("#compare_panel_BG").fadeIn();
-    $('.compare_panel').attr('id',$(this).attr('val'))
+    console.log($(this).attr('value'));
+    $('.compare_panel').attr('id',$(this).attr('value'))
       .css({top:pos_y,left:pos_x}).animate({height:60},400);
     $('.compare_panel #show').click(function () {
       socket.emit("display cat",{

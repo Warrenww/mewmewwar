@@ -27,12 +27,20 @@ var config = {
     request.end();
   }
   // aibot("你好")
+  var stdin = process.openStdin();
+  var i = 0;
+  stdin.addListener("data", function(d) {
+      // note:  d is an object, and when converted to a string it will
+      // end with a linefeed.  so we (rather crudely) account for that
+      // with toString() and then trim()
+      let arr = d.toString().trim().split(",");
+      console.log(arr);
+      getData(i,arr);
+    });
 
-  var i=390;
-  getData(i);
-  function getData(i) {
+  function getData(i,seq) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
-    let url = "https://battlecats-db.com/enemy/"+AddZero(i)+".html";
+    let url = "https://battlecats-db.com/enemy/"+AddZero(seq[i])+".html";
     // console.log(url);
     request({
       url: url,
@@ -76,11 +84,11 @@ var config = {
         // parseCondition(row_7,row_8,obj);
 
         console.log(obj);
-        database.ref("/enemydata/"+AddZero(i)).update(obj);
+        database.ref("/enemydata/"+AddZero(seq[i])).update(obj);
 
         i++;
-        if(i<394)
-          getData(i);
+        if(i<seq.length)
+          getData(i,seq);
         else
           setTimeout(function () {
             process.exit()
