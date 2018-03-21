@@ -205,28 +205,45 @@
               <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
             </div>
           </div>
-
         </div>
+      </div>
+    </div>
 
+    <div class="page_2">
+      <div id='more_option'>
+        <div id='mark_own' value='0'>
+          <i class="material-icons">&#xE8E7;</i>
+          <i class="material-icons">&#xE8E6;</i>
+          <span class="tag">我<span>沒</span>有這隻貓</span>
+        </div>
+        <div id='addcart'>
+          <i class="material-icons">&#xE8CC;</i>
+          <span class="tag">加到購物車</span>
+        </div>
+        <!-- <div id='share'>
+          <i class="material-icons">&#xe80d;</i>
+          <span class="tag">分享</span>
+        </div> -->
+        <div>
+          <a target='blank' id="out"><i class="material-icons">&#xe895;</i></a>
+          <span class="tag">在超絕攻略網打開</span>
+        </div>
+        <div id='snapshot'>
+          <i class="material-icons" style="font-size:24px">&#xe439;</i>
+          <span class="tag">截圖</span>
+        </div>
+        <div id='top'>
+          <i class="material-icons">&#xE25A;</i>
+          <span class="tag">回到頂端</span>
+        </div>
+        <!-- <div id='addfight'>加到對戰 &#9876;</div> -->
+      </div>
+      <div class="content" style="position:absolute;top:0">
         <div class="display">
-          <div id='more_option'>
-            <table>
-              <td id='mark_own' value='0'>我<span>沒</span>有這隻貓</td>
-              <td id='addcart'>加到購物車 <i class="fa">&#xf07a;</i></td>
-              <!-- <td id='addfight'>加到對戰 &#9876;</td> -->
-              <td id='share'>分享 <i class="material-icons">&#xe80d;</i></td>
-              <td>
-                <a target='blank' id="out">
-                  在超絕攻略網打開 <i class="material-icons">&#xe895;</i>
-                </a>
-              </td>
-            </table>
-          </div>
           <table class="dataTable">
             <tr>
               <th>ID</th><td id="id"></td>
               <th>查詢次數</th><td id="count"></td>
-              <td id='more' colspan='2'>更多選項</td>
             </tr>
             <tr class="non_mobile">
               <th style='height:80px;padding:0' class="img"><img src='' style='height:100%'></th>
@@ -242,7 +259,7 @@
               </th>
             </tr>
             <tr class="mobile">
-              <th style='padding:0;background-color:transparent' colspan="6" class="bro"></th>
+              <th style="padding:0;background-color:transparent" colspan="6" class="bro"></th>
             </tr>
             <tr>
               <th colspan='1'>等級</th>
@@ -274,7 +291,7 @@
             <tr><th>取得方法</th><td colspan='5' id='get_method'></td></tr>
             <tr><td colspan = '6' id='char'></td></tr>
             <tr id="combo_head"><th colspan='6'>發動聯組<i class="material-icons">&#xe315;</i></th></tr>
-            <!-- <tr id="survey_head"><th colspan='6'>統計數據<i class="material-icons">&#xe315;</i></th></tr>
+            <tr id="survey_head"><th colspan='6'>統計數據<i class="material-icons">&#xe315;</i></th></tr>
             <tr class="survey"><th>暱稱</th><td colspan='5'>
               <div id='nickname'>
                 <div>暫無暱稱</div>
@@ -430,10 +447,9 @@
                 <textarea rows='1' maxlength='100' placeholder="想說什麼呢..."></textarea>
                 <i class="material-icons" id="comment_submit">&#xe163;</i>
               </div>
-            </th></tr> -->
+            </th></tr>
           </table>
         </div>
-
       </div>
     </div>
     <div id="compareTarget_tag">
@@ -450,7 +466,6 @@
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
     <div id="fight_alert">已加入對戰 <i class="material-icons">&#xe877;</i></div>
     <div id="batch_alert">已加入圖鑑 <i class="material-icons">&#xe877;</i></div>
-    <div id='snapshot'><i class="material-icons">&#xe439;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>
     </div>
@@ -471,20 +486,11 @@
         </div>
       </div>
     </div>
-
-    <!-- <div class="survey_holder">
-        </div>
-        <div>
-          簡單的敘述一下評價吧(40字以內)</br>
-          <textarea maxlength='40'></textarea>
-        </div>
-        <span style="width:100%;display:flex;justify-content:center">
-          <button id='submit'>提交</button>
-          <button id='cancel'>取消</button>
-        </span>
-      </div>
-      <div class="survey_BG"></div>
-    </div> -->
+    <div class='compare_panel'>
+      <span id='show'>顯示</span>
+      <span id='del'>刪除</span>
+    </div>
+    <div id='compare_panel_BG'></div>
 
     <style>
       #loading{

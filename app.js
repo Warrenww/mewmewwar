@@ -102,7 +102,6 @@ database.ref("/").once("value",function (snapshot) {
     }
   }
   console.log(stage_count);
-
 });
 
 
@@ -319,7 +318,6 @@ io.on('connection', function(socket){
         result.survey = variable ? (variable.survey?(variable.survey[id]?variable.survey[id]:false):false):false;
         database.ref("/newCatData/"+id).once("value",function (snapshot) {
           result.this.statistic = snapshot.val().statistic;
-          result.this.comment = snapshot.val().comment;
           socket.emit("display cat result",result);
         });
 
@@ -353,11 +351,11 @@ io.on('connection', function(socket){
   });
   socket.on("display enemy",function (data) {
     let uid = data.uid,id = data.id,record = data.history;
-    console.log(data);
     console.log("client requir enemy "+id+"'s data");
+    console.log(data);
     let buffer = enemydata[id];
 
-    if(uid){
+    if(uid&&id){
       database.ref("/user/"+uid+"/variable/").once("value",function (snapshot) {
         let data = snapshot.val();
         buffer.count = data.enemy?(data.enemy[id]?data.enemy[id].count:0):0;
@@ -401,7 +399,7 @@ io.on('connection', function(socket){
         if(uid == user.uid){
           console.log("find same user");
           exist = true;
-          socket.emit("login complete");
+          socket.emit("login complete",data.val().nickname);
           break;
         }
       }
@@ -432,7 +430,7 @@ io.on('connection', function(socket){
         }
         console.log(data);
         database.ref('/user/'+user.uid).set(data) ;
-        socket.emit("login complete");
+        socket.emit("login complete",data.nickname);
       }
     })
     // .then(function () {
@@ -709,6 +707,30 @@ io.on('connection', function(socket){
         .update({time:new Date().getTime(),accept:data.state,state:true});
     }
   });
+  socket.on("user photo",function (data) {
+    console.log('user',data.uid,"change it's photo");
+    if(data.type !='fb'){
+      let photo_arr = [] ;
+      for(let i in catdata) photo_arr.push(catdata[i].id);
+      let photo = photo_arr[Math.floor((Math.random()*photo_arr.length))];
+      photo = "/public/css/footage/cat/u"+photo+".png";
+      database.ref("/user/"+data.uid+"/setting/photo").set(photo);
+      socket.emit("random cat photo",photo);
+    } else {
+      database.ref("/user/"+data.uid+"/setting/photo").set(data.photo);
+    }
+  });
+  socket.on("required users photo",function (arr) {
+    var obj = {};
+    database.ref("/user").once('value',function (snapshot) {
+      let data = snapshot.val();
+      for(let i in arr){
+        let id = arr[i];
+        obj[id] = data[id]?{photo:data[id].setting.photo,name:data[id].nickname}:null;
+      }
+      socket.emit('return users photo',obj);
+    })
+  });
 
   socket.on("required stage name",function (chapter) {
     console.log("load stage name");
@@ -863,8 +885,8 @@ io.on('connection', function(socket){
         type = data.type,
         val = data.add;
 
+    if(!data.cat) return
     console.log(uid,"update",cat,"statistic",type);
-
     database.ref("/user/"+uid).once("value",function (snapshot) {
       let user = snapshot.val(),
           setting = user.setting,
@@ -888,21 +910,44 @@ io.on('connection', function(socket){
     });
   });
   socket.on('comment cat',function (data) {
-    console.log(data.owner,'comment on',data.cat);
-    database.ref("/newCatData/"+data.cat+"/comment").push({
+    if(!data.cat) return
+    var key = database.ref().push().key;
+    console.log(data.owner,'comment on',data.cat,'with key',key);
+    database.ref("/catComment/"+data.cat.substring(0,3)+"/"+key).set({
       owner:data.owner,
       comment:data.comment,
       time:data.time
     });
-    database.ref("/user/"+data.owner+"/variable/cat/"+data.cat.substring(0,3)+
-      "/survey/"+data.cat+"/comment").push({
+    database.ref("/user/"+data.owner).once('value',function (snapshot) {
+      socket.emit('cat comment push',{
+        key:key,
         owner:data.owner,
         comment:data.comment,
-        time:data.time
+        time:data.time,
+        photo:snapshot.val().setting.photo,
+        name:snapshot.val().nickname
       });
+    });
   });
-
-
+  socket.on('required cat comment',function (cat) {
+    console.log('required cat comment',cat);
+    database.ref("/catComment/"+cat).once("value",function (snapshot) {
+      socket.emit("comment",snapshot.val());
+    });
+  });
+  socket.on('comment function',function (data) {
+    console.log(data.uid,data.type,'comment in',data.cat);
+    if(data.type == 'like'){
+      if(data.inverse)
+      database.ref("/catComment/"+data.cat+"/"+data.key+"/like/"+data.uid).set(null);
+      else
+      database.ref("/catComment/"+data.cat+"/"+data.key+"/like/"+data.uid).set(1);
+    }else if(data.type == 'del'){
+      database.ref("/catComment/"+data.cat+"/"+data.key).set(null);
+    }else if(data.type == 'edit'){
+      database.ref("/catComment/"+data.cat+"/"+data.key+"/comment").set(data.val);
+    }
+  });
 
   socket.on('disconnect', function(){
     // console.log('user disconnected');
@@ -910,7 +955,6 @@ io.on('connection', function(socket){
 
 });
 var timeout,event_get_count = 0,user=[],userCount=0 ;
-
 function arrangeUserData() {
   timeout = setTimeout(function () {
     arrangeUserData();
@@ -931,8 +975,8 @@ function arrangeUserData() {
         continue
       } else {
         if(userdata[i].Anonymous){
-          if((timer - userdata[i].last_login)>3*86400000) {
-            console.log("remove "+i+" since didn't login for 3 days");
+          if((timer - userdata[i].last_login)>5*86400000) {
+            console.log("remove "+i+" since didn't login for 5 days");
             database.ref('/user/'+i).remove();
             admin.auth().deleteUser(i)
             .then(function() {

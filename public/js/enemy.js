@@ -13,11 +13,10 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     current_user_data = data ;
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
       socket.emit("display enemy",{uid:data.uid,id:data.last_enemy,history:true});
-    show_more = !data.setting.show_more_option;
     if(data.last_enemy_search){
       let last = data.last_enemy_search;
       if(last.query)
@@ -85,7 +84,6 @@ $(document).ready(function () {
         type:"cat",
         value:0
       });
-      window.parent.changeIframe('cat');
       window.parent.reloadIframe('cat');
     }
   });
@@ -120,7 +118,6 @@ $(document).ready(function () {
       type:"cat",
       value:0
     });
-    window.parent.changeIframe('cat');
     window.parent.reloadIframe('cat');
 
   })
@@ -160,7 +157,7 @@ $(document).ready(function () {
     for(let id in enemydata){
       if(enemydata[id].name.indexOf(keyword) != -1) buffer.push(enemydata[id]) ;
     }
-    console.log(buffer);
+    // console.log(buffer);
     $("#selected").empty();
     $("#selected").scrollTop(0);
     $("#selected").append(condenseEnemyName(buffer));
@@ -212,7 +209,7 @@ $(document).ready(function () {
       }
       result_expand = result_expand?0:1;
     } else if(type == 'batch_compare'){
-      console.log(current_search);
+      // console.log(current_search);
       let r = confirm("確定覆蓋現有比較序列?!");
       if(!r) return
       if(current_search.length<10){
@@ -235,8 +232,8 @@ $(document).ready(function () {
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
 
-    console.log(cFilter);
-    console.log(aFilter);
+    // console.log(cFilter);
+    // console.log(aFilter);
 
     $(".filter_option[active='true']").each(function () {
       let name = $(this).attr('id'),
@@ -263,7 +260,7 @@ $(document).ready(function () {
   }
   var number_page,page_factor ;
   socket.on("search result enemy",function (result) {
-    console.log(result);
+    // console.log(result);
     number_page = 0 ;
     page_factor = 1 ;
     $("#selected").empty();
@@ -286,7 +283,7 @@ $(document).ready(function () {
   });
   socket.on('display enemy result',function (data) {
     data = new Enemy(data);
-    console.log(data);
+    // console.log(data);
     current_enemy_data = data;
     $(".dataTable").attr("id",data.id);
     displayEnemyData(data) ;
@@ -297,12 +294,9 @@ $(document).ready(function () {
         showID = current_user_data.setting.show_enemy_id,
         showCount = current_user_data.setting.show_enemy_count;
 
-    if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
-    else $("#more_option").css("height",0);
     $("#more_option #out ").attr("href","http://battlecats-db.com/enemy/"+data.id+".html");
     html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
-            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+data.count+"</td>"+
-            "<td colspan=2 id='more'>更多選項</td></tr>";
+            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+data.count+"</td>";
 
     html += displayenemyHtml(data)
     $(".dataTable").empty();
@@ -350,13 +344,6 @@ $(document).ready(function () {
     }).parent().siblings('.active').html(active=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>')
     .siblings('.reverse').html(reverse=='true'?'以下':'以上');
   }
-  var show_more = 1;
-  $(document).on("click","#more",function () {
-    // console.log(show_more);
-    if(show_more) $("#more_option").css("height",50);
-    else $("#more_option").css("height",0);
-    show_more = show_more?0:1;
-  });
   $(document).on("click","#share",function () {
     let id = $(this).parents("#more_option").siblings().attr("id"),
         lv = $(this).parents("#more_option").siblings().find("#level_num").children("span").text().split(" %")[0],
@@ -560,10 +547,10 @@ function serialATK(prop,atk) {
     let b = prop.split("（")[0];
     let arr = prop.split("（")[1].split("）")[0].split(","),
         c = prop.split("（")[1].split("）")[1];
-        console.log(atk)
-    console.log("("+arr.join()+")")
+        // console.log(atk)
+    // console.log("("+arr.join()+")")
     for(let i in arr) arr[i] = (atk*Number(arr[i])).toFixed(0) ;
-    console.log(arr.join())
+    // console.log(arr.join())
     return b+"（"+arr.join(' ')+"）"+c ;
 }
 function addColor(str) {

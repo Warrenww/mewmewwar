@@ -1,6 +1,18 @@
 $(document).ready(function () {
   var socket = io.connect();
   var current_user_data = {};
+  var user_photo_url = false;
+
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      socket.emit("user connect",{user:user,page:location.pathname});
+      socket.emit("require setting",user.uid);
+      if (!user.isAnonymous) user_photo_url = user.providerData[0].photoURL;
+      console.log(user_photo_url);
+    } else {
+      console.log('did not sign in');
+    }
+  });
 
   $(document).on('blur','#default_cat_lv',function () {
     let val = Number($(this).val()) ;
@@ -117,14 +129,7 @@ $(document).ready(function () {
   });
 
 
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user connect",{user:user,page:location.pathname});
-      socket.emit("require setting",user.uid);
-    } else {
-      console.log('did not sign in');
-    }
-  });
+
   socket.on("current_user_data",function (data) {
     // console.log(data);
     current_user_data = data ;
@@ -146,12 +151,17 @@ $(document).ready(function () {
       } else if(i == 'cat_survey_count') {
         $("#total_survey").text(data[i]);
         exp += 1000*Number(data[i]);
+      }else if(i == 'photo'){
+        $('#photo').css("background-image",'url("'+data[i]+'")')
+          .css('background-position',function () {
+            return data[i].indexOf("http")!=-1?'0':'-4px 6px'
+          });
       } else {
         $("#"+i).prop('checked',data[i]);
       }
     }
     console.log(Math.log(exp));
-});
+  });
 
 
   socket.on("return history",function (history) {
@@ -176,6 +186,38 @@ $(document).ready(function () {
         image_url_cat+history.owned[i].id+'.png);">'+
         history.owned[i].name+'</span>');
   });
+  $("#photo").hover(function () {
+    $(this).children().show(400);
+  },function () {
+    $(this).children().hide(400);
+  });
+  $("#photo span").click(function () { $('#photo_chooser').css('display','flex'); });
+  $("#photo_chooser").click(function () { $('#photo_chooser').fadeOut(400); });
+  $("#photo_chooser div div span").click(function (e) {
+    e.stopPropagation();
+    var type = $(this).attr("id");
+    if(type == 'fb'){
+      if(!user_photo_url){ alert("無法取得fb照片"); return }
+      $('#photo').css({
+        "background-image":'url("'+user_photo_url+'")',
+        "background-position":'0'
+      });
+    }
+    socket.emit("user photo",{
+      uid:current_user_data.uid,
+      photo:user_photo_url,
+      type:type
+    });
+    $('#photo_chooser').fadeOut(400);
+  });
+  socket.on("random cat photo",function (photo) {
+    $('#photo').css({
+      "background-image":'url("'+photo+'")',
+      "background-position":'-4px 6px'
+    });
+  });
+
+
 
 
 });

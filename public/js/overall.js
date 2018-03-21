@@ -128,7 +128,11 @@ $(document).ready(function () {
 //compare tag for cat and enemy
   $(document).on('click','#compareTarget_tag',showhidecomparetarget);
 
-
+  $('#more_option div').hover(function () {
+    $(this).children('.tag').show(400);
+  },function () {
+    $(this).children('.tag').hide(400);
+  });
 
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
@@ -250,6 +254,8 @@ function snapshot(target) {
     $('#canvas_holder canvas').bind("click",function (e) {e.stopPropagation();});
   });
 
+
+
 }
 function parseRarity(s) {
   switch (s) {
@@ -301,12 +307,12 @@ function showhidecomparetarget() {
 function scroll_to_div(div_id){
   $('html,body').animate(
     {scrollTop: $("#"+div_id).offset().top-100},
-    1000,'easeInOutCubic');
+    600,'easeInOutCubic');
 }
 function scroll_to_class(class_name,n) {
   $('html,body').animate(
     {scrollTop: $("."+class_name).eq(n).offset().top},
-    1000,'easeInOutCubic');
+    600,'easeInOutCubic');
 }
 function AddZero(n) {
   return n<10 ? "0"+n : n

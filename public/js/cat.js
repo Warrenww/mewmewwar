@@ -1,43 +1,45 @@
 $(document).ready(function () {
   var timer = new Date().getTime();
-  var compare = [] ;
   var socket = io.connect();
   var current_cat_data = {};
   var current_cat_survey = {};
-  var current_cat_statistic = {};
-  var current_search = [];
-  var current_user_data = {
-    setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
+  var current_cat_statistic = {
+    application:{
+      ash:0,attack:0,control:0,fastatk:0,shield:0,tank:0
+    },
+    nickname:[],
+    rank:{
+      atk:{1:0,2:0,3:0,4:0,5:0},
+      control:{1:0,2:0,3:0,4:0,5:0},
+      cost:{1:0,2:0,3:0,4:0,5:0},
+      hp:{1:0,2:0,3:0,4:0,5:0},
+      range:{1:0,2:0,3:0,4:0,5:0},
+      speed:{1:0,2:0,3:0,4:0,5:0},
+      total:{1:0,2:0,3:0,4:0,5:0},
+    }
+
   };
+  var current_search = [];
+  var current_user_id = '';
 
   auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user connect",{user:user,page:location.pathname});
-    } else {
-      console.log('did not sign in');
-    }
+    if (user)  socket.emit("user connect",{user:user,page:location.pathname});
+    else  console.log('did not sign in');
   });
-
   socket.on("current_user_data",function (data) {
-    // console.log(data);
-    current_user_data = data ;
+    current_user_id = data.uid;
     if(data.last_cat && location.pathname.indexOf('once') == -1)
-    socket.emit("display cat",{
-      uid : data.uid,
-      cat : data.last_cat,
-      history:true
-    }) ;
+      socket.emit("display cat",{
+        uid : data.uid,
+        cat : data.last_cat,
+        history:true
+      }) ;
     if(data.compare_c2c) {
       $(".compareTarget").empty();
       $("#compare_number").text(data.compare_c2c.length)
       for(let i in data.compare_c2c){
-        let id = data.compare_c2c[i].id,
-            name = data.compare_c2c[i].name;
-        $(".compareTarget").append(
-        '<span class="card" value="'+id+
-        '" style="background-image:url('+
-        image_url_cat+id+'.png'+
-        '">'+name+'</span>');
+        let id = data.compare_c2c[i].id, name = data.compare_c2c[i].name;
+        compareTargetAddCard(id,name)
       }
     }
     if(data.last_cat_search){
@@ -61,7 +63,6 @@ $(document).ready(function () {
           .click();
       }
     }
-    show_more = !data.setting.show_more_option;
     if(!data.setting.show_ability_text ||screen.width<768){
         $(".select_ability").children(".button").each(function () {
           $(this).css({'padding':0,'border-radius':7,'overflow':'hidden'})
@@ -74,58 +75,55 @@ $(document).ready(function () {
       $('.display').find("#count").css({'background-color':'transparent','color':'transparent'})
         .prev().css({'background-color':'transparent','color':'transparent'})
     }
-    setTimeout(function () {
-      $("#loading").fadeOut();
-    },2500);
+    setTimeout(function () { $("#loading").fadeOut(); },2500);
   });
-
   if(screen.width<=768) $("#level_num").parent().attr("colspan",5);
+  var page_2_sticky = 0;
+  $('.page_2').scroll(function () {
+    let aa = $(this).scrollTop();
+    if(Number(aa)){
+      if(page_2_sticky) return
+      scroll_to_class('page_2',0);
+      page_2_sticky = 1;
+    }
+    else page_2_sticky = 0;
+  });
   var tip_fadeOut;
   $(document).on("click",".select_ability .button",function () {
     let text = $(this).children("span").text(),
         val = $(this).attr('value')=='1'?true:false;
-        // console.log(val);
-    if((!current_user_data.setting.show_ability_text||screen.width<768)&&val){
+    if(val){
       clearTimeout(tip_fadeOut);
       $(".ability_tip").remove();
       $("body").append("<div class='ability_tip'>"+text+"<div>");
-      setTimeout(function () {
-        $(".ability_tip").css("left",-10);
-      },100)
-      tip_fadeOut = setTimeout(function () {
-        $(".ability_tip").css("left",-250)
-      },2000);
+      setTimeout(function () { $(".ability_tip").css("left",-10); },100)
+      tip_fadeOut = setTimeout(function () { $(".ability_tip").css("left",-250) },2000);
     }
   });
   $(document).on('click','.search_type .button',function () {
     let type = $(this).attr('id').split("_")[0];
     if(type == 'normal'){
-      $(this).attr("value",1);
       $("#gacha_search").attr("value",0);
-      $("#gacha_table").hide(200);
-      $("#upper_table").show(200);
-      $("#search_ability").attr("value",type);
+      $("#gacha_table").hide(200).siblings("#upper_table").show(200);
     } else if(type == 'gacha'){
-      $(this).attr("value",1);
       $("#normal_search").attr("value",0);
-      $("#upper_table").hide(200);
-      $("#gacha_table").show(200);
-      $("#search_ability").attr("value",type);
+      $("#upper_table").hide(200).siblings("#gacha_table").show(200);
     } else {
       $("#lower_table").toggle(300);
+      return
     }
+    $(this).attr("value",1);
+    $("#search_ability").attr("value",type);
   });
 
   $(document).on('click','.card',function (e) {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
-    else {
+    else
       socket.emit("display cat",{
-        uid : current_user_data.uid,
+        uid : current_user_id,
         cat : $(this).attr('value'),
         history:true
       });
-    }
-
   });
   $(document).on('click','#search_ability',search) ;
   $(document).on('click','#searchBut',function () {
@@ -157,16 +155,14 @@ $(document).ready(function () {
   var input_org ;
   $(document).on('click','.editable',function () {
       input_org = $(this).text();
-      $(this).html('<input type="number" value="' +input_org+ '"></input>');
-      $(this).find('input').select();
+      $(this).html('<input type="number" value="' +input_org+ '"></input>').find('input').select();
   });
   $(document).on('blur', '.editable input', calculateLV);
   $(document).on('click','.filter_option',filterSlider);
   var filter_org ;
   $(document).on('click','.value_display,#level_num',function () {
       filter_org = Number($(this).text());
-      $(this).html('<input type="number" value="' +filter_org+ '"></input>');
-      $(this).find('input').select();
+      $(this).html('<input type="number" value="' +filter_org+ '"></input>').find('input').select();
   });
   $(document).on('blur','.value_display input',changeSlider) ;
   $(document).on('blur','#level_num input',function () {
@@ -176,22 +172,17 @@ $(document).ready(function () {
   });
   $(document).on('click','.searchCombo',function () {
     socket.emit("search combo",{
-      uid:current_user_data.uid,
+      uid:current_user_id,
       id:[$(this).attr('val')]
     }) ;
-    // location.assign('combo.html');
     window.parent.reloadIframe('combo');
   }) ;
-  $(document).on("click","#share",function () {
-    let id = $(this).parents("#more_option").siblings().attr("id"),
-        lv = $(this).parents("#more_option").siblings().find("#level_num").text(),
-        host = location.origin;
+  $(document).on("click",".dataTable .name",function () {
+    let name = $(this).text();
     $(this).append(
       "<input type='text' value='"+
-      host+"/view/once.html?q=cat&"+
-      id+"&"+lv+"' style='position:fixed;top:-100px'/>"
-    );
-    $(this).find("input").select();
+      name+"' style='position:fixed;top:-100px'/>"
+    ).find("input").select();
     document.execCommand("Copy");
     $("#copy_alert").css("left",-10);
     setTimeout(function () {
@@ -209,12 +200,10 @@ $(document).ready(function () {
     let data = new Cat(result.this),
         arr = result.bro,
         brr = result.combo,
-        lv = (result.lv == 'default'||result.lv == null) ? current_user_data.setting.default_cat_lv : result.lv,
         own = result.own,
         survey = result.survey;
-    // if(!result.survey&&Math.random()>0.5) $(".survey_holder").css("display",'flex');
-    displayCatData(data,arr,brr,lv,result.count,own,survey) ;
-    append_comment(result.this.comment);
+    displayCatData(data,arr,brr,result.lv,result.count,own,survey) ;
+    socket.emit('required cat comment',data.id.substring(0,3));
     current_cat_data = data;
   });
   var number_page,page_factor ;
@@ -223,12 +212,8 @@ $(document).ready(function () {
     // console.log(data);
     number_page = 0 ;
     page_factor = 1 ;
-    $("#selected").empty();
-    $("#page_dot").empty();
-    $("#selected").css('display','flex');
-    $("#selected").scrollTop(0);
-    $("#selected").append(condenseCatName(data));
-    $(".button_group").css('display','flex');
+    $("#selected,#page_dot").empty();
+    $("#selected").css('display','flex').scrollTop(0).append(condenseCatName(data));
     scroll_to_div("selected");
     let select_width = $("#selected").innerWidth(),
         card_width = screen.width > 1024 ? 216 :140,
@@ -240,20 +225,43 @@ $(document).ready(function () {
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
       $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
   });
+  function condenseCatName(data) {
+    let now = '000' ;
+    let html = '<span class="card-group" hidden>' ;
+    for(let i in data){
+      if(!data[i].id) continue
+      let name = data[i].name,id = data[i].id,current = id.substring(0,3) ;
+      if(current == now){
+        html += '<span class="card" value="'+id+'" '+
+        'style="background-image:url('+
+        image_url_cat+id+'.png);display:none">'+
+        name+'</span>' ;
+      }
+      else{
+        html += '</span>' ;
+        html += '<span class="card-group" value="'+current+'">'+
+        '<span class="glyphicon glyphicon-refresh"></span>'+
+        '<span class="glyphicon glyphicon-shopping-cart"></span>'+
+        '<span class="card" value="'+id+'" '+
+        'style="background-image:url('+
+        image_url_cat+id+'.png)">'+
+        name+'</span>' ;
+        now = current ;
+        number_page ++ ;
+        current_search.push(current);
+      }
+    }
+    $(".compareSorce #result_count").find("span").text(number_page);
+    return html ;
+  }
   function displayCatData(data,arr,brr,lv,count,own,survey) {
     let html = "",
-        showID = current_user_data.setting.show_cat_id,
-        showCount = current_user_data.setting.show_cat_count,
         id = data.id,
         grossID = id.substring(0,3);
 
-    if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
-    else $("#more_option").css("height",0);
-    if(own) $("#more_option #mark_own").attr({"value":1,"style":"color:rgb(96, 176, 37)"}).find("span").fadeOut();
-    else $("#more_option #mark_own").attr({"value":0,"style":"color:rgb(224, 103, 103)"}).find("span").fadeIn();
+    if(own) $("#more_option #mark_own").attr({"value":1,'cat':grossID}).find(".tag span").fadeOut();
+    else $("#more_option #mark_own").attr({"value":0,'cat':grossID}).find(".tag span").fadeIn();
     $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+grossID+".html");
-
-    // console.log(data);
 
     for (let i in data){
       if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
@@ -277,23 +285,7 @@ $(document).ready(function () {
     $(".dataTable").find(".combo").remove();
     $(AddCombo(brr)).insertAfter('.dataTable #combo_head');
     initialSlider(data,lv);
-    scroll_to_class("display",0);
-
-    if(data.id == "334-2"&&(Math.random()<0.4)) {
-      $(".dataTable").append(
-        '<div class="animate_cat">'+
-        '<img src="../public/css/footage/animate/u334-2.gif" style="width:100%" />'+
-        '</div>'
-      );
-      $(".animate_cat").fadeIn().css("display","flex");
-      setTimeout(function () {
-        $(".animate_cat").fadeOut();
-      },30000);
-      $(".animate_cat").click(function (e) {
-        $(this).fadeOut();
-        return false
-      });
-    }
+    scroll_to_class("page_2",0);
   }
   function initialSlider(data,lv) {
     $("#level").slider({
@@ -301,15 +293,12 @@ $(document).ready(function () {
       min: 1,
       value: 30,
     });
-    setTimeout(function () {
-      $("#level").slider('option','value',lv)
-    },800);
-
+    setTimeout(function () { $("#level").slider('option','value',lv) },800);
     $("#level").on("slidechange", function(e,ui) {
       $("#level_num").html(ui.value);
       updateState(ui.value);
       socket.emit("store level",{
-        uid : current_user_data.uid,
+        uid : current_user_id,
         id : $(this).parents(".dataTable").attr("id"),
         lv : ui.value,
         type : 'cat'
@@ -394,7 +383,7 @@ $(document).ready(function () {
     });
     // console.log(type);
     socket.emit(type+" search",{
-      uid:current_user_data.uid,
+      uid:current_user_id,
       query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
       query_type:type,
       filterObj,
@@ -405,40 +394,6 @@ $(document).ready(function () {
 
     scroll_to_div('selected');
   }
-  function condenseCatName(data) {
-    console.log('condensing....');
-    let now = '000' ;
-    // console.log(data);
-
-    let html = '<span class="card-group" hidden>' ;
-    for(let i in data){
-      if(!data[i].id) continue
-      let name = data[i].name;
-      let id = data[i].id ;
-      let current = id.substring(0,3) ;
-      if(current == now){
-        html += '<span class="card" value="'+id+'" '+
-        'style="background-image:url('+
-        image_url_cat+id+'.png);display:none">'+
-        name+'</span>' ;
-      }
-      else{
-        html += '</span>' ;
-        html += '<span class="card-group" value="'+current+'">'+
-        '<span class="glyphicon glyphicon-refresh"></span>'+
-        '<span class="glyphicon glyphicon-shopping-cart"></span>'+
-        '<span class="card" value="'+id+'" '+
-        'style="background-image:url('+
-        image_url_cat+id+'.png)">'+
-        name+'</span>' ;
-        now = current ;
-        number_page ++ ;
-        current_search.push(current);
-      }
-    }
-    $(".compareSorce #result_count").find("span").text(number_page);
-    return html ;
-  }
   var result_expand = 0,originHeight;
   $(document).on('click','.compareSorce td',function () {
     let type = $(this).attr("id");
@@ -446,71 +401,50 @@ $(document).ready(function () {
       let target = $("#selected")[0];
       if(!result_expand) {
         $("#result_expand").click();
-        setTimeout(function () {
-          snapshot(target);
-        },500)
-        setTimeout(function () {
-          $("#result_expand").click();
-        },500)
+        setTimeout(function () { snapshot(target); },500)
+        setTimeout(function () { $("#result_expand").click(); },500)
       } else snapshot(target);
     } else if(type == 'result_expand'){
       let trueHeight = $("#selected")[0].scrollHeight;
-          // console.log(trueHeight,originHeight);
       if(!result_expand){
         originHeight = $("#selected")[0].offsetHeight;
-        $("#selected").css("height",trueHeight);
         $(this).html("收合<i class='material-icons'>&#xe240;</i>");
-      } else {
-        $("#selected").css("height",originHeight);
-        $(this).html("展開<i class='material-icons'>&#xe240;</i>");
-      }
+      } else  $(this).html("展開<i class='material-icons'>&#xe240;</i>");
+      $("#selected").css("height",function () {
+        return result_expand?originHeight:trueHeight
+      });
       result_expand = result_expand?0:1;
     } else if(type == 'batch_own'){
-      // console.log(current_search);
       socket.emit("mark own",{
-        uid:current_user_data.uid,
+        uid:current_user_id,
         arr:current_search,
         mark:true
       });
       $("#batch_alert").css("left",-10);
-      setTimeout(function () {
-        $("#batch_alert").css("left",-250);
-      },2600);
+      setTimeout(function () { $("#batch_alert").css("left",-250); },2600);
     }
-
   });
   $(document).on("click","#mark_own",function () {
     let val = Number($(this).attr("value"))?0:1,
-        cat = $(this).parents("#more_option").siblings().attr("id").substring(0,3);
+        cat = $(this).attr("cat");
     socket.emit("mark own",{
-      uid:current_user_data.uid,
+      uid:current_user_id,
       cat:cat,
       mark:val
     });
-    if(val) $(this).attr({"value":1,"style":"color:rgb(96, 176, 37)"}).find("span").fadeOut();
-    else $(this).attr({"value":0,"style":"color:rgb(224, 103, 103)"}).find("span").fadeIn();
-
-  });
-  var show_more = 1;
-  $(document).on("click","#more",function () {
-    // console.log(show_more);
-    if(show_more) $("#more_option").css("height",50);
-    else $("#more_option").css("height",0);
-    show_more = show_more?0:1;
+    if(val) $(this).attr("value",1).find(".tag span").fadeOut();
+    else $(this).attr("value",0).find(".tag span").fadeIn();
   });
   $(document).on("click","#char span[id!='serial']",function () {
     let type = $(this).attr("id"),
     rFilter=[],aFilter=[],gFilter=[],filterObj=[],cFilter=[];
     if(type == 'color') {
       let ww = $(this).text().split(",")
-      for(let i in ww){
-        cFilter.push("對"+ww[i].substring(0,2))
-      }
+      for(let i in ww) cFilter.push("對"+ww[i].substring(0,2));
       $("#upper_table .button").each(function () {
         if(cFilter.indexOf($(this).attr('name'))==-1) $(this).attr('value',0);
         else $(this).attr('value',1);
       });
-
     }
     else {
       let ww = $(this).text().split(" ")[0].split("(")[0];
@@ -534,7 +468,7 @@ $(document).ready(function () {
       });
     }
     socket.emit("normal search",{
-      uid:current_user_data.uid,
+      uid:current_user_id,
       query:{rFilter,cFilter,aFilter},
       query_type:type,
       filterObj:[],
@@ -574,62 +508,31 @@ $(document).ready(function () {
   $(".slider").on("slidechange", function(e,ui) {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
-  $('.compareTable').on('sort',function (e,ui) {
-    $('.comparedatahead').find('th').css('border-left','0px solid');
-  });
 
-
-  $('body').append("<div id='compare_panel_BG'></div>");
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
-  $(document).on('click','.glyphicon-shopping-cart',addToCompare);
+  $(document).on('click','.glyphicon-shopping-cart',function () {
+    var target = $(this).parent().children(".card:visible").attr('value'),
+        name = $(this).parent().children(".card:visible").text();
+    addToCompare(target,name);
+  });
   $(document).on('click',"#addcart", function () {
-    $('.compare_panel').css('height',0);
-    if(showcomparetarget) showhidecomparetarget();
-    let id = $(".dataTable").attr('id'),
-        name = $(".dataTable").find("#name").text().split(" ")[1];
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    if(compare.indexOf(id) != -1) {
-      let repeat = $('.compareTarget').find('[value='+id+']') ;
-      repeat.css('border-color','rgb(237, 179, 66)');
-      $(".compareTarget_holder").animate({
-        scrollTop : repeat[0].offsetTop-100
-      },800,'easeInOutCubic');
-      setTimeout(function () {
-        repeat.css('border-color','white');
-      },1000);
-    } else {
-      $(".compareTarget").append(
-          '<span class="card" value="'+id+
-          '" style="background-image:url('+
-          image_url_cat+id+'.png'+
-          '">'+name+'</span>');
-      $('.compareTarget_holder').animate({
-        scrollTop : $('.compareTarget').height()
-      },500,'easeInOutCubic');
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-      $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-    }
-
+    let target = $(".dataTable").attr('id'),
+        name = current_cat_data.name;
+        name = name?name:current_cat_data.jp_name;
+    addToCompare(target,name);
   });
   $(document).on('click','.compareTarget .card',function (e) {
     let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;
-    $('.compare_panel').remove();
     $("#compare_panel_BG").fadeIn();
-    $('body').append(
-      "<div class='compare_panel' id='"+
-      $(this).attr('value')+
-      "'><span id='show'>顯示</span><span id='del'>刪除</span></div>");
-    $('.compare_panel').css({top:pos_y,left:pos_x}).animate({height:60},400);
+    $('.compare_panel').attr('id',$(this).attr('val'))
+      .css({top:pos_y,left:pos_x}).animate({height:60},400);
     $('.compare_panel #show').click(function () {
       socket.emit("display cat",{
-        uid : current_user_data.uid,
+        uid : current_user_id,
         cat : $(this).parent().attr('id'),
         history:true
       });
       showhidecomparetarget();
-      $("#compare_panel_BG").fadeOut();
-      $('.compare_panel').css('height',0);
     });
     $('.compare_panel #del').click(function () {
       let target = $(".compareTarget .card[value='"+$(this).parent().attr('id')+"']");
@@ -638,20 +541,58 @@ $(document).ready(function () {
       target.remove();
       compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
       $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
+      socket.emit("compare cat",{id:current_user_id,target:compare});
+    });
+    $('compare_panel span').click(function () {
       $("#compare_panel_BG").fadeOut();
       $('.compare_panel').css('height',0);
     });
   });
   $(document).on('click','#compare_panel_BG',function () {
-    $("#compare_panel_BG").fadeOut();
-    $('.compare_panel').css('height',0);
+    $(this).fadeOut(); $('.compare_panel').css('height',0);
   });
-
+  var compare ;
+  function addToCompare(target,name) {
+    if(showcomparetarget) showhidecomparetarget();
+    let compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    if(compare.indexOf(target) != -1) {
+      let repeat = $('.compareTarget').find('[value='+target+']') ;
+      repeat.css('border-color','rgb(237, 179, 66)');
+      $(".compareTarget_holder").animate({ scrollTop : repeat[0].offsetTop-100 },800,'easeInOutCubic');
+      setTimeout(function () { repeat.css('border-color','white'); },1000);
+    } else {
+      compareTargetAddCard(target,name)
+      $('.compareTarget_holder').animate({
+        scrollTop : $('.compareTarget').height()
+      },500,'easeInOutCubic');
+      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      $("#compare_number").text(compare.length);
+      socket.emit("compare cat",{id:current_user_id,target:compare});
+    }
+  }
+  function compareTargetAddCard(target,name) {
+    $(".compareTarget").append(
+        '<span class="card" value="'+target+
+        '" style="background-image:url('+
+        image_url_cat+target+'.png'+
+        '">'+name+'</span>');
+  }
+  $("#clear_compare").click(function () {
+    let r = confirm("確定要移除所有貓咪?!");
+    if(!r) return
+    showhidecomparetarget();
+    $(this).siblings().html("");
+    compare = [];
+    $("#compare_number").text(0);
+    socket.emit("compare cat",{id:current_user_id,target:compare});
+  });
+  $(document).on('click','#more_option #top',function () {
+    $('.page_2').animate( {scrollTop: 0}, 600,'easeInOutCubic');
+  });
   $(document).on("click","#addfight",function () {
     let id = $(this).parents("#more_option").siblings().attr("id");
     socket.emit("compare C2E",{
-      uid : current_user_data.uid,
+      uid : current_user_id,
       target : {cat:{id:id}}
     });
     $("#fight_alert").css("left",-10);
@@ -660,7 +601,6 @@ $(document).ready(function () {
       $("#fight_alert").css("left",-250);
     },2600);
   });
-
   function initial_survey() {
     $(".survey #nickname div").text("暫無暱稱");
     $("#rank i").attr('value',0);
@@ -706,7 +646,7 @@ $(document).ready(function () {
   function addSurvey(data,survey) {
     // console.log(data,survey);
     current_cat_survey = survey;
-    current_cat_statistic = data;
+    current_cat_statistic = data?data:current_cat_statistic;
     let arr = [];
     if(!data) return
     if(data.nickname){
@@ -816,7 +756,7 @@ $(document).ready(function () {
     update_total_rank(current_cat_statistic.rank);
     update_respect_rank(current_cat_statistic.rank);
     socket.emit("cat survey",{
-      uid : current_user_data.uid,
+      uid : current_user_id,
       cat : current_cat_data.id,
       type : 'rank',
       add : current_cat_survey.rank,
@@ -843,7 +783,7 @@ $(document).ready(function () {
     current_cat_survey.application[type] = (active?0:1);
     update_application(current_cat_statistic.application);
     socket.emit("cat survey",{
-      uid : current_user_data.uid,
+      uid : current_user_id,
       cat : current_cat_data.id,
       type : 'application',
       add : current_cat_survey.application,
@@ -874,13 +814,13 @@ $(document).ready(function () {
         return
       }
     let obj = {
-      owner:current_user_data.uid,
+      owner:current_user_id,
       nickname:val
     }
     quene.push(obj);
     org.push(val);
     socket.emit("cat survey",{
-      uid : current_user_data.uid,
+      uid : current_user_id,
       cat : current_cat_data.id,
       type : 'nickname',
       add : obj,
@@ -957,8 +897,11 @@ $(document).ready(function () {
     for(let i in app)
       $('.survey .application[type="'+i+'"]').prev(".num").text(app[i]+"票");
   }
+  socket.on("comment",function (comment) { append_comment(comment); });
+  var commentMap = {};
   function append_comment(comment) {
     // console.log(comment);
+    commentMap = {};
     $(".comment_input").parents('tr').siblings(".comment").remove();
     if(comment == undefined){
       $("<tr class='comment'><td colspan='6'>尚無評論</td></tr>")
@@ -967,16 +910,15 @@ $(document).ready(function () {
     }
     let html = '';
     for(let i in comment){
-      html +=
-        '<tr class="comment"><td colspan="6">'+
-        '<div class="comment_content">'+
-        '<span class="photo"></span>'+
-        '<div id="'+i+'">'+
-        '<span class="bubble">'+comment[i].comment.split("\n").join("</br>")+'</span>'+
-        '<span class="time">'+commentTime(comment[i].time)+'</span></div>'+
-        '</div></td></tr>'
+      html += commentHtml(i,comment[i]);
+      if(!commentMap[comment[i].owner]){
+        commentMap[comment[i].owner] = [i]
+      }else{
+        commentMap[comment[i].owner].push(i);
+      }
     }
     $(html).insertAfter(".dataTable #comment_head");
+    commentPhoto(commentMap);
   }
   function submitComment() {
     let comment = $(".comment_input").find('textarea').val();
@@ -984,21 +926,127 @@ $(document).ready(function () {
     if(!comment) return
     socket.emit('comment cat',{
       cat:current_cat_data.id,
-      owner:current_user_data.uid,
+      owner:current_user_id,
       comment:comment,
       time:new Date().getTime()
     });
     $(".comment_input").find('textarea').val('');
   }
+  socket.on('cat comment push',function (data) {
+    let last = $('.comment_content').last().parents(".comment");
+    $(commentHtml(data.key,data,data.photo,data.name)).insertAfter(last);
+    $(".page_2").animate({scrollTop:$('.comment').last()[0].offsetTop},800);
+  });
+  function commentHtml(id,comment,photo=null,name=null) {
+    let html,uid = current_user_id;
+    html = '<tr class="comment" style="display:'+(toggle_comment?'none':'')+'">'+
+    '<td colspan="6" style="border-left:'+
+    (comment.owner == uid?"5px solid rgb(235, 138, 38)":"0")+
+    '"><div class="comment_content">'+
+    '<span class="photo" style="'+
+    (photo?'background-image:url(\''+photo+'\')':'')+'")"></span>'+
+    '<span class="name">'+(name?name:'')+'</span>'+
+    '<div id="'+id+'">'+
+    '<span class="bubble">'+comment.comment.split("\n").join("</br>")+'</span>'+
+    "<span class='function'>"+
+    '<span class="time">'+commentTime(comment.time)+'</span>'+
+    '<span class="like">'+likeOrEdit(comment.owner,comment.like)+'</span>'+
+    '</span></div></div></td></tr>'
+    return html
+  }
   function commentTime(date) {
     var now = new Date().getTime(),
         d = now-date,
-        e = new Date(date);
-
+        b = new Date(date);
     if(d<60000) return (d/1000).toFixed(0)+"秒前"
     else if(d<3600000) return (d/60000).toFixed(0)+"分鐘前"
     else if(d<86400000) return (d/3600000).toFixed(0)+"小時前"
-    else return e.getFullYear+"/"+(e.getMonth+1)+"/"+e.getDate
+    else if(d<86400000*7) return (d/86400000).toFixed(0)+"天前"
+    else return b.getFullYear()+"/"+(b.getMonth()+1)+"/"+b.getDate()
+  }
+  function likeOrEdit(uid,like) {
+    var html = '',me = current_user_id,count = 0;
+    for(let i in like) count++;
+    html+='<i class="material-icons" id="like" value='+
+          (like?(like[me]?1:0):0) +'>&#xe8dc;</i>'+
+          '<span id="num_like">'+count+'</span>';
+    if(uid == me){
+      html+='<i class="material-icons" id="edit">&#xe254;</i>';
+      html+='<i class="material-icons" id="del">&#xe872;</i>';
+    }
+    return html
+  }
+  function commentPhoto(obj) {
+    // console.log(obj);
+    var buffer = [];
+    for(let i in obj) buffer.push(i);
+    socket.emit("required users photo",buffer);
+  }
+  socket.on('return users photo',function (obj) {
+    // console.log(obj);
+    for(let i in obj){
+      if(!obj[i]) continue
+      for(let j in commentMap[i]){
+        let id = commentMap[i][j];
+        $('.dataTable').find("#"+id).siblings('.photo')
+          .css('background-image','url("'+obj[i].photo+'")')
+          .siblings('.name').text(obj[i].name);
+      }
+    }
+  });
+
+  $(document).on('click','.function .like i',function () {
+    var type = $(this).attr('id'),
+        num = Number($(this).next('span').text()),
+        val = Number($(this).attr('value')),
+        key = $(this).parents('div').attr("id"),
+        inverse = false;
+    // console.log(type);
+    if(type == 'like'){
+      if(!val) $(this).next('span').text(num+1);
+      else {$(this).next('span').text(num-1);inverse = true;}
+    }
+    else if(type == 'del'){
+      let r = confirm('確定刪除?!');
+      if(r)
+        $(this).parents(".comment").remove();
+    }
+    else {
+      a = $(this).parents(".function").siblings(".bubble");
+      b = a.html().split("<br>").join("\n");
+      a.html("<textarea rows='1' maxlength='100'></textarea>")
+        .find("textarea").val(b).select();
+      return
+    }
+    socket.emit('comment function',{
+      uid:current_user_id,
+      key:key,
+      cat:current_cat_data.id.substring(0,3),
+      type:type,
+      inverse:inverse
+    });
+    $(this).attr('value',function () { return val?0:1 });
+  });
+  $(document).on('keypress','.comment_content textarea',function (e) {
+    if(e.keyCode == '13' && !e.shiftKey) {$(this).blur();return false}
+  });
+  $(document).on('blur','.comment_content textarea',editComment);
+  function editComment() {
+    var r = confirm("確定修改?");
+    if(!r) return
+    var val = $('.comment_content textarea').val(),
+        key = $(this).parents('div').attr("id"),
+        b = val.split("\n").join("<br>");
+    $(this).parent().html(b);
+    socket.emit('comment function',{
+      uid:current_user_id,
+      key:key,
+      cat:current_cat_data.id.substring(0,3),
+      type:'edit',
+      val:val,
+      inverse:false
+    });
+
   }
 
   function toggleCatStage() {
@@ -1015,97 +1063,6 @@ $(document).ready(function () {
       }
     },400);
   }
-  var compare ;
-  $('#selected').sortable('option',{
-    item: '> .card-group',
-    connectWith: ".compareTarget"
-  });
-  $('.compareTarget').sortable('option',{
-    item: '> comparedata'
-  });
-  $('#selected').on('sortstart',function (e,ui) {
-    $('.compareTarget_holder').css('left',0);
-    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
-    showcomparetarget = 0 ;
-  });
-  $('.compareTarget').on('sortover',function (e,ui) {
-    let input = ui.item.children('.card:visible');
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    if(compare.indexOf(input.attr('value')) != -1){
-      let repeat = $(this).find('[value='+input.attr('value')+']') ;
-      repeat.css('border-color','rgb(237, 179, 66)');
-      setTimeout(function () {
-        repeat.css('border-color','white');
-      },1000);
-      $("#selected").sortable('cancel');
-      $(".compareTarget_holder").animate({
-        scrollTop : repeat[0].offsetTop-100
-      },800,'easeInOutCubic');
-    }
-    else if(ui.sender.is('#selected')){
-      let id = input.attr('value'),
-          name = input.text();
-      $(".compareTarget").append(
-      '<span class="card" value="'+id+
-      '" style="background-image:url('+
-      image_url_cat+id+'.png'+
-      '">'+name+'</span>');
-      $("#selected").sortable('cancel');
-      $('.compareTarget_holder').animate({
-        scrollTop : $('.compareTarget').height()
-      },500,'easeInOutCubic');
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-      $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-    }
-    else $("#selected").sortable('cancel');
-  });
-  $('.compareTarget').on('sortout',function (e,ui) {
-    let x = ui.position.left,
-        y = ui.position.top ;
-    if(ui.sender.is('.compareTarget')) {
-      let r = confirm("確定要將"+ui.item.children(".card").text()+"從比較列中移除?") ;
-      if(!r) return
-      ui.item.remove();
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-      $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-    }
-  });
-  function addToCompare() {
-    $('.compare_panel').css('height',0);
-    if(showcomparetarget) showhidecomparetarget();
-    let target = $(this).parent().children(".card:visible");
-    compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-    if(compare.indexOf(target.attr('value')) != -1) {
-      let repeat = $('.compareTarget').find('[value='+target.attr('value')+']') ;
-      repeat.css('border-color','rgb(237, 179, 66)');
-      $(".compareTarget_holder").animate({
-        scrollTop : repeat[0].offsetTop-100
-      },800,'easeInOutCubic');
-      setTimeout(function () {
-        repeat.css('border-color','white');
-      },1000);
-    } else {
-      target.clone().appendTo('.compareTarget');
-      $('.compareTarget_holder').animate({
-        scrollTop : $('.compareTarget').height()
-      },500,'easeInOutCubic');
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
-      $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-    }
-  }
-  $("#clear_compare").click(function () {
-    let r = confirm("確定要移除所有貓咪?!");
-    if(!r)return
-    showhidecomparetarget();
-    $(this).siblings().html("");
-    compare = [];
-    $("#compare_number").text(compare.length);
-    socket.emit("compare cat",{id:current_user_data.uid,target:compare});
-  });
-
   function changeSlider() {
     let target = $("#"+filter_name+".filter_option");
     let range = JSON.parse(target.attr('range')),

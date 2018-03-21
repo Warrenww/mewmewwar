@@ -69,11 +69,11 @@ $(document).ready(function () {
         if(a != id) arr.push(a);
       });
       socket.emit("compare cat",{id:current_user_data.uid,target:arr});
-      colsePanel();
+      closePanel();
     }
     else if(action == 'hide'){
       $(".comparedataholder").find("#"+id).hide(400);
-      colsePanel();
+      closePanel();
     }
     else if(action == 'switch'){
       let bro = $('.comparedataholder').find("#"+id).attr("bro").split(",");
@@ -95,7 +95,7 @@ $(document).ready(function () {
         cat:id.substring(0,3),
         mark:true
       });
-      colsePanel();
+      closePanel();
     }
   });
   $(document).on('click','.panel #switch span',function () {
@@ -124,10 +124,10 @@ $(document).ready(function () {
     highlightTheBest();
     $(".comparedata").each(function () {brr.push($(this).attr("id"))});
     socket.emit("compare cat",{id:current_user_data.uid,target:brr});
-    colsePanel();
+    closePanel();
   });
-  $('.compareDisplay').on("scroll",colsePanel);
-  function colsePanel() {
+  $('.compareDisplay').on("scroll",closePanel);
+  function closePanel() {
     $('.panel').css("height",0).attr('value',0);
     $("#level i").css("transform",'rotate(0deg)');
   }

@@ -31,7 +31,7 @@ $(document).ready(function () {
       socket.emit("required level name",{chapter:arr[0],stage:arr[1]});
       // $(".select_chapter").children().first().before($(".select_chapter").find("#"+arr[0])[0]);
     }
-    console.log(data.stage_count);
+    // console.log(data.stage_count);
     for(let i in data.stage_count)
       $('.select_chapter').children().last()
         .after($('.select_chapter').find("#"+data.stage_count[i].name));
@@ -317,7 +317,7 @@ $(document).ready(function () {
               "</tr><tr>"+
               "<th>出現條件</th>"+
               "<td colspan='3'>城體力小於<b>"+arr[i].castle+
-              "</b>時</br>於<b>"+arr[i].first_show+"</b>秒後出現"+
+              "</b></br>且開場已過<b>"+arr[i].first_show+"</b>秒後出現"+
               "</br>間隔<b>"+arr[i].next_time+"</b>秒後再次出現</td><tr>"
             )
     }
@@ -390,7 +390,7 @@ $(document).ready(function () {
     let name = $(this).attr('id');
     var arr = [] ;
     let flag = true ;
-    $(this).css('border-top','5px solid rgb(246, 132, 59)')
+    $(this).css('border-top','5px solid rgb(59, 184, 246)')
             .siblings().css('border-top','0px solid');
 
     $(".enemy_row").each(function () {
@@ -406,7 +406,7 @@ $(document).ready(function () {
     // console.log(arr);
     for(let i=0;i<arr.length;i++){
       for(let j=i+1;j<arr.length;j++){
-        if(arr[j].item>arr[i].item){
+        if(arr[j].item<arr[i].item){
           $(".enemy_row[id='"+arr[i].id+"']").before( $(".enemy_row[id='"+arr[j].id+"']"));
           flag = false ;
         }
@@ -423,12 +423,12 @@ $(document).ready(function () {
       }
     }
     if(flag){
-      $(this).css('border-top','5px solid rgb(59, 184, 246)')
+      $(this).css('border-top','5px solid rgb(246, 132, 59)')
               .siblings().css('border-top','0px solid');
 
       for(let i=0;i<arr.length;i++){
         for(let j=i+1;j<arr.length;j++){
-          if(arr[j].item<arr[i].item){
+          if(arr[j].item>arr[i].item){
             $(".enemy_row[id='"+arr[i].id+"']").before( $(".enemy_row[id='"+arr[j].id+"']"));
           }
           arr = [] ;

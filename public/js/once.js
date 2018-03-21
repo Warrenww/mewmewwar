@@ -4,21 +4,22 @@ $(document).ready(function () {
   var current_user_data = {} ;
   console.log(search);
   var sign_in = false ;
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      socket.emit("user connect",{user:user,page:location.pathname});
-      console.log('user login');
-      sign_in = true ;
-    } else {
-      console.log('did not sign in');
-      require_data();
-    }
-  });
-  socket.on("current_user_data",function (data) {
-    console.log(data);
-    current_user_data = data ;
+  // auth.onAuthStateChanged(function(user) {
+  //   if (user) {
+  //     socket.emit("user connect",{user:user,page:location.pathname});
+  //     console.log('user login');
+  //     sign_in = true ;
+  //   } else {
+  //     console.log('did not sign in');
+  //     require_data();
+  //   }
+  // });
+  // socket.on("current_user_data",function (data) {
+  //   console.log(data);
+  //   current_user_data = data ;
+  //   require_data();
+  // });
     require_data();
-  });
 
   function require_data() {
     if(search[0] == 'cat'){

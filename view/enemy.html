@@ -15,23 +15,10 @@
     <link rel="stylesheet" href="../public/css/cat.css" />
   </head>
   <body>
-    <!-- <nav>
-      <a href="\">
-        <img src="../public/css/footage/title.png" />
-      </a>
-      <div class="navLinkBox"></div>
-      <div class="settingBox"></div>
-      <div class="mobile">
-        <i class="material-icons" id="m_nav_menu">menu</i>
-      </div>
-    </nav>
-    <div id="m_nav_panel_BG"></div>
-    <div class="m_nav_panel">
-      <div class="m_navLinkBox"></div>
-      <div class="m_settingBox"></div>
-    </div> -->
     <style>
     .glyphicon-shopping-cart {right: -164px;}
+    #more_option{position: absolute;left:95%}
+    @media screen and (max-width:768px) { #more_option{left:0;top:20%} }
     </style>
 
     <div class="page_1" >
@@ -139,22 +126,28 @@
 
         </div>
 
-        <div class="display">
+        <div class="display" style="position:relative">
           <div id='more_option'>
-            <table>
-              <!-- <td id='addfight'>加到對戰 &#9876;</td> -->
-              <td id='share'>分享 <i class="material-icons">&#xe80d;</i></td>
-              <td id='addcart'>加到購物車 <i class="fa">&#xf07a;</i></td>
-              <td>
-                <a target='blank' id="out">
-                  在超絕攻略網打開 <i class="material-icons">&#xe895;</i>
-                </a>
-              </td>
-            </table>
+            <!-- <td id='addfight'>加到對戰 &#9876;</td> -->
+            <!-- <div id='share'>
+            <i class="material-icons">&#xe80d;</i>
+            <span class="tag">分享</span>
+          </div> -->
+          <div id='addcart'>
+            <i class="material-icons">&#xE8CC;</i>
+            <span class="tag">加到購物車</span>
           </div>
+          <div>
+            <a target='blank' id="out"><i class="material-icons">&#xe895;</i></a>
+            <span class="tag">在超絕攻略網打開</span>
+          </div>
+          <div id='snapshot'>
+            <i class="material-icons" style="font-size:24px">&#xe439;</i>
+            <span class="tag">截圖</span>
+          </div>
+        </div>
           <table class="dataTable">
           </table>
-
         </div>
         <div id="compareTarget_tag">
           <i class="material-icons">&#xe315;</i>敵人購物車
@@ -171,7 +164,6 @@
     <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
     <div id="fight_alert">已加入對戰 <i class="material-icons">&#xe877;</i></div>
-    <div id='snapshot'><i class="material-icons">&#xe439;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>
     </div>

@@ -69,6 +69,9 @@ html,body{overflow: hidden;}
   width: 100%;
   height: 100%;
   overflow: hidden;
+  right: -100%;
+  top: 0;
+  position: absolute;
 }
 iframe{
   transition: .4s ease-in-out;
@@ -138,3 +141,9 @@ nav a{cursor: pointer;}
   animation-duration: .5s ;
   animation-iteration-count: infinite;
 }
+.content{
+  justify-content: flex-start;
+  height: 100%;
+  overflow-y: scroll;
+}
+.content::-webkit-scrollbar {width: 0}

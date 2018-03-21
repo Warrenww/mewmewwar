@@ -1,6 +1,6 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
 var miner_count = 0 ;
-var explor_page = [],explor_index = 0;
+var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
@@ -11,12 +11,13 @@ $(document).ready(function () {
     $(document).on("click","#fb_login",facebookLog)
     $(document).on("click","#guest_login",function () {
       let r = confirm("資料庫容量有限，"+
-      "匿名登入使用者如果連續三天沒有使用將被刪除，"+
+      "匿名登入使用者如果連續五天沒有使用將被刪除，"+
       "是否仍要繼續匿名登入?");
       if(r) guestLog();
       else return
     })
     function facebookLog() {
+      $(".login_box").children('span').hide().siblings('i').show();
       auth.signInWithPopup(facebook_provider).then(function(result) {
         // This gives you a Facebook Access Token. You can use it to access the Facebook API.
         var token = result.credential.accessToken;
@@ -24,8 +25,6 @@ $(document).ready(function () {
         var user = result.user;
         // console.log(user);
         socket.emit("user login",result.user) ;
-        //$("#login").fadeOut();
-        // window.location.assign("/");
       }).catch(function(error) {
         console.log(error);
         // Handle Errors here.
@@ -39,10 +38,12 @@ $(document).ready(function () {
       });
     }
     function guestLog() {
+      $(".login_box").children('span').hide().siblings('i').show();
       firebase.auth().signInAnonymously().catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
+
         // ...
       })
       .then(function () {
@@ -74,8 +75,9 @@ $(document).ready(function () {
         console.log('did not sign in');
       }
     });
-    socket.on("login complete",function () {
+    socket.on("login complete",function (name) {
       $("#login").fadeOut();
+      $(".current_user_name").text("Hi, "+name);
     });
 
     socket.on("current_user_data",function (data) {
@@ -126,11 +128,12 @@ $(document).ready(function () {
     });
 
     //index page get year
-    var today = new Date();
+    var today = new Date(),iframe_holder_pos = 1;
     $("nav a,.m_nav_panel a").click(function () {
+      if(iframe_holder_pos) {$('#iframe_holder').css('right',0);iframe_holder_pos = 0;}
       let target = $(this).attr("id");
       explor_page.splice(0,explor_index);
-      if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target);
+      if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target,false);
       else changeIframe(target);
 
       $(".m_nav_panel").css('right',-180);
@@ -139,7 +142,8 @@ $(document).ready(function () {
       explor_index = 0;
     });
     $("nav img").click(function () {
-      $("#iframe_holder iframe").css("right",'-100%');
+      $("#iframe_holder").css("right",'-100%');
+      iframe_holder_pos = 1;
     });
 
     var nav_panel_timeout,close_nav_panel,panel_height;
@@ -197,6 +201,9 @@ $(document).ready(function () {
           explor_index++;
           return
         }
+      }
+      else if(type == 'reload'){
+        reloadIframe(current_page,false);
       }
       else{
         let arr = [];
@@ -271,12 +278,6 @@ $(document).ready(function () {
       } else if($(this).attr("id") == 'ok') {
         if(accept){
           socket.emit("notice mine",{uid:current_user_data.uid,accept:true});
-          // if(miner.isRunning()){
-          //   $("#mine_alert").fadeOut();
-          // } else {
-          //   $("#mine_alert .fail").fadeIn().siblings('div').fadeOut();
-          //   $("#mine_alert #ok").fadeOut().siblings('button').fadeIn();
-          // }
           $("#mine_alert").fadeOut();
         } else {
           $("#mine_alert").fadeOut();
@@ -372,11 +373,12 @@ function changeIframe(target,record = true) {
   } else
   $("#iframe_holder").find("#"+target).css("right","0%").siblings().css("right",'-100%');
   if(record) explor_page.splice(0,0,target);
+  current_page = target;
   // console.log(explor_page);
 }
-function reloadIframe(target) {
+function reloadIframe(target,record = true) {
   if(!$("#iframe_holder").find("#"+target)[0]) {
-    changeIframe(target);
+    changeIframe(target,record);
   }
   else{
     let src = $("#iframe_holder").find("#"+target).attr("src");

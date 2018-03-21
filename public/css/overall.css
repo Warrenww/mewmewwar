@@ -128,7 +128,7 @@ td, th {
   margin: 0 20px;
 }
 .button_group{
-  display:none;
+  display: flex;
   width:100%;
   justify-content: center;
 }
