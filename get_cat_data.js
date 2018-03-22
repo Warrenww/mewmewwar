@@ -83,7 +83,7 @@ var config = {
         obj.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
         obj.cd = Number(row_4.children().eq(7).children().eq(0).text())/30;
         obj.region = '[TW][JP]';
-        obj.id = AddZero(i)+"-"+j;
+        obj.id = AddZero(seq[i])+"-"+j;
         parseChar(row_5.children().eq(1),obj);
         parseCondition(row_7,row_8,obj);
 

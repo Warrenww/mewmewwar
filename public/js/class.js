@@ -112,6 +112,7 @@ class Enemy{
   constructor(obj){
     this.id = obj.id;
     this.name = obj.name;
+    this.jp_name = obj.jp_name;
     this.aoe = obj.aoe;
     this.atk = obj.atk;
     this.atk_speed = Number(obj.atk_speed)?obj.atk_speed.toFixed(2):"-";
@@ -129,6 +130,9 @@ class Enemy{
     this.reward = obj.reward;
     this.speed = obj.speed;
     this.tag = obj.tag;
+  }
+  get Name(){
+    return this.name?this.name:this.jp_name
   }
   get Color(){
     let html = '';

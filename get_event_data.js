@@ -22,21 +22,20 @@ var config = {
       root = 'https://forum.gamer.com.tw/';
   // aibot("你好")
 
-
+var start,end;
   request({
     url: url,
     method: "GET"
   },function (e,r,b) {
     if(!e){
       $ = cheerio.load(b);
-      // console.log($("tbody").html());
       let title = $(".b-list__row");
       let today = y+m+d;
       let arr = [];
       console.log(today);
       title.each(function () {
         let a = $(this).children(".b-list__main").find("a");
-        if(a.text().indexOf("活動資訊")!=-1){
+        if(a.text().indexOf("日版活動資訊")!=-1){
           let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
           for(let i in b){
             b[i] = b[i].split("/");
@@ -45,7 +44,8 @@ var config = {
           }
           if(b[1]>today){
             console.log(a.text());
-            console.log(b);
+            start = b[0];end=b[1];
+            console.log(start,end);
             arr.push(root+a.attr("href"));
           }
         }
@@ -59,26 +59,55 @@ var config = {
       url:url,
       method:"GET"
     },function (e,r,b) {
-      let obj = {
-        source_1 : url
-      }
       if(!e){
         $ = cheerio.load(b);
-        let gachaP = $("section").eq(0).find(".c-article__content"),
+        var gachaP = $("section").eq(0).find(".c-article__content"),
             eventP = $("section").eq(1).find(".c-article__content");
-        // console.log(gachaP.text());
-        // console.log(eventP.text());
-        console.log(gachaP.find('a').attr("href"));
+        var gachaObj = [],eventObj = [];
         gachaP.children("div").each(function () {
           let content = $(this).text();
           if(content&&content.length<30){
-            // console.log(content);
             let arr = content.split(' ');
-            // console.log(arr);
             let brr = arr[0].split("~");
-            console.log(brr,arr[1],arr[2]);
+            let cc = /[0-9]+\/[0-9]+/.test(arr[0]);
+            if(cc){
+              gachaObj.push({
+                date:brr,name:arr[1],
+                sure:arr[2].indexOf('必中')!=-1
+              });
+            }
           }
         });
+        eventP.children("div").each(function () {
+          let content = $(this).text();
+          if( content.indexOf('課金')!=-1||
+              content.indexOf('出售')!=-1||
+              content.indexOf('來源')!=-1||!content) return
+          arr = content.trim().split(' ');
+          let brr = arr[0].split("~");
+          let cc = /[0-9]+\/[0-9]+/.test(arr[0]);
+          if(cc){
+            eventObj.push({
+              date:brr,
+              name:arr[1]+(arr[2]?(" "+arr[2]):"")
+            });
+          }
+
+        });
+
       }
+      console.log(gachaObj);
+      console.log(eventObj);
+      // database.ref("/event_date/prediction_jp").set({
+      //   start:start,
+      //   end:end,
+      //   source:url,
+      //   eventP:eventObj,
+      //   gachaP:gachaObj
+      // });
+      // process.exit()
     });
   }
+function AddZero(n) {
+  return n>9?n:'0'+n
+}

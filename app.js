@@ -954,7 +954,7 @@ io.on('connection', function(socket){
   });
 
 });
-var timeout,event_get_count = 0,user=[],userCount=0 ;
+var timeout,user=[],userCount=0 ;
 function arrangeUserData() {
   timeout = setTimeout(function () {
     arrangeUserData();
@@ -1047,75 +1047,21 @@ function geteventDay() {
   },function (e,r,b) {
     if(!e){
       $ = cheerio.load(b);
-      let body = $("body").html();
-      if(body.indexOf("<error>") == -1) {
-        console.log("change event day");
-        database.ref("/event_date/now").set(y+"/"+AddZero(m)+"/"+AddZero(d));
-        // NextEventDay(y,m,d);
-        PrevEventDay(y,m,d);
-      }
-      else {
-        console.log("did not change event day");
+      let body = $("body").html(),
+          cc = body.indexOf("<error>") == -1;
+      database.ref("/event_date/"+y+AddZero(m)+AddZero(d)).set(cc);
+      if(cc){
+        database.ref("/event_date").once("value",function (snapshot) {
+          let data = snapshot.val();
+          for(let i in data){
+            if(i.substring(0,4)<y||i.substring(4,6)<m) delete data[i]
+          }
+          database.ref("/event_date").set(data);
+        });
       }
     }else{console.log(e);}
   });
-  setTimeout(function () {
-    geteventDay()
-  },86400000);
-}
-function NextEventDay(y,m,d) {
-  event_get_count ++ ;
-  d ++ ;
-  if(m == 2 && d>28){m++,d=1}
-  else if (d_31.indexOf(m) != -1 && d>31) {m++,d=1}
-  else if (d>30) {m++,d=1}
-  if(m>12){y++;m=1}
-  // console.log("next event day ?= "+y+AddZero(m)+AddZero(d));
-  request({
-    url: event_url+y+AddZero(m)+AddZero(d)+".html",
-    method: "GET"
-  },function (e,r,b) {
-    if(!e){
-      $ = cheerio.load(b);
-      let body = $("body").html();
-      if(body.indexOf("<error>") == -1) {
-        console.log("change next event day");
-        database.ref("/event_date/next").set(y+"/"+AddZero(m)+"/"+AddZero(d));
-        event_get_count = 0 ;
-      }
-      else {
-        console.log("next day");
-        if(event_get_count<10) NextEventDay(y,m,d);
-        else console.log("There are no event update for later 10 days.");
-      }
-    } else {console.log(e);return}
-  });
-}
-function PrevEventDay(y,m,d) {
-  d -- ;
-  if(d==0){
-    m--;
-    if(m==0){y--;m=12}
-    d = m==2 ? 28 : (d_31.indexOf(m) != -1 ? 31 : 30);
-  }
-  // console.log("prev event day ?= "+y+AddZero(m)+AddZero(d));
-  request({
-    url: event_url+y+AddZero(m)+AddZero(d)+".html",
-    method: "GET"
-  },function (e,r,b) {
-    if(!e){
-      $ = cheerio.load(b);
-      let body = $("body").html();
-      if(body.indexOf("<error>") == -1) {
-        console.log("change prev event day");
-        database.ref("/event_date/prev").set(y+"/"+AddZero(m)+"/"+AddZero(d));
-      }
-      else {
-        console.log("prev day");
-        PrevEventDay(y,m,d)
-      }
-    } else {console.log(e);}
-  });
+  setTimeout(function () { geteventDay() },12*3600*1000);
 }
 function levelToValue(origin,rarity,lv) {
   let limit ;

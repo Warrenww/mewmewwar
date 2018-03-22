@@ -26,17 +26,18 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 
-// database.ref("/newCatData").once("value",function (snapshot) {
-//   catdata = snapshot.val();
-//   console.log("cat data load complete");
-//   // for(let i in catdata){
-//   //   process.stdout.clearLine();
-//   //   process.stdout.cursorTo(0);
-//   //   process.stdout.write(i);
-//   //   database.ref("/newCatData/"+i+"/count").set(catdata[i].count)
-//   // }
-//   console.log("finish");
-// });
+database.ref("/newCatData").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  console.log("cat data load complete");
+  for(let i in catdata){
+    if(i!=catdata[i].id){
+      console.log(i);
+      // database.ref("/newCatData/"+i+"/id").set(i);
+    }
+  }
+  console.log("finish");
+  // process.exit();
+});
 
 // database.ref("/gachadata").once("value",function (snapshot) {
 //   for(let i in snapshot.val()){
@@ -110,74 +111,7 @@ console.log('start');
 //
 // });
 
-var t = new Date(),
-    y = t.getFullYear(),
-    m = AddZero(t.getMonth()+1),
-    d = AddZero(t.getDate()),
-    url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
-    root = 'https://forum.gamer.com.tw/';
 
-      // console.log(url+y+m+d+".html");
-
-request({
-  url: url,
-  method: "GET"
-},function (e,r,b) {
-  if(!e){
-    $ = cheerio.load(b);
-    // console.log($("tbody").html());
-    let title = $(".b-list__row");
-    let today = y+m+d;
-    let arr = [];
-    console.log(today);
-    title.each(function () {
-      let a = $(this).children(".b-list__main").find("a");
-      if(a.text().indexOf("活動資訊")!=-1){
-        let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
-        for(let i in b){
-          b[i] = b[i].split("/");
-          for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
-          b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
-        }
-        if(b[1]>today){
-          console.log(a.text());
-          console.log(b);
-          arr.push(root+a.attr("href"));
-        }
-      }
-    });
-    console.log(arr[0]);
-    parsePrediction(arr[0]);
-  }
-});
-function parsePrediction(url) {
-  request({
-    url:url,
-    method:"GET"
-  },function (e,r,b) {
-    let obj = {
-      source_1 : url
-    }
-    if(!e){
-      $ = cheerio.load(b);
-      let gachaP = $("section").eq(0).find(".c-article__content"),
-          eventP = $("section").eq(1).find(".c-article__content");
-      // console.log(gachaP.text());
-      // console.log(eventP.text());
-      console.log(gachaP.find('a').attr("href"));
-      gachaP.children("div").each(function () {
-        let content = $(this).text();
-        if(content&&content.length<30){
-          // console.log(content);
-          let arr = content.split(' ');
-          // console.log(arr);
-          let brr = arr[0].split("~");
-          console.log(brr,arr[1],arr[2]);
-        }
-      });
-    }
-  });
-}
 
 function AddZero(n) {
   return n<10 ? "0"+n : n

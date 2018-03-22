@@ -497,13 +497,13 @@ function displayenemyHtml(data) {
   "<th style='height:80px;padding:0'><img src='"+
   data.imgURL+
   "' style='height:100%'></th>"+
-  "<th colspan=5 id='name'>"+data.name+"</th>"+
+  "<th colspan=5 id='name'>"+data.Name+"</th>"+
   "</tr>" :
   "<tr>"+
   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
   data.imgURL+"' style='height:100%'"
   +"</tr><tr>"+
-  "<th colspan='6' id='name'>"+data.name+"</th>"+
+  "<th colspan='6' id='name'>"+data.Name+"</th>"+
   "</tr>" ;
   html+=
   "<tr>"+

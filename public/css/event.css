@@ -10,56 +10,88 @@ body,html{
   cursor: default;
 }
 .iframe_holder{
-  display: flex;
-  width: 300%;
+  width: 100%;
+  height: 100%;
   position: relative;
-  left: -100%;
-  transition: .8s ease-in-out
+  left: 0;
+}
+.iframe_holder iframe{
+  width: 100%;
+  height:100%;
+  transition: .4s ease-in-out;
+  position: absolute;
+  right: -100%;
 }
 .view{overflow: hidden;}
-#left,#right{
-  width: 100px;
-  height: 100px;
-  background-color: transparent;
-  position: fixed;
-  top: 50%;
-  border: 50px solid transparent;
-  transition: .2s ease-in-out;
+.calendar_holder,.prediction_holder{
+  width: 100%;
+  height: 100%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0%;
+  padding: 5%;
+  background-color: rgba(0, 0, 0, 0.83);
+  z-index: 4;
+}
+.prediction_holder{flex-direction: column;}
+.prediction_holder h6{font-size: 16px;color: white;margin: 20px}
+#calendar .event{
+  background-color: rgba(238, 172, 24, 0.9);
+  font-weight: bold;
   cursor: pointer;
 }
-#left{border-right: 50px solid white;left:-20px}
-#right{border-left: 50px solid white;right:-20px}
-#left:hover{border-right: 50px solid rgb(255, 177, 66)}
-#right:hover{border-left: 50px solid rgb(255, 177, 66)}
-#date{
-  width: 50%;
-  height: 100px;
-  position: fixed;
-  top: 50%;
-  background-color: rgba(255,255,255,.8);
-  text-align: center;
-  margin: 0 25%;
-  border-radius: 20px;
-  padding: 20px;
-  font-size: 40px;
-  font-weight: bold;
-  display: none;
+#calendar{max-width: 500px}
+#calendar th{
+  width: 70px;
+  height: 40px;
 }
-@media screen and (max-width: 768px){
-  #left,#right{
-    width: 50px;
-    height: 50px;
-    border: 25px solid transparent;
-  }
-  #left{border-right: 25px solid rgb(255, 177, 66);left:-10px}
-  #right{border-left: 25px solid rgb(255, 177, 66);right:-10px}
-  #left:hover{border-right: 25px solid rgb(255, 177, 66)}
-  #right:hover{border-left: 25px solid rgb(255, 177, 66)}
-  #date{
-    width: 70%;
-    margin: 0 15%;
-    font-size: 30px;
-    height: 70px;
-    padding: 10px;
-  }
+#prediction td{
+  background-color: rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+}
+#prediction{max-width: 1000px}
+#function_tag{
+  position: absolute;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  bottom: 10%;
+  z-index: 3;
+  width: auto;
+  overflow: visible;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.35)
+}
+#function_tag .tag{
+  display: none;
+  top: 30px;
+  position: absolute;
+  left: -7px;
+  padding: 5px 10px;
+  width: 200px;
+  font-weight: bold;
+  color: white !important;
+}
+#function_tag div{
+  margin: 20px 10px;
+  background-color: rgba(255, 255, 255, 0.71);
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: .2s ease-in-out;
+  position: relative;
+  color: black;
+  width: auto;
+  height: auto;
+  top: 0;
+  left: 0;
+}
+#function_tag div:hover{
+  background-color: rgba(150, 150, 150, 0.88);
+  color: rgb(244, 214, 43);
+}
+@media screen and (max-width:768px) {
+  .prediction_holder{align-items: flex-start;overflow: scroll;}
 }

@@ -46,7 +46,7 @@ var config = {
       url: url,
       method: "GET"
     }, function(e,r,b) {
-      let obj = {tag:[],char:[],id:i,color:[]};
+      let obj = {tag:[],char:[],id:seq[i],color:[]};
       if(!e){
         console.log("get data");
         // process.stdout.clearLine();
@@ -64,7 +64,7 @@ var config = {
           row_7 = row_5.next().next(),
           row_8 = row_7.next();
 
-        obj.jp_name = content.find("tr[class='bgc12']").eq(0).children().eq(1).text();
+        obj.jp_name = content.eq(0).children().eq(1).text();
         row_1.children().eq(0).find('a').each(function () {
           obj.color.push(parseEnemy($(this).text()));
         });
