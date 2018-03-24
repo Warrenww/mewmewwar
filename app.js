@@ -140,12 +140,13 @@ io.on('connection', function(socket){
         let rFilter = data.query.rFilter?data.query.rFilter:[],
             cFilter = data.query.cFilter?data.query.cFilter:[],
             aFilter = data.query.aFilter?data.query.aFilter:[],
-            otherFilter = data.filterObj?data.filterObj:[],
+            filterObj = data.filterObj?data.filterObj:[],
             type = data.type,
             buffer_1 = [],
             buffer_2 = [],
             load_data = {},
-            user = data.uid;
+            user = data.uid,
+            flag = true;
         console.log("recording last search quene");
         database.ref("/user/"+user+"/history/last_"+type+"_search").set(data);
         switch (type) {
@@ -203,20 +204,22 @@ io.on('connection', function(socket){
           }
           else buffer_1 = buffer_2 ;
           buffer_2 = [] ;
-          if(otherFilter.length != 0 && data.value){
-            for(let i in otherFilter){
-              let name = otherFilter[i].name,
-              reverse = otherFilter[i].reverse ,
-              limit = otherFilter[i].limit ,
-              level_bind = otherFilter[i].level_bind;
+          for(let i in filterObj){
+            if (!filterObj[i].active) continue
+            flag = false;
+            let name = i,
+            type = filterObj[i].type ,
+            limit = filterObj[i].value ,
+            level_bind = filterObj[i].lv_bind;
 
-              for(let j in buffer_1){
-                let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].rarity,level) : buffer_1[j][name];
-                if(value > limit && !reverse) buffer_2.push(buffer_1[j]);
-                else if (value < limit && reverse) buffer_2.push(buffer_1[j]);
-              }
+            for(let j in buffer_1){
+              let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].rarity,level) : buffer_1[j][name];
+              if(type == 0  && value>limit) buffer_2.push(buffer_1[j]);
+              else if (type == 1 && value<limit) buffer_2.push(buffer_1[j]);
+              else if (type == 2 && value>limit[0] && value<limit[1]) buffer_2.push(buffer_1[j]);
             }
-          } else buffer_2 = buffer_1 ;
+          }
+          if(flag) buffer_2 = buffer_1 ;
           buffer_1 = [] ;
           if(type == 'cat' && !showJP){
             for(let i in buffer_2) {
@@ -338,7 +341,7 @@ io.on('connection', function(socket){
             console.log("count cat search time(user)");
             database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(count);
             console.log("count cat search time(global)");
-            database.ref("/catdata/"+id+"/count").once("value",function (snapshot) {
+            database.ref("/newCatData/"+id+"/count").once("value",function (snapshot) {
               let count = snapshot.val() + 1;
               database.ref("/catdata/"+id+"/count").set(count);
               database.ref("/newCatData/"+id+"/count").set(count);
@@ -542,6 +545,9 @@ io.on('connection', function(socket){
         userdata.setting = setting;
         userdata.name = snapshot.val().nickname;
         userdata.setting = {show_more_option:setting.show_more_option}
+      }
+      else if(page == 'event'){
+        userdata.setting = {show_jp_cat:setting.show_jp_cat}
       }
       socket.emit("current_user_data",userdata)
     });
@@ -813,13 +819,12 @@ io.on('connection', function(socket){
       socket.emit('true event date',snapshot.val());
     });
   });
-  socket.on("rankdata",function () {
-    socket.emit("recive rank data",rankdata);
-  });
+  socket.on("rankdata",function () { socket.emit("recive rank data",rankdata); });
 
   socket.on("gacha",function(data){
     console.log("gacha");
     console.log(data);
+    if(!gachadata[data.gacha]) return
     database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
       let jp = snapshot.val(),senddata=[];
 
@@ -1038,30 +1043,133 @@ function geteventDay() {
   var t = new Date(),
       y = t.getFullYear(),
       m = t.getMonth()+1,
-      d = t.getDate();
+      d = t.getDate(),
+      predic_url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
+      root = 'https://forum.gamer.com.tw/';
+  var start,end;
       console.log("get event day")
       console.log(y+AddZero(m)+AddZero(d));
+
+  database.ref("/event_date").once('value',function (snapshot) {
+    var eventdate = snapshot.val();
+    //update new event
+    request({
+      url: event_url+y+AddZero(m)+AddZero(d)+".html",
+      method: "GET"
+    },function (e,r,b) {
+      if(!e){
+        $ = cheerio.load(b);
+        let body = $("body").html(),
+        cc = body.indexOf("<error>") == -1;
+        database.ref("/event_date/"+y+AddZero(m)+AddZero(d)).set(cc);
+        if(cc){
+          for(let i in eventdate){
+            if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete data[i]
+          }
+          database.ref("/event_date").set(eventdate);
+        }
+      } else {console.log(e);}
+    });
+    //update prediction
+    request({
+      url: predic_url,
+      method: "GET"
+    },function (e,r,b) {
+      if(!e){
+        $ = cheerio.load(b);
+        let title = $(".b-list__row");
+        let today = y+AddZero(m)+AddZero(d);
+        let arr = [];
+        title.each(function () {
+          let a = $(this).children(".b-list__main").find("a");
+          if(a.text().indexOf("活動資訊")!=-1){
+            let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
+            for(let i in b){
+              b[i] = b[i].split("/");
+              for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
+              b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
+            }
+            if(b[1]>today){
+              // console.log(a.text());
+              start = b[0];end=b[1];
+              // console.log(start,end);
+              arr.push({url:root+a.attr("href"),start:start,end:end,name:a.text()});
+            }
+          }
+        });
+        // console.log(arr);
+        for(i in arr){
+          if (arr[i].url == eventdate.prediction.source||
+              arr[i].url == eventdate.prediction_jp.source) continue
+          console.log('update prediction');
+          parsePrediction(arr[i],eventdate);
+        }
+      }
+    });
+  });
+  setTimeout(function () { geteventDay() },12*3600*1000);
+}
+function parsePrediction(obj,eventdate) {
+  console.log(obj.name);
+  let path = "/event_date/prediction";
+  if(obj.name.indexOf('日版')!=-1){
+    // console.log(/snA=[0-9]+/.exec(eventdate.prediction_jp.source)[0].split('=')[1]);
+    if (Number(/snA=[0-9]+/.exec(eventdate.prediction_jp.source)[0].split('=')[1])>
+        Number(/snA=[0-9]+/.exec(obj.url)[0].split('=')[1])) {console.log("don't update");return}
+    path += '_jp';
+  } else {
+    if (Number(/snA=[0-9]+/.exec(eventdate.prediction.source)[0].split('=')[1])>
+        Number(/snA=[0-9]+/.exec(obj.url)[0].split('=')[1])) {console.log("don't update");return}
+  }
   request({
-    url: event_url+y+AddZero(m)+AddZero(d)+".html",
-    method: "GET"
+    url:obj.url,
+    method:"GET"
   },function (e,r,b) {
     if(!e){
       $ = cheerio.load(b);
-      let body = $("body").html(),
-          cc = body.indexOf("<error>") == -1;
-      database.ref("/event_date/"+y+AddZero(m)+AddZero(d)).set(cc);
-      if(cc){
-        database.ref("/event_date").once("value",function (snapshot) {
-          let data = snapshot.val();
-          for(let i in data){
-            if(i.substring(0,4)<y||i.substring(4,6)<m) delete data[i]
+      var gachaP = $("section").eq(0).find(".c-article__content"),
+          eventP = $("section").eq(1).find(".c-article__content");
+      var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
+      gachaP.children("div").each(function () {
+        let content = $(this).text();
+        if(content&&content.length<30){
+          let arr = content.split(' ');
+          let brr = arr[0].split("~");
+          let cc = dateRe.test(arr[0]);
+          if(cc){
+            gachaObj.push({
+              date:brr,name:arr[1],
+              sure:arr[2].indexOf('必中')!=-1
+            });
           }
-          database.ref("/event_date").set(data);
-        });
-      }
-    }else{console.log(e);}
+        }
+      });
+      eventP.children("div").each(function () {
+        let content = $(this).text();
+        if( content.indexOf('課金')!=-1||
+            content.indexOf('出售')!=-1||
+            content.indexOf('來源')!=-1||!content) return
+        arr = content.trim().split(' ');
+        let brr = arr[0].split("~");
+        let cc = dateRe.test(arr[0]);
+        if(cc){
+          eventObj.push({
+            date:brr,
+            name:arr[1]+(arr[2]?(" "+arr[2]):"")
+          });
+        }
+      });
+    }
+    // console.log(gachaObj);
+    // console.log(eventObj);
+    database.ref(path).set({
+      start:obj.start,
+      end:obj.end,
+      source:obj.url,
+      eventP:eventObj,
+      gachaP:gachaObj
+    });
   });
-  setTimeout(function () { geteventDay() },12*3600*1000);
 }
 function levelToValue(origin,rarity,lv) {
   let limit ;

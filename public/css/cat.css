@@ -229,6 +229,11 @@
   min-width: 1000px;
   z-index: 9
 }
+.dataTable .img{
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 .dataTable .mobile{display: none;}
 #combo_head i,#survey_head i,#comment_head i{
   font-size: 16px;
@@ -361,14 +366,12 @@
     animation-iteration-count: infinite;
     animation-timing-function: linear;
   }
+  .dataTable .mobile{display: table-row;}
+  .dataTable .non_mobile{display: none;}
   #more_option{ left: 0; background-color: rgba(0, 0, 0, 0.35)}
 }
 @keyframes scrolling {
   0%{left:1000px}
   50%{left:0px}
   100%{left:-1000px}
-}
-@media screen and (max-width:425px) {
-  .dataTable .mobile{display: table-row;}
-  .dataTable .non_mobile{display: none;}
 }

@@ -17,7 +17,6 @@ $(document).ready(function () {
       speed:{1:0,2:0,3:0,4:0,5:0},
       total:{1:0,2:0,3:0,4:0,5:0},
     }
-
   };
   var current_search = [];
   var current_user_id = '';
@@ -55,13 +54,16 @@ $(document).ready(function () {
          for(let j in last.query[i])
           $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
       }
-      if(last.value){
-        $("#value_search").click();
-        for(let i in last.filterObj)
-          $("#lower_table").find("th[id='"+last.filterObj[i].name+"']")
-          .attr({'active':true,'value':last.filterObj[i].limit,'reverse':last.filterObj[i].reverse})
-          .click();
+      var value_search = false;
+      for(let i in last.filterObj){
+        $("#lower_table").find("th[id='"+i+"']").attr({
+          'active':last.filterObj[i].active,
+          'value':last.filterObj[i].type==2?("["+last.filterObj[i].value+"]"):last.filterObj[i].value,
+          'type':last.filterObj[i].type
+        }).click();
+        if(last.filterObj[i].active) value_search = true;
       }
+      if(value_search) $("#value_search").click();
     }
     if(!data.setting.show_ability_text ||screen.width<768){
         $(".select_ability").children(".button").each(function () {
@@ -158,7 +160,12 @@ $(document).ready(function () {
       $(this).html('<input type="number" value="' +input_org+ '"></input>').find('input').select();
   });
   $(document).on('blur', '.editable input', calculateLV);
-  $(document).on('click','.filter_option',filterSlider);
+  $(document).on('click','.filter_option',function () {
+    $("#slider_holder").show();
+    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
+    filter_name = $(this).attr('id') ;
+    filterSlider($(this));
+  });
   var filter_org ;
   $(document).on('click','.value_display,#level_num',function () {
       filter_org = Number($(this).text());
@@ -281,7 +288,9 @@ $(document).ready(function () {
     initial_survey();
     addSurvey(data.statistic,survey);
     $(".dataTable").attr('id',data.id).find('.bro').html(Thisbro(arr));
-    $(".dataTable").find('.img').children().attr('src',data.imgURL);
+    $(".dataTable").find('.img').css('background-image','url("'+data.imgURL+'")');
+    // $(".dataTable").find('.img').children().attr('src',data.imgURL);
+
     $(".dataTable").find(".combo").remove();
     $(AddCombo(brr)).insertAfter('.dataTable #combo_head');
     initialSlider(data,lv);
@@ -345,8 +354,8 @@ $(document).ready(function () {
     }else if(type == 'survey'){
       $(this).siblings('.survey').each(function () {
         let Class = $(this).attr('class').split(" ");
-        if(screen.width>425&&Class.indexOf("mobile")!=-1)return
-        if(screen.width<=425&&Class.indexOf("non_mobile")!=-1)return
+        if(screen.width>768&&Class.indexOf("mobile")!=-1)return
+        if(screen.width<=768&&Class.indexOf("non_mobile")!=-1)return
         $(this).toggle();
       });
       toggle_survey = toggle_survey?0:1;
@@ -362,33 +371,18 @@ $(document).ready(function () {
         gacha = $(".gacha_search td .button[value=1]"),
         type = $("#search_ability").attr("value"),
         value_search = Number($("#value_search").attr("value"));
-    let rFilter = [], cFilter = [], aFilter = [],gFilter = [], filterObj = [] ;
+    let rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
 
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
     for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
-    $(".filter_option[active='true']").each(function () {
-      let name = $(this).attr('id'),
-          reverse = $(this).attr('reverse') == 'true' ? true : false ,
-          limit = $(this).attr('value') ,
-          level_bind = $(this).attr('lv-bind') == 'true' ? true : false ,
-          bufferObj = {
-            "name" : name,
-            "reverse" : reverse,
-            "limit" : limit,
-            "level_bind" : level_bind
-          } ;
-      filterObj.push(bufferObj);
-    });
-    // console.log(type);
     socket.emit(type+" search",{
       uid:current_user_id,
       query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
       query_type:type,
       filterObj,
-      type:"cat",
-      value:value_search&&filterObj.length
+      type:"cat"
     });
     ga('send', 'event', 'search', type,'cat');
 
@@ -437,7 +431,7 @@ $(document).ready(function () {
   });
   $(document).on("click","#char span[id!='serial']",function () {
     let type = $(this).attr("id"),
-    rFilter=[],aFilter=[],gFilter=[],filterObj=[],cFilter=[];
+    rFilter=[],aFilter=[],gFilter=[],cFilter=[];
     if(type == 'color') {
       let ww = $(this).text().split(",")
       for(let i in ww) cFilter.push("對"+ww[i].substring(0,2));
@@ -477,37 +471,12 @@ $(document).ready(function () {
     });
     if($('#normal_search').attr("value")!=1) $("#normal_search").click();
   });
-  function filterSlider() {
-    $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
-    filter_name = $(this).attr('id') ;
-    let value = Number($(this).attr('value')) ;
-    let reverse = $(this).attr('reverse') ;
-    let range = JSON.parse($(this).attr('range'));
-    let step = Number($(this).attr('step')) ;
-    let active = $(this).attr('active') ;
-
-    $("#slider_holder").find('.slider').slider('option',{
-      'min': range[0],
-      'max': range[1],
-      'step': step,
-      'value': value
-    }).parent().siblings('.active').html(active=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>')
-    .siblings('.reverse').html(reverse=='true'?'以下':'以上');
-  }
 
   $(".sortable").sortable({
     scroll:false,
     delay:150
   });
   $(".slider").slider();
-
-  $(".slider").on("slide", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
-  });
-  $(".slider").on("slidechange", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
-  });
 
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   $(document).on('click','.glyphicon-shopping-cart',function () {
@@ -607,9 +576,9 @@ $(document).ready(function () {
     $("#rank i").attr('value',0);
     $('#rank span').attr("new",'true');
     $("#rank_c").find("path").remove();
-    $('#rank').parent().attr('colspan',function () { return screen.width>425?2:3 });
-    $('#rank_respec').parent().attr('colspan',function () { return screen.width>425?2:6 });
-    $('#rank_respec').parent().attr('rowspan',function () { return screen.width>425?6:1 });
+    $('#rank').parent().attr('colspan',function () { return screen.width>768?2:3 });
+    $('#rank_respec').parent().attr('colspan',function () { return screen.width>768?2:6 });
+    $('#rank_respec').parent().attr('rowspan',function () { return screen.width>768?6:1 });
     d3.select("#rank_c").select('text').text('尚無評分')
       .attr({
         x:"26,46,26,46",y:"40",dy:'0,0,20',
@@ -629,7 +598,7 @@ $(document).ready(function () {
         '<i class="material-icons" value="0" no="4">&#xe885;</i>'+
         '<i class="material-icons" value="0" no="5">&#xe885;</i>'+
         '</span>'
-      ).attr('colspan',function () { return screen.width>425?3:5 });
+      ).attr('colspan',function () { return screen.width>768?3:5 });
       index++;
     });
     $("#rank_respec").find("path[id='char']").remove();
@@ -1068,7 +1037,8 @@ $(document).ready(function () {
     let target = $("#"+filter_name+".filter_option");
     let range = JSON.parse(target.attr('range')),
         step = Number(target.attr('step')),
-        value = Number($(this).val()) ;
+        value = Number($(this).val()),
+        type = Number(target.attr("type"));
 
     value = Math.round(value/step)*step ;
 

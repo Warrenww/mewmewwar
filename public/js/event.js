@@ -4,13 +4,22 @@ $(document).ready(function () {
   var site ;
   var socket = io.connect();
   var colorSet=[ '#95CC85', '#EDDB8A', '#FF5959', '#FF9259', '#4ABABB' ];
+  var show_jp_cat;
   createCalendar();
-  socket.emit('get event date');
+  auth.onAuthStateChanged(function(user) {
+    if (user)  socket.emit("user connect",{user:user,page:location.pathname});
+    else  console.log('did not sign in');
+  });
+  socket.on("current_user_data",function (data) {
+    show_jp_cat = data.setting.show_jp_cat;
+    socket.emit('get event date');
+    // console.log(data);
+  });
   socket.on('true event date',function (data) {
     // console.log(data);
     let now;
     for(let i in data){
-      if (i == 'now'||i == 'prev'||i == 'prediction') continue
+      if (i == 'now'||i == 'prev'||i.indexOf('prediction')!=-1) continue
       if(data[i]) {
         $('#calendar').find("#"+Number(i.substring(6,8)))
           .addClass('event')
@@ -18,7 +27,8 @@ $(document).ready(function () {
       }
     }
     appendIframe(now);
-    createPredictionQueue(data.prediction);
+    var prediction = show_jp_cat?data.prediction_jp:data.prediction;
+    createPredictionQueue(prediction);
     // console.log(src,now);
 
   });
@@ -54,37 +64,57 @@ $(document).ready(function () {
 
   var emptyObj={};
   function createPredictionQueue(data) {
+    $("#prediction").empty();
+    // console.log(data);
     var start = data.start.substring(4,8),
         end = data.end.substring(4,8),
         month = start.substring(0,2),
         maxDay = TotalDay(Number(month),data.start.substring(0,4));
     var table_head='<tr>';
+    start = Number(start);end = Number(end)
     // console.log(start,end,maxDay,month);
-    for(i=Number(start);i<=Number(end);i++) {
-      if(i>Number(month+maxDay)&&i<(Number(month)+1)*100+1) continue
-      table_head+="<th id='"+i+"'>"+todate(i)+"</th>";
-      emptyObj[i]=null;
-    }
+
+    // console.log(emptyObj);
     var map = [];
     for(let i in data.gachaP){
-      let row = 0;
       let a = data.gachaP[i],
           d = a.date,n = a.name,s = a.sure;
-      d[0] = Number(d[0].split("/").join(""));
-      d[1] = Number(d[1].split("/").join(""));
+      for(j in d){
+        d[j] = d[j].split("/");
+        d[j][0] = addZero(d[j][0]);
+        d[j][1] = addZero(d[j][1]);
+        d[j] = Number(d[j].join(""));
+        if(d[j]>end) end = d[j];
+        if(d[j]<start) start = d[j];
+      }
       let day = d[1]-d[0];
+      if(day>30) day = d[1]-(Number(month)+1)*100+Number(month+maxDay)-d[0];
       n += s?" (必中)":"";
-      updateMap(map,0,d[0],day,n);
+      updateMap(map,0,d[0],day,n,maxDay,month);
     }
     for(let i in data.eventP){
-      let row = 0;
       let a = data.eventP[i],
           d = a.date,n = a.name;
-      d[0] = Number(d[0].split("/").join(""));
-      d[1] = Number(d[1].split("/").join(""));
+      for(j in d){
+        d[j] = d[j].split("/");
+        d[j][0] = addZero(d[j][0]);
+        d[j][1] = addZero(d[j][1]);
+        d[j] = Number(d[j].join(""));
+        if(d[j]>end) end = d[j];
+        if(d[j]<start) start = d[j];
+      }
       let day = d[1]-d[0]+1;
-      updateMap(map,0,d[0],day,n);
+      if(day>30) day = d[1]-(Number(month)+1)*100+Number(month+maxDay)-d[0]+1;
+      updateMap(map,0,d[0],day,n,maxDay,month);
     }
+    for(i=start;i<=end;i++) {
+      if(i>Number(month+maxDay)&&i<(Number(month)+1)*100+1) continue
+      table_head+="<th id='"+i+"'>"+todate(i)+"</th>";
+      for(let j in map){
+        if(!map[j][i]) map[j][i] = null;
+      }
+    }
+    // console.log(start,end);
     // console.log(map);
     $("#prediction").append(table_head);
     var table_body='';
@@ -109,14 +139,22 @@ $(document).ready(function () {
     a = n.toString();
     return n<1000?(a[0]+"/"+a[1]+a[2]):(a[0]+a[1]+"/"+a[2]+a[3])
   }
-  function updateMap(map,i,d0,day,n) {
+  function updateMap(map,i,d0,day,n,maxDay,month) {
     var bb = Object.assign({},emptyObj);
     if(!map[i]) map.push(bb);
     for(j=0;j<day;j++){
-      if(map[i][(d0+j)]) { i++;updateMap(map,i,d0,day,n);return }
+      let aa = d0+j;
+      if (aa%100>maxDay){
+        aa = aa-Number(month+maxDay)+(Number(month)+1)*100;
+      }
+      if(map[i][(aa)]) { i++;updateMap(map,i,d0,day,n,maxDay,month);return }
     }
     for(j=0;j<day;j++){
-      map[i][(d0+j)] = {name:n,day:day};
+      let aa = d0+j;
+      if (aa%100>maxDay){
+        aa = aa-Number(month+maxDay)+(Number(month)+1)*100;
+      }
+      map[i][(aa)] = {name:n,day:day};
     }
   }
 

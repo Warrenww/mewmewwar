@@ -97,6 +97,7 @@
                 <span class='button'name='免疫傳送'value='0'><i id='notrans'class="ability_icon"></i><span> 傳送無效</span></span>
                 <span class='button'name='破盾'value='0'><i id='breakshell'class="ability_icon"></i><span> 破壞護盾</span></span>
                 <span class='button'name='一次攻擊'value='0'><i id='1atk'class="ability_icon"></i><span> 一次攻擊</span></span>
+                <span class='button'name='鋼鐵'value='0'><i id='metal'class="ability_icon"></i><span> 鋼鐵</span></span>
               </td>
             </tr>
 
@@ -109,7 +110,7 @@
                 <span class="button" id="R220" value='0'>超激烈爆彈</span>
                 <span class="button" id="R223" value='0'>戰國武神 巴薩拉斯</span>
                 <span class="button" id="R226" value='0'>電腦學園銀河美少女團</span>
-                <span class="button" id="R229" value='0'>超破壞大帝 龍皇因佩拉斯</span>
+                <span class="button" id="R266" value='0'>超破壞大帝 龍皇因佩拉斯</span>
                 <span class="button" id="R232" value='0'>超古代勇者 超級靈魂勇者</span>
                 <span class="button" id="R235" value='0'>逆襲的戰士 黑暗英雄</span>
                 <span class="button" id="R238" value='0'>究極降臨 巨神宙斯</span>
@@ -156,30 +157,26 @@
           <table id="lower_table" style="display:none">
             <tbody>
               <tr>
-                <th rowspan="2" id="selectAll">
-                  全選
-                </th>
-                <th colspan="8">
-                  更多篩選器
-                </th>
+                <th rowspan="2" id="selectAll"> 啟用 </th>
+                <th colspan="8"> 數值篩選器 </th>
               </tr>
               <tr>
-                <th class="filter_option" id="hp" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">體力</th>
-                <th class="filter_option" id="lv1dps" lv-bind="true" value="3000" reverse="false" range="[100,10000]" step="100" active="false">DPS</th>
-                <th class="filter_option" id="speed" lv-bind="false" value="10" reverse="false" range="[1,100]" step="1" active="false">速度</th>
-                <th class="filter_option" id="cost" lv-bind="false" value="1000" reverse="false" range="[0,5000]" step="10" active="false">花費</th>
-                <th class="filter_option" id="freq" lv-bind="false" value="5" reverse="false" range="[0,20]" step="0.5" active="false">攻頻</th>
-                <th class="filter_option" id="atk" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">攻撃力</th>
-                <th class="filter_option" id="range" lv-bind="false" value="300" reverse="false" range="[10,1000]" step="10" active="false">射程</th>
-                <th class="filter_option" id="cd" lv-bind="false" value="5" reverse="false" range="[2,300]" step="1" active="false">再生産</th>
+                <th class="filter_option" id="hp" lv-bind="true" value="20000" type="0" range="[1000,100000]" step="1000" active="false">體力</th>
+                <th class="filter_option" id="dps" lv-bind="true" value="3000" type="0" range="[100,10000]" step="100" active="false">DPS</th>
+                <th class="filter_option" id="speed" lv-bind="false" value="10" type="0" range="[1,100]" step="1" active="false">速度</th>
+                <th class="filter_option" id="cost" lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false">花費</th>
+                <th class="filter_option" id="freq" lv-bind="false" value="5" type="0" range="[1,20]" step="0.5" active="false">攻頻</th>
+                <th class="filter_option" id="atk" lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000" active="false">攻撃力</th>
+                <th class="filter_option" id="range" lv-bind="false" value="300" type="0" range="[10,1000]" step="10" active="false">射程</th>
+                <th class="filter_option" id="cd" lv-bind="false" value="5" type="0" range="[2,300]" step="1" active="false">再生産</th>
               </tr>
               <tr id="slider_holder">
                 <td class="active"></td>
                 <td colspan="6">
                   <div class="slider"></div>
                 </td>
-                <td class="value_display"></td>
-                <td class="reverse"></td>
+                <td class="value_display" colspan="1"></td>
+                <td class="type"></td>
               </tr>
             </tbody>
           </table>
@@ -246,7 +243,7 @@
               <th>查詢次數</th><td id="count"></td>
             </tr>
             <tr class="non_mobile">
-              <th style='height:80px;padding:0' class="img"><img src='' style='height:100%'></th>
+              <th style='height:80px;padding:0' class="img"></th>
               <th colspan=3 rarity='data.rarity' class='name'></th>
               <th colspan=2 class="bro"></th>
             </tr>
@@ -254,8 +251,7 @@
               <th class="name" colspan="6"></th>
             </tr>
             <tr class="mobile">
-              <th style='height:80px;padding:0;background-color:transparent' colspan="6" class="img">
-                <img src='' style='height:100%'>
+              <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
               </th>
             </tr>
             <tr class="mobile">

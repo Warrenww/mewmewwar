@@ -21,16 +21,23 @@ $(document).ready(function () {
       let last = data.last_enemy_search;
       if(last.query)
         socket.emit("normal search",last);
+      else{
+        last.query = {};
+        socket.emit("normal search",last);
+      }
       for(let i in last.query){
         for(let j in last.query[i]) $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
       }
-      if(last.value){
-        $("#value_search").click();
-        for(let i in last.filterObj)
-          $("#lower_table").find("th[id='"+last.filterObj[i].name+"']")
-          .attr({'active':true,'value':last.filterObj[i].limit,'reverse':last.filterObj[i].reverse})
-          .click();
+      var value_search = false;
+      for(let i in last.filterObj){
+        $("#lower_table").find("th[id='"+i+"']").attr({
+          'active':last.filterObj[i].active,
+          'value':last.filterObj[i].type==2?("["+last.filterObj[i].value+"]"):last.filterObj[i].value,
+          'type':last.filterObj[i].type
+        }).click();
+        if(last.filterObj[i].active) value_search = true;
       }
+      if(value_search) $("#value_search").click();
     }
     if(data.compare_e2e) {
       $(".compareTarget").empty();
@@ -47,7 +54,12 @@ $(document).ready(function () {
     }
   });
 
-  $(document).on('click','.filter_option',filterSlider);
+  $(document).on('click','.filter_option',function () {
+    $("#slider_holder").show();
+    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
+    filter_name = $(this).attr('id') ;
+    filterSlider($(this));
+  });
   $(document).on('click','#searchBut',function () {
     let keyword = $(this).siblings().val();
     socket.emit("text search",{key:keyword,type:'enemy'});
@@ -80,7 +92,7 @@ $(document).ready(function () {
         uid:current_user_data.uid,
         query:{rFilter:[],cFilter:[],aFilter:[reverse]},
         query_type:'normal',
-        filterObj:[],
+        filterObj:{},
         type:"cat",
         value:0
       });
@@ -228,33 +240,17 @@ $(document).ready(function () {
   function search() {
     let color = $(".select_color [value=1]"),
         ability = $(".select_ability [value=1]");
-    let cFilter = [], aFilter = [], rFilter = [], filterObj = [],gFilter = [] ;
+    let cFilter = [], aFilter = [], rFilter = [], gFilter = [] ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
 
     // console.log(cFilter);
     // console.log(aFilter);
-
-    $(".filter_option[active='true']").each(function () {
-      let name = $(this).attr('id'),
-          reverse = $(this).attr('reverse') == 'true' ? true : false ,
-          limit = $(this).attr('value') ,
-          level_bind = $(this).attr('lv-bind') == 'true' ? true : false ,
-          bufferObj = {
-            "name" : name,
-            "reverse" : reverse,
-            "limit" : limit,
-            "level_bind" : level_bind
-          } ;
-      filterObj.push(bufferObj);
-    });
-
     socket.emit("normal search",{
       query:{cFilter,aFilter},
       filterObj,
       type:'enemy',
       uid:current_user_data.uid,
-      value:filterObj.length
     });
     scroll_to_div('selected');
   }
@@ -295,12 +291,21 @@ $(document).ready(function () {
         showCount = current_user_data.setting.show_enemy_count;
 
     $("#more_option #out ").attr("href","http://battlecats-db.com/enemy/"+data.id+".html");
-    html += "<tr><th "+(showID?"":"hidden")+">ID</th><td "+(showID?"":"hidden")+">"+data.id+
-            "</td><th "+(showCount?"":"hidden")+">查詢次數</th><td "+(showCount?"":"hidden")+">"+data.count+"</td>";
 
-    html += displayenemyHtml(data)
-    $(".dataTable").empty();
-    $(".dataTable").append(html);
+    for (let i in data){
+      if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
+        $(".dataTable").find("#"+i).text(data.Tovalue(i,data.lv));
+      else if(i == 'name')
+        $(".dataTable").find("."+i).text(data.Name);
+      else if(i == 'aoe')
+        $(".dataTable").find("#"+i).text(data.Aoe);
+      else if(i == 'char')
+        $(".dataTable").find("#"+i).html(data.CharHtml(data.lv));
+      else
+        $(".dataTable").find("#"+i).text(data[i]);
+    }
+    $(".dataTable").find('.img').css('background-image','url("'+data.imgURL+'")');
+    $(".dataTable").find("#level_num").children().text(data.lv*100+" %");
     scroll_to_class("display",0) ;
   }
   function updateState(level) {
@@ -325,25 +330,7 @@ $(document).ready(function () {
       type : 'enemy'
     });
   }
-
-  function filterSlider() {
-    $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
-    filter_name = $(this).attr('id') ;
-    let value = Number($(this).attr('value')) ;
-    let reverse = $(this).attr('reverse') ;
-    let range = JSON.parse($(this).attr('range'));
-    let step = Number($(this).attr('step')) ;
-    let active = $(this).attr('active') ;
-
-    $("#slider_holder").find('.slider').slider('option',{
-      'min': range[0],
-      'max': range[1],
-      'step': step,
-      'value': value
-    }).parent().siblings('.active').html(active=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>')
-    .siblings('.reverse').html(reverse=='true'?'以下':'以上');
-  }
+  $(".slider").slider();
   $(document).on("click","#share",function () {
     let id = $(this).parents("#more_option").siblings().attr("id"),
         lv = $(this).parents("#more_option").siblings().find("#level_num").children("span").text().split(" %")[0],
@@ -490,55 +477,55 @@ $(document).ready(function () {
   });
 
 });
-function displayenemyHtml(data) {
-  let html = '';
-  html += screen.width > 768 ?
-  "<tr>"+
-  "<th style='height:80px;padding:0'><img src='"+
-  data.imgURL+
-  "' style='height:100%'></th>"+
-  "<th colspan=5 id='name'>"+data.Name+"</th>"+
-  "</tr>" :
-  "<tr>"+
-  "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
-  data.imgURL+"' style='height:100%'"
-  +"</tr><tr>"+
-  "<th colspan='6' id='name'>"+data.Name+"</th>"+
-  "</tr>" ;
-  html+=
-  "<tr>"+
-  "<th colspan='1'>倍率</th>"+
-  "<td colspan=5 id='level_num'>"+
-  // "<button>-100%</button><button>-50%</button>"+
-  "<span style='margin:0 10px'>"+data.lv*100+" %</span>"+
-  // "<button>+50%</button><button>+100%</button>"+
-  "</td >"+
-  "<tr>"+
-  "<th>體力</th><td id='hp'>"+
-  data.Tovalue('hp')+"</td>"+
-  "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
-  "<th>硬度</th><td id='hardness'>"+
-  data.Tovalue('hardness')+"</td>"+
-  "</tr><tr>"+
-  "<th>攻擊力</th><td id='atk'>"+
-  data.Tovalue('atk')+"</td>"+
-  "<th>DPS</th><td id='DPS'>"+
-  data.Tovalue('dps')+"</td>"+
-  "<th>射程</th><td id='range'>"+data.range+"</td>"+
-  "</tr><tr>"+
-  "<th>攻頻</th><td id='freq'>"+data.freq+" s</td>"+
-  "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
-  "<td colspan='2' rowspan='2' id='aoe'>"+data.Aoe+"</td>"+
-  "</tr><tr>"+
-  "<th>獲得金錢</th><td id='reward'>"+data.reward+"</td>"+
-  "<th>屬性</th><td id='color'>"+data.Color+"</td>"+
-  "</tr><tr>"+
-  "<td colspan='6' id='char'>"+
-  data.CharHtml()+
-  "</td>"+
-  "</tr><tr>"
-  return html
-}
+// function displayenemyHtml(data) {
+//   let html = '';
+//   html += screen.width > 768 ?
+//   "<tr>"+
+//   "<th style='height:80px;padding:0'><img src='"+
+//   data.imgURL+
+//   "' style='height:100%'></th>"+
+//   "<th colspan=5 id='name'>"+data.Name+"</th>"+
+//   "</tr>" :
+//   "<tr>"+
+//   "<th colspan='6' style='height:80px;padding:0;background-color:transparent'><img src='"+
+//   data.imgURL+"' style='height:100%'"
+//   +"</tr><tr>"+
+//   "<th colspan='6' id='name'>"+data.Name+"</th>"+
+//   "</tr>" ;
+//   html+=
+//   "<tr>"+
+//   "<th colspan='1'>倍率</th>"+
+//   "<td colspan=5 id='level_num'>"+
+//   // "<button>-100%</button><button>-50%</button>"+
+//   "<span style='margin:0 10px'>"+data.lv*100+" %</span>"+
+//   // "<button>+50%</button><button>+100%</button>"+
+//   "</td >"+
+//   "<tr>"+
+//   "<th>體力</th><td id='hp'>"+
+//   data.Tovalue('hp')+"</td>"+
+//   "<th>KB</th><td id='KB'>"+data.kb+"</td>"+
+//   "<th>硬度</th><td id='hardness'>"+
+//   data.Tovalue('hardness')+"</td>"+
+//   "</tr><tr>"+
+//   "<th>攻擊力</th><td id='atk'>"+
+//   data.Tovalue('atk')+"</td>"+
+//   "<th>DPS</th><td id='DPS'>"+
+//   data.Tovalue('dps')+"</td>"+
+//   "<th>射程</th><td id='range'>"+data.range+"</td>"+
+//   "</tr><tr>"+
+//   "<th>攻頻</th><td id='freq'>"+data.freq+" s</td>"+
+//   "<th>跑速</th><td id='speed'>"+data.speed+"</td>"+
+//   "<td colspan='2' rowspan='2' id='aoe'>"+data.Aoe+"</td>"+
+//   "</tr><tr>"+
+//   "<th>獲得金錢</th><td id='reward'>"+data.reward+"</td>"+
+//   "<th>屬性</th><td id='color'>"+data.Color+"</td>"+
+//   "</tr><tr>"+
+//   "<td colspan='6' id='char'>"+
+//   data.CharHtml()+
+//   "</td>"+
+//   "</tr><tr>"
+//   return html
+// }
 function mutipleValue(value,m) {
   // console.log(value+":"+m);
   return value*m

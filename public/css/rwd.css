@@ -101,6 +101,7 @@ nav .mobile,
   #snapshot {width: 60px;height: 60px}
   #snapshot i {font-size: 30px}
   #year_event{padding: 5% 0;font-size: 16px}
+  #bulletin .main{width: 95%}
 
 }
 @media screen and (max-width: 1024px) {
@@ -127,7 +128,6 @@ nav .mobile,
   {padding-top: 15%}
   .navigation_m{display: flex}
   .iframe_box iframe{width: 100%;}
-  #bulletin .main{width: 95%;font-size: 15px}
   .search_type{flex-wrap: wrap;justify-content: center;}
   .search_type .search{justify-content: center;}
   body::-webkit-scrollbar {width: 0px;}

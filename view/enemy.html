@@ -72,30 +72,27 @@
         <table id="lower_table">
           <tbody>
             <tr>
-              <th rowspan="2" id="selectAll">
-                全選
-              </th>
-              <th colspan="8">
-                更多篩選器
-              </th>
+              <th rowspan="2" id="selectAll"> 啟用</th>
+              <th colspan="8"> 數值篩選器 </th>
             </tr>
             <tr>
-              <th class="filter_option" id="hp" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">體力</th>
-              <th class="filter_option" id="dps" lv-bind="true" value="3000" reverse="false" range="[100,10000]" step="100" active="false">DPS</th>
-              <th class="filter_option" id="speed" lv-bind="false" value="10" reverse="false" range="[1,100]" step="1" active="false">速度</th>
-              <th class="filter_option" id="reward" lv-bind="false" value="1000" reverse="false" range="[0,5000]" step="10" active="false">獲得金錢</th>
-              <th class="filter_option" id="freq" lv-bind="false" value="5" reverse="false" range="[0,20]" step="0.5" active="false">攻頻</th>
-              <th class="filter_option" id="atk" lv-bind="true" value="10000" reverse="false" range="[1000,100000]" step="1000" active="false">攻撃力</th>
-              <th class="filter_option" id="range" lv-bind="false" value="300" reverse="false" range="[10,1000]" step="10" active="false">射程</th>
+              <th class="filter_option" id="hp" lv-bind="false" value="10000" type="0" range="[1000,100000]" step="1000" active="false">體力</th>
+              <th class="filter_option" id="dps" lv-bind="false" value="3000" type="0" range="[100,10000]" step="100" active="false">DPS</th>
+              <th class="filter_option" id="speed" lv-bind="false" value="10" type="0" range="[1,100]" step="1" active="false">速度</th>
+              <th class="filter_option" id="reward" lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false">獲得金錢</th>
+              <th class="filter_option" id="freq" lv-bind="false" value="5" type="0" range="[1,20]" step="0.5" active="false">攻頻</th>
+              <th class="filter_option" id="atk" lv-bind="false" value="10000" type="0" range="[1000,100000]" step="1000" active="false">攻撃力</th>
+              <th class="filter_option" id="range" lv-bind="false" value="300" type="0" range="[10,1000]" step="10" active="false">射程</th>
+              <th></th>
               <!-- <th class="filter_option" id="再生産" lv-bind="false" value="5" reverse="false" range="[2,300]" step="1" active="false">再生産</th> -->
             </tr>
             <tr id="slider_holder">
               <td class="active"></td>
-              <td colspan="5">
+              <td colspan="6">
                 <div class="slider"></div>
               </td>
               <td class="value_display"></td>
-              <td class="reverse"></td>
+              <td class="type"></td>
             </tr>
           </tbody>
         </table>
@@ -132,7 +129,7 @@
             <!-- <div id='share'>
             <i class="material-icons">&#xe80d;</i>
             <span class="tag">分享</span>
-          </div> -->
+            </div> -->
           <div id='addcart'>
             <i class="material-icons">&#xE8CC;</i>
             <span class="tag">加到購物車</span>
@@ -147,8 +144,46 @@
           </div>
         </div>
           <table class="dataTable">
+            <tr>
+              <th>ID</th><td id="id"></td>
+              <th>查詢次數</th><td id="count"></td>
+            </tr>
+            <tr>
+              <th style='height:80px;padding:0;background-size:cover' class="img"></th>
+              <th colspan=5 rarity='data.rarity' class='name'></th>
+            </tr>
+            <tr>
+              <th colspan='1'>倍率</th>
+              <td colspan=5 id='level_num'>
+                <span style='margin:0 10px'></span>
+              </td>
+            </tr>
+            <tr>
+              <th>體力</th><td id='hp'></td>
+              <th>KB</th><td id='KB'></td>
+              <th>硬度</th><td id='hardness'></td>
+            </tr>
+            <tr>
+              <th>攻擊力</th><td id='atk'></td>
+              <th>DPS</th><td id='DPS'></td>
+              <th>射程</th><td id='range'></td>
+            </tr>
+            <tr>
+              <th>攻頻</th><td id='freq'></td>
+              <th>跑速</th><td id='speed'></td>
+              <td colspan='2' rowspan='2' id='aoe'></td>
+            </tr>
+            <tr>
+              <th>獲得金錢</th><td id='reward'></td>
+              <th>屬性</th><td id='color'></td>
+            </tr>
+            <tr>
+              <td colspan='6' id='char'></td>
+            </tr>
+
           </table>
         </div>
+
         <div id="compareTarget_tag">
           <i class="material-icons">&#xe315;</i>敵人購物車
           <span id="compare_number">0</span>

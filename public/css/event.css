@@ -1,14 +1,3 @@
-body,html{
-  margin: 0;
-  height: 100%;
-  font-family: Microsoft JhengHei;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select:none;
-  user-select:none;
-  -o-user-select:none;
-  cursor: default;
-}
 .iframe_holder{
   width: 100%;
   height: 100%;
@@ -35,8 +24,20 @@ body,html{
   background-color: rgba(0, 0, 0, 0.83);
   z-index: 4;
 }
-.prediction_holder{flex-direction: column;}
-.prediction_holder h6{font-size: 16px;color: white;margin: 20px}
+.prediction_holder{
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: scroll;
+}
+.prediction_holder table {width: auto}
+.prediction_holder::-webkit-scrollbar { width: 0; }
+.prediction_holder h6{
+  font-size: 16px;
+  color: white;
+  margin: 20px 0;
+  width: 100%;
+  text-align: right;
+}
 #calendar .event{
   background-color: rgba(238, 172, 24, 0.9);
   font-weight: bold;
@@ -51,7 +52,6 @@ body,html{
   background-color: rgba(255, 255, 255, 0.5);
   font-weight: bold;
 }
-#prediction{max-width: 1000px}
 #function_tag{
   position: absolute;
   flex-direction: column;
@@ -91,7 +91,4 @@ body,html{
 #function_tag div:hover{
   background-color: rgba(150, 150, 150, 0.88);
   color: rgb(244, 214, 43);
-}
-@media screen and (max-width:768px) {
-  .prediction_holder{align-items: flex-start;overflow: scroll;}
 }

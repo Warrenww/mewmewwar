@@ -2,6 +2,7 @@ const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
 const image_url_icon =  "../public/css/footage/gameIcon/" ;
 var showcomparetarget = 1 ;
+var filterObj = {};
 $(document).ready(function () {
   var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
@@ -22,7 +23,7 @@ $(document).ready(function () {
 
   var today = new Date();
 
-  if(screen.width < 769){
+  if(screen.width <= 768){
     $("#lower_table .value_display").attr("colspan",7);
     $("#dataTable").find("#level_num").parent().attr("colspan",7);
   }
@@ -161,57 +162,36 @@ $(window).load(function () {
   $('#slider_holder').children('.active').click(function () {
     let target = $("#"+filter_name+".filter_option");
     target.attr('active',target.attr('active')=='true'?'false':'true');
-    $(this).html(target.attr('active')=='true'?'<i class="material-icons">&#xe837;</i>':'<i class="material-icons">&#xe836;</i>');
+    filterObj[filter_name].active = target.attr('active')=='true';
+    $(this).html('<i class="material-icons">&#xe83'+(target.attr('active')=='true'?7:6)+';</i>');
   });
-  $('#slider_holder').children('.reverse').click(function () {
-    let target = $("#"+filter_name+".filter_option");
-    target.attr('reverse',target.attr('reverse')=='true'?'false':'true');
-    $(this).html(target.attr('reverse')=='true'?'以下':'以上');
+  $('#slider_holder').children('.type').click(function () {
+    let target = $("#"+filter_name+".filter_option"),
+        value = filterObj[filter_name].value,
+        range = JSON.parse(target.attr("range"));
+    target.attr('type',Number(target.attr('type'))+1<3?Number(target.attr('type'))+1:0);
+    if(Number(target.attr('type'))==2)
+      target.attr('value',"["+range[0]*10+","+range[1]*0.9+"]");
+    else if(typeof(value) == 'object')
+      target.attr('value',(value[0]+value[1])/2);
+    filterSlider(target);
   });
   $('#slider_holder').find('.slider').on("slidechange",function (e,ui) {
-    $("#lower_table").find("#"+filter_name).attr('value',ui.value);
+    setTimeout(function () {
+      let target = $("#"+filter_name+".filter_option");
+      target.attr('value',Number(target.attr('type'))==2?("["+ui.values+"]"):ui.value);
+      if(!filterObj[filter_name]) filterObj[filter_name] = {};
+      filterObj[filter_name].value = Number(target.attr("value"))?Number(target.attr("value")):JSON.parse(target.attr("value"));
+      $(this).parent().siblings('.value_display').text(filterObj[filter_name].value);
+    },300);
   });
-  $("#lower_table").find("#selectAll").click(function () {
-    if($(this).text().trim() == '全選') {
-      $(".filter_option").attr('active','true');
-      $(this).text('全部清除');
-      $('.active').html('<i class="material-icons">&#xe837;</i>');
-    }
-    else{
-      filter_name = "" ;
-      $(".filter_option").attr('active','false');
-      $(this).text('全選');
-      $('.active').html('<i class="material-icons">&#xe836;</i>');
-      $("#slider_holder").hide().siblings().children('.filter_option').css('border-bottom','0px solid');
-    }
-  });
-  $(".filter_option").hover(
-    function () {
-      let position = $(this).offset(),
-          value = $(this).attr('value'),
-          width = $(this).outerWidth()-10,
-          active = $(this).attr('active') == 'true' ? true : false ,
-          reverse = $(this).attr('reverse') == 'true' ? '以下' : '以上';
-      position.top -= 30 ;
-        if(active && screen.width > 768){
-          $("#TOOLTIP").finish().fadeIn().css("display","flex");
-          $("#TOOLTIP").offset(position).width(width).text(value+reverse) ;
-        }
-
-    },function () {
-      $("#TOOLTIP").fadeOut();
-  });
-  $(".slider").slider();
   $(".slider").on("slide", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
+    $(this).parent().siblings('.value_display').html(ui.value);
   });
   $(".slider").on("slidechange", function(e,ui) {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
-  $(document).on("click","#service_window_holder",function () {
-    $(this).fadeOut();
-    setTimeout(function () {$(this).remove()},500);
-  });
+
 });
 
 //google Analytics
@@ -376,4 +356,31 @@ function turn(s) {
   let ww = '';
   for(let i in arr) ww += arr[i]+"</br>";
   return ww
+}
+function filterSlider(target) {
+  let value = target.attr('value') ;
+  let type = Number(target.attr('type')) ;
+  let range = JSON.parse(target.attr('range'));
+  let step = Number(target.attr('step')) ;
+  let active = target.attr('active') ;
+  let Slider = $("#slider_holder").find('.slider');
+  Slider.slider("destroy");
+  Slider.slider();
+  Slider.slider('option','range',type==2);
+  Slider.slider('option',{
+    'min': range[0],
+    'max': range[1],
+    'step': step,
+  }).parent().siblings('.active').html('<i class="material-icons">&#xe83'+(active=='true'?7:6)+';</i>')
+  .siblings('.type').html(type?(type == '1'?'以下':'範圍'):'以上');
+  if(type==2)
+    Slider.slider("option","values",JSON.parse(value));
+  else
+    Slider.slider("option","value",Number(value));
+  filterObj[filter_name] = {
+    type:Number(type),
+    active:active=='true',
+    value:Number(value)?Number(value):JSON.parse(value),
+    lv_bind:target.attr('lv-bind')=='true'
+  }
 }
