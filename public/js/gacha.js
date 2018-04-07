@@ -1,11 +1,8 @@
 $(document).ready(function () {
   var socket = io.connect();
-  var rank_data;
-  var current_user_data = {
-    setting:{show_cat_id:false,default_cat_lv:30,show_cat_count:false}
-  };
   var gacha_url = 'https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/'
   var r = sr = ssr = 0 ;
+  var current_gacha_data;
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -18,6 +15,8 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     current_user_data = data ;
+    if(data.last_gacha)
+      $(".tag[id='"+data.last_gacha+"']").click();
   });
 
   $(document).on("click",'.tag span',function (e) {
@@ -41,14 +40,24 @@ $(document).ready(function () {
   $(document).on("click",'.tag',function () {
     let name = $(this).attr("id"),
         target = name;
-    $(".monitor").attr('id',name);
+    $(".monitor .content img").attr('src','/public/css/footage/gacha/'+name+".png");
     $(this).attr("value",1).siblings(".tag").attr("value",0)
       .parent().siblings().find(".tag").attr("value",0);
     $("#result").empty();
     $("#scoreboard").children("h2").text($(this).text())
       .parent().find("td").empty();
     ssr = sr = r = 0 ;
+    socket.emit("record gacha",{
+      uid:current_user_data.uid,
+      gacha:name
+    });
   });
+  socket.on("gacha result",function (data) {
+    data = data.result;
+    current_gacha_data = data;
+    $(".monitor").attr('id',data.id);
+  });
+
   $(document).on("click",".title",function () {
     $(this).next().toggle(400);
     $(this).siblings('.title').next().hide(400);
@@ -136,8 +145,8 @@ $(document).ready(function () {
       $("#result").find("span").css("transform","scale(1)").fadeIn();
       $("#scoreboard tbody tr").attr("val",0);
     },100);
-    $('#result').animate({
-      scrollTop : $('#result')[0].scrollHeight
+    $('.content').animate({
+      scrollTop : $('.content')[0].scrollHeight
     },1000,"easeInOutCubic");
     let total = r+sr+ssr,africa = ssr/total;
     $("#scoreboard").find("#r").children(".number")

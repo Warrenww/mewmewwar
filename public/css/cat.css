@@ -55,21 +55,7 @@
   transition: .2s ease-in-out
 }
 .compareTarget_child:hover{color:rgb(232, 84, 84)}
-#compareTarget_tag{
-  padding: 10px;
-  font-size: 20px;
-  font-weight: bolder;
-  width: 40px;
-  height: 180px;
-  position: fixed;
-  top: 65%;
-  left: 0;
-  background-color: rgba(255,255,255,.64);
-  z-index: 3;
-  cursor: pointer;
-  transition: .8s ease-in-out;
-}
-#compareTarget_tag i {transition: .8s ease-in-out;}
+
 .compareTarget_holder{
   position: fixed;
   top: 0px;
@@ -101,6 +87,15 @@
   font-weight: bold;
   text-decoration: underline;
   cursor: pointer;
+}
+#condition span{
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+#condition img{
+  width: 30px;
+  margin: 5px;
 }
 #color{
   font-weight: bold;

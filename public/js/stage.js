@@ -29,75 +29,43 @@ $(document).ready(function () {
       $('#select_stage').attr("chapter",arr[0]);
       $('#select_level').attr("stage",arr[1]);
       socket.emit("required level name",{chapter:arr[0],stage:arr[1]});
-      // $(".select_chapter").children().first().before($(".select_chapter").find("#"+arr[0])[0]);
+      $(".select_chapter").find("#"+arr[0]).parent().prev().click();
     }
-    // console.log(data.stage_count);
-    for(let i in data.stage_count)
-      $('.select_chapter').children().last()
-        .after($('.select_chapter').find("#"+data.stage_count[i].name));
-    if(current_user_data.setting.show_more_option) $("#more_option").css("height",50);
-    else $("#more_option").css("height",0);
   });
 
-  var chapter = {
-    r:{name : '懶得鳥你</br>合作關卡',id : 'lazybird',show : true},
-    k:{name : '經驗關',id : 'XP',show : true},
-    l:{name : '開眼小小貓',id : 'smallCat',show : true},
-    j:{name : '狂亂系列',id : 'crazy',show : true},
-    g:{name : '極難關',id : 'hard',show : true},
-    b:{name : '傳說故事',id : 'story',show : true},
-    m:{name : '旋渦關',id : 'cyclone',show : true},
-    n:{name : '貓薄荷',id : 'evolution',show : true},
-    o:{name : '城堡素材',id : 'castleMaterial',show : true},
-    c:{name : '貓咪</br>風雲塔',id : 'tower',show : true},
-    d:{name : '世界篇',id : 'world',show : true},
-    e:{name : '未來篇',id : 'future',show : true},
-    f:{name : '宇宙篇',id : 'universe',show : true},
-    q:{name : '貓咪卷關卡',id : 'ticket',show : true},
-    a:{name : '梅露可</br>合作關卡',id : 'maylook',show : true},
-    p:{name : '實況野球</br>合作關卡',id : 'baseball',show : true},
-    h:{name : '月間關',id : 'month',show : false},
-    // i:{name : '開眼關',id : 'openEye',show : false},
-  };
-  let chapter_count = 0;
-  for(let i in chapter) {
-    $(".select_chapter").append(
-        "<button id='"+chapter[i].id+
-      "' value='0' show='"+chapter[i].show+"'>"
-      +chapter[i].name+"</button>"
-    ) ;
-    chapter_count ++ ;
-  }
-  $(".select_chapter").css('width',200*chapter_count);
+  $(document).on("click",".select_chapter span",function () {
+    $(this).next().toggle(400).siblings("div").hide(400)
+  });
   var expend_sl_chap = 1 ;
-  $("#expend_sl_chap").click(function () {
-    $(".select_chapter").css('width',function () {
-      if(expend_sl_chap) return "100%"
-      else return 200*chapter_count
-    });
-    $("#expend_sl_chap i").css('transform',function () {
-      if(expend_sl_chap) return "rotate(180deg)"
-      else return "rotate(0deg)"
-    })
-    expend_sl_chap = expend_sl_chap?0:1;
-  });
-
-  $(document).on("click","#select_stage,#select_level",function () {
-    $(this).css("flex",'3').siblings().css("flex",'1');
-  });
+  $(document).on('click','#select_chap_tag',showhideselectchap);
+  function showhideselectchap() {
+    if(expend_sl_chap){
+      $('.select_chapter_holder').css('left',0);
+      $('#select_chap_tag').css('left',250).children('i').css({"transform":"rotate(180deg)"});
+    } else {
+      $('.select_chapter_holder').css('left',-250);
+      $('#select_chap_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
+    }
+    expend_sl_chap = expend_sl_chap ? 0 : 1 ;
+  }
   $(document).on("click",".select_chapter button",function () {
-    let chapter = $(this).attr('id'),
-        show = $(this).attr("show")=="true"?true:false;
+    let chapter = $(this).attr('id');
     $(this).attr("value",'1');
     setTimeout(function () {
       $(".select_chapter button[value=1]").attr("value",0);
-    },4000);
+      expend_sl_chap = 0;
+      showhideselectchap();
+    },1000);
     $("#select_stage").empty();
     $("#select_level").empty();
     // console.log(chapter);
     $("#select_stage").attr("chapter",chapter);
-    if(!show) alert("not yet ready");
-    else socket.emit("required stage name",chapter);
+    socket.emit("required stage name",chapter);
+    scroll_to_div('selector');
+  });
+
+  $(document).on("click","#select_stage,#select_level",function () {
+    $(this).css("flex",'3').siblings().css("flex",'1');
   });
   socket.on("stage name",function (data) {
     // console.log(data);
@@ -186,7 +154,7 @@ $(document).ready(function () {
               "<th rowspan=2 colspan=2>"+data.name+"</th>"+
               "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
               "</tr><tr>"+
-              "<th>經驗值</th>"+"<td>"+data.exp+"</td>"+
+              "<th>經驗值</th>"+"<td>"+parseEXP(data.exp)+"</td>"+
               "</tr><tr>"+
               "<th>城堡體力</th>"+"<td>"+data.castle+"</td>"+
               "<th>戰線長度</th>"+"<td>"+data.length+"</td>"+
@@ -214,7 +182,7 @@ $(document).ready(function () {
               +obj.parent+"</th>"+
               "<th colspan=2>"+data.name+"</th>"+
               "</tr><tr>"+
-              "<th>經驗值</th>"+"<td>"+data.exp+"</td>"+
+              "<th>經驗值</th>"+"<td>"+parseEXP(data.exp)+"</td>"+
               "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
               "</tr><tr>"+
               "<th>城堡體力</th>"+"<td colspan=3>"+data.castle+"</td>"+
@@ -290,7 +258,8 @@ $(document).ready(function () {
                 "<tr><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
                 "<td colspan=2>"+arr[i].prize.amount+"</td></tr>"
               );
-      html += "<th>"+(b?"累計積分":"取得機率")+"</th>"+"<td>"+arr[i].chance+"</td>"+
+      html += "<th>"+(b?(arr[i].chance.indexOf("%")!=-1?"取得機率":"累計積分"):"取得機率")+
+              "</th>"+"<td>"+arr[i].chance+"</td>"+
               "<th>取得上限</th>"+"<td>"+arr[i].limit+"</td>"+
               "</tr>"
 
@@ -300,6 +269,7 @@ $(document).ready(function () {
   function Addenemy(arr) {
     let html ="";
     for(let i in arr){
+      if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
               "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
               (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
@@ -324,10 +294,11 @@ $(document).ready(function () {
     return html
   }
   function chapterName(s) {
-    for(let i in chapter){
-       if (chapter[i].id == s) return chapter[i].name ;
-    }
-    return
+    var name='';
+    $(".select_chapter").find('button').each(function () {
+      if($(this).attr("id")==s) name = $(this).html();
+    });
+    return name
   }
   function prize(s) {
     // console.log(s);
@@ -337,6 +308,10 @@ $(document).ready(function () {
     } else {
       return s
     }
+  }
+  function parseEXP(n) {
+    n = n.split(",").join("");
+    return Math.ceil(Number(n)*4.2);
   }
   $(document).on("click",".cat",function () {
     socket.emit("display cat",{
@@ -366,24 +341,8 @@ $(document).ready(function () {
     // window.parent.changeIframe('enemy');
     window.parent.reloadIframe('enemy');
 
-    // $("body").append(
-    //   "<div class='float'><iframe src='"+
-    //   location.origin+"/view/once.html?q=enemy&"+
-    //   id+"&"+multiple+"'></iframe></div>"
-    // );
-    // $(".float_BG").fadeIn();
-    // $(".float_BG").click(function () {
-    //   $(this).fadeOut();
-    //   $(".float").remove();
-    // });
   });
 
-
-  $('.select_chapter_holder').bind('mousewheel', function (e) {
-    let origin = $(".select_chapter_holder").scrollLeft();
-    $(".select_chapter_holder").scrollLeft(origin-e.originalEvent.wheelDelta);
-    return false;
-  });
 
   $(document).on('click','.enemy_head',sortStageEnemy);
   function sortStageEnemy() {
@@ -398,7 +357,7 @@ $(document).ready(function () {
           val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
       obj = {
         id:$(this).attr('id'),
-        item: !val ? 99999 : val
+        item: !val ? (val==0?0:99999) : val
       }
       arr.push(obj);
     });
@@ -416,7 +375,7 @@ $(document).ready(function () {
               val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
           obj = {
             id:$(this).attr('id'),
-            item:!val?99999:val
+            item: !val ? (val==0?0:99999) : val
           }
           arr.push(obj);
         });
@@ -437,7 +396,7 @@ $(document).ready(function () {
             val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
             obj = {
               id:$(this).attr('id'),
-              item:!val?99999:val
+              item: !val ? (val==0?0:99999) : val
             }
             arr.push(obj);
           });
@@ -447,11 +406,3 @@ $(document).ready(function () {
   }
 
 });
-
-function sleep(n) {
-  let start = now = new Date().getTime();
-  while (now-start<n) {
-    now = new Date().getTime()
-  }
-  return
-}

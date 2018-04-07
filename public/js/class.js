@@ -12,7 +12,7 @@ class Cat{
     this.count = obj.count;
     this.dps = obj.dps;
     this.freq = Number(obj.freq)?obj.freq.toFixed(2):"-";
-    this.get_method = obj.get_method;
+    this.condition = obj.condition;
     this.hardness = obj.hardness;
     this.hp = obj.hp;
     this.jp_name = obj.jp_name;
@@ -105,6 +105,39 @@ class Cat{
       }
     }
     return ""
+  }
+  CondHtml(){
+    var cond = this.condition;
+    var html='';
+    html += (cond.lv?"合併等級"+cond.lv+"以上<br>":"")+
+    (cond.xp?"XP "+cond.xp+"+<br>":"")+
+    (cond.can?"貓罐頭"+cond.can+"個+<br>":"")+
+    (cond.stage?"<span type='stage' id='"+cond.stage.id+"'>"+cond.stage.name+"</span>通關後機率獲得<br>":"")+
+    (cond.gacha?this.parseGacha(cond.gacha):"")+
+    (cond.other?cond.other:"")+
+    (cond.fruit?this.parseFruit(cond.fruit):"");
+    return html
+  }
+  parseGacha(gacha) {
+    var html = '';
+    if (gacha == 'any') html = "再任意稀有轉蛋中獲得";
+    else{
+      for(let i in gacha){
+        name = gacha[i].name;
+        name = name=='にゃんこ'?"貓咪":name;
+        html += "在<span type='gacha' id='"+gacha[i].id+"'>"+name+"</span>轉蛋中獲得<br>";
+      }
+    }
+    return html
+  }
+  parseFruit(fruit){
+    var html='';
+    for(let i in fruit){
+      if(!fruit[i]) continue
+      html += "<img src='/public/css/footage/fruit/"+(fruit[i].seed?"seed":"fruit")
+      +"_icon0"+(Number(i)+1)+".png'/>x"+fruit[i].number
+    }
+    return html
   }
 }
 

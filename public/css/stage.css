@@ -1,5 +1,4 @@
-.select_chapter button[value~='0'],
-.select_chapter button[value~='1']{
+.select_chapter button{
   width: 180px;
   height: 120px;
   border-radius: 0;
@@ -8,6 +7,10 @@
   align-items: center;
   -webkit-text-stroke: 0px;
   font-size: 25px;
+  background-size: 100%;
+  background-position: 0% 100%;
+  background-color: rgba(0,0,0,.6);
+  background-blend-mode: multiply;
 }
 .select_chapter button[value~='1']{
   animation-name: border-blink;
@@ -18,12 +21,6 @@
   0%{border-color: rgb(255, 93, 46)}
   50%{border-color: yellow}
   100%{border-color: orange}
-}
-.select_chapter button{
-  background-size: 100%;
-  background-position: 0% 100%;
-  background-color: rgba(0,0,0,.6);
-  background-blend-mode: multiply;
 }
 #world,#future{
   background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
@@ -55,12 +52,12 @@
   background-color: transparent;
 }
 #maylook{background-image: url("footage/stage/maylook_BG.png");}
-#baseball{
+#baseball,#lazybird,#easter{
   background-image: url("footage/stage/pawapuro_BG.jpg");
   background-size: cover;
   background-position: center;
 }
-#crazy,#hard,#smallCat,#XP{
+#crazy,#hard,#smallCat,#XP,#castleMaterial{
   background-image: url("footage/stage/crazy_BG.png");
   background-color: rgba(0,0,0,.1);
   font-size: 0;
@@ -69,22 +66,52 @@
 #smallCat{background-image: url("footage/stage/smallCat_BG.png");}
 #smallCat:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
 #XP{background-image: url("footage/stage/XP_BG.png");}
+#castleMaterial{background-image: url("footage/stage/castleMaterial.png");}
+#lazybird{background-image: url("footage/stage/lazybird.png");}
+#easter{background-image: url("footage/stage/easter.png");}
 #cyclone,#evolution,#castleMaterial,#ticket
 {background-blend-mode: normal;}
 
 
 .select_chapter{
   display: flex;
-  max-height: 70%;
+  flex-direction: column;
   transition: .1s ease-in-out;
-  flex-wrap: wrap;
   justify-content: center;
+  width: 250px;
 }
-.select_chapter_holder{
+.select_chapter span{
+  background-color: rgba(242, 132, 85, 0.85);
+  cursor: pointer;
   width: 100%;
-  overflow-x: scroll;
-  margin-top: 10px ;
-  background-color: rgba(255,255,255,.5)
+  height: 40px;
+  padding: 1% 5% ;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: .4s ease-in-out;
+  justify-content: space-between;
+}
+.select_chapter div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.select_chapter_holder{
+  height: 100%;
+  overflow-y: scroll;
+  padding-top: 50px ;
+  background-color: rgba(255,255,255,.5);
+  position: fixed;
+  top: 0;
+  left: -250;
+  z-index: 3;
+  transition: .8s ease-in-out
 }
 .select_chapter_holder::-webkit-scrollbar,
 #select_stage::-webkit-scrollbar,

@@ -105,12 +105,11 @@
 #result{
   display: flex;
   width: 100%;
-  max-height: 80%;
-  overflow: scroll;
   justify-content: center;
   flex-wrap: wrap;
 }
-#result::-webkit-scrollbar,
+.content{overflow: scroll;max-height: 90%}
+.content::-webkit-scrollbar,
 .navigation::-webkit-scrollbar {
     width: 0px;
 }
@@ -146,7 +145,6 @@
   flex-direction: column;
 }
 
-
 #scoreboard{
   position: fixed;
   top: 50px;
@@ -166,7 +164,7 @@
   bottom: -5px;
   left: 0;
 }
-
+.monitor .content img{ min-width: 75% }
 @media screen and (max-width: 1024px){
   .button_holder{height: 120px;}
 }
@@ -184,4 +182,5 @@
   .button_holder{height: 100px;right: 30px;}
   #toggleScore{bottom: 3px;left:30%}
   #foot{left:0}
+  .monitor .content img{ min-width: 90% }
 }

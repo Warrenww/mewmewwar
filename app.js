@@ -336,7 +336,7 @@ io.on('connection', function(socket){
               if(history[i].id == id) delete history[i]
             }
             database.ref("/user/"+uid+"/history/cat").set(history);
-            database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id});
+            database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id,time:new Date().getTime()});
             database.ref("/user/"+uid+"/history/last_cat").set(id);
             console.log("count cat search time(user)");
             database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(count);
@@ -377,7 +377,7 @@ io.on('connection', function(socket){
             if(history[i].id == id) delete history[i]
           }
           database.ref("/user/"+uid+"/history/enemy").set(history);
-          database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id});
+          database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id,time:new Date().getTime()});
           database.ref("/user/"+uid+"/history/last_enemy").set(id);
           console.log("count enemy search time(user)");
           database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
@@ -478,6 +478,7 @@ io.on('connection', function(socket){
       last_enemy = history.last_enemy;
       last_combo = history.last_combo;
       last_stage = history.last_stage;
+      last_gacha = history.last_gacha;
       last_cat_search = history.last_cat_search;
       last_enemy_search = history.last_enemy_search;
       let compareCat = snapshot.val().compare.cat2cat,
@@ -549,6 +550,9 @@ io.on('connection', function(socket){
       else if(page == 'event'){
         userdata.setting = {show_jp_cat:setting.show_jp_cat}
       }
+      else if(page == 'gacha'){
+        userdata.last_gacha = last_gacha
+      }
       socket.emit("current_user_data",userdata)
     });
     console.log('user data send');
@@ -564,7 +568,7 @@ io.on('connection', function(socket){
     }
     socket.emit("combo result",buffer) ;
     console.log("recording user history");
-    database.ref("/user/"+uid+"/history/combo").push({type : "combo",id : arr});
+    database.ref("/user/"+uid+"/history/combo").push({type : "combo",id : arr,time:new Date().getTime()});
     database.ref("/user/"+uid+"/history/last_combo").set(arr);
   }) ;
   socket.on("compare cat",function (data) {
@@ -797,7 +801,8 @@ io.on('connection', function(socket){
         database.ref("/user/"+uid+"/history/stage").set(history)
         database.ref("/user/"+uid+"/history/stage").push({
           type : "stage",
-          id : id
+          id : id,
+          time:new Date().getTime()
         });
         database.ref("/user/"+uid+"/history/last_stage").set(id);
         console.log("count stage search time(user)");
@@ -822,9 +827,9 @@ io.on('connection', function(socket){
   socket.on("rankdata",function () { socket.emit("recive rank data",rankdata); });
 
   socket.on("gacha",function(data){
-    console.log("gacha");
     console.log(data);
     if(!gachadata[data.gacha]) return
+    console.log("gacha");
     database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
       let jp = snapshot.val(),senddata=[];
 
@@ -844,6 +849,14 @@ io.on('connection', function(socket){
       socket.emit("choose",senddata);
 
     });
+  });
+
+  socket.on("record gacha",function (data) {
+    var uid = data.uid,gacha = data.gacha;
+    if(!uid||!gacha) return
+    console.log("user",uid,"select gacha",gacha);
+    database.ref("/user/"+uid+"/history/last_gacha").set(gacha);
+    socket.emit("gacha result",{ result:gachadata[gacha] });
   });
 
   socket.on("compare C2E",function (data) {
@@ -954,6 +967,30 @@ io.on('connection', function(socket){
     }
   });
 
+  socket.on("cat to stage",function (data) {
+    console.log("cat to stage");
+    console.log(data);
+    var uid = data.uid, stage = data.stage,find = false,location;
+    for(let i in stagedata){
+      if(find) break
+      for(let j in stagedata[i]){
+        if(find) break
+        if(j == stage){
+          find = true;
+          location = i+"-"+j+"-1";
+        }
+        for(let k in stagedata[i][j]){
+          if(find) break
+          if((j+"-"+k) == stage){
+            find = true;
+            location = i+"-"+j+"-"+"k";
+          }
+        }
+      }
+    }
+    if(find) database.ref("/user/"+uid+"/history/last_stage").set(location);
+    socket.emit('cat to stage',{find,stage});
+  });
   socket.on('disconnect', function(){
     // console.log('user disconnected');
   });
@@ -1064,7 +1101,7 @@ function geteventDay() {
         database.ref("/event_date/"+y+AddZero(m)+AddZero(d)).set(cc);
         if(cc){
           for(let i in eventdate){
-            if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete data[i]
+            if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete eventdate[i]
           }
           database.ref("/event_date").set(eventdate);
         }
@@ -1139,7 +1176,7 @@ function parsePrediction(obj,eventdate) {
           if(cc){
             gachaObj.push({
               date:brr,name:arr[1],
-              sure:arr[2].indexOf('必中')!=-1
+              sure:arr[2]?arr[2].indexOf('必中')!=-1:false
             });
           }
         }

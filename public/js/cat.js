@@ -91,7 +91,7 @@ $(document).ready(function () {
     else page_2_sticky = 0;
   });
   var tip_fadeOut;
-  $(document).on("click",".select_ability .button",function () {
+  $(".select_ability .button").click(function () {
     let text = $(this).children("span").text(),
         val = $(this).attr('value')=='1'?true:false;
     if(val){
@@ -281,6 +281,8 @@ $(document).ready(function () {
         $(".dataTable").find("#"+i).text(data.Aoe);
       else if(i == 'char')
         $(".dataTable").find("#"+i).html(data.CharHtml(lv));
+      else if(i == 'condition')
+        $(".dataTable").find("#"+i).html(data.CondHtml());
       else
         $(".dataTable").find("#"+i).text(data[i]);
     }
@@ -470,6 +472,32 @@ $(document).ready(function () {
       value:0
     });
     if($('#normal_search').attr("value")!=1) $("#normal_search").click();
+  });
+  $(document).on("click","#condition span",function () {
+    var type = $(this).attr("type"),
+        id = $(this).attr("id");
+    if(type == "gacha"){
+      socket.emit("gacha search",{
+        uid:current_user_id,
+        query:[id],
+        query_type:"gacha",
+        filterObj,
+        type:"cat"
+      });
+    }
+    else if(type == 'stage'){
+      socket.emit("cat to stage",{
+        uid : current_user_id,
+        stage : id
+      });
+    }
+  });
+  socket.on("cat to stage",function (data) {
+    console.log(data);
+    if(data.find) window.parent.reloadIframe('stage');
+    else
+      window.open('https://battlecats-db.com/stage/'+data.stage+'.html',"_blank");
+
   });
 
   $(".sortable").sortable({
@@ -725,6 +753,7 @@ $(document).ready(function () {
     }
     update_total_rank(current_cat_statistic.rank);
     update_respect_rank(current_cat_statistic.rank);
+    ga('send', 'event', 'survey_cat', 'rank',current_cat_data.id);
     socket.emit("cat survey",{
       uid : current_user_id,
       cat : current_cat_data.id,
@@ -752,6 +781,7 @@ $(document).ready(function () {
     current_cat_statistic.application[type] += (active?(-1):1);
     current_cat_survey.application[type] = (active?0:1);
     update_application(current_cat_statistic.application);
+    ga('send', 'event', 'survey_cat', 'application',current_cat_data.id);
     socket.emit("cat survey",{
       uid : current_user_id,
       cat : current_cat_data.id,
@@ -783,6 +813,7 @@ $(document).ready(function () {
         alert("暱稱已存在!");
         return
       }
+    ga('send', 'event', 'survey_cat', 'nickname',current_cat_data.id);
     let obj = {
       owner:current_user_id,
       nickname:val
@@ -891,6 +922,7 @@ $(document).ready(function () {
     commentPhoto(commentMap);
   }
   function submitComment() {
+    ga('send', 'event', 'comment', 'cat',current_cat_data.id);
     let comment = $(".comment_input").find('textarea').val();
     // console.log(comment);
     if(!comment) return

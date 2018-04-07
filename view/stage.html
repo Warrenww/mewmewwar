@@ -14,26 +14,51 @@
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <!-- <nav>
-      <a href="\">
-        <img src="../public/css/footage/title.png" />
-      </a>
-      <div class="navLinkBox">
-      </div>
-      <div class="settingBox">
-      </div>
-      <div class="mobile">
-        <i class="material-icons" id="m_nav_menu">menu</i>
-      </div>
-    </nav>
-    <div id="m_nav_panel_BG"></div>
-    <div class="m_nav_panel">
-      <div class="m_navLinkBox">
-      </div>
-      <div class="m_settingBox">
-      </div>
-    </div> -->
 
+    <div class="select_chapter_holder">
+      <div class="select_chapter">
+        <span>主線任務</span>
+        <div style="display:none">
+          <button id='world' value='0'>世界篇</button>
+          <button id='future' value='0'>未來篇</button>
+          <button id='universe' value='0'>宇宙篇</button>
+        </div>
+        <span>傳說故事</span>
+        <div style="display:none"> <button id='story' value='0'>傳說故事</button> </div>
+        <span>貓咪風雲塔</span>
+        <div style="display:none"> <button id='tower' value='0'>貓咪</br>風雲塔</button> </div>
+        <span>經驗值/素材</span>
+        <div style="display:none">
+          <button id='XP' value='0'>經驗關</button>
+          <button id='evolution' value='0'>貓薄荷</button>
+          <button id='castleMaterial' value='0'>城堡素材</button>
+          <button id='ticket' value='0'>貓咪卷關卡</button>
+        </div>
+        <span>開眼/取得貓咪</span>
+        <div style="display:none">
+          <button id='crazy' value='0'>狂亂系列</button>
+          <button id='hard' value='0'>極難關</button>
+          <button id='cyclone' value='0'>旋渦關</button>
+          <button id='smallCat' value='0'>開眼小小貓</button>
+          <button id='openeye' value='0'>Ex貓開眼關</button>
+        </div>
+        <span>時節性關卡</span>
+        <div style="display:none">
+          <button id='month' value='0'>月間關</button>
+          <button id='easter' value='0'>復活節關卡</button>
+        </div>
+        <span>合作關卡</span>
+        <div style="display:none">
+          <button id='eva' value='0'>eva合作關卡</button>
+          <button id='lazybird' value='0'>懶得鳥你</br>合作關卡</button>
+          <button id='baseball' value='0'>實況野球</br>合作關卡</button>
+          <button id='maylook' value='0'>梅露可</br>合作關卡</button>
+        </div>
+      </div>
+    </div>
+    <div id="select_chap_tag">
+      <i class="material-icons">&#xe315;</i>選擇關卡
+    </div>
     <div class="page_1" >
           <!-- <div class="search" >
           <input type="text" id="searchBox" placeholder="Search for Cats...">
@@ -41,12 +66,6 @@
         </div> -->
 
         <div class="content" id="selector">
-          <div class="select_chapter_holder">
-            <div class="select_chapter"></div>
-          </div>
-          <div id="expend_sl_chap">
-            <i class="material-icons">&#xe5cf;</i>
-          </div>
           <div class="lv_sg_box" >
             <div id="select_stage" ></div>
             <div id="select_level" ></div>

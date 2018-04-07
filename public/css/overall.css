@@ -445,6 +445,23 @@ animation-name: blink;
 animation-duration: .5s ;
 animation-iteration-count: infinite;
 }
+#compareTarget_tag,
+#select_chap_tag{
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bolder;
+  width: 40px;
+  height: 180px;
+  position: fixed;
+  top: 65%;
+  left: 0;
+  background-color: rgba(255,255,255,.64);
+  z-index: 3;
+  cursor: pointer;
+  transition: .8s ease-in-out;
+}
+#compareTarget_tag i,
+#select_chap_tag i {transition: .8s ease-in-out;}
 @keyframes blink {
   0%{color: rgb(255, 93, 46)}
   50%{color: rgb(250, 204, 86)}

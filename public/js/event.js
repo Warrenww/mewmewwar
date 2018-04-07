@@ -20,7 +20,7 @@ $(document).ready(function () {
     let now;
     for(let i in data){
       if (i == 'now'||i == 'prev'||i.indexOf('prediction')!=-1) continue
-      if(data[i]) {
+      if(data[i]&&Number(i.substring(4,6))==new Date().getMonth()+1) {
         $('#calendar').find("#"+Number(i.substring(6,8)))
           .addClass('event')
         now = i ;
@@ -40,13 +40,13 @@ $(document).ready(function () {
         firstDay = Date.parse(month+" 1,"+year),
         start = new Date(firstDay).getDay(),
         totalDay = TotalDay(month,year) ;
-    var table = "<tr><td colspan='"+start+"'></td>"
+    var table = "<tr>"+(start?("<td colspan='"+start+"'></td>"):"");
     for(i=start;i<=totalDay+start-1;i++){
       let a = i-start+1;
       if(i%7) table += "<td id='"+a+"'>"+a+"</td>";
       else table +=  "</tr><tr><td id='"+a+"'>"+a+"</td>";
     }
-    if((totalDay-start+1)%7) table += "<td colspan='"+((totalDay-start+1)%7)+"'></td>";
+    if(7-(totalDay+start)%7) table += "<td colspan='"+(7-(totalDay+start)%7)+"'></td>";
     $('#calendar').find("th").eq(0).text(year+"年"+month+"月");
     $("#calendar").append(table).attr("value",year+addZero(month))
       .find("#"+today.getDate()).css("border",'5px solid rgb(240, 89, 59)')
