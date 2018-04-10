@@ -91,55 +91,26 @@ $(document).ready(function () {
     if(id == 'R255' || id == 'R261') c = [0.09,0.39] ;
     for(let i=0;i<n;i++){
       let result = Math.random();
-      // console.log(result.toFixed(3));
       if(result<c[0]||id=='R264') {data.push("ssr");ssr++;}
       else if(c[0]<result&&result<c[1]) {data.push("sr");sr++;}
       else if(c[1]<result) {data.push("r");r++;}
     }
-    socket.emit("gacha",{
-      uid:current_user_data.uid,
-      gacha:id,
-      result:data
-    });
-  }
-  function showhideNav(e,n) {
-    if(n == undefined)
-      nav_expand = nav_expand?0:1;
-    else nav_expand = n ;
-    let dist = screen.width>768?350:250;
-    $(".navigation").css("left",function () {
-      if(nav_expand) return -dist
-      else return 0
-    });
-    $("#nav_tag").css('left',function () {
-      if(nav_expand) return 0
-      else return dist
-    }).children("i").css('transform',function(){
-      if(nav_expand) return 'rotate(0deg)'
-      else return 'rotate(-180deg)'
-    });
-  }
-
-  socket.on("choose",function (data) {
-    // console.log(data);
+    var color = {
+      "ssr":"rgb(241, 71, 71)",
+      "sr":"rgb(231, 184, 63)",
+      "r":"rgb(139, 214, 31)"
+    }
     for(let i in data){
-      let color = "rgb(139, 214, 31)";
-      switch (data[i].rarity) {
-        case 'ssr':
-          color = "rgb(241, 71, 71)";
-          break;
-        case 'sr':
-          color = "rgb(231, 184, 63)";
-          break;
-        default:
-      }
+      let rarity = data[i],
+          buffer = current_gacha_data[rarity],
+          choose = buffer[Math.floor((Math.random()*buffer.length))];
       $("#result").append('<span class="card" value="'+
-      data[i].id+'" rarity="'+data[i].rarity+'" '+
+      choose.id+'" rarity="'+rarity+'" '+
        'style="background-image:url('+
-       image_url_cat+data[i].id+'.png);'+
+       image_url_cat+choose.id+'.png);'+
        "margin:5px;transform:scale(0);"+
-       "border-color:"+color+
-       '">'+data[i].name+'</span>');
+       "border-color:"+color[rarity]+
+       '">'+choose.name+'</span>');
     }
     setTimeout(function () {
       $("#result").find("span").css("transform","scale(1)").fadeIn();
@@ -162,7 +133,24 @@ $(document).ready(function () {
     else if(africa>0.09) $("#www").text("歐皇");
     else if(africa>0.06) $("#www").text("歐洲人");
     else $("#www").text("普通人");
-  });
+  }
+  function showhideNav(e,n) {
+    if(n == undefined)
+      nav_expand = nav_expand?0:1;
+    else nav_expand = n ;
+    let dist = screen.width>768?350:250;
+    $(".navigation").css("left",function () {
+      if(nav_expand) return -dist
+      else return 0
+    });
+    $("#nav_tag").css('left',function () {
+      if(nav_expand) return 0
+      else return dist
+    }).children("i").css('transform',function(){
+      if(nav_expand) return 'rotate(0deg)'
+      else return 'rotate(-180deg)'
+    });
+  }
   $(document).on("click","#scoreboard tbody tr",function () {
     let id = $(this).attr("id"),val = Number($(this).attr("val"));
     if(!id) return

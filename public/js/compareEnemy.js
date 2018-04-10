@@ -261,7 +261,7 @@ $(document).ready(function () {
     "</tr><tr>"+
     "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
     "</tr><tr>"+
-    "<th id='name'>"+data.name+"</th>"+
+    "<th id='name'>"+data.Name+"</th>"+
     "</tr><tr>"+
     "<th id='color'>"+data.color+"</th>"+
     "</tr><tr>"+

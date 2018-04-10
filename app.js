@@ -17,7 +17,6 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
-var event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
 var d_31 = [1,3,5,7,8,10,12];
 var admin = require("firebase-admin");
 var CoinhiveAPI = require('coinhiveapi');
@@ -55,8 +54,12 @@ var catdata,
     stagedata,
     gachadata,
     rankdata,
-    most_search_cat ='',
-    stage_count = [] ;
+    userdata,
+    catComment ;
+var __numberOfCat = 0,
+    mostSearchCat = {name:"",count:-999},
+    secondMostSearchCat = {name:"",count:-999},
+    thirdMostSearchCat = {name:"",count:-999};
 database.ref("/").once("value",function (snapshot) {
   catdata = snapshot.val().newCatData ;
   combodata = snapshot.val().combodata ;
@@ -64,44 +67,27 @@ database.ref("/").once("value",function (snapshot) {
   stagedata = snapshot.val().stagedata ;
   gachadata = snapshot.val().gachadata ;
   rankdata = snapshot.val().rankdata ;
+  userdata = snapshot.val().user ;
+  eventdata = snapshot.val().event_date ;
+  catComment = snapshot.val().catComment ;
   console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
-
+  for(let i in catdata){
+    __numberOfCat ++ ;
+    if(catdata[i].count>mostSearchCat.count){
+      if(mostSearchCat.count>secondMostSearchCat.count){
+        if(secondMostSearchCat.count>thirdMostSearchCat.count){
+          thirdMostSearchCat = Object.assign({},secondMostSearchCat);
+        }
+        secondMostSearchCat = Object.assign({},mostSearchCat);
+      }
+      mostSearchCat = {name:catdata[i].name,count:catdata[i].count};
+    }
+  }
+  console.log("most Search Cat : ",mostSearchCat);
+  console.log("second most Search Cat : ",secondMostSearchCat);
+  console.log("third most Search Cat : ",thirdMostSearchCat);
   arrangeUserData();
   geteventDay();
-  var exist='000',current='',count=0;
-  for(let i in catdata) {
-    if(catdata[i].count > count){
-      most_search_cat = i;
-      count = catdata[i].count
-    }
-  }
-  console.log('most search',catdata[most_search_cat].name,count);
-  // console.log(catname.R.length,catname.SR.length,catname.SSR.length);
-  var index = 0;
-  for(let i in stagedata){
-    if (i == 'name') continue
-    stage_count.push({name:i,count:0});
-    for(let j in stagedata[i]){
-      if (j == 'name') continue
-      for(let k in stagedata[i][j]){
-        if (k == 'name') continue
-        if (stagedata[i][j][k].count)
-          stage_count[index].count += Number(stagedata[i][j][k].count) ;
-      }
-    }
-    index ++;
-  }
-  for(let i=0;i<stage_count.length;i++){
-    for(let j=i+1;j<stage_count.length;j++){
-      let a = stage_count[i],
-          b = stage_count[j],
-          c;
-      if(b.count>a.count){
-        c=b;stage_count[j]=a;stage_count[i]=c;
-      }
-    }
-  }
-  console.log(stage_count);
 });
 
 
@@ -159,91 +145,87 @@ io.on('connection', function(socket){
           default:
         } ;
 
-        database.ref("/user/"+user+"/setting").once("value",function (snapshot) {
-          let level = snapshot.val().default_cat_lv,
-              showJP = snapshot.val().show_jp_cat;
+        let level = userdata[user].setting.default_cat_lv,
+            showJP = userdata[user].setting.show_jp_cat;
+        if(cFilter.length != 0){
+          for(let i in load_data){
+            for(let j in cFilter){
+              if(type == 'cat' && !load_data[i].tag) break;
+              if(type == 'enemy' && !load_data[i].color) break;
 
-          if(cFilter.length != 0){
-            for(let i in load_data){
-              for(let j in cFilter){
-                if(type == 'cat' && !load_data[i].tag) break;
-                if(type == 'enemy' && !load_data[i].color) break;
+              if( type == 'cat' &&
+              (load_data[i].tag.indexOf(cFilter[j]) != -1 ||
+              ((cFilter[j] != "對白色" && cFilter[j] != "對鋼鐵") &&
+              load_data[i].tag.indexOf("對全部") != -1))
+              ) {
+                buffer_1.push(load_data[i]);
+                break;
+              }
+              if(type == 'enemy' && load_data[i].color.indexOf(cFilter[j]) != -1 ) {
+                buffer_1.push(load_data[i]);
+                break;
+              }
+            }
+          }
+        }
+        else buffer_1 = load_data ;
+        if(aFilter.length != 0){
+          for(let i in buffer_1){
+            for(let j in aFilter){
+              if(buffer_1[i].tag == '[無]' || !buffer_1[i].tag) break;
+              else if(buffer_1[i].tag.indexOf(aFilter[j]) != -1) {
+                buffer_2.push(buffer_1[i]);
+                break;
+              }
+            }
+          }
+        }
+        else buffer_2 = buffer_1 ;
+        buffer_1 = [] ;
+        if(rFilter.length != 0) {
+          for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].rarity) != -1) buffer_1.push(buffer_2[i]) ;
+        }
+        else buffer_1 = buffer_2 ;
+        buffer_2 = [] ;
+        for(let i in filterObj){
+          if (!filterObj[i].active) continue
+          flag = false;
+          let name = i,
+          type = filterObj[i].type ,
+          limit = filterObj[i].value ,
+          level_bind = filterObj[i].lv_bind;
 
-                if( type == 'cat' &&
-                    (load_data[i].tag.indexOf(cFilter[j]) != -1 ||
-                    ((cFilter[j] != "對白色" && cFilter[j] != "對鋼鐵") &&
-                    load_data[i].tag.indexOf("對全部") != -1))
-                ) {
-                  buffer_1.push(load_data[i]);
-                  break;
-                }
-                if(type == 'enemy' && load_data[i].color.indexOf(cFilter[j]) != -1 ) {
-                  buffer_1.push(load_data[i]);
-                  break;
-                }
-              }
+          for(let j in buffer_1){
+            let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].rarity,level) : buffer_1[j][name];
+            if(type == 0  && value>limit) buffer_2.push(buffer_1[j]);
+            else if (type == 1 && value<limit) buffer_2.push(buffer_1[j]);
+            else if (type == 2 && value>limit[0] && value<limit[1]) buffer_2.push(buffer_1[j]);
+          }
+        }
+        if(flag) buffer_2 = buffer_1 ;
+        buffer_1 = [] ;
+        if(type == 'cat' && !showJP){
+          for(let i in buffer_2) {
+            let obj = {
+              id : buffer_2[i].id,
+              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
             }
+            if(buffer_2[i].region.indexOf("[TW]")==-1) continue
+            else buffer_1.push(obj) ;
           }
-          else buffer_1 = load_data ;
-          // console.log(buffer_1)
-          if(aFilter.length != 0){
-            for(let i in buffer_1){
-              for(let j in aFilter){
-                if(buffer_1[i].tag == '[無]' || !buffer_1[i].tag) break;
-                else if(buffer_1[i].tag.indexOf(aFilter[j]) != -1) {
-                  buffer_2.push(buffer_1[i]);
-                  break;
-                }
-              }
+        }
+        else {
+          for(let i in buffer_2) {
+            let obj = {
+              id : buffer_2[i].id,
+              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
             }
+            buffer_1.push(obj);
           }
-          else buffer_2 = buffer_1 ;
-          buffer_1 = [] ;
-          if(rFilter.length != 0) {
-            for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].rarity) != -1) buffer_1.push(buffer_2[i]) ;
-          }
-          else buffer_1 = buffer_2 ;
-          buffer_2 = [] ;
-          for(let i in filterObj){
-            if (!filterObj[i].active) continue
-            flag = false;
-            let name = i,
-            type = filterObj[i].type ,
-            limit = filterObj[i].value ,
-            level_bind = filterObj[i].lv_bind;
-
-            for(let j in buffer_1){
-              let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].rarity,level) : buffer_1[j][name];
-              if(type == 0  && value>limit) buffer_2.push(buffer_1[j]);
-              else if (type == 1 && value<limit) buffer_2.push(buffer_1[j]);
-              else if (type == 2 && value>limit[0] && value<limit[1]) buffer_2.push(buffer_1[j]);
-            }
-          }
-          if(flag) buffer_2 = buffer_1 ;
-          buffer_1 = [] ;
-          if(type == 'cat' && !showJP){
-            for(let i in buffer_2) {
-              let obj = {
-                id : buffer_2[i].id,
-                name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
-              }
-              if(buffer_2[i].region.indexOf("[TW]")==-1) continue
-              else buffer_1.push(obj) ;
-            }
-          }
-          else {
-            for(let i in buffer_2) {
-              let obj = {
-                id : buffer_2[i].id,
-                name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
-              }
-              buffer_1.push(obj);
-            }
-          }
-          console.log("Result length:",buffer_1.length);
-          if(type == 'enemy') socket.emit("search result enemy",buffer_1);
-          else socket.emit("search result",buffer_1);
-        });
+        }
+        console.log("Result length:",buffer_1.length);
+        if(type == 'enemy') socket.emit("search result enemy",buffer_1);
+        else socket.emit("search result",buffer_1);
   });
   socket.on("text search",function (obj) {
     console.log("Text Search : "+obj.type+"_"+obj.key);
@@ -309,47 +291,39 @@ io.on('connection', function(socket){
     result.combo = combo ;
     if(!uid) socket.emit("display cat result",result);
     else {
-      database.ref("/user/"+uid).once("value",function (snapshot) {
-        let default_lv = snapshot.val().setting.default_cat_lv;
-        let variable = snapshot.val().variable.cat[grossID];
-        let storge_lv = variable ? variable.lv : default_lv,
-            storge_count = variable ? variable.count : 1,
-            own = variable ? variable.own : false;
-        result.lv = storge_lv ? storge_lv : default_lv  ;
-        result.count = storge_count ? storge_count : 1;
-        result.own = own;
-        result.survey = variable ? (variable.survey?(variable.survey[id]?variable.survey[id]:false):false):false;
-        database.ref("/newCatData/"+id).once("value",function (snapshot) {
-          result.this.statistic = snapshot.val().statistic;
-          socket.emit("display cat result",result);
-        });
-
-        database.ref("/user/"+uid).once('value',function (snapshot) {
-          let data = snapshot.val(),
-          history = data.history.cat,
-          last = data.history.last_cat?data.history.last_cat:"",
-          cat = data.variable.cat[grossID],
-          count = (cat?(cat.count?cat.count:0):0) + 1;
-          if(id != last && record) {
-            console.log("recording user history");
-            for(let i in history){
-              if(history[i].id == id) delete history[i]
-            }
-            database.ref("/user/"+uid+"/history/cat").set(history);
-            database.ref("/user/"+uid+"/history/cat").push({type : "cat",id : id,time:new Date().getTime()});
-            database.ref("/user/"+uid+"/history/last_cat").set(id);
-            console.log("count cat search time(user)");
-            database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(count);
-            console.log("count cat search time(global)");
-            database.ref("/newCatData/"+id+"/count").once("value",function (snapshot) {
-              let count = snapshot.val() + 1;
-              database.ref("/catdata/"+id+"/count").set(count);
-              database.ref("/newCatData/"+id+"/count").set(count);
-            });
-          }
-          else console.log(record?"same as last cat":"do not record");
-        });
-      });
+      let default_lv = userdata[uid].setting.default_cat_lv,
+          variable = userdata[uid].variable.cat[grossID],
+          storge_lv = variable ? variable.lv : default_lv,
+          storge_count = variable?(variable.count?variable.count+1:1):1,
+          own = variable ? variable.own : false;
+      result.lv = storge_lv ? storge_lv : default_lv  ;
+      result.count = storge_count;
+      result.own = own;
+      result.survey = variable ? (variable.survey?(variable.survey[id]?variable.survey[id]:false):false):false;
+      result.this.statistic = catdata[id].statistic;
+      socket.emit("display cat result",result);
+      let history = userdata[uid].history.cat,
+          last = userdata[uid].history.last_cat;
+      if(id != last && record) {
+        console.log("recording user history");
+        for(let i in history){
+          if(history[i].id == id) delete history[i]
+        }
+        var key = database.ref().push().key;
+        history = history != "" ? history : {};
+        history[key] = {type : "cat",id : id,time:new Date().getTime()};
+        database.ref("/user/"+uid+"/history/cat").set(history);
+        last = id;
+        database.ref("/user/"+uid+"/history/last_cat").set(id);
+        console.log("count cat search time(user)");
+        variable = variable?variable:{}
+        variable.count = storge_count;
+        database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(storge_count);
+        console.log("count cat search time(global)");
+        catdata[id].count ++;
+        database.ref("/newCatData/"+id+"/count").set(catdata[id].count);
+      }
+      else console.log(record?"same as last cat":"do not record");
     }
   });
   socket.on("display enemy",function (data) {
@@ -359,36 +333,35 @@ io.on('connection', function(socket){
     let buffer = enemydata[id];
 
     if(uid&&id){
-      database.ref("/user/"+uid+"/variable/").once("value",function (snapshot) {
-        let data = snapshot.val();
-        buffer.count = data.enemy?(data.enemy[id]?data.enemy[id].count:0):0;
-        buffer.lv = data.enemy[id]?(data.enemy[id].lv?data.enemy[id].lv:1):1;
-        socket.emit('display enemy result',buffer);
-      });
-      database.ref("/user/"+uid).once('value',function (snapshot) {
-        let data = snapshot.val(),
-        last = data.history.last_enemy,
-        history = data.history.enemy,
-        enemy = data.variable.enemy?data.variable.enemy[id]:null,
-        count = (enemy?(enemy.count?enemy.count:0):0) + 1;
-        if(id != last && record) {
-          console.log("recording user history");
-          for(let i in history){
-            if(history[i].id == id) delete history[i]
-          }
-          database.ref("/user/"+uid+"/history/enemy").set(history);
-          database.ref("/user/"+uid+"/history/enemy").push({type : "enemy",id : id,time:new Date().getTime()});
-          database.ref("/user/"+uid+"/history/last_enemy").set(id);
-          console.log("count enemy search time(user)");
-          database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
-          console.log("count enemy search time(global)");
-          database.ref("/enemydata/"+id+"/count").once("value",function (snapshot) {
-            let count = snapshot.val() + 1;
-            database.ref("/enemydata/"+id+"/count").set(count);
-          });
+      let data = userdata[uid].variable.enemy[id];
+      data = data?data:{};
+      data.count = data.count?(data.count+1):1
+      buffer.count = data.count;
+      buffer.lv = data.lv?data.lv:1;
+      socket.emit('display enemy result',buffer);
+
+      let last = userdata[uid].history.last_enemy,
+          history = userdata[uid].history.enemy,
+          count = buffer.count;
+      if(id != last && record) {
+        console.log("recording user history");
+        for(let i in history){
+          if(history[i].id == id) delete history[i]
         }
-        else console.log(record?"same as last enemy":"do not record");
-      });
+        var key = database.ref().push().key;
+        history = history != "" ? history : {};
+        history[key] = {type : "enemy",id : id,time:new Date().getTime()};
+        database.ref("/user/"+uid+"/history/enemy").set(history);
+        last = id;
+        database.ref("/user/"+uid+"/history/last_enemy").set(id);
+        console.log("count enemy search time(user)");
+
+        database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
+        console.log("count enemy search time(global)");
+        enemydata[id].count ++ ;
+        database.ref("/enemydata/"+id+"/count").set(enemydata[id].count);
+      }
+      else console.log(record?"same as last enemy":"do not record");
     } else socket.emit('display enemy result',buffer);
   });
 
@@ -397,50 +370,49 @@ io.on('connection', function(socket){
     let exist = false;
     let timer = new Date().getTime();
     console.log('login time : '+timer);
-    database.ref('/user').once('value',function (data) {
-      for(let uid in data.val()){
-        if(uid == user.uid){
-          console.log("find same user");
-          exist = true;
-          socket.emit("login complete",data.val().nickname);
-          break;
-        }
+    for(let uid in userdata){
+      if(uid == user.uid){
+        console.log("find same user");
+        exist = true;
+        socket.emit("login complete",data.val().nickname);
+        break;
       }
-    }).then(function () {
-      if(exist){
-        console.log('user exist');
-        database.ref('/user/'+user.uid).update({"last_login" : timer});
-      } else {
-        console.log('new user');
-        let data = {
-          name : user.displayName,
-          nickname :user.displayName,
-          first_login : timer,
-          last_login : timer,
-          history : {cat:"",enemy:"",combo:"",stage:""},
-          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
-          setting : {default_cat_lv:30},
-          variable : {cat:"",enemy:"",stage:""},
-          folder : {owned:""},
-          Anonymous : user.isAnonymous
-        }
-        if(user.isAnonymous){
-          let name_arr = [] ;
-          for(let i in catdata) name_arr.push(catdata[i].name);
-          let anonymous = name_arr[Math.floor((Math.random()*name_arr.length))];
-          data.name = "匿名"+anonymous;
-          data.nickname = "匿名"+anonymous;
-        }
-        console.log(data);
-        database.ref('/user/'+user.uid).set(data) ;
-        socket.emit("login complete",data.nickname);
+    }
+    if(exist){
+      console.log('user exist');
+      database.ref('/user/'+user.uid).update({"last_login" : timer});
+    } else {
+      console.log('new user');
+      let data = {
+        name : user.displayName,
+        nickname :user.displayName,
+        first_login : timer,
+        last_login : timer,
+        history : {cat:"",enemy:"",combo:"",stage:""},
+        compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
+        setting : {default_cat_lv:30},
+        variable : {cat:"",enemy:"",stage:""},
+        folder : {owned:""},
+        Anonymous : user.isAnonymous
       }
-    })
-    // .then(function () {
-    //   clearTimeout(timeout);
-    //   arrangeUserData();
-    // });
-
+      if(user.isAnonymous){
+        let anonymous = "";
+        var CatCount=0,Random = Math.floor((Math.random()*__numberOfCat));
+        for(let i in catdata){
+          if (CatCount == Random){
+            anonymous = catdata[i].name?catdata[i].name:catdata[i].jp_name;
+            break
+          }
+          CatCount++;
+        }
+        data.name = "匿名"+anonymous;
+        data.nickname = "匿名"+anonymous;
+      }
+      // console.log(data);
+      userdata[user.uid] = data;
+      database.ref('/user/'+user.uid).set(data) ;
+      socket.emit("login complete",data.nickname);
+    }
   });
   socket.on("user connect",function (data){
     // console.log(data);
@@ -451,110 +423,91 @@ io.on('connection', function(socket){
         last_enemy = '',
         last_stage = '',
         user = data.user,
-        userdata = {uid : user.uid},
+        CurrentUserData = {uid : user.uid},
         page = data.page=='/'?'index':data.page.split("/")[2].split(".")[0];
     console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
-    database.ref('/user/'+user.uid).once("value",function (snapshot) {
-      if(snapshot.val().first_login == null){
-        console.log('null user');
-        let data = {
-          name : "匿名貓咪",
-          nickname : "匿名貓咪",
-          first_login : timer,
-          last_login : timer,
-          history : {cat:"",enemy:"",combo:"",stage:""},
-          compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
-          setting : {default_cat_lv:30},
-          variable : {cat:"",enemy:"",stage:""},
-          folder : {owned:""},
-          Anonymous : true
-        }
-        database.ref('/user/'+user.uid).set(data) ;
-        return
+    let history = userdata[user.uid].history,
+        setting = userdata[user.uid].setting ;
+    last_cat = history.last_cat;
+    last_enemy = history.last_enemy;
+    last_combo = history.last_combo;
+    last_stage = history.last_stage;
+    last_gacha = history.last_gacha;
+    last_cat_search = history.last_cat_search;
+    last_enemy_search = history.last_enemy_search;
+    let compareCat = userdata[user.uid].compare.cat2cat,
+        fight_cat = userdata[user.uid].compare.cat2enemy.cat?userdata[user.uid].compare.cat2enemy.cat:null,
+        fight_ene = userdata[user.uid].compare.cat2enemy.enemy?userdata[user.uid].compare.cat2enemy.enemy:null,
+        fight = {
+          cat : fight_cat?{id:fight_cat.id,name:catdata[fight_cat.id].name}:null,
+          enemy : fight_ene?{id:fight_ene.id,name:enemydata[fight_ene.id].name,lv:fight_ene.lv}:null
+        },
+        compareEnemy = userdata[user.uid].compare.enemy2enemy;
+    let obj , arr = [] , brr = [];
+    for(let i in compareCat){
+      obj = {};
+      if(!catdata[compareCat[i]]) continue
+      obj = {id:compareCat[i],name:catdata[compareCat[i]].name};
+      arr.push(obj);
+    }
+    for(let i in compareEnemy){
+      obj = {};
+      if(!enemydata[compareEnemy[i]]) continue
+      obj = {id:compareEnemy[i],name:enemydata[compareEnemy[i]].name};
+      brr.push(obj);
+    }
+    if(page == 'index'){
+      CurrentUserData.name = userdata[user.uid].nickname;
+      CurrentUserData.first_login = userdata[user.uid].first_login;
+      CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert}
+    }
+    else if(page == 'book'){
+      CurrentUserData.folder = {owned:userdata[user.uid].folder.owned};
+      CurrentUserData.setting = {show_more_option:setting.show_more_option}
+    }
+    else if(page == 'cat'){
+      CurrentUserData.last_cat = last_cat;
+      CurrentUserData.compare_c2c = arr;
+      CurrentUserData.last_cat_search = last_cat_search;
+      CurrentUserData.setting = {
+        show_more_option:setting.show_more_option,
+        show_ability_text:setting.show_ability_text,
+        default_cat_lv:setting.default_cat_lv,
+        show_cat_id:setting.show_cat_id,
+        show_cat_count:setting.show_cat_count
       }
-      let history = snapshot.val().history, setting = snapshot.val().setting ;
-      last_cat = history.last_cat;
-      last_enemy = history.last_enemy;
-      last_combo = history.last_combo;
-      last_stage = history.last_stage;
-      last_gacha = history.last_gacha;
-      last_cat_search = history.last_cat_search;
-      last_enemy_search = history.last_enemy_search;
-      let compareCat = snapshot.val().compare.cat2cat,
-          fight_cat = snapshot.val().compare.cat2enemy.cat?snapshot.val().compare.cat2enemy.cat:null,
-          fight_ene = snapshot.val().compare.cat2enemy.enemy?snapshot.val().compare.cat2enemy.enemy:null,
-          fight = {
-            cat : fight_cat?{id:fight_cat.id,name:catdata[fight_cat.id].name}:null,
-            enemy : fight_ene?{id:fight_ene.id,name:enemydata[fight_ene.id].name,lv:fight_ene.lv}:null
-          },
-          compareEnemy = snapshot.val().compare.enemy2enemy;
-      let obj , arr = [] , brr = [];
-      for(let i in compareCat){
-        obj = {};
-        if(!catdata[compareCat[i]]) continue
-        obj = {id:compareCat[i],name:catdata[compareCat[i]].name};
-        arr.push(obj);
+    }
+    else if(page == 'enemy'){
+      CurrentUserData.last_enemy = last_enemy;
+      CurrentUserData.compare_e2e = brr;
+      CurrentUserData.last_enemy_search = last_enemy_search;
+      CurrentUserData.setting = {
+        show_more_option:setting.show_more_option,
+        show_enemy_id:setting.show_enemy_id,
+        show_enemy_count:setting.show_enemy_count
       }
-      for(let i in compareEnemy){
-        obj = {};
-        if(!enemydata[compareEnemy[i]]) continue
-        obj = {id:compareEnemy[i],name:enemydata[compareEnemy[i]].name};
-        brr.push(obj);
-      }
-      if(page == 'index'){
-        userdata.name = snapshot.val().nickname;
-        userdata.first_login = snapshot.val().first_login;
-        userdata.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert}
-      }
-      else if(page == 'book'){
-        userdata.folder = {owned:snapshot.val().folder.owned};
-        userdata.setting = {show_more_option:setting.show_more_option}
-      }
-      else if(page == 'cat'){
-        userdata.last_cat = last_cat;
-        userdata.compare_c2c = arr;
-        userdata.last_cat_search = last_cat_search;
-        userdata.setting = {
-          show_more_option:setting.show_more_option,
-          show_ability_text:setting.show_ability_text,
-          default_cat_lv:setting.default_cat_lv,
-          show_cat_id:setting.show_cat_id,
-          show_cat_count:setting.show_cat_count
-        }
-      }
-      else if(page == 'enemy'){
-        userdata.last_enemy = last_enemy;
-        userdata.compare_e2e = brr;
-        userdata.last_enemy_search = last_enemy_search;
-        userdata.setting = {
-          show_more_option:setting.show_more_option,
-          show_enemy_id:setting.show_enemy_id,
-          show_enemy_count:setting.show_enemy_count
-        }
-      }
-      else if(page == 'combo'){userdata.last_combo = last_combo;}
-      else if(page == 'compareCat'){userdata.compare_c2c = arr;}
-      else if(page == 'compareEnemy'){userdata.compare_e2e = brr;}
-      else if(page == 'compareEnemy'){userdata.fight = fight;}
-      else if(page == 'stage'){
-        userdata.last_stage = last_stage;
-        userdata.setting = {show_more_option:setting.show_more_option};
-        userdata.stage_count = stage_count;
-      }
-      else if(page == 'setting'){
-        userdata.setting = setting;
-        userdata.name = snapshot.val().nickname;
-        userdata.setting = {show_more_option:setting.show_more_option}
-      }
-      else if(page == 'event'){
-        userdata.setting = {show_jp_cat:setting.show_jp_cat}
-      }
-      else if(page == 'gacha'){
-        userdata.last_gacha = last_gacha
-      }
-      socket.emit("current_user_data",userdata)
-    });
+    }
+    else if(page == 'combo'){CurrentUserData.last_combo = last_combo;}
+    else if(page == 'compareCat'){CurrentUserData.compare_c2c = arr;}
+    else if(page == 'compareEnemy'){CurrentUserData.compare_e2e = brr;}
+    else if(page == 'compareEnemy'){CurrentUserData.fight = fight;}
+    else if(page == 'stage'){
+      CurrentUserData.last_stage = last_stage;
+      CurrentUserData.setting = {show_more_option:setting.show_more_option};
+    }
+    else if(page == 'setting'){
+      CurrentUserData.setting = setting;
+      CurrentUserData.name = userdata[user.uid].nickname;
+      CurrentUserData.setting = {show_more_option:setting.show_more_option}
+    }
+    else if(page == 'event'){
+      CurrentUserData.setting = {show_jp_cat:setting.show_jp_cat}
+    }
+    else if(page == 'gacha'){
+      CurrentUserData.last_gacha = last_gacha
+    }
+    socket.emit("current_user_data",CurrentUserData);
     console.log('user data send');
   });
   socket.on("search combo",function (data) {
@@ -568,105 +521,101 @@ io.on('connection', function(socket){
     }
     socket.emit("combo result",buffer) ;
     console.log("recording user history");
-    database.ref("/user/"+uid+"/history/combo").push({type : "combo",id : arr,time:new Date().getTime()});
+    var key = database.ref().push().key;
+    userdata[uid].history.combo[key] = {type : "combo",id : arr,time:new Date().getTime()};
+    database.ref("/user/"+uid+"/history/combo/"+key).set({type : "combo",id : arr,time:new Date().getTime()});
+    userdata[uid].history.last_combo = arr;
     database.ref("/user/"+uid+"/history/last_combo").set(arr);
   }) ;
   socket.on("compare cat",function (data) {
     console.log("compare cat!!");
     console.log(data);
+    userdata[data.id].compare.cat2cat = data.target;
     database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
   });
   socket.on("compare enemy",function (data) {
     console.log("compare enemy!!");
     console.log(data);
+    userdata[data.id].compare.enemy2enemy = data.target;
     database.ref('/user/'+data.id+"/compare/enemy2enemy").set(data.target);
   });
   socket.on("start compare c2c",function (data) {
     console.log('start compare c2c');
-    let compare = [];
-    database.ref("/user/"+data.id).once("value",function (snapshot) {
-      let def = snapshot.val().setting.default_cat_lv,
-          catArr = snapshot.val().variable ? snapshot.val().variable.cat : [];
-      for(let i in data.target) {
-        let id = data.target[i].substring(0,3),
-            lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def,
-            bro = [];
-        for(let j=1;j<4;j++){
-          let a = id+"-"+j ;
-          if(a != data.target[i]) if(catdata[a]) bro.push(a) ;
-        }
-        compare.push({data:catdata[data.target[i]],lv:lv,bro:bro});
+    let compare = [],
+        def = userdata[data.id].setting.default_cat_lv,
+        catArr = userdata[data.id].variable.cat;
+    for(let i in data.target) {
+      let id = data.target[i].substring(0,3),
+      lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def,
+      bro = [];
+      for(let j=1;j<4;j++){
+        let a = id+"-"+j ;
+        if(a != data.target[i]) if(catdata[a]) bro.push(a) ;
       }
-      socket.emit("c2c compare",compare);
-
-    });
+      compare.push({data:catdata[data.target[i]],lv:lv,bro:bro});
+    }
+    socket.emit("c2c compare",compare);
   });
   socket.on("start compare e2e",function (data) {
     console.log('start compare e2e');
-    let compare = [];
-    database.ref("/user/"+data.id).once("value",function (snapshot) {
-      let eneArr = snapshot.val().variable ? snapshot.val().variable.enemy : [];
-      for(let i in data.target) {
-        let id = data.target[i],
-            lv = eneArr[id] ? (!eneArr[id].lv ? 1 : eneArr[id].lv) : 1;
-        compare.push({data:enemydata[data.target[i]],lv:lv});
-      }
-      socket.emit("e2e compare",compare);
-
-    });
+    let compare = [],
+        eneArr = userdata[data.id].variable.enemy;
+    for(let i in data.target) {
+      let id = data.target[i],
+      lv = eneArr[id] ? (!eneArr[id].lv ? 1 : eneArr[id].lv) : 1;
+      compare.push({data:enemydata[data.target[i]],lv:lv});
+    }
+    socket.emit("e2e compare",compare);
   });
+
   socket.on("rename",function (data) {
+    userdata[data.uid].nickname = data.name;
     database.ref("/user/"+data.uid+"/nickname").set(data.name);
   });
-
   socket.on("history",function (uid) {
     console.log(uid+"'s history");
-    database.ref("/user/"+uid).once("value",function (snapshot) {
-      let data = snapshot.val().history,
-          owned = snapshot.val().folder.owned;
-      // console.log(data);
-      let buffer = {cat:[],enemy:[],owned:[]};
-      for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].name,id :data.cat[i].id});
-      for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].name,id :data.enemy[i].id});
-      for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
-      // console.log(buffer);
-      socket.emit("return history",buffer);
-    });
+    let data = userdata[uid].history,
+        owned = userdata[uid].folder.owned;
+    owned = owned != "0" ? owned : [];
+    let buffer = {cat:[],enemy:[],owned:[]};
+    for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].name,id :data.cat[i].id});
+    for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].name,id :data.enemy[i].id});
+    for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
+    socket.emit("return history",buffer);
   });
   socket.on("store level",function (data) {
     console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
     let id = data.id,
         gross = data.type == 'cat'? id.substring(0,3):id;
+    var buffer = userdata[data.uid].variable[data.type][gross] ;
+    buffer = buffer?buffer:{};
+    buffer.lv = data.lv;
     database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
   });
   socket.on("mark own",function (data) {
+    let folder = userdata[data.uid].folder,
+        arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
     if(data.arr){
       let brr = data.arr ;
       console.log("batch add",brr.length);
-      database.ref("/user/"+data.uid+"/folder").once("value",function (snapshot) {
-        let folder = snapshot.val(),
-            arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
-        for(let i in brr){
-          database.ref("/user/"+data.uid+"/variable/cat/"+brr[i])
-          .update({own:true});
-          if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
-        }
-        database.ref("/user/"+data.uid+"/folder").update({owned:arr});
-      });
+      for(let i in brr){
+        userdata[data.uid].variable.cat[brr[i]].own = true;
+        database.ref("/user/"+data.uid+"/variable/cat/"+brr[i]).update({own:true});
+        if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
+      }
+      userdata[data.uid].folder.owned = arr ;
+      database.ref("/user/"+data.uid+"/folder").update({owned:arr});
       return
     }
     console.log(data.uid+" claim he/she "+
         (data.mark?"does":"doesn't")+" own "+data.cat);
-    database.ref("/user/"+data.uid+"/variable/cat/"+data.cat)
-      .update({own:data.mark ? true : false});
-    database.ref("/user/"+data.uid+"/folder").once("value",function (snapshot) {
-      let folder = snapshot.val(),
-          arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
-      if(data.mark&&arr.indexOf(data.cat)==-1) arr.push(data.cat);
-      else if(!data.mar&&arr.indexOf(data.cat)!=-1) arr.splice(arr.indexOf(data.cat),1);
-      arr = arr.length ? arr : 0 ;
-      database.ref("/user/"+data.uid+"/folder").update({owned:arr});
-    });
+    userdata[data.uid].variable.cat[data.cat].own = data.mark ? true : false;
+    database.ref("/user/"+data.uid+"/variable/cat/"+data.cat).update({own:data.mark ? true : false});
+    if(data.mark&&arr.indexOf(data.cat)==-1) arr.push(data.cat);
+    else if(!data.mark&&arr.indexOf(data.cat)!=-1) arr.splice(arr.indexOf(data.cat),1);
+    arr = arr.length ? arr : 0 ;
+    userdata[data.uid].folder.owned = arr ;
+    database.ref("/user/"+data.uid+"/folder").update({owned:arr});
   });
 
   socket.on("require setting",function (id) {
@@ -679,40 +628,44 @@ io.on('connection', function(socket){
           database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
         }
         console.log("hash count complete");
-        database.ref("/user/"+id+"/setting").once("value",function (snapshot) {
-          socket.emit("user setting",snapshot.val());
-        });
+        socket.emit("user setting",userdata[id].setting);
       });
-
   });
   socket.on("set default cat level",function (data) {
     console.log("set "+data.uid+"'s default_cat_lv to "+data.lv);
+    userdata[data.uid].setting.default_cat_lv = data.lv;
     database.ref("/user/"+data.uid+"/setting/default_cat_lv").set(data.lv);
-
   });
   socket.on("reset cat level",function (id) {
     console.log("reset all "+id+"'s cat lv to default");
-      database.ref("/user/"+id+"/variable/cat").once("value",function (snapshot) {
-        for(let i in snapshot.val()){
-          database.ref("/user/"+id+"/variable/cat/"+i+"/lv").set("default");
-        }
-      });
+    var data = userdata[id].variable.cat,
+        default_lv = userdata[id].setting.default_cat_lv;
+    for(let i in data){
+      data[i].lv = default_lv;
+      database.ref("/user/"+id+"/variable/cat/"+i+"/lv").set(default_lv);
+    }
   });
   socket.on("reset owned cat",function (id) {
     console.log("reset all "+id+"'s cat owned state");
-    database.ref("/user/"+id+"/variable/cat").once("value",function (snapshot) {
-      for(let i in snapshot.val()){
-        database.ref("/user/"+id+"/variable/cat/"+i+"/own").set(false);
-      }
-    });
+    var data = userdata[id].variable.cat;
+    for(let i in data){
+      data[i].own = false;
+      database.ref("/user/"+id+"/variable/cat/"+i+"/own").set(false);
+    }
+    userdata[id].folder.owned = "0";
     database.ref("/user/"+id+"/folder/owned").set("0");
   });
   socket.on("change setting",function (data) {
     console.log(data.uid+" want to "+
         (data.state?"show":"hide")+" it's "+data.type);
-    database.ref("/user/"+data.uid+"/setting/show_"+data.type)
-        .set(data.state);
+    userdata[data.uid].setting["show_"+data.type] = data.state;
+    database.ref("/user/"+data.uid+"/setting/show_"+data.type).set(data.state);
     if(data.type == 'miner'){
+      userdata[data.uid].setting.mine_alert = {
+        time:new Date().getTime(),
+        accept:data.state,
+        state:true
+      };
       database.ref("/user/"+data.uid+"/setting/mine_alert")
         .update({time:new Date().getTime(),accept:data.state,state:true});
     }
@@ -720,26 +673,31 @@ io.on('connection', function(socket){
   socket.on("user photo",function (data) {
     console.log('user',data.uid,"change it's photo");
     if(data.type !='fb'){
-      let photo_arr = [] ;
-      for(let i in catdata) photo_arr.push(catdata[i].id);
-      let photo = photo_arr[Math.floor((Math.random()*photo_arr.length))];
-      photo = "/public/css/footage/cat/u"+photo+".png";
+      let CatCount = 0,
+          Random = Math.floor((Math.random()*__numberOfCat)),
+          photo ;
+      for(let i in catdata){
+        if (CatCount == Random){
+          photo = "/public/css/footage/cat/u"+i+".png";
+          break
+        }
+        CatCount ++;
+      }
+      userdata[data.uid].setting.photo = photo;
       database.ref("/user/"+data.uid+"/setting/photo").set(photo);
       socket.emit("random cat photo",photo);
     } else {
+      userdata[data.uid].setting.photo = data.photo;
       database.ref("/user/"+data.uid+"/setting/photo").set(data.photo);
     }
   });
   socket.on("required users photo",function (arr) {
     var obj = {};
-    database.ref("/user").once('value',function (snapshot) {
-      let data = snapshot.val();
-      for(let i in arr){
-        let id = arr[i];
-        obj[id] = data[id]?{photo:data[id].setting.photo,name:data[id].nickname}:null;
-      }
-      socket.emit('return users photo',obj);
-    })
+    for(let i in arr){
+      let id = arr[i];
+      obj[id] = userdata[id]?{photo:userdata[id].setting.photo,name:userdata[id].nickname}:null;
+    }
+    socket.emit('return users photo',obj);
   });
 
   socket.on("required stage name",function (chapter) {
@@ -765,125 +723,111 @@ io.on('connection', function(socket){
   socket.on("required level data",function (data) {
     console.log("load level data");
     console.log(data);
-    let parent = stagedata[data.chapter][data.stage],
-        prev=null,next=null,flag=false;
-    for(let i in parent){
-      if(flag) {next = i;break}
-      if(i != data.level) prev = i ;
-      else flag = true ;
-    }
-    socket.emit("level data",{
-      data:stagedata[data.chapter][data.stage][data.level],
-      parent:parent.name,
-      chapter:data.chapter,
-      stage:data.stage,
-      prev:prev,
-      next:next
-    });
-
     let chapter = data.chapter,
         stage = data.stage,
         level = data.level,
         id = chapter+"-"+stage+"-"+level,
-        uid = data.uid;
-    if(uid)
-      database.ref("/user/"+uid).once('value',function (snapshot) {
-      let data = snapshot.val(),
-          last = data.history.last_stage,
-          history = data.history.stage,
-          Stage = data.variable.stage?data.variable.stage[id]:null,
+        uid = data.uid,
+        parent = stagedata[chapter][stage],
+        prev=null,next=null,flag=false;
+    for(let i in parent){
+      if(flag) {next = i;break}
+      if(i != level) prev = i ;
+      else flag = true ;
+    }
+    socket.emit("level data",{
+      data:stagedata[chapter][stage][level],
+      parent:parent.name,
+      chapter:chapter,
+      stage:stage,
+      prev:prev,
+      next:next
+    });
+    if(uid){
+      let last = userdata[uid].history.last_stage,
+          history = userdata[uid].history.stage,
+          Stage = userdata[uid].variable.stage[id],
           count = (Stage?(Stage.count?Stage.count:0):0) + 1;
       if(id != last) {
         console.log("recording user history");
         for(let i in history){
-          if(history[i] == id) delete history[i]
+          if(history[i].id == id) delete history[i]
         }
-        database.ref("/user/"+uid+"/history/stage").set(history)
-        database.ref("/user/"+uid+"/history/stage").push({
-          type : "stage",
-          id : id,
-          time:new Date().getTime()
-        });
+        var key = database.ref().push().key;
+        history = history != "" ? history : {};
+        history[key] = { type : "stage", id : id, time:new Date().getTime() };
+        database.ref("/user/"+uid+"/history/stage").set(history);
+        userdata[uid].history.last_stage = id ;
         database.ref("/user/"+uid+"/history/last_stage").set(id);
         console.log("count stage search time(user)");
+        Stage = Stage?Stage:{};
+        Stage.count = count ;
         database.ref("/user/"+uid+"/variable/stage/"+id+"/count").set(count);
         console.log("count stage search time(global)");
-        database.ref("/stagedata/"+chapter+"/"+stage+"/"+level+"/count")
-          .once("value",function (snapshot) {
-            let count = snapshot.val() + 1;
-            database.ref("/stagedata/"+chapter+"/"+stage+"/"+level+"/count")
-              .set(count);
-          });
+        globalCount = stagedata[chapter][stage][level].count;
+        stagedata[chapter][stage][level].count = globalCount?(globalCount+1):1 ;
+        database.ref("/stagedata/"+chapter+"/"+stage+"/"+level+"/count").set(globalCount);
       }
       else console.log("same as last stage");
-    });
+    }
   });
 
-  socket.on('get event date',function () {
-    database.ref('/event_date').once('value',function (snapshot) {
-      socket.emit('true event date',snapshot.val());
-    });
-  });
+  socket.on('get event date',function () { socket.emit('true event date',eventdata); });
   socket.on("rankdata",function () { socket.emit("recive rank data",rankdata); });
 
-  socket.on("gacha",function(data){
-    console.log(data);
-    if(!gachadata[data.gacha]) return
-    console.log("gacha");
-    database.ref("/user/"+data.uid+"/setting/show_jp_cat").once("value",function (snapshot) {
-      let jp = snapshot.val(),senddata=[];
-
-      for(let i in data.result){
-        let rarity = data.result[i];
-        // let buffer = jp?catname.JP[rarity].concat(catname.TW[rarity]):catname.TW[rarity];
-        let buffer = gachadata[data.gacha][rarity];
-
-        let choose = buffer[Math.floor((Math.random()*buffer.length))];
-        senddata.push({
-          id:choose,
-          name:catdata[choose].name,
-          rarity:data.result[i]
-        });
-      }
-      // console.log(choooose);
-      socket.emit("choose",senddata);
-
-    });
-  });
-
   socket.on("record gacha",function (data) {
-    var uid = data.uid,gacha = data.gacha;
+    var uid = data.uid,
+        gacha = data.gacha,
+        result = JSON.parse(JSON.stringify(gachadata[gacha]));
     if(!uid||!gacha) return
     console.log("user",uid,"select gacha",gacha);
+    userdata[uid].history.last_gacha = gacha;
     database.ref("/user/"+uid+"/history/last_gacha").set(gacha);
-    socket.emit("gacha result",{ result:gachadata[gacha] });
+    for(let i in result){
+      if (i=='id'||i=='name') continue
+      for(let j in result[i]){
+        let id = result[i][j];
+        result[i][j] = {
+          id : id,
+          name : catdata[id].name?catdata[id].name:catdata[id].jp_name
+        }
+      }
+    }
+    socket.emit("gacha result",{ result:result});
   });
 
   socket.on("compare C2E",function (data) {
     console.log("compare C2E");
     console.log(data);
+    userdata[data.uid].compare.cat2enemy = data.target
     database.ref("/user/"+data.uid+"/compare/cat2enemy").update(data.target)
   });
 
   socket.on("notice mine",function (data) {
     let timer = new Date().getTime();
+    userdata[data.uid].setting.mine_alert = {
+      time : timer,
+      state : true,
+      accept : data.accept
+    };
     database.ref("/user/"+data.uid+"/setting/mine_alert").set({
       time : timer,
       state : true,
       accept : data.accept
     });
+    userdata[data.uid].setting.show_miner = true ;
     database.ref("/user/"+data.uid+"/setting/show_miner").set(true);
-
   });
 
   socket.on("required owned",function (data) {
     console.log(data.uid,"owned",data.owned.length,"cat");
     let arr = [];
+    if (data.owned == "0") return
     for(let i in data.owned){
       let own = catdata[data.owned[i]+"-1"],
           own2 = catdata[data.owned[i]+"-2"],
           own3 = catdata[data.owned[i]+"-3"];
-      let tag = own!='0'?(own.tag?own.tag:[]):[];
+      let tag = own.tag?own.tag:[];
       if(own2) tag = tag.concat(own2.tag);
       if(own3) tag = tag.concat(own3.tag);
       let obj = {
@@ -902,67 +846,85 @@ io.on('connection', function(socket){
         cat = data.cat,
         type = data.type,
         val = data.add;
-
     if(!data.cat) return
+    let user = userdata[uid],
+        setting = user.setting,
+        target = user.variable.cat[cat.substring(0,3)],
+        exist = target.survey?(target.survey[cat]?(target.survey[cat][type]?target.survey[cat][type]:false):false):false,
+        count = setting.cat_survey_count?setting.cat_survey_count:0;
+    if(!exist) count += 0.25;
     console.log(uid,"update",cat,"statistic",type);
-    database.ref("/user/"+uid).once("value",function (snapshot) {
-      let user = snapshot.val(),
-          setting = user.setting,
-          target = user.variable.cat[cat.substring(0,3)],
-          exist = target.survey?(target.survey[cat]?(target.survey[cat][type]?target.survey[cat][type]:false):false):false,
-          count = setting.cat_survey_count?setting.cat_survey_count:0;
-      if(!exist) count += 0.25;
-      database.ref("/user/"+uid+"/setting/cat_survey_count").set(count);
-      if(type == 'nickname'){
-        exist = exist?exist:[];
-        exist.push(val);
-        database.ref("/user/"+uid+"/variable/cat/"+
-          cat.substring(0,3)+"/survey/"+cat+"/"+type).set(exist);
-        database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
-      }
-      else {
-        database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
-        database.ref("/user/"+uid+"/variable/cat/"+
-          cat.substring(0,3)+"/survey/"+cat+"/"+type).set(val);
-      }
-    });
+    userdata[uid].setting.cat_survey_count = count;
+    database.ref("/user/"+uid+"/setting/cat_survey_count").set(count);
+    if(type == 'nickname'){
+      exist = exist?exist:[];
+      exist.push(val);
+      var survey = userdata[uid].variable.cat[cat.substring(0,3)].survey;
+      survey = survey?survey:{};
+      survey[cat] = survey[cat]?survey[cat]:{};
+      survey[cat][type] = exist;
+      database.ref("/user/"+uid+"/variable/cat/"+
+      cat.substring(0,3)+"/survey/"+cat+"/"+type).set(exist);
+      catdata[cat].statistic = catdata[cat].statistic?catdata[cat].statistic:{};
+      catdata[cat].statistic[type] = data.all;
+      database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
+    }
+    else {
+      catdata[cat].statistic[type] = data.all;
+      database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
+      var survey = userdata[uid].variable.cat[cat.substring(0,3)].survey;
+      survey = survey?survey:{};
+      survey[cat] = survey[cat]?survey[cat]:{};
+      survey[cat][type] = val;
+      database.ref("/user/"+uid+"/variable/cat/"+
+      cat.substring(0,3)+"/survey/"+cat+"/"+type).set(val);
+    }
   });
   socket.on('comment cat',function (data) {
     if(!data.cat) return
     var key = database.ref().push().key;
     console.log(data.owner,'comment on',data.cat,'with key',key);
+    catComment[data.cat.substring(0,3)] = catComment[data.cat.substring(0,3)]?catComment[data.cat.substring(0,3)]:{};
+    catComment[data.cat.substring(0,3)][key] = {
+      owner:data.owner,
+      comment:data.comment,
+      time:data.time
+    };
     database.ref("/catComment/"+data.cat.substring(0,3)+"/"+key).set({
       owner:data.owner,
       comment:data.comment,
       time:data.time
     });
-    database.ref("/user/"+data.owner).once('value',function (snapshot) {
-      socket.emit('cat comment push',{
-        key:key,
-        owner:data.owner,
-        comment:data.comment,
-        time:data.time,
-        photo:snapshot.val().setting.photo,
-        name:snapshot.val().nickname
-      });
+    socket.emit('cat comment push',{
+      key:key,
+      owner:data.owner,
+      comment:data.comment,
+      time:data.time,
+      photo:userdata[data.owner].setting.photo,
+      name:userdata[data.owner].nickname
     });
   });
   socket.on('required cat comment',function (cat) {
     console.log('required cat comment',cat);
-    database.ref("/catComment/"+cat).once("value",function (snapshot) {
-      socket.emit("comment",snapshot.val());
-    });
+    socket.emit("comment",catComment[cat]);
   });
   socket.on('comment function',function (data) {
     console.log(data.uid,data.type,'comment in',data.cat);
     if(data.type == 'like'){
-      if(data.inverse)
+      if(data.inverse){
+      catComment[data.cat][data.key].like[data.uid] = null;
       database.ref("/catComment/"+data.cat+"/"+data.key+"/like/"+data.uid).set(null);
-      else
+      } else {
+      catComment[data.cat][data.key].like = catComment[data.cat][data.key].like ?
+        catComment[data.cat][data.key].like:{};
+      delete catComment[data.cat][data.key].like[data.uid];
       database.ref("/catComment/"+data.cat+"/"+data.key+"/like/"+data.uid).set(1);
+      }
     }else if(data.type == 'del'){
+      delete catComment[data.cat][data.key] ;
       database.ref("/catComment/"+data.cat+"/"+data.key).set(null);
     }else if(data.type == 'edit'){
+      catComment[data.cat][data.key].comment = data.val;
       database.ref("/catComment/"+data.cat+"/"+data.key+"/comment").set(data.val);
     }
   });
@@ -988,13 +950,12 @@ io.on('connection', function(socket){
         }
       }
     }
-    if(find) database.ref("/user/"+uid+"/history/last_stage").set(location);
+    if(find) {
+      userdata[uid].history.last_stage = location;
+      database.ref("/user/"+uid+"/history/last_stage").set(location);
+    }
     socket.emit('cat to stage',{find,stage});
   });
-  socket.on('disconnect', function(){
-    // console.log('user disconnected');
-  });
-
 });
 var timeout,user=[],userCount=0 ;
 function arrangeUserData() {
@@ -1002,79 +963,59 @@ function arrangeUserData() {
     arrangeUserData();
   },3600000*3);
   console.log('arrange user data');
-  let count = 0;
-  database.ref('/user').once('value',function (snapshot) {
-    let timer = new Date().getTime();
-    userdata = snapshot.val();
-    for(let i in userdata){
-      // console.log(i);
-      // process.stdout.clearLine();
-      // process.stdout.cursorTo(0);
-      // process.stdout.write(i);
-      if(i == undefined|| i == "undefined"){
-        console.log("remove "+i);
-        database.ref('/user/'+i).remove();
-        continue
-      } else {
-        if(userdata[i].Anonymous){
-          if((timer - userdata[i].last_login)>5*86400000) {
-            console.log("remove "+i+" since didn't login for 5 days");
-            database.ref('/user/'+i).remove();
-            admin.auth().deleteUser(i)
-            .then(function() {
-              console.log("Successfully deleted user");
-            })
-            .catch(function(error) {
-              console.log("Error deleting user:", error);
-            });
-            continue
-          }
-          if(userdata[i].last_login == undefined){
-            console.log("remove "+i+" since unknown last login");
-            database.ref('/user/'+i).remove();
-            admin.auth().deleteUser(i)
-            .then(function() {
-              console.log("Successfully deleted user");
-            })
-            .catch(function(error) {
-              console.log("Error deleting user:", error);
-            });
-            continue
+  let count = 0,
+      timer = new Date().getTime();
+  for(let i in userdata){
+    if(i == undefined|| i == "undefined"){
+      console.log("remove "+i);
+      database.ref('/user/'+i).remove();
+      continue
+    } else {
+      if(userdata[i].Anonymous){
+        if((timer - userdata[i].last_login)>5*86400000) {
+          console.log("remove "+i+" since didn't login for 5 days");
+          database.ref('/user/'+i).remove();
+          admin.auth().deleteUser(i)
+          .then(function() { console.log("Successfully deleted user"); })
+          .catch(function(error) { console.log("Error deleting user:", error); });
+          continue
+        }
+        if(userdata[i].last_login == undefined){
+          console.log("remove "+i+" since unknown last login");
+          database.ref('/user/'+i).remove();
+          admin.auth().deleteUser(i)
+          .then(function() { console.log("Successfully deleted user"); })
+          .catch(function(error) { console.log("Error deleting user:", error); });
+          continue
+        }
+      }
+      let arr=[],edit = ['cat','enemy','combo','stage'];
+      count ++ ;
+      for(let j in edit){
+        for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
+        if (arr.length > 20){
+          console.log(i+" too many "+edit[j]);
+          let l=0 ;
+          for(let k in userdata[i].history[edit[j]]){
+            l++;
+            if(l < (arr.length-19)) database.ref('/user/'+i+"/history/"+edit[j]+"/"+k).remove();
           }
         }
-        let arr=[],edit = ['cat','enemy','combo','stage'];
-        count ++ ;
-        user.push(i);
-        for(let j in edit){
-          for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
-          if (arr.length > 20){
-            // process.stdout.write("\n");
-            console.log(i+" too many "+edit[j]);
-            let l=0 ;
-            for(let k in userdata[i].history[edit[j]]){
-              l++;
-              if(l < (arr.length-19)) database.ref('/user/'+i+"/history/"+edit[j]+"/"+k).remove();
-            }
-          }
-          arr = [];
-        }
-        if(!userdata[i].variable) {
-          console.log("user "+i+" no variable");
-          database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
-        }
-        if(userdata[i].setting.mine_alert){
-          let mine = userdata[i].setting.mine_alert;
-          if(!mine.accept&&((timer - mine.time)>4*86400000)&&Math.random()>0.2){
-            // console.log("3 days ago try re-ask for mine");
-            database.ref('/user/'+i+"/setting/mine_alert/state").set(false);
-          }
+        arr = [];
+      }
+      if(!userdata[i].variable) {
+        console.log("user "+i+" no variable");
+        database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
+      }
+      if(userdata[i].setting.mine_alert){
+        let mine = userdata[i].setting.mine_alert;
+        if(!mine.accept&&((timer - mine.time)>4*86400000)&&Math.random()>0.2){
+          database.ref('/user/'+i+"/setting/mine_alert/state").set(false);
         }
       }
     }
-    // process.stdout.write("\n");
-    console.log("there are "+count+" users!!");
-
-  });
+  }
+  console.log("there are "+count+" users!!");
 }
 function geteventDay() {
   var t = new Date(),
@@ -1082,68 +1023,69 @@ function geteventDay() {
       m = t.getMonth()+1,
       d = t.getDate(),
       predic_url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
-      root = 'https://forum.gamer.com.tw/';
+      root = 'https://forum.gamer.com.tw/',
+      event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
   var start,end;
-      console.log("get event day")
-      console.log(y+AddZero(m)+AddZero(d));
+      console.log("get event day ",y+AddZero(m)+AddZero(d));
 
-  database.ref("/event_date").once('value',function (snapshot) {
-    var eventdate = snapshot.val();
-    //update new event
-    request({
-      url: event_url+y+AddZero(m)+AddZero(d)+".html",
-      method: "GET"
-    },function (e,r,b) {
-      if(!e){
-        $ = cheerio.load(b);
-        let body = $("body").html(),
-        cc = body.indexOf("<error>") == -1;
-        database.ref("/event_date/"+y+AddZero(m)+AddZero(d)).set(cc);
-        if(cc){
-          for(let i in eventdate){
-            if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete eventdate[i]
-          }
-          database.ref("/event_date").set(eventdate);
-        }
-      } else {console.log(e);}
-    });
-    //update prediction
-    request({
-      url: predic_url,
-      method: "GET"
-    },function (e,r,b) {
-      if(!e){
-        $ = cheerio.load(b);
-        let title = $(".b-list__row");
-        let today = y+AddZero(m)+AddZero(d);
-        let arr = [];
-        title.each(function () {
-          let a = $(this).children(".b-list__main").find("a");
-          if(a.text().indexOf("活動資訊")!=-1){
-            let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
-            for(let i in b){
-              b[i] = b[i].split("/");
-              for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
-              b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
+      //update new event
+      if(eventdata[(y+AddZero(m)+AddZero(d))]==undefined){
+        request({
+          url: event_url+y+AddZero(m)+AddZero(d)+".html",
+          method: "GET"
+        },function (e,r,b) {
+          if(!e){
+            $ = cheerio.load(b);
+            let body = $("body").html(),
+            cc = body.indexOf("<error>") == -1;
+            console.log("event page load complete,update = ",cc);
+            eventdata[(y+AddZero(m)+AddZero(d))] = cc;
+            database.ref("/event_date/"+(y+AddZero(m)+AddZero(d))).set(cc);
+            if(cc){
+              for(let i in eventdata){
+                if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete eventdata[i]
+              }
+              database.ref("/event_date").set(eventdata);
             }
-            if(b[1]>today){
-              // console.log(a.text());
-              start = b[0];end=b[1];
-              // console.log(start,end);
-              arr.push({url:root+a.attr("href"),start:start,end:end,name:a.text()});
-            }
-          }
+          } else {console.log(e);}
         });
-        // console.log(arr);
-        for(i in arr){
-          if (arr[i].url == eventdate.prediction.source||
-              arr[i].url == eventdate.prediction_jp.source) continue
-          console.log('update prediction');
-          parsePrediction(arr[i],eventdate);
+      } else console.log(y+AddZero(m)+AddZero(d),"exist");
+      //update prediction
+      request({
+        url: predic_url,
+        method: "GET"
+      },function (e,r,b) {
+        if(!e){
+          $ = cheerio.load(b);
+          let title = $(".b-list__row");
+          let today = y+AddZero(m)+AddZero(d);
+          let arr = [];
+          title.each(function () {
+            let a = $(this).children(".b-list__main").find("a");
+            if(a.text().indexOf("活動資訊")!=-1){
+              let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
+              for(let i in b){
+                b[i] = b[i].split("/");
+                for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
+                b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
+              }
+              if(b[1]>today){
+                // console.log(a.text());
+                start = b[0];end=b[1];
+                // console.log(start,end);
+                arr.push({url:root+a.attr("href"),start:start,end:end,name:a.text()});
+              }
+            }
+          });
+          // console.log(arr);
+          for(i in arr){
+            if (arr[i].url == eventdata.prediction.source||
+              arr[i].url == eventdata.prediction_jp.source) continue
+              console.log('update prediction');
+              parsePrediction(arr[i],eventdata);
+          }
         }
-      }
-    });
-  });
+      });
   setTimeout(function () { geteventDay() },12*3600*1000);
 }
 function parsePrediction(obj,eventdate) {

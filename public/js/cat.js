@@ -94,7 +94,7 @@ $(document).ready(function () {
   $(".select_ability .button").click(function () {
     let text = $(this).children("span").text(),
         val = $(this).attr('value')=='1'?true:false;
-    if(val){
+    if(!val){
       clearTimeout(tip_fadeOut);
       $(".ability_tip").remove();
       $("body").append("<div class='ability_tip'>"+text+"<div>");
@@ -102,7 +102,7 @@ $(document).ready(function () {
       tip_fadeOut = setTimeout(function () { $(".ability_tip").css("left",-250) },2000);
     }
   });
-  $(document).on('click','.search_type .button',function () {
+  $('.search_type .button').click(function () {
     let type = $(this).attr('id').split("_")[0];
     if(type == 'normal'){
       $("#gacha_search").attr("value",0);
@@ -114,11 +114,11 @@ $(document).ready(function () {
       $("#lower_table").toggle(300);
       return
     }
-    $(this).attr("value",1);
     $("#search_ability").attr("value",type);
   });
 
   $(document).on('click','.card',function (e) {
+
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
     else
       socket.emit("display cat",{
@@ -127,8 +127,8 @@ $(document).ready(function () {
         history:true
       });
   });
-  $(document).on('click','#search_ability',search) ;
-  $(document).on('click','#searchBut',function () {
+  $('#search_ability').click(search) ;
+  $('#searchBut').click(function () {
     let keyword = $(this).siblings().val();
     socket.emit("text search",{key:keyword,type:'cat'});
     ga('send', 'event', 'search', 'text search','cat');
@@ -141,7 +141,7 @@ $(document).ready(function () {
       ga('send', 'event', 'search', 'text search','cat');
     }
   });
-  $(document).on('click',".search_table .button",function () {
+  $(".search_table .button").click(function () {
     $("body").bind('keypress',quickSearch);
     setTimeout(function () {
       $("body").unbind('keypress',quickSearch);
@@ -160,9 +160,9 @@ $(document).ready(function () {
       $(this).html('<input type="number" value="' +input_org+ '"></input>').find('input').select();
   });
   $(document).on('blur', '.editable input', calculateLV);
-  $(document).on('click','.filter_option',function () {
+  $('.filter_option').click(function () {
     $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
+    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0');
     filter_name = $(this).attr('id') ;
     filterSlider($(this));
   });
@@ -935,8 +935,9 @@ $(document).ready(function () {
     $(".comment_input").find('textarea').val('');
   }
   socket.on('cat comment push',function (data) {
-    let last = $('.comment_content').last().parents(".comment");
-    $(commentHtml(data.key,data,data.photo,data.name)).insertAfter(last);
+    // console.log(data);
+    let last = $('.comment').last();
+    $(commentHtml(data.key,data,data.photo,data.name)).insertBefore(last);
     $(".page_2").animate({scrollTop:$('.comment').last()[0].offsetTop},800);
   });
   function commentHtml(id,comment,photo=null,name=null) {
@@ -986,12 +987,13 @@ $(document).ready(function () {
   }
   socket.on('return users photo',function (obj) {
     // console.log(obj);
+    var default_photo = image_url_cat+"001-1.png";
     for(let i in obj){
       if(!obj[i]) continue
       for(let j in commentMap[i]){
         let id = commentMap[i][j];
         $('.dataTable').find("#"+id).siblings('.photo')
-          .css('background-image','url("'+obj[i].photo+'")')
+          .css('background-image','url("'+(obj[i].photo?obj[i].photo:default_photo)+'")')
           .siblings('.name').text(obj[i].name);
       }
     }

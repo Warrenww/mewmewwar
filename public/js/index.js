@@ -6,7 +6,7 @@ $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
   var current_user_data = {};
-
+  var newUser = false;
   //user login
     $(document).on("click","#fb_login",facebookLog)
     $(document).on("click","#guest_login",function () {
@@ -67,10 +67,10 @@ $(document).ready(function () {
 
     auth.onAuthStateChanged(function(user) {
       if (user) {
-        setTimeout(function (data) {
+        if (!newUser)
           socket.emit("user connect",{user:user,page:location.pathname});
-        },1000);
       } else {
+        newUser = true;
         $("#login").fadeIn();
         console.log('did not sign in');
       }
@@ -78,6 +78,7 @@ $(document).ready(function () {
     socket.on("login complete",function (name) {
       $("#login").fadeOut();
       $(".current_user_name").text("Hi, "+name);
+      socket.emit("user connect",{user:user,page:location.pathname});
     });
 
     socket.on("current_user_data",function (data) {
