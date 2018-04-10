@@ -849,8 +849,9 @@ io.on('connection', function(socket){
     if(!data.cat) return
     let user = userdata[uid],
         setting = user.setting,
-        target = user.variable.cat[cat.substring(0,3)],
-        exist = target.survey?(target.survey[cat]?(target.survey[cat][type]?target.survey[cat][type]:false):false):false,
+        target = user.variable.cat[cat.substring(0,3)];
+    target = target?target:{}
+    var exist = target.survey?(target.survey[cat]?(target.survey[cat][type]?target.survey[cat][type]:false):false):false,
         count = setting.cat_survey_count?setting.cat_survey_count:0;
     if(!exist) count += 0.25;
     console.log(uid,"update",cat,"statistic",type);
