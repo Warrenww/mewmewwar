@@ -967,6 +967,7 @@ function arrangeUserData() {
   let count = 0,
       timer = new Date().getTime();
   for(let i in userdata){
+    // console.log(i);
     if(i == undefined|| i == "undefined"){
       console.log("remove "+i);
       database.ref('/user/'+i).remove();
@@ -981,14 +982,14 @@ function arrangeUserData() {
           .catch(function(error) { console.log("Error deleting user:", error); });
           continue
         }
-        if(userdata[i].last_login == undefined){
-          console.log("remove "+i+" since unknown last login");
-          database.ref('/user/'+i).remove();
-          admin.auth().deleteUser(i)
-          .then(function() { console.log("Successfully deleted user"); })
-          .catch(function(error) { console.log("Error deleting user:", error); });
-          continue
-        }
+      }
+      if(userdata[i].first_login == undefined){
+        console.log("remove "+i+" since unknown first login");
+        database.ref('/user/'+i).remove();
+        admin.auth().deleteUser(i)
+        .then(function() { console.log("Successfully deleted user"); })
+        .catch(function(error) { console.log("Error deleting user:", error); });
+        continue
       }
       let arr=[],edit = ['cat','enemy','combo','stage'];
       count ++ ;
