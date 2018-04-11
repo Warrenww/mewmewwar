@@ -9,7 +9,7 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     current_user_data = data ;
     if(data.last_combo)  socket.emit("search combo",{uid:data.uid,id:data.last_combo}) ;
     for(let i in data.last_combo){

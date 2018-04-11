@@ -291,14 +291,16 @@ io.on('connection', function(socket){
       for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
     }
     result.combo = combo ;
-    if(!uid) socket.emit("display cat result",result);
+    if(!uid) return
     else {
       let default_lv = userdata[uid].setting.default_cat_lv,
           variable = userdata[uid].variable.cat[grossID],
           storge_lv = variable ? variable.lv : default_lv,
           storge_count = variable?(variable.count?variable.count+1:1):1,
           own = variable ? variable.own : false;
-      result.lv = storge_lv ? storge_lv : default_lv  ;
+      if(userdata[uid].variable.cat == "") userdata[uid].variable.cat = {};
+      if(!userdata[uid].variable.cat[grossID]) userdata[uid].variable.cat[grossID] = {};
+      result.lv = storge_lv?storge_lv:default_lv;
       result.count = storge_count;
       result.own = own;
       result.survey = variable ? (variable.survey?(variable.survey[id]?variable.survey[id]:false):false):false;
@@ -312,13 +314,12 @@ io.on('connection', function(socket){
           if(history[i].id == id) delete history[i]
         }
         var key = database.ref().push().key;
-        history = history != "" ? history : {};
+        if(history == "") userdata[uid].history.cat = {};
         history[key] = {type : "cat",id : id,time:new Date().getTime()};
         database.ref("/user/"+uid+"/history/cat").set(history);
         userdata[uid].history.last_cat = id;
         database.ref("/user/"+uid+"/history/last_cat").set(id);
         console.log("count cat search time(user)");
-        userdata[uid].variable.cat[grossID] = userdata[uid].variable.cat[grossID]?userdata[uid].variable.cat[grossID]:{}
         userdata[uid].variable.cat[grossID].count = storge_count;
         database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(storge_count);
         console.log("count cat search time(global)");
@@ -351,12 +352,14 @@ io.on('connection', function(socket){
           if(history[i].id == id) delete history[i]
         }
         var key = database.ref().push().key;
-        history = history != "" ? history : {};
+        if(history == "" ) userdata[uid].history.enemy = {};
         history[key] = {type : "enemy",id : id,time:new Date().getTime()};
         database.ref("/user/"+uid+"/history/enemy").set(history);
         userdata[uid].history.last_enemy = id;
         database.ref("/user/"+uid+"/history/last_enemy").set(id);
         console.log("count enemy search time(user)");
+        if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
+        if(!userdata[uid].variable.enemy[id]) userdata[uid].variable.enemy[id]={};
         userdata[uid].variable.enemy[id].count = count;
         database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
         console.log("count enemy search time(global)");

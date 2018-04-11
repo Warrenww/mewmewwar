@@ -203,7 +203,7 @@ $(document).ready(function () {
   });
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
-    // console.log(result) ;
+    console.log(result) ;
     let data = new Cat(result.this),
         arr = result.bro,
         brr = result.combo,
@@ -313,7 +313,7 @@ $(document).ready(function () {
       store_lv_timeOut = setTimeout(function () {
         socket.emit("store level",{
           uid : current_user_id,
-          id : $(this).parents(".dataTable").attr("id"),
+          id : current_cat_data.id,
           lv : ui.value,
           type : 'cat'
         });
@@ -427,11 +427,12 @@ $(document).ready(function () {
   $(document).on("click","#mark_own",function () {
     let val = Number($(this).attr("value"))?0:1,
         cat = $(this).attr("cat");
-    socket.emit("mark own",{
-      uid:current_user_id,
-      cat:cat,
-      mark:val
-    });
+    if(cat)
+      socket.emit("mark own",{
+        uid:current_user_id,
+        cat:cat,
+        mark:val
+      });
     if(val) $(this).attr("value",1).find(".tag span").fadeOut();
     else $(this).attr("value",0).find(".tag span").fadeIn();
   });
@@ -520,7 +521,7 @@ $(document).ready(function () {
     let target = $(".dataTable").attr('id'),
         name = current_cat_data.name;
         name = name?name:current_cat_data.jp_name;
-    addToCompare(target,name);
+    if(target) addToCompare(target,name);
   });
   $(document).on('click','.compareTarget .card',function (e) {
     let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;

@@ -437,6 +437,7 @@ $(document).ready(function () {
     if(showcomparetarget) showhidecomparetarget();
     let id = $(".dataTable").attr('id'),
         name = $(".dataTable").find("#name").text();
+    if(!id) return
     $(".compareTarget").children().each(function () {
       compare.push($(this).attr("value"));
     });
