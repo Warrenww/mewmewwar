@@ -13,27 +13,10 @@
   transition: .8s ease-in-out;
   position: fixed;
   top: 0;
-  left: 0;
+  left: -350;
   z-index: 3;
   height: 100%;
 }
-#nav_tag{
-  font-size: 10px;
-  font-weight: bolder;
-  width: 15px;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 350px;
-  background-color: rgba(255, 144, 29, 0.9);
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: .8s ease-in-out;
-  cursor: pointer;
-}
-#nav_tag i {transition: .8s ease-in-out;}
 .monitor{
   width: 100%;
   background: linear-gradient(rgb(51, 1, 82),rgb(159, 108, 195))
@@ -175,7 +158,6 @@
   .iframe_holder iframe{width: 100%}
   .navigation .tag{font-size: 15px}
   .navigation{width: 250px}
-  #nav_tag{left: 250px}
 }
 @media screen and (max-width:425px) {
   #scoreboard{width: 60%}

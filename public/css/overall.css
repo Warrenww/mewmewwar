@@ -446,7 +446,8 @@ animation-duration: .5s ;
 animation-iteration-count: infinite;
 }
 #compareTarget_tag,
-#select_chap_tag{
+#select_chap_tag,
+#nav_tag{
   padding: 10px;
   font-size: 20px;
   font-weight: bolder;
@@ -461,7 +462,8 @@ animation-iteration-count: infinite;
   transition: .8s ease-in-out;
 }
 #compareTarget_tag i,
-#select_chap_tag i {transition: .8s ease-in-out;}
+#select_chap_tag i,
+#nav_tag i {transition: .8s ease-in-out;}
 @keyframes blink {
   0%{color: rgb(255, 93, 46)}
   50%{color: rgb(250, 204, 86)}

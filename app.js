@@ -315,11 +315,11 @@ io.on('connection', function(socket){
         history = history != "" ? history : {};
         history[key] = {type : "cat",id : id,time:new Date().getTime()};
         database.ref("/user/"+uid+"/history/cat").set(history);
-        last = id;
+        userdata[uid].history.last_cat = id;
         database.ref("/user/"+uid+"/history/last_cat").set(id);
         console.log("count cat search time(user)");
-        variable = variable?variable:{}
-        variable.count = storge_count;
+        userdata[uid].variable.cat[grossID] = variable?variable:{}
+        userdata[uid].variable.cat[grossID].count = storge_count;
         database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(storge_count);
         console.log("count cat search time(global)");
         catdata[id].count ++;
@@ -354,10 +354,10 @@ io.on('connection', function(socket){
         history = history != "" ? history : {};
         history[key] = {type : "enemy",id : id,time:new Date().getTime()};
         database.ref("/user/"+uid+"/history/enemy").set(history);
-        last = id;
+        userdata[uid].history.last_enemy = id;
         database.ref("/user/"+uid+"/history/last_enemy").set(id);
         console.log("count enemy search time(user)");
-
+        userdata[uid].variable.enemy[id].count = count;
         database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
         console.log("count enemy search time(global)");
         enemydata[id].count ++ ;

@@ -33,7 +33,7 @@ $(document).ready(function () {
     });
     window.parent.reloadIframe('cat');
   });
-  var nav_expand = 0 ;
+  var nav_expand = 1 ;
   $(document).on('click','#nav_tag',showhideNav);
 
   var expand = 0 ;
@@ -179,5 +179,16 @@ $(document).ready(function () {
 
 
   });
+  $(document).on('click','#nav_tag',showhideselectchap);
+  function showhideselectchap() {
+    let dist = screen.width>768?350:250;
+    if(!nav_expand){
+      $('.select_chapter_holder').css('left',0);
+      $('#nav_tag').css('left',dist).children('i').css({"transform":"rotate(180deg)"});
+    } else {
+      $('.select_chapter_holder').css('left',-dist);
+      $('#nav_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
+    }
+  }
 
 });
