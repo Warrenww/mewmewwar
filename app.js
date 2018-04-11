@@ -587,6 +587,7 @@ io.on('connection', function(socket){
   });
   socket.on("store level",function (data) {
     console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
+    if(!data.uid||!data.id) return
     let id = data.id,
         gross = data.type == 'cat'? id.substring(0,3):id;
     var buffer = userdata[data.uid].variable[data.type][gross] ;
