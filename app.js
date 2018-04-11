@@ -318,7 +318,7 @@ io.on('connection', function(socket){
         userdata[uid].history.last_cat = id;
         database.ref("/user/"+uid+"/history/last_cat").set(id);
         console.log("count cat search time(user)");
-        userdata[uid].variable.cat[grossID] = variable?variable:{}
+        userdata[uid].variable.cat[grossID] = userdata[uid].variable.cat[grossID]?userdata[uid].variable.cat[grossID]:{}
         userdata[uid].variable.cat[grossID].count = storge_count;
         database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(storge_count);
         console.log("count cat search time(global)");

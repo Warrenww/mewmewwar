@@ -305,15 +305,19 @@ $(document).ready(function () {
       value: 30,
     });
     setTimeout(function () { $("#level").slider('option','value',lv) },800);
+    var store_lv_timeOut ;
     $("#level").on("slidechange", function(e,ui) {
+      clearTimeout(store_lv_timeOut);
       $("#level_num").html(ui.value);
       updateState(ui.value);
-      socket.emit("store level",{
-        uid : current_user_id,
-        id : $(this).parents(".dataTable").attr("id"),
-        lv : ui.value,
-        type : 'cat'
-      });
+      store_lv_timeOut = setTimeout(function () {
+        socket.emit("store level",{
+          uid : current_user_id,
+          id : $(this).parents(".dataTable").attr("id"),
+          lv : ui.value,
+          type : 'cat'
+        });
+      },100);
     });
     $("#level").on("slide", function(e,ui) {
       $("#level_num").html(ui.value);
