@@ -95,7 +95,8 @@ io.on('connection', function(socket){
   socket.on("gacha search",function (data) {
     console.log(data);
     console.log("recording last search quene");
-    database.ref("/user/"+data.uid+"/history/last_"+data.type+"_search").set(data);
+    database.ref("/user/"+data.uid+"/history/last_"+data.type+"_search").set(data)
+    .then(userdata[data.uid].history["last_"+data.type+"_search"] = data);
 
     let gFilter = data.query ,buffer=[],buffer_1=[];
     for(let i in gFilter){
@@ -134,7 +135,8 @@ io.on('connection', function(socket){
             user = data.uid,
             flag = true;
         console.log("recording last search quene");
-        database.ref("/user/"+user+"/history/last_"+type+"_search").set(data);
+        database.ref("/user/"+user+"/history/last_"+type+"_search").set(data)
+        .then(userdata[user].history["last_"+data.type+"_search"] = data);
         switch (type) {
           case 'cat':
             load_data = catdata ;
@@ -871,6 +873,7 @@ io.on('connection', function(socket){
       database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
     }
     else {
+      catdata[cat].statistic = catdata[cat].statistic?catdata[cat].statistic:{};
       catdata[cat].statistic[type] = data.all;
       database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
       var survey = userdata[uid].variable.cat[cat.substring(0,3)].survey;
