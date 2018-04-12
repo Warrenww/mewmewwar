@@ -90,28 +90,23 @@ console.log('start');
 //   console.log('finfish');
 // });
 
-// database.ref("/stagedata/smallCat").once('value',function (snapshot) {
+// database.ref("/stagedata").once('value',function (snapshot) {
 //   let data = snapshot.val();
 //     for(let i in data){
 //       for(let j in data[i] ){
 //         if(j == 'name') continue
-//         //
-//         database.ref("/stagedata/smallCat/"+i+"/"+j+"/constrain")
-//         .set("EX・稀有");
+//         console.log( data[i][j].name);
+//         for(let k in data[i][j]){
+//           if(k == 'name') continue
+//           // if (!data[i][j][k].count) database.ref("/stagedata/"+i+"/"+j+"/"+k+"/count").set(0)
+//         }
 //       }
-//       // database.ref("/stagedata/world/s03001z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-//       // database.ref("/stagedata/world/s03002z/"+j+"/reward/0").update({prize:target.reward[0].prize});
-//       // arr = arr.concat(target.reward);
-//       // for(let i in target.reward){
-//       //   if(target.reward[i].prize.name.indexOf("u")!=-1)
-//       //   console.log(target.name,target.reward[i].prize.amount);
-//       // }
-//     }
-//
-//
-// });
+    }
 
-geteventDay()
+
+});
+
+// geteventDay()
 
 function geteventDay() {
   var t = new Date(),

@@ -379,7 +379,7 @@ io.on('connection', function(socket){
       if(uid == user.uid){
         console.log("find same user");
         exist = true;
-        socket.emit("login complete",data.val().nickname);
+        socket.emit("login complete",userdata[uid].nickname);
         break;
       }
     }
