@@ -336,6 +336,7 @@ io.on('connection', function(socket){
     let buffer = enemydata[id];
 
     if(uid&&id){
+      if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
       let data = userdata[uid].variable.enemy[id];
       data = data?data:{};
       data.count = data.count?(data.count+1):1
@@ -358,7 +359,6 @@ io.on('connection', function(socket){
         userdata[uid].history.last_enemy = id;
         database.ref("/user/"+uid+"/history/last_enemy").set(id);
         console.log("count enemy search time(user)");
-        if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
         if(!userdata[uid].variable.enemy[id]) userdata[uid].variable.enemy[id]={};
         userdata[uid].variable.enemy[id].count = count;
         database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
