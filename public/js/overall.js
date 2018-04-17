@@ -8,6 +8,7 @@ $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
 
+  $(document).on('click','#more_option #top',function () { scroll_to_class("content",1); });
 
 //coustomer service
   $(document).on("click","#service",function () {
@@ -129,7 +130,7 @@ $(document).ready(function () {
 //compare tag for cat and enemy
   $(document).on('click','#compareTarget_tag',showhidecomparetarget);
 
-  $('#more_option div').hover(function () {
+  $('#more_option div,.compareSorce .title #option div').hover(function () {
     $(this).children('.tag').show(400);
   },function () {
     $(this).children('.tag').hide(400);

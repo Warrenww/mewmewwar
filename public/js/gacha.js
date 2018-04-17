@@ -77,9 +77,7 @@ $(document).ready(function () {
   $(document).on('click','#once',function () {gacha(1);});
   $(document).on('click','#elevent',function () {gacha(11);});
 
-  $(document).on('click','#toggleScore',function () {
-    $("#scoreboard").toggle(400);
-  });
+  $(document).on('click','#toggleScore',function () { $("#scoreboard").toggle(400); });
 
   function gacha(n) {
     let data=[],
@@ -95,11 +93,7 @@ $(document).ready(function () {
       else if(c[0]<result&&result<c[1]) {data.push("sr");sr++;}
       else if(c[1]<result) {data.push("r");r++;}
     }
-    var color = {
-      "ssr":"rgb(241, 71, 71)",
-      "sr":"rgb(231, 184, 63)",
-      "r":"rgb(139, 214, 31)"
-    }
+    var color = { "ssr":"#f14747", "sr":"#e7b83f", "r":"#8bd61f" }
     for(let i in data){
       let rarity = data[i],
           buffer = current_gacha_data[rarity],
@@ -133,6 +127,12 @@ $(document).ready(function () {
     else if(africa>0.09) $("#www").text("歐皇");
     else if(africa>0.06) $("#www").text("歐洲人");
     else $("#www").text("普通人");
+
+    socket.emit("gacha history",{
+      uid:current_user_data.uid,
+      gacha:current_gacha_data.name,
+      ssr,sr,r
+    });
   }
   function showhideNav(e,n) {
     if(n == undefined)

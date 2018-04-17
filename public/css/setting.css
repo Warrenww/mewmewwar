@@ -166,3 +166,4 @@ input:checked + .slider_but:before {
   cursor: pointer;
 }
 #photo_chooser div #fb{ background-color: #2f5dde; }
+#history:hover{color: rgb(117, 19, 133);}

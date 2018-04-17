@@ -195,7 +195,7 @@ $(document).ready(function () {
     return html ;
   }
   var result_expand = 0,originHeight;
-  $(document).on('click','.compareSorce td',function () {
+  $(document).on('click','.compareSorce .title #option div',function () {
     let type = $(this).attr("id");
     if(type == 'result_snapshot'){
       let target = $("#selected")[0];
@@ -214,17 +214,15 @@ $(document).ready(function () {
       if(!result_expand){
         originHeight = $("#selected")[0].offsetHeight;
         $("#selected").css("height",trueHeight);
-        $(this).html("收合<i class='material-icons'>&#xe240;</i>");
       } else {
         $("#selected").css("height",originHeight);
-        $(this).html("展開<i class='material-icons'>&#xe240;</i>");
       }
       result_expand = result_expand?0:1;
     } else if(type == 'batch_compare'){
       // console.log(current_search);
       let r = confirm("確定覆蓋現有比較序列?!");
       if(!r) return
-      if(current_search.length<10){
+      if(current_search.length<15){
         socket.emit("compare enemy",{id:current_user_data.uid,target:current_search});
         $(".compareTarget").empty();
         $("#selected").children().each(function () {
@@ -233,7 +231,7 @@ $(document).ready(function () {
         if(showcomparetarget) showhidecomparetarget();
         $("#compare_number").text(current_search.length);
       }
-      else alert("超過10隻!!!");
+      else alert("超過15隻!!!");
     }
 
   });
@@ -255,15 +253,15 @@ $(document).ready(function () {
     scroll_to_div('selected');
   }
   var number_page,page_factor ;
-  socket.on("search result enemy",function (result) {
-    // console.log(result);
+  socket.on("search result enemy",function (data) {
+    // console.log(data);
     number_page = 0 ;
     page_factor = 1 ;
     $("#selected").empty();
     $("#page_dot").empty();
     $("#selected").css('display','flex');
     $("#selected").scrollTop(0);
-    $("#selected").append(condenseEnemyName(result));
+    $("#selected").append(condenseEnemyName(data.result));
     $(".button_group").css('display','flex');
     scroll_to_div("selected");
     let select_width = $("#selected").innerWidth(),
@@ -275,7 +273,12 @@ $(document).ready(function () {
     for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
     $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
-
+    let query = '';
+    for(let i in data.query){
+      for(let j in data.query[i]) query+=data.query[i][j]+" ";
+    }
+    // console.log(query);
+    $(".compareSorce").find("#query").text(query);
   });
   socket.on('display enemy result',function (data) {
     data = new Enemy(data);

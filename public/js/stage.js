@@ -136,15 +136,9 @@ $(document).ready(function () {
         prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
         next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
     $(".dataTable").empty();
-    html += "<tr>"+
-            (screen.width > 768 ?
-              "<td id='prev' query='"+JSON.stringify(prev_stage)+"'>"+
-              "<i class='material-icons' style='transform:rotate(180deg)'>&#xe154;</i>上一關</td>"+
-              "<td id='next' query='"+JSON.stringify(next_stage)+"'>下一關"+
-              "<i class='material-icons'>&#xe154;</i></td>":"")+
-            "<th>接關</th><td>"+(data.continue?"可以":"不行")+"</td>"+
-            "<td colspan=2><a target='blank' href='http://battlecats-db.com/stage/"+
-            (data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+".html'>在超絕攻略網打開<i class='material-icons'>insert_link</i></a></td></tr>";
+    $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
+    $("#more_option #next").attr("query",JSON.stringify(next_stage));
+    $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
     html += screen.width > 768 ?
             ( "<tr>"+
               "<th rowspan=2 colspan=1 id='chapter' value='"+obj.chapter+"'>"
@@ -152,20 +146,21 @@ $(document).ready(function () {
               "<th rowspan=2 colspan=1 id='stage' value='"+obj.stage+"'>"
               +obj.parent+"</th>"+
               "<th rowspan=2 colspan=2>"+data.name+"</th>"+
-              "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
+              "<th>接關</th><td>"+(data.continue?"可以":"不行")+"</td>"+
               "</tr><tr>"+
-              "<th>經驗值</th>"+"<td>"+parseEXP(data.exp)+"</td>"+
+              "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
               "</tr><tr>"+
               "<th>城堡體力</th>"+"<td>"+data.castle+"</td>"+
               "<th>戰線長度</th>"+"<td>"+data.length+"</td>"+
-              "<th>敵人出擊限制</th>"+"<td>"+data.limit_no+"</td>"+
+              "<th>經驗值</th>"+"<td>"+parseEXP(data.exp)+"</td>"+
               "</tr><tr>"+
-              "<th>我方出擊限制</th>"+"<td colspan='5'>"+(data.constrain?data.constrain:"無")+"</td>+"+
+              "<th>我方出擊限制</th>"+"<td colspan='3'>"+(data.constrain?data.constrain:"無")+"</td>+"+
+              "<th>敵人出擊限制</th>"+"<td>"+data.limit_no+"</td>"+
               "</tr><tr>"+
               "<th colspan=6>過關獎勵</th>"+
               "</tr><tr>"+Addreward(data.reward,data.integral)+
               "</tr><tr>"+
-              "<th colspan=5>關卡敵人</th><th id ='AddToCompare'>加入比較序列</th>"+
+              "<th colspan=6>關卡敵人</th>"+
               "</tr><tr>"+
               "<th>敵人</th><th class='enemy_head' id='multiple'>倍率</th>"+
               "<th class='enemy_head' id='amount'>數量</th>"+
@@ -235,7 +230,6 @@ $(document).ready(function () {
       }
     }
     socket.emit("compare enemy",{id:current_user_data.uid,target:arr});
-    // window.parent.changeIframe('compareEnemy');
     window.parent.reloadIframe('compareEnemy');
   });
   $(document).on("click",".dataTable #chapter",function () {

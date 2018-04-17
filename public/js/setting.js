@@ -55,9 +55,9 @@ $(document).ready(function () {
       uid:current_user_data.uid,
       state:$(this).prop("checked")
     });
-    if(type.indexOf("cat")!=-1 || type == 'ability_text' ||type == 'more_option')
+    if(type.indexOf("cat")!=-1 || type == 'ability_text')
       window.parent.reloadIframe('cat');
-    if(type.indexOf("enemy")!=-1 || type =='more_option')
+    if(type.indexOf("enemy")!=-1)
       window.parent.reloadIframe('enemy');
     // window.parent.reloadIframe('stage');
   });
@@ -67,42 +67,6 @@ $(document).ready(function () {
     },1000);
   });
 
-  let cat_history_show = 0;
-  $(document).on("click","#cat_history",function () {
-    if(!cat_history_show){
-      $("#history_cat").css({"height":560});
-      $(this).css({transform:"rotate(0deg)"});
-      scroll_to_div("history_cat")
-    } else {
-      $("#history_cat").css({"height":0});
-      $(this).css({transform:"rotate(-90deg)"});
-    }
-    cat_history_show = cat_history_show ? 0 : 1 ;
-  });
-  let cat_owned_show = 0;
-  $(document).on("click","#own_cat",function () {
-    if(!cat_owned_show){
-      $("#cat_own").css({"height":560});
-      $(this).css({transform:"rotate(0deg)"});
-      scroll_to_div("cat_own")
-    } else {
-      $("#cat_own").css({"height":0});
-      $(this).css({transform:"rotate(-90deg)"});
-    }
-    cat_owned_show = cat_owned_show ? 0 : 1 ;
-  });
-  let ene_history_show = 0;
-  $(document).on("click","#ene_history",function () {
-    if(!ene_history_show){
-      $("#history_ene").css({"height":560});
-      $(this).css({transform:"rotate(0deg)"});
-      scroll_to_div("history_ene")
-    } else {
-      $("#history_ene").css({"height":0});
-      $(this).css({transform:"rotate(-90deg)"});
-    }
-    ene_history_show = ene_history_show ? 0 : 1 ;
-  });
   $(document).on('click','.card',function () {
     let id = $(this).attr('value'),
         type = $(this).attr('type');
@@ -163,29 +127,6 @@ $(document).ready(function () {
     console.log(Math.log(exp));
   });
 
-
-  socket.on("return history",function (history) {
-    // console.log(history);
-    for(let i in history.cat){
-      $("#history_cat").append(
-        '<span class="card" type="cat" value="'+history.cat[i].id+'" '+
-        'style="background-image:url('+
-        image_url_cat+history.cat[i].id+'.png);">'+
-        history.cat[i].name+'</span>');
-    }
-    for(let i in history.enemy)
-      $("#history_ene").append(
-        '<span class="card" type="enemy" value="'+history.enemy[i].id+'" '+
-        'style="background-image:url('+
-        image_url_enemy+history.enemy[i].id+'.png);">'+
-        history.enemy[i].name+'</span>');
-    for(let i in history.owned)
-      $("#cat_own").append(
-        '<span class="card" type="cat" value="'+history.owned[i].id+'" '+
-        'style="background-image:url('+
-        image_url_cat+history.owned[i].id+'.png);">'+
-        history.owned[i].name+'</span>');
-  });
   $("#photo").hover(function () {
     $(this).children().show(400);
   },function () {
@@ -217,7 +158,7 @@ $(document).ready(function () {
     });
   });
 
-
+  $("#history").click(function(){window.parent.reloadIframe('history')});
 
 
 });

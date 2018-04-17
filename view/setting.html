@@ -27,12 +27,9 @@
             <span>使用者名稱</span>
             <input type="text" id="userName"/>
           </div>
-          <div class="setting_item">
-            <span>預設顯示更多選項</span>
-            <label class="switch">
-              <input type="checkbox" id="show_more_option" >
-              <span class="slider_but"></span>
-            </label>
+          <div class="setting_item" id="history" style="cursor:pointer">
+            <span>歷程記錄</span>
+            <i class="material-icons" style="font-size:30px;margin:0 30;">&#xE889;</i>
           </div>
           <div class="setting_item">
             <span>重設我擁有的貓咪</span>
@@ -86,11 +83,6 @@
             <span>已填寫問卷數</span>
             <h3 id="total_survey" style="margin:0">0</h3>
           </div>
-          <div class="setting_item">
-            <span>我的貓咪查詢歷程記錄(最近20隻)</span>
-            <i class="material-icons" id="cat_history">arrow_drop_down</i>
-          </div>
-          <div id="history_cat"></div>
         </div>
 
         <h4>敵人查詢設定</h4>
@@ -109,11 +101,6 @@
               <span class="slider_but"></span>
             </label>
           </div>
-          <div class="setting_item">
-            <span>我的敵人查詢歷程記錄(最近20隻)</span>
-            <i class="material-icons" id="ene_history">arrow_drop_down</i>
-          </div>
-          <div id="history_ene"></div>
         </div>
 
         <h4>其他設定</h4>

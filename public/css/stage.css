@@ -1,3 +1,4 @@
+.main_board button,
 .select_chapter button{
   width: 180px;
   height: 120px;
@@ -52,11 +53,12 @@
   background-color: transparent;
 }
 #maylook{background-image: url("footage/stage/maylook_BG.png");}
-#baseball,#lazybird,#easter{
+#baseball,#lazybird,#easter,#eva{
   background-image: url("footage/stage/pawapuro_BG.jpg");
   background-size: cover;
   background-position: center;
 }
+#eva{background-image: url("footage/stage/eva_BG.jpg");}
 #crazy,#hard,#smallCat,#XP,#castleMaterial{
   background-image: url("footage/stage/crazy_BG.png");
   background-color: rgba(0,0,0,.1);
@@ -192,3 +194,4 @@
   font-weight: bold;
   cursor: pointer;
 }
+.display{position: relative;top:-300px}

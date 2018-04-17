@@ -57,14 +57,6 @@
   width: 500%;
 }
 iframe{width: 20%}
-td input{
-  border: 0;
-  border-bottom: 1px solid rgb(80, 80, 80);
-  background-color: transparent;
-  width: 40%;
-  text-align: center;
-}
-th span[value~='0']{display: none;}
 .navigation_m{
   width: 100%;
   flex-direction: column;
@@ -95,21 +87,60 @@ th span[value~='0']{display: none;}
 .choose_panel span[value~='1']{
   color:rgb(222, 181, 38);
 }
-td span{
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 2px;
-  margin: 2px 5px;
-  cursor: pointer;
-  transition: .3s ease-in-out
-}
-td span:hover{
-  background-color: rgba(235, 151, 83, 0.4)
-}
 #keyword{
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+.section{
+  width: 80%;
+  margin: 3% 10%;
+  background-color: rgba(255,255,255,.9);
+  border-radius: 20px;
+  margin-bottom: 0
+}
+.section .section_title{
+  width: 100%;
+  position: sticky;
+  top: 0;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  background-color: rgba(255,255,255,.9);
+  box-shadow: 0px 4px 12px -2px;
+  z-index: 2;
+}
+.section_title i{
+  float:right;
+  margin: 8px;
+  border: 1px solid;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.section_title i:hover{background-color: #ebebeb}
+.section p{
+  width: 100%;
+  font-size: 18px;
+  margin: 10px 0
+}
+.section li{font-size: 18px}
+.ability_icon{width: 40px;height: 40px}
+.select_ability .button{
+    padding: 0px;
+    border-radius: 7px;
+    overflow: hidden;
+}
+.mobile{display: none;}
+.editable{border: 2px solid #f9c237;padding: 2px 5px}
+@media screen and (max-width:768px) {
+  .section{
+    width: 94%;
+    margin: 3%;
+    background-color: rgba(255,255,255,.9);
+    border-radius: 10px;
+    margin-bottom: 0;
+    padding:5%
+  }
 }
 @media screen and (max-width:425px) {
   .screen{

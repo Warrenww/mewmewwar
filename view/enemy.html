@@ -17,184 +17,184 @@
   <body>
     <style>
     .glyphicon-shopping-cart {right: -164px;}
-    #more_option{position: absolute;left:95%}
-    @media screen and (max-width:768px) { #more_option{left:0;top:20%} }
+    /* #more_option{position: absolute;left:95%}
+    @media screen and (max-width:768px) { #more_option{left:0;top:20%} } */
     </style>
 
-    <div class="page_1" >
-      <div class="content">
-        <div class="search" style="width:100%;margin-bottom:20px">
-          <input type="text" id="searchBox" placeholder="Search for enemies...">
-          <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
-        </div>
-        <table id="upper_table">
-            <tr>
-                <th colspan="2">屬性</th>
-                <td colspan="4" class="select_color">
-                  <span class='button' name='紅色敵人' value='0'>紅色敵人</span>
-                  <span class='button' name='漂浮敵人' value='0'>漂浮敵人</span>
-                  <span class='button' name='黑色敵人' value='0'>黑色敵人</span>
-                  <span class='button' name='鋼鐵敵人' value='0'>鋼鐵敵人</span>
-                  <span class='button' name='天使敵人' value='0'>天使敵人</span>
-                  <span class='button' name='外星敵人' value='0'>外星敵人</span>
-                  <span class='button' name='外星敵人(星)' value='0'>外星敵人(星)</span>
-                  <span class='button' name='不死敵人' value='0'>不死敵人</span>
-                  <span class='button' name='白色敵人' value='0'>白色敵人</span>
-                  <span class='button' name='無屬性敵人' value='0'>無屬性敵人</span>
-                </td>
-            </tr>
-            <tr>
-                <th colspan="2" rowspan="2">能力</th>
-                <td colspan="4" rowspan="2" class="select_ability">
-                  <span class='button' name='爆擊' value='0'>爆擊</span>
-                  <span class='button' name='鋼鐵' value='0'>鋼鐵</span>
-                  <span class='button' name='緩速' value='0'>緩速</span>
-                  <span class='button' name='波動' value='0'>波動</span>
-                  <span class='button' name='擊退' value='0'>擊退</span>
-                  <span class='button' name='暫停' value='0'>暫停</span>
-                  <span class='button' name='連續攻擊' value='0'>連續攻擊</span>
-                  <span class='button' name='降攻' value='0'>降攻</span>
-                  <span class='button' name='增攻' value='0'>增攻</span>
-                  <span class='button' name='攻城' value='0'>攻城</span>
-                  <span class='button' name='遠方攻擊' value='0'>遠方攻擊</span>
-                  <span class='button' name='免疫擊退' value='0'>免疫擊退</span>
-                  <span class='button' name='免疫緩速' value='0'>免疫緩速</span>
-                  <span class='button' name='免疫波動' value='0'>免疫波動</span>
-                  <span class='button' name='免疫暫停' value='0'>免疫暫停</span>
-                  <span class='button' name='免疫降攻' value='0'>免疫降攻</span>
-                  <span class='button' name='潛地' value='0'>潛地</span>
-                  <span class='button' name='復活' value='0'>復活</span>
-                  <span class='button' name='傳送' value='0'>傳送</span>
-                  <span class='button' name='護盾' value='0'>護盾</span>
-                </td>
-            </tr>
-        </table>
-        <table id="lower_table">
-          <tbody>
-            <tr>
-              <th rowspan="2" id="selectAll"> 啟用</th>
-              <th colspan="8"> 數值篩選器 </th>
-            </tr>
-            <tr>
-              <th class="filter_option" id="hp" lv-bind="false" value="10000" type="0" range="[1000,100000]" step="1000" active="false">體力</th>
-              <th class="filter_option" id="dps" lv-bind="false" value="3000" type="0" range="[100,10000]" step="100" active="false">DPS</th>
-              <th class="filter_option" id="speed" lv-bind="false" value="10" type="0" range="[1,100]" step="1" active="false">速度</th>
-              <th class="filter_option" id="reward" lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false">獲得金錢</th>
-              <th class="filter_option" id="freq" lv-bind="false" value="5" type="0" range="[1,20]" step="0.5" active="false">攻頻</th>
-              <th class="filter_option" id="atk" lv-bind="false" value="10000" type="0" range="[1000,100000]" step="1000" active="false">攻撃力</th>
-              <th class="filter_option" id="range" lv-bind="false" value="300" type="0" range="[10,1000]" step="10" active="false">射程</th>
-              <th></th>
-              <!-- <th class="filter_option" id="再生産" lv-bind="false" value="5" reverse="false" range="[2,300]" step="1" active="false">再生産</th> -->
-            </tr>
-            <tr id="slider_holder">
-              <td class="active"></td>
-              <td colspan="6">
-                <div class="slider"></div>
-              </td>
-              <td class="value_display"></td>
-              <td class="type"></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="display:flex;margin:1%">
-          <button id="search_ability" >GO</button>
-        </div>
-
-        <div style="display:flex;width:100%">
-          <div class="compareSorce">
-            <table style="padding:3%;padding-bottom:0">
-              <td id="result_count">共<span></span>筆結果</td>
-              <td id="result_expand">展開<i class="material-icons">&#xe240;</i></td>
-              <td id="result_snapshot">截圖<i class="material-icons">&#xe439;</i></td>
-              <td id="batch_compare">批次加入比較序列<i class="material-icons">&#xe7f0;</i></td>
-            </table>
-            <div id="selected" class="sortable">
-            </div>
-            <div class="page_group">
-
-            </div>
-            <div class="button_group" >
-              <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
-              <span id="page_dot"></span>
-              <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
-            </div>
+    <div class="content">
+      <div class="search" style="width:100%;margin-bottom:20px">
+        <input type="text" id="searchBox" placeholder="Search for enemies...">
+        <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
+      </div>
+      <table id="upper_table">
+        <tr>
+          <th colspan="2">屬性</th>
+          <td colspan="4" class="select_color">
+            <span class='button' name='紅色敵人' value='0'>紅色敵人</span>
+            <span class='button' name='漂浮敵人' value='0'>漂浮敵人</span>
+            <span class='button' name='黑色敵人' value='0'>黑色敵人</span>
+            <span class='button' name='鋼鐵敵人' value='0'>鋼鐵敵人</span>
+            <span class='button' name='天使敵人' value='0'>天使敵人</span>
+            <span class='button' name='外星敵人' value='0'>外星敵人</span>
+            <span class='button' name='外星敵人(星)' value='0'>外星敵人(星)</span>
+            <span class='button' name='不死敵人' value='0'>不死敵人</span>
+            <span class='button' name='白色敵人' value='0'>白色敵人</span>
+            <span class='button' name='無屬性敵人' value='0'>無屬性敵人</span>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2" rowspan="2">能力</th>
+          <td colspan="4" rowspan="2" class="select_ability">
+            <span class='button' name='爆擊' value='0'>爆擊</span>
+            <span class='button' name='鋼鐵' value='0'>鋼鐵</span>
+            <span class='button' name='緩速' value='0'>緩速</span>
+            <span class='button' name='波動' value='0'>波動</span>
+            <span class='button' name='擊退' value='0'>擊退</span>
+            <span class='button' name='暫停' value='0'>暫停</span>
+            <span class='button' name='連續攻擊' value='0'>連續攻擊</span>
+            <span class='button' name='降攻' value='0'>降攻</span>
+            <span class='button' name='增攻' value='0'>增攻</span>
+            <span class='button' name='攻城' value='0'>攻城</span>
+            <span class='button' name='遠方攻擊' value='0'>遠方攻擊</span>
+            <span class='button' name='免疫擊退' value='0'>免疫擊退</span>
+            <span class='button' name='免疫緩速' value='0'>免疫緩速</span>
+            <span class='button' name='免疫波動' value='0'>免疫波動</span>
+            <span class='button' name='免疫暫停' value='0'>免疫暫停</span>
+            <span class='button' name='免疫降攻' value='0'>免疫降攻</span>
+            <span class='button' name='潛地' value='0'>潛地</span>
+            <span class='button' name='復活' value='0'>復活</span>
+            <span class='button' name='傳送' value='0'>傳送</span>
+            <span class='button' name='護盾' value='0'>護盾</span>
+          </td>
+        </tr>
+      </table>
+      <table id="lower_table">
+        <tbody>
+          <tr>
+            <th rowspan="2" id="selectAll"> 啟用</th>
+            <th colspan="8"> 數值篩選器 </th>
+          </tr>
+          <tr>
+            <th class="filter_option" id="hp" lv-bind="false" value="10000" type="0" range="[1000,100000]" step="1000" active="false">體力</th>
+            <th class="filter_option" id="dps" lv-bind="false" value="3000" type="0" range="[100,10000]" step="100" active="false">DPS</th>
+            <th class="filter_option" id="speed" lv-bind="false" value="10" type="0" range="[1,100]" step="1" active="false">速度</th>
+            <th class="filter_option" id="reward" lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false">獲得金錢</th>
+            <th class="filter_option" id="freq" lv-bind="false" value="5" type="0" range="[1,20]" step="0.5" active="false">攻頻</th>
+            <th class="filter_option" id="atk" lv-bind="false" value="10000" type="0" range="[1000,100000]" step="1000" active="false">攻撃力</th>
+            <th class="filter_option" id="range" lv-bind="false" value="300" type="0" range="[10,1000]" step="10" active="false">射程</th>
+            <th></th>
+            <!-- <th class="filter_option" id="再生産" lv-bind="false" value="5" reverse="false" range="[2,300]" step="1" active="false">再生産</th> -->
+          </tr>
+          <tr id="slider_holder">
+            <td class="active"></td>
+            <td colspan="6">
+              <div class="slider"></div>
+            </td>
+            <td class="value_display"></td>
+            <td class="type"></td>
+          </tr>
+        </tbody>
+      </table>
+      <button id="search_ability" >GO</button>
+      <div class="compareSorce">
+        <div class="title">
+          <span>搜尋篩選結果<span id="query"></span></span>
+          <div id="option">
+            <div id="result_expand"><i class="material-icons">&#xe240;</i><span class="tag">展開/收合</span></div>
+            <div id="result_snapshot"><i class="material-icons">&#xe439;</i><span class="tag">截圖</span></div>
+            <div id="batch_compare"><i class="material-icons">&#xE8CC;</i><span class="tag">批次加入比較序列</span></div>
           </div>
-
+          <span id="result_count">共<span></span>筆結果</span>
         </div>
-
-        <div class="display" style="position:relative">
-          <div id='more_option'>
-            <!-- <td id='addfight'>加到對戰 &#9876;</td> -->
-            <!-- <div id='share'>
-            <i class="material-icons">&#xe80d;</i>
-            <span class="tag">分享</span>
-            </div> -->
-          <div id='addcart'>
-            <i class="material-icons">&#xE8CC;</i>
-            <span class="tag">加到購物車</span>
-          </div>
-          <div>
-            <a target='blank' id="out"><i class="material-icons">&#xe895;</i></a>
-            <span class="tag">在超絕攻略網打開</span>
-          </div>
-          <div id='snapshot'>
-            <i class="material-icons" style="font-size:24px">&#xe439;</i>
-            <span class="tag">截圖</span>
-          </div>
+        <div id="selected" class="sortable">
         </div>
-          <table class="dataTable">
-            <tr>
-              <th>ID</th><td id="id"></td>
-              <th>查詢次數</th><td id="count"></td>
-            </tr>
-            <tr>
-              <th style='height:80px;padding:0;background-size:cover' class="img"></th>
-              <th colspan=5 rarity='data.rarity' class='name'></th>
-            </tr>
-            <tr>
-              <th colspan='1'>倍率</th>
-              <td colspan=5 id='level_num'>
-                <span style='margin:0 10px'></span>
-              </td>
-            </tr>
-            <tr>
-              <th>體力</th><td id='hp'></td>
-              <th>KB</th><td id='KB'></td>
-              <th>硬度</th><td id='hardness'></td>
-            </tr>
-            <tr>
-              <th>攻擊力</th><td id='atk'></td>
-              <th>DPS</th><td id='DPS'></td>
-              <th>射程</th><td id='range'></td>
-            </tr>
-            <tr>
-              <th>攻頻</th><td id='freq'></td>
-              <th>跑速</th><td id='speed'></td>
-              <td colspan='2' rowspan='2' id='aoe'></td>
-            </tr>
-            <tr>
-              <th>獲得金錢</th><td id='reward'></td>
-              <th>屬性</th><td id='color'></td>
-            </tr>
-            <tr>
-              <td colspan='6' id='char'></td>
-            </tr>
-
-          </table>
-        </div>
-
-        <div id="compareTarget_tag">
-          <i class="material-icons">&#xe315;</i>敵人購物車
-          <span id="compare_number">0</span>
-        </div>
-        <div class="compareTarget_holder">
-          <span id='clear_compare'>Clear All</span>
-          <div class="compareTarget sortable">
-          </div>
+        <div class="button_group" style="margin-top:10px" >
+          <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
+          <span id="page_dot"></span>
+          <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
         </div>
       </div>
+
     </div>
+    <div class="content">
+      <div id='more_option'>
+        <!-- <td id='addfight'>加到對戰 &#9876;</td> -->
+        <!-- <div id='share'>
+        <i class="material-icons">&#xe80d;</i>
+        <span class="tag">分享</span>
+      </div> -->
+      <div id='addcart'>
+        <i class="material-icons">&#xE8CC;</i>
+        <span class="tag">加到購物車</span>
+      </div>
+      <div>
+        <a target='blank' id="out"><i class="material-icons">&#xe895;</i></a>
+        <span class="tag">在超絕攻略網打開</span>
+      </div>
+      <div id='snapshot'>
+        <i class="material-icons">&#xe439;</i>
+        <span class="tag">截圖</span>
+      </div>
+    </div>
+      <div class="display" style="top:-200">
+      <table class="dataTable">
+        <tr>
+          <th>ID</th><td id="id"></td>
+          <th>查詢次數</th><td id="count"></td>
+        </tr>
+        <tr class="non_mobile">
+          <th style='height:80px;padding:0' class="img"></th>
+          <th colspan=5 rarity='data.rarity' class='name'></th>
+        </tr>
+        <tr class="mobile">
+          <th class="name" colspan="6"></th>
+        </tr>
+        <tr class="mobile">
+          <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
+          </th>
+        </tr>
+        <tr>
+          <th colspan='1'>倍率</th>
+          <td colspan=5 id='level_num'>
+            <span style='margin:0 10px'></span>
+          </td>
+        </tr>
+        <tr>
+          <th>體力</th><td id='hp'></td>
+          <th>KB</th><td id='KB'></td>
+          <th>硬度</th><td id='hardness'></td>
+        </tr>
+        <tr>
+          <th>攻擊力</th><td id='atk'></td>
+          <th>DPS</th><td id='DPS'></td>
+          <th>射程</th><td id='range'></td>
+        </tr>
+        <tr>
+          <th>攻頻</th><td id='freq'></td>
+          <th>跑速</th><td id='speed'></td>
+          <td colspan='2' rowspan='2' id='aoe'></td>
+        </tr>
+        <tr>
+          <th>獲得金錢</th><td id='reward'></td>
+          <th>屬性</th><td id='color'></td>
+        </tr>
+        <tr>
+          <td colspan='6' id='char'></td>
+        </tr>
+
+      </table>
+    </div>
+
+    <div id="compareTarget_tag">
+      <i class="material-icons">&#xe315;</i>敵人購物車
+      <span id="compare_number">0</span>
+    </div>
+    <div class="compareTarget_holder">
+      <span id='clear_compare'>Clear All</span>
+      <div class="compareTarget">
+      </div>
+    </div>
+  </div>
 
     <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>

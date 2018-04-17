@@ -88,6 +88,7 @@ button:active{
 #search_ability{
   font-size: 25px;
   padding: 3px 30px;
+  margin: 30px;
 }
 .select_rarity td,
 .select_color td,
@@ -158,8 +159,7 @@ td, th {
   transition: .3s ease-in-out;
 }
 #selected{
-  margin: 2% 4% ;
-  width: 93%;
+  width: 100%;
   height: 347.88px;
   display: none;
   flex-wrap: wrap;
@@ -194,10 +194,29 @@ table {
 .tbody_togger th{width: 100%;}
 .compareSorce{
   display: flex;
-  width: 80%;
   flex-direction: column;
   align-items: center;
-  flex:6 ;
+  width: 100%;
+}
+.compareSorce .title{
+  width: 100%;
+  background-color: rgba(255,255,255,.9);
+  padding: 5px 20px;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  min-height: 46px
+}
+.compareSorce .title #option{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.compareSorce .title #option span{display: none;}
+.compareSorce .title #option div{
+
 }
 
 .compareTarget_holder::-webkit-scrollbar,
@@ -350,22 +369,53 @@ table {
 }
 #more:hover{color:rgb(222, 157, 32);}
 #more_option{
-  height: 0px;
-  width: 100%;
-  display: flex;
+  position: sticky;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  top: 10%;
+  z-index: 3;
+  left: 86%;
+  overflow: visible;
+}
+.compareSorce .title #option div,
+#more_option div{
+  margin: 10px;
+  background-color: rgba(255, 255, 255, 0.71);
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: .2s ease-in-out;
   position: relative;
+  color: black;
+  width: auto;
+  height: auto;
   top: 0;
   left: 0;
-  align-items: center;
-  transition: .4s ease-in-out;
-  overflow: hidden;
 }
-#more_option td{
-  cursor: pointer;
+.compareSorce .title #option div{
+  border: 1px solid;
+  margin: 0 20px;
+}
+.compareSorce .title #option div:hover,
+#more_option div:hover{
+  background-color: rgba(150, 150, 150, 0.88);
+  color: rgb(244, 214, 43);
+}
+.compareSorce .title #option div .tag,
+#more_option .tag{
+  display: none;
+  top: 0;
+  position: absolute;
+  left: 30px;
+  padding: 5px 10px;
+  width: 200px;
   font-weight: bold;
+  color: black !important;
 }
-#more_option td i {font-size: 16px;}
-#more_option td:hover{color:rgb(230, 155, 56)}
+.compareSorce .title #option div .tag{
+  top: 30px;left:-8;font-size: 14px
+}
 #copy_alert,
 #fight_alert,
 #batch_alert,
@@ -407,7 +457,6 @@ table {
 }
 canvas{transition: .4s ease-in-out}
 #canvas_holder a,
-#snapshot,
 #canvas_holder span,
 .floatbutton{
   color: white;
@@ -431,7 +480,7 @@ canvas{transition: .4s ease-in-out}
   bottom: 140px;
 }
 #canvas_holder #zoom_in{bottom: 200px;}
-#canvas_holder a i,#snapshot i{font-size: 36px}
+#canvas_holder a i{font-size: 36px}
 #canvas_holder a:hover,
 #canvas_holder span:hover,
 #snapshot:hover,

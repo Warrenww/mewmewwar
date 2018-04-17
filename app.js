@@ -60,40 +60,45 @@ var __numberOfCat = 0,
     mostSearchCat = {name:"",count:-999},
     secondMostSearchCat = {name:"",count:-999},
     thirdMostSearchCat = {name:"",count:-999};
-database.ref("/").once("value",function (snapshot) {
-  catdata = snapshot.val().newCatData ;
-  combodata = snapshot.val().combodata ;
-  enemydata = snapshot.val().enemydata ;
-  stagedata = snapshot.val().stagedata ;
-  gachadata = snapshot.val().gachadata ;
-  rankdata = snapshot.val().rankdata ;
-  userdata = snapshot.val().user ;
-  eventdata = snapshot.val().event_date ;
-  catComment = snapshot.val().catComment ;
-  console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
-  for(let i in catdata){
-    __numberOfCat ++ ;
-    if(catdata[i].count>mostSearchCat.count){
-      if(mostSearchCat.count>secondMostSearchCat.count){
-        if(secondMostSearchCat.count>thirdMostSearchCat.count){
-          thirdMostSearchCat = Object.assign({},secondMostSearchCat);
+ReloadAllData();
+function ReloadAllData() {
+  database.ref("/").once("value",function (snapshot) {
+    catdata = snapshot.val().newCatData ;
+    combodata = snapshot.val().combodata ;
+    enemydata = snapshot.val().enemydata ;
+    stagedata = snapshot.val().stagedata ;
+    gachadata = snapshot.val().gachadata ;
+    rankdata = snapshot.val().rankdata ;
+    userdata = snapshot.val().user ;
+    eventdata = snapshot.val().event_date ;
+    catComment = snapshot.val().catComment ;
+    console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
+    for(let i in catdata){
+      __numberOfCat ++ ;
+      if(catdata[i].count>mostSearchCat.count){
+        if(mostSearchCat.count>secondMostSearchCat.count){
+          if(secondMostSearchCat.count>thirdMostSearchCat.count){
+            thirdMostSearchCat = Object.assign({},secondMostSearchCat);
+          }
+          secondMostSearchCat = Object.assign({},mostSearchCat);
         }
-        secondMostSearchCat = Object.assign({},mostSearchCat);
+        mostSearchCat = {name:catdata[i].name,count:catdata[i].count};
       }
-      mostSearchCat = {name:catdata[i].name,count:catdata[i].count};
     }
-  }
-  console.log("most Search Cat : ",mostSearchCat);
-  console.log("second most Search Cat : ",secondMostSearchCat);
-  console.log("third most Search Cat : ",thirdMostSearchCat);
-  arrangeUserData();
-  geteventDay();
-});
+    console.log("most Search Cat : ",mostSearchCat);
+    console.log("second most Search Cat : ",secondMostSearchCat);
+    console.log("third most Search Cat : ",thirdMostSearchCat);
+    arrangeUserData();
+    geteventDay();
+  });
+  setTimeout(ReloadAllData,6*3600*1000);
+}
 
 
 io.on('connection', function(socket){
   socket.on("gacha search",function (data) {
     console.log(data);
+    if (!data.uid) return
     console.log("recording last search quene");
     database.ref("/user/"+data.uid+"/history/last_"+data.type+"_search").set(data)
     .then(userdata[data.uid].history["last_"+data.type+"_search"] = data);
@@ -101,6 +106,7 @@ io.on('connection', function(socket){
     let gFilter = data.query ,buffer=[],buffer_1=[];
     for(let i in gFilter){
       // console.log(gachadata[gFilter[i]].ssr);
+      if(!gachadata[gFilter[i]]) continue
       let include = gachadata[gFilter[i]].include?gachadata[gFilter[i]].include:[]
       buffer = buffer.concat(gachadata[gFilter[i]].ssr).concat(include)
     }
@@ -119,11 +125,12 @@ io.on('connection', function(socket){
       }
     }
     // console.log(buffer_1);
-    socket.emit("search result",buffer_1);
+    socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
   });
   socket.on("normal search",function (data) {
         console.log("searching "+data.type+"....");
         console.log(data);
+        if(!data.uid) return
         let rFilter = data.query.rFilter?data.query.rFilter:[],
             cFilter = data.query.cFilter?data.query.cFilter:[],
             aFilter = data.query.aFilter?data.query.aFilter:[],
@@ -226,8 +233,9 @@ io.on('connection', function(socket){
           }
         }
         console.log("Result length:",buffer_1.length);
-        if(type == 'enemy') socket.emit("search result enemy",buffer_1);
-        else socket.emit("search result",buffer_1);
+        if(type == 'enemy') socket.emit("search result enemy",{result:buffer_1,query:data.query,type:data.query_type});
+        else  socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
+
   });
   socket.on("text search",function (obj) {
     console.log("Text Search : "+obj.type+"_"+obj.key);
@@ -271,7 +279,7 @@ io.on('connection', function(socket){
       }
     }
     // console.log(buffer);
-    socket.emit("search result",buffer);
+    socket.emit("search result",{result:buffer,query:data.query,type:data.query_type});
   });
   socket.on("display cat",function (data) {
     console.log("display cat");
@@ -336,6 +344,7 @@ io.on('connection', function(socket){
     let buffer = enemydata[id];
 
     if(uid&&id){
+      if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
       let data = userdata[uid].variable.enemy[id];
       data = data?data:{};
       data.count = data.count?(data.count+1):1
@@ -358,7 +367,6 @@ io.on('connection', function(socket){
         userdata[uid].history.last_enemy = id;
         database.ref("/user/"+uid+"/history/last_enemy").set(id);
         console.log("count enemy search time(user)");
-        if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
         if(!userdata[uid].variable.enemy[id]) userdata[uid].variable.enemy[id]={};
         userdata[uid].variable.enemy[id].count = count;
         database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
@@ -433,7 +441,8 @@ io.on('connection', function(socket){
     console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
     database.ref('/user/'+user.uid).update({"last_login" : timer});
     let history = userdata[user.uid].history,
-        setting = userdata[user.uid].setting ;
+        setting = userdata[user.uid].setting,
+        variable = userdata[user.uid].variable;
     last_cat = history.last_cat;
     last_enemy = history.last_enemy;
     last_combo = history.last_combo;
@@ -496,7 +505,34 @@ io.on('connection', function(socket){
     else if(page == 'combo'){CurrentUserData.last_combo = last_combo;}
     else if(page == 'compareCat'){CurrentUserData.compare_c2c = arr;}
     else if(page == 'compareEnemy'){CurrentUserData.compare_e2e = brr;}
-    else if(page == 'compareEnemy'){CurrentUserData.fight = fight;}
+    else if(page == 'fight'){CurrentUserData.fight = fight;}
+    else if(page == 'history'){
+      obj = {cat:{},enemy:{},stage:{}};
+      for(i in history.cat){
+        let id = history.cat[i].id,
+            name = catdata[id].name?catdata[id].name:catdata[id].jp_name,
+            lv = variable.cat[id.substring(0,3)].lv;
+        obj.cat[i] = {id:id,time:history.cat[i].time,name:name,lv:lv}
+      }
+      for(i in history.enemy){
+        let id = history.enemy[i].id,
+            name = enemydata[id].name?enemydata[id].name:enemydata[id].jp_name,
+            lv = variable.enemy[id].lv;
+        obj.enemy[i] = {id:id,time:history.enemy[i].time,name:name,lv:lv?lv:1}
+      }
+      for(i in history.stage){
+        let id = history.stage[i].id.split("-"),
+            chapter = id[0],stage=stagedata[id[0]][id[1]].name,
+            level=stagedata[id[0]][id[1]][id[2]].name;
+        obj.stage[i] = {
+          id:id.join("-"),
+          time:history.stage[i].time,
+          chapter:chapter,level:level,stage:stage
+        }
+      }
+      obj.last_gacha = last_gacha;
+      CurrentUserData.history = obj;
+    }
     else if(page == 'stage'){
       CurrentUserData.last_stage = last_stage;
       CurrentUserData.setting = {show_more_option:setting.show_more_option};
@@ -605,6 +641,7 @@ io.on('connection', function(socket){
       let brr = data.arr ;
       console.log("batch add",brr.length);
       for(let i in brr){
+        if (!userdata[data.uid].variable.cat[brr[i]]) userdata[data.uid].variable.cat[brr[i]] = {};
         userdata[data.uid].variable.cat[brr[i]].own = true;
         database.ref("/user/"+data.uid+"/variable/cat/"+brr[i]).update({own:true});
         if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
@@ -627,6 +664,7 @@ io.on('connection', function(socket){
   socket.on("require setting",function (id) {
     console.log("require "+id+"'s setting");
     coinhive.balance(id,res => {
+      console.log(res);
         res = JSON.parse(res);
         if(res.success){
           console.log(id,res.total,'hash');
@@ -782,6 +820,7 @@ io.on('connection', function(socket){
   socket.on("rankdata",function () { socket.emit("recive rank data",rankdata); });
 
   socket.on("record gacha",function (data) {
+    if(!gachadata[data.gacha]) return
     var uid = data.uid,
         gacha = data.gacha,
         result = JSON.parse(JSON.stringify(gachadata[gacha]));
@@ -800,6 +839,24 @@ io.on('connection', function(socket){
       }
     }
     socket.emit("gacha result",{ result:result});
+  });
+  socket.on("gacha history",function (data) {
+    let uid = data.uid,
+        gacha = data.gacha;
+    if(!uid||!gacha) return
+    let key = database.ref().push().key;
+    if(!userdata[uid].history.gacha) userdata[uid].history.gacha = {}
+    var last={key:"",name:""}
+    for(let i in userdata[uid].history.gacha){
+      last.key = i ;
+      last.name = userdata[uid].history.gacha[i].name;
+    }
+    if(last.name == gacha) key = last.key;
+    userdata[uid].history.gacha[key] = {
+      name:gacha,ssr:data.ssr,sr:data.sr,r:data.r,
+      time:new Date().getTime()
+    }
+    database.ref("/user/"+uid+"/history/gacha/"+key).set(userdata[uid].history.gacha[key]);
   });
 
   socket.on("compare C2E",function (data) {
@@ -965,11 +1022,7 @@ io.on('connection', function(socket){
     socket.emit('cat to stage',{find,stage});
   });
 });
-var timeout,user=[],userCount=0 ;
 function arrangeUserData() {
-  timeout = setTimeout(function () {
-    arrangeUserData();
-  },3600000*3);
   console.log('arrange user data');
   let count = 0,
       timer = new Date().getTime();
@@ -998,16 +1051,16 @@ function arrangeUserData() {
         .catch(function(error) { console.log("Error deleting user:", error); });
         continue
       }
-      let arr=[],edit = ['cat','enemy','combo','stage'];
+      let arr=[],edit = ['cat','enemy','combo','stage','gacha'];
       count ++ ;
       for(let j in edit){
         for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
-        if (arr.length > 20){
+        if (arr.length > 40){
           console.log(i+" too many "+edit[j]);
           let l=0 ;
           for(let k in userdata[i].history[edit[j]]){
             l++;
-            if(l < (arr.length-19)) database.ref('/user/'+i+"/history/"+edit[j]+"/"+k).remove();
+            if(l < (arr.length-39)) database.ref('/user/'+i+"/history/"+edit[j]+"/"+k).remove();
           }
         }
         arr = [];
@@ -1095,7 +1148,6 @@ function geteventDay() {
           }
         }
       });
-  setTimeout(function () { geteventDay() },12*3600*1000);
 }
 function parsePrediction(obj,eventdate) {
   console.log(obj.name);

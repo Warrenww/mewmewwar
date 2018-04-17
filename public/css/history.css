@@ -1,0 +1,50 @@
+.window{
+  width: 100%;
+  background-color: rgba(240, 240, 240,.9);
+  border-radius: 20px;
+  padding: 3%;
+  font-size: 20px;
+}
+.title{
+  border-bottom: 2px solid rgba(0,0,0,.9);
+  padding: 0 20px;
+  position: relative;
+  font-weight: bold;
+}
+.title span{
+  cursor: pointer;
+  padding: 0 5px;
+  transition: .3s ease-in-out;
+  font-size: 24px
+}
+.title div{
+  width: 0;
+  position: absolute;
+  bottom: 0;
+  left: 20;
+  transition: .3s ease-in-out;
+}
+.title div,
+.title span[value~='1']{
+  border-bottom: 3px solid rgb(236, 155, 34);
+}
+.main_board{
+  padding: 0 5%
+}
+.main_board button{
+  width: 90px;
+  height: 60px
+}
+.main_board div{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  border-bottom: 0.1px solid;
+  cursor: pointer;
+}
+.main_board div:hover{
+  background-color: rgba(230,230,230,0.6);
+  box-shadow: 0px 1px 10px 0px;
+}
+.main_board div img{width: 120px}

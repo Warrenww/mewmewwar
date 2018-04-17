@@ -80,16 +80,6 @@ $(document).ready(function () {
     setTimeout(function () { $("#loading").fadeOut(); },2500);
   });
   if(screen.width<=768) $("#level_num").parent().attr("colspan",5);
-  var page_2_sticky = 0;
-  $('.page_2').scroll(function () {
-    let aa = $(this).scrollTop();
-    if(Number(aa)){
-      if(page_2_sticky) return
-      scroll_to_class('page_2',0);
-      page_2_sticky = 1;
-    }
-    else page_2_sticky = 0;
-  });
   var tip_fadeOut;
   $(".select_ability .button").click(function () {
     let text = $(this).children("span").text(),
@@ -118,7 +108,6 @@ $(document).ready(function () {
   });
 
   $(document).on('click','.card',function (e) {
-
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
     else
       socket.emit("display cat",{
@@ -203,7 +192,7 @@ $(document).ready(function () {
   });
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
-    console.log(result) ;
+    // console.log(result) ;
     let data = new Cat(result.this),
         arr = result.bro,
         brr = result.combo,
@@ -220,7 +209,7 @@ $(document).ready(function () {
     number_page = 0 ;
     page_factor = 1 ;
     $("#selected,#page_dot").empty();
-    $("#selected").css('display','flex').scrollTop(0).append(condenseCatName(data));
+    $("#selected").css('display','flex').scrollTop(0).append(condenseCatName(data.result));
     scroll_to_div("selected");
     let select_width = $("#selected").innerWidth(),
         card_width = screen.width > 1024 ? 216 :140,
@@ -230,7 +219,23 @@ $(document).ready(function () {
     if(number_page>25) page_factor = 2;
     for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
-      $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
+    $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
+    if (data.type == "gacha"&&data.query.length == 1)
+      $(".compareSorce .title #option #Gogacha").attr('value',data.query[0]).show();
+    else $(".compareSorce .title #option #Gogacha").hide();
+    let query = '';
+    for(let i in data.query){
+      if(data.type == 'gacha') query+=parseGachaName(data.query[i])+" ";
+      else for(let j in data.query[i]) query+=(parseRarity(data.query[i][j])?parseRarity(data.query[i][j]):data.query[i][j])+" ";
+    }
+    // console.log(query);
+    $(".compareSorce").find("#query").text("篩選條件:"+query);
+    function parseGachaName(name) {
+       $("#gacha_table").find(".button").each(function () {
+        if($(this).attr('id') == name) name = $(this).text();
+      });
+      return name
+    }
   });
   function condenseCatName(data) {
     let now = '000' ;
@@ -266,8 +271,8 @@ $(document).ready(function () {
         id = data.id,
         grossID = id.substring(0,3);
 
-    if(own) $("#more_option #mark_own").attr({"value":1,'cat':grossID}).find(".tag span").fadeOut();
-    else $("#more_option #mark_own").attr({"value":0,'cat':grossID}).find(".tag span").fadeIn();
+    if(own) $("#more_option #mark_own").attr({"value":1,'cat':grossID}).find("i").html("&#xE8E6;").siblings().children().fadeOut();
+    else $("#more_option #mark_own").attr({"value":0,'cat':grossID}).find("i").html("&#xE8E7;").siblings().children().fadeIn();
     $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+grossID+".html");
 
     for (let i in data){
@@ -296,7 +301,7 @@ $(document).ready(function () {
     $(".dataTable").find(".combo").remove();
     $(AddCombo(brr)).insertAfter('.dataTable #combo_head');
     initialSlider(data,lv);
-    scroll_to_class("page_2",0);
+    scroll_to_class("content",1);
   }
   function initialSlider(data,lv) {
     $("#level").slider({
@@ -317,7 +322,7 @@ $(document).ready(function () {
           lv : ui.value,
           type : 'cat'
         });
-      },100);
+      },200);
     });
     $("#level").on("slide", function(e,ui) {
       $("#level_num").html(ui.value);
@@ -391,11 +396,10 @@ $(document).ready(function () {
       type:"cat"
     });
     ga('send', 'event', 'search', type,'cat');
-
     scroll_to_div('selected');
   }
   var result_expand = 0,originHeight;
-  $(document).on('click','.compareSorce td',function () {
+  $(document).on('click','.compareSorce .title #option div',function () {
     let type = $(this).attr("id");
     if(type == 'result_snapshot'){
       let target = $("#selected")[0];
@@ -404,17 +408,20 @@ $(document).ready(function () {
         setTimeout(function () { snapshot(target); },500)
         setTimeout(function () { $("#result_expand").click(); },500)
       } else snapshot(target);
-    } else if(type == 'result_expand'){
+    }
+    else if(type == 'result_expand'){
       let trueHeight = $("#selected")[0].scrollHeight;
       if(!result_expand){
         originHeight = $("#selected")[0].offsetHeight;
-        $(this).html("收合<i class='material-icons'>&#xe240;</i>");
-      } else  $(this).html("展開<i class='material-icons'>&#xe240;</i>");
+      }
       $("#selected").css("height",function () {
         return result_expand?originHeight:trueHeight
       });
       result_expand = result_expand?0:1;
-    } else if(type == 'batch_own'){
+    }
+    else if(type == 'batch_own'){
+      let r = confirm("確定批次加入「我擁有的貓咪」?!");
+      if(!r) return
       socket.emit("mark own",{
         uid:current_user_id,
         arr:current_search,
@@ -423,10 +430,43 @@ $(document).ready(function () {
       $("#batch_alert").css("left",-10);
       setTimeout(function () { $("#batch_alert").css("left",-250); },2600);
     }
+    else if(type == 'batch_compare'){
+      // console.log(current_search);
+      let r = confirm("確定覆蓋現有比較序列?!");
+      if(!r) return
+      if(current_search.length<15*3){
+        $(".compareTarget").empty();
+        let target = [];
+        $("#selected").children('.card-group').each(function () {
+          let visible = $(this).children(".card:visible"),
+              id = visible.attr('value'),
+              name = visible.text();
+          // console.log(id,name);
+          if(id) {
+            compareTargetAddCard(id,name);
+            target.push(id);
+          }
+        });
+        // console.log(target);
+        socket.emit("compare cat",{id:current_user_id,target:target});
+        if(showcomparetarget) showhidecomparetarget();
+        $("#compare_number").text(target.length);
+      }
+      else alert("超過15隻!!!");
+    }
+    else if (type == 'Gogacha') {
+      socket.emit("record gacha",{
+        uid:current_user_id,
+        gacha:$(this).attr('value')
+      });
+      window.parent.reloadIframe("gacha");
+    }
   });
   $(document).on("click","#mark_own",function () {
     let val = Number($(this).attr("value"))?0:1,
-        cat = $(this).attr("cat");
+        cat = $(this).attr("cat"),
+        icon = val?"&#xE8E6;":"&#xE8E7;";
+    $(this).find("i").html(icon);
     if(cat)
       socket.emit("mark own",{
         uid:current_user_id,
@@ -498,17 +538,12 @@ $(document).ready(function () {
     }
   });
   socket.on("cat to stage",function (data) {
-    console.log(data);
+    // console.log(data);
     if(data.find) window.parent.reloadIframe('stage');
     else
       window.open('https://battlecats-db.com/stage/'+data.stage+'.html',"_blank");
-
   });
 
-  $(".sortable").sortable({
-    scroll:false,
-    delay:150
-  });
   $(".slider").slider();
 
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
@@ -542,7 +577,10 @@ $(document).ready(function () {
       let r = confirm("確定要將"+target.text()+"從比較列中移除?") ;
       if(!r) return
       target.remove();
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      compare = [];
+      $('.compareTarget').children(".card").each(function () {
+        compare.push($(this).attr("value"));
+      });
       $("#compare_number").text(compare.length);
       socket.emit("compare cat",{id:current_user_id,target:compare});
     });
@@ -557,7 +595,10 @@ $(document).ready(function () {
   var compare ;
   function addToCompare(target,name) {
     if(showcomparetarget) showhidecomparetarget();
-    let compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+    compare = [];
+    $('.compareTarget').children(".card").each(function () {
+      compare.push($(this).attr("value"));
+    });
     if(compare.indexOf(target) != -1) {
       let repeat = $('.compareTarget').find('[value='+target+']') ;
       repeat.css('border-color','rgb(237, 179, 66)');
@@ -568,7 +609,10 @@ $(document).ready(function () {
       $('.compareTarget_holder').animate({
         scrollTop : $('.compareTarget').height()
       },500,'easeInOutCubic');
-      compare = $('.compareTarget').sortable('toArray',{attribute:'value'});
+      compare = [];
+      $('.compareTarget').children(".card").each(function () {
+        compare.push($(this).attr("value"));
+      });
       $("#compare_number").text(compare.length);
       socket.emit("compare cat",{id:current_user_id,target:compare});
     }
@@ -588,9 +632,6 @@ $(document).ready(function () {
     compare = [];
     $("#compare_number").text(0);
     socket.emit("compare cat",{id:current_user_id,target:compare});
-  });
-  $(document).on('click','#more_option #top',function () {
-    $('.page_2').animate( {scrollTop: 0}, 600,'easeInOutCubic');
   });
   $(document).on("click","#addfight",function () {
     let id = $(this).parents("#more_option").siblings().attr("id");
@@ -943,7 +984,7 @@ $(document).ready(function () {
     // console.log(data);
     let last = $('.comment').last();
     $(commentHtml(data.key,data,data.photo,data.name)).insertBefore(last);
-    $(".page_2").animate({scrollTop:$('.comment').last()[0].offsetTop},800);
+    // $(".content").eq(1).animate({scrollTop:$('.comment').last()[0].offsetTop},800);
   });
   function commentHtml(id,comment,photo=null,name=null) {
     let html,uid = current_user_id;
@@ -1070,7 +1111,7 @@ $(document).ready(function () {
       else{
         group.children(".card:visible").hide().parent().children('.card').eq(0).show();
       }
-    },400);
+    },300);
   }
   function changeSlider() {
     let target = $("#"+filter_name+".filter_option");

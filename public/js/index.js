@@ -234,7 +234,7 @@ $(document).ready(function () {
       "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
       "gacha":"轉蛋資訊", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
       "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
-      "setting":"設定"
+      "setting":"設定","rank":"等級排行","history":"歷程記錄"
     }
     function parse_iframe_name(str) {
       return iframeName[str]
@@ -297,24 +297,13 @@ $(document).ready(function () {
       if (this.readyState == 4 && this.status == 200){
         update_dialog = this.responseText ;
         $("#helpModal").find(".modal-body").html(update_dialog);
-        $("#helpModal").find(".modal-header .title").text("更新紀錄");
-        $("#helpModal").find(".modal-footer").html("本網站資料來源主要為<a href='https://cnhv.co/rnwe' target='blank'>超絕攻略網</a>");
       }
     }
-    socket.emit('get event date');
-    socket.on('true event date',function (data) {
-      let a = data.now,
-          b = today.getFullYear()+"/"+AddZero(today.getMonth()+1)+"/"+AddZero(today.getDate());
-      if(a == b){
-        $("nav").find("#event").addClass("new");
-      }
-    });
 
     //temp
     let dd = today.getDate(),
         hh = today.getHours(),
-        html='',
-        arrr = ['紺野美崎','貓塚花凜','片桐戀','虹谷彩理'];
+        html='';
     // console.log(dd,hh);
 
     $("#year_event").click(function () {$(this).fadeOut();});
@@ -323,38 +312,42 @@ $(document).ready(function () {
     });
 
     html+="<thead><tr><th></th>";
-    if(dd<27)
+    if(dd<29)
       for(let i=dd;i<dd+3;i++){
-        html+="<th>2月"+i+"日</th>";
+        html+="<th>4月"+i+"日</th>";
       }
     else{
-      html+="<th>2月27日</th><th>2月28日</th><th>3月1日</th>"
+      html+="<th>4月29日</th><th>4月30日</th><th>5月1日</th>"
     }
     html+="</tr></thead><tbody>";
-    for(let i=6;i<22;i+=3){
-      html+="<tr><td>"+i+":00~"+(i+3)+":00</td>";
+    for(let i=0;i<4;i++){
       switch (i) {
-        case 6:
-          for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4)%4]+"</td>"
+        case 0:
+          html+="<tr><td>7:00~9:00</td>";
+          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j)%2))+"使徒，來襲</br></td>"
           break;
-        case 12:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4-1)%4]+"</td>"
+        case 1:
+          html+="<tr><td>12:00~14:00</td>";
+          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j-1)%2))+"使徒，來襲</br></td>"
           break;
-        case 18:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4-2)%4]+"</td>"
+        case 2:
+          html+="<tr><td>17:00~19:00</td>";
+          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j)%2))+"使徒，來襲</br></td>"
           break;
-        case 21:
-        for(let j=0;j<3;j++)html+="<td>約會戰</br>"+arrr[Math.abs(dd%4+j+4-3)%4]+"</td>"
+        case 3:
+          html+="<tr><td>21:00~23:00</td>";
+          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j-1)%2))+"使徒，來襲</br></td>"
           break;
+
         default:
           html+="<td colspan='3'>-</td>"
       }
       html+="</tr>"
     }
-    // $("#year_event").find("table").append(html);
+    $("#year_event").find("table").append(html);
     hh = Math.floor(hh/3)-1;
-    // $("#year_event").find("tr").eq(hh).children().eq(1)
-    //     .css("border","3px solid rgb(246, 149, 34)")
+    $("#year_event").find("tr").eq(hh).children().eq(1)
+        .css("border","3px solid rgb(246, 149, 34)")
 
 
 });

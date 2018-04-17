@@ -142,7 +142,7 @@
 }
 .card-group{
   margin: 0 8px;
-  transition: .4s ease-in-out;
+  transition: .3s ease-in-out;
 }
 .search_type{
   width: 100%;
@@ -150,10 +150,6 @@
 }
 #mark_own[value~='0']{color:rgb(224, 103, 103)}
 #mark_own[value~='1']{color:rgb(96, 176, 37)}
-#mark_own[value~='0'] i:first-child{display: block;}
-#mark_own[value~='0'] i:nth-child(2){display: none;;}
-#mark_own[value~='1'] i:first-child{display: none;}
-#mark_own[value~='1'] i:nth-child(2){display: block;}
 .survey #nickname{display: flex}
 .survey #nickname span,
 .survey #nickname div,
@@ -223,6 +219,9 @@
   font-size: 20px;
   min-width: 1000px;
   z-index: 9
+}
+.display{
+  position: relative;top:-300px
 }
 .dataTable .img{
   background-size: contain;
@@ -313,45 +312,30 @@
 .function .like i:hover,
 .function .like i[value~='1']
 {color: rgb(251, 146, 60)}
-#more_option{
-  position: sticky;
-  flex-direction: column;
-  align-items: center;
-  height: auto;
-  top: 10%;
-  z-index: 3;
-  width: 50;
-  left: 86%;
-  overflow: visible;
+
+.compareSorce .title #option #Gogacha:hover i{
+  animation-name: rotate;
+  animation-duration: 2s;
+  animation-timing-function:cubic-bezier();
+  animation-iteration-count: 1;
 }
-#more_option .tag{
-  display: none;
-  top: 0;
+.compareSorce .title span #query{
   position: absolute;
-  left: 30px;
+  opacity: 0;
+  top: -30px;
   padding: 5px 10px;
-  width: 200px;
-  font-weight: bold;
-  color: black !important;
+  font-size: 14;
+  right: 0px;
+  background-color: rgba(255,255,255,.9);
+  transition: .3s ease-in-out;
 }
-#more_option div{
-  margin: 10px;
-  background-color: rgba(255, 255, 255, 0.71);
-  padding: 5px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: .2s ease-in-out;
-  position: relative;
-  color: black;
-  width: auto;
-  height: auto;
-  top: 0;
-  left: 0;
+.compareSorce .title:hover span #query{opacity: 1}
+@keyframes rotate {
+  0%{transform:rotate(0deg);}
+  50%{transform:rotate(720deg);}
+  100%{transform:rotate(360deg);}
 }
-#more_option div:hover{
-  background-color: rgba(150, 150, 150, 0.88);
-  color: rgb(244, 214, 43);
-}
+
 @media screen and (max-width:768px){
   .bulletin span{
     position: relative;
@@ -363,7 +347,6 @@
   }
   .dataTable .mobile{display: table-row;}
   .dataTable .non_mobile{display: none;}
-  #more_option{ left: 0; background-color: rgba(0, 0, 0, 0.35)}
 }
 @keyframes scrolling {
   0%{left:1000px}
