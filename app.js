@@ -615,8 +615,9 @@ io.on('connection', function(socket){
   });
   socket.on("history",function (uid) {
     console.log(uid+"'s history");
-    let data = userdata[uid].history,
-        owned = userdata[uid].folder.owned;
+    let data = userdata[uid].history;
+    if(!userdata[uid].folder)userdata[uid].folder = {};
+    let owned = userdata[uid].folder.owned;
     owned = owned != "0" ? owned : [];
     let buffer = {cat:[],enemy:[],owned:[]};
     for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].name,id :data.cat[i].id});
