@@ -33,6 +33,48 @@ $(document).ready(function () {
     }
   });
 
+  $("#searchBox").blur(textSearch);
+  $("#searchBut").click(textSearch);
+  function textSearch() {
+    let text = $("#searchBox").val();
+    if(text) socket.emit('text search stage',text);
+  }
+  socket.on('text search stage',function (data) {
+    // console.log(data);
+    let text = $("#searchBox").val();
+    $("#searchResult .result").empty();
+    for(let i in data){
+      $("#searchResult .result").append(
+        "<span id='"+data[i].id+"'>"+
+        resultName(data[i],text)+"</span>"
+      );
+    }
+    $("#searchResult").find("#num").text(data.length);
+    $("#searchResult").show(300);
+    function resultName(obj,text) {
+      let id = obj.id.split("-"),
+          name = id.length == 3?"<c>關卡</c> ":"<c>大關</c> ";
+      name += " <d>"+chapterName(id[0])+"</d> <d>";
+      name += obj.name.split("<br>").join("").split("/").join("</d> <d>").split(text).join("<b>"+text+"</b>");
+      return name
+    }
+  });
+  $("#searchResult i").click(function () {$("#searchResult").hide(300); });
+  $(document).on("click","#searchResult .result span",function () {
+    let id = $(this).attr("id").split("-");
+    if(id.length == 3){
+      socket.emit("required level data",{
+        uid: current_user_data.uid,
+        chapter:id[0],
+        stage:id[1],
+        level:id[2]
+      });
+    } else {
+      socket.emit("required stage name",{chapter:id[0]});
+      socket.emit("required level name",{chapter:id[0],stage:id[1]});
+      scroll_to_class("lv_sg_box",0);
+    }
+  });
   $(document).on("click",".select_chapter span",function () {
     $(this).next().toggle(400).siblings("div").hide(400)
   });

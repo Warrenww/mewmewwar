@@ -22,17 +22,32 @@ var stdin = process.openStdin();
 // database.ref("/newCatData").once("value",function (snapshot) {
 //   console.log('load complete');
 //   catdata = snapshot.val();
+//   let exist = '000',current,data='';
 //   for(let i in catdata){
-//     if(catdata[i].survey){
-//       console.log(i,catdata[i].survey);
-//       // let survey = catdata[i].survey;
-//       // survey.rank = {atk:"",control:"",cost:"",hp:"",range:"",speed:"",total:""};
-//       // for(let j in survey.rank){
-//       //   survey.rank[j] = {1:0,2:0,3:0,4:0,5:0}
-//       // }
-//       // database.ref("/newCatData/"+i+"/statistic").set(survey);
+//     console.log(i);
+//     current = i.substring(0,3);
+//     if(current == exist){
+//       if(catdata[i].name) data += ',"'+catdata[i].name+'"'
+//       if(catdata[i].statistic)
+//         for(let j in catdata[i].statistic.nickname){
+//           data += ',"'+catdata[i].statistic.nickname[j].nickname+'"'
+//         }
+//     }
+//     else {
+//       exist = current;
+//       data += '\r\n"'+current+'","'+current+'","'+catdata[i].jp_name+'"'
+//       if(catdata[i].name) data += ',"'+catdata[i].name+'"';
+//       if(catdata[i].statistic)
+//         for(let j in catdata[i].statistic.nickname){
+//           data += ',"'+catdata[i].statistic.nickname[j].nickname+'"'
+//         }
 //     }
 //   }
+//   fs.appendFile('cat.txt', data,(err) =>{
+//     if (err) throw err;
+//     console.log('Is saved!');
+//     process.exit();
+//   });
 // });
 
 // database.ref('/user').once("value",function (snapshot) {
@@ -75,6 +90,8 @@ var stdin = process.openStdin();
 function AddZero(n) {
   return n>99 ? n : (n>9 ? "0"+n : "00"+n)
 }
+
+
 var ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
 gsjson({
     spreadsheetId: ID,

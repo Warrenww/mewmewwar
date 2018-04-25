@@ -1,6 +1,7 @@
 const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
 const image_url_icon =  "../public/css/footage/gameIcon/" ;
+const image_url_gacha =  "../public/css/footage/gacha/" ;
 var showcomparetarget = 1 ;
 var filterObj = {};
 $(document).ready(function () {
@@ -292,7 +293,7 @@ function scroll_to_div(div_id){
 }
 function scroll_to_class(class_name,n) {
   $('html,body').animate(
-    {scrollTop: $("."+class_name).eq(n).offset().top},
+    {scrollTop: $("."+class_name).eq(n).offset().top-100},
     600,'easeInOutCubic');
 }
 function AddZero(n) {
@@ -384,4 +385,10 @@ function filterSlider(target) {
     value:Number(value)?Number(value):JSON.parse(value),
     lv_bind:target.attr('lv-bind')=='true'
   }
+}
+function parseRarity(r) {
+  let arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'],
+      brr = ['B','EX','R','SR','SR_alt','SSR'];
+
+  return arr[brr.indexOf(r)]
 }

@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/overall.css" />
     <link rel="stylesheet" href="../public/css/cat.css" />
+    <link rel="stylesheet" href="../public/css/stage.css" />
+    <link rel="stylesheet" href="../public/css/compareCat.css" />
     <link rel="stylesheet" href="../public/css/intro.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
@@ -73,7 +75,7 @@
       <div class="section_title">貓咪、敵人資料庫<i class="material-icons"onclick="scrollToDiv('database')">&#xE25A;</i></div>
       <div class="content">
         <p>
-          在貓咪資料庫與敵人資料庫頁面，主要分為三大區塊，
+          在貓咪資料庫與敵人資料庫頁面，主要分為五大區塊，
           <b style="color:#df5151;text-decoration:underline;cursor:pointer" onclick="scrollToDiv(0)">篩選器</b>、
           <b style="color:#df5151;text-decoration:underline;cursor:pointer" onclick="scrollToDiv(1)">篩選結果</b>、
           <b style="color:#df5151;text-decoration:underline;cursor:pointer" onclick="scrollToDiv(2)">資料顯示區</b>、
@@ -316,6 +318,7 @@
           第一列的貓咪id與查詢次數，預設不會顯示，可以在設定中打開它。
           第二列會顯示貓咪的圖片與名字，右邊則時該貓咪的其他階級，點擊即可顯示其他階的資料。
           拖動拉桿以改變等級，也可以直接點擊旁變的數字修改等級(手機板無拉桿)。
+          調整後系統會自動儲存每隻貓的等級與敵人的倍率。
           黃色框框框起來的地方點選後可以編輯數值，編輯完成後，系統會自動計算出該貓咪的整數等級中，
           最接近你輸入的數值的等級，並改為顯示該等級的資料。 </p>
         <p>
@@ -543,28 +546,218 @@
             有如何加入比較序列的方法。要查看比較序列中的敵人或貓咪，點擊螢幕左下方如右圖的標籤，
             即可展開購物車列表。標籤上的數字則是代表當前購物車中有幾隻貓咪或敵人。<br />
             比較序列一有變動，會自動儲存，不需要另行點選儲存，欲開始比較時，逕行從導航列前往
-            "貓咪比較器"或"敵人比較器"即可看到比較結果。
-          </p>
+            <b onclick="scrollToDiv(compare)" style="text-decoration:underline">"貓咪比較器"或"敵人比較器"</b>即可看到比較結果。</p>
           <div id="compareTarget_tag" style="position:relative;z-index:0">
             <i class="material-icons">&#xe315;</i>貓咪購物車
             <span id="compare_number">0</span>
           </div>
         </div>
         <p>
-          若要編輯
+          若要編輯購物車內的敵人或貓咪，點擊欲編輯的對象，即會出現選單可以選擇刪除該對象，
+          點擊顯示則會在該頁顯示對象的詳細資料。 </p>
+      </div>
+    </div>
+    <div class="section" id="stage">
+      <div class="section_title">關卡資料庫<i class="material-icons"onclick="scrollToDiv('stage')">&#xE25A;</i></div>
+      <div class="content">
+        <p>
+          關卡資料庫，主要分為兩大部分，
+          <b style="color:#df5151;text-decoration:underline;cursor:pointer" onclick="scrollToDiv(5)">關卡選擇器</b>、
+          <b style="color:#df5151;text-decoration:underline;cursor:pointer" onclick="scrollToDiv(6)">關卡資料結果</b>
+          (點擊連結以前往介紹) </p>
+        <h1 id="5"><b>關卡選擇器</b></h1>
+        <p>
+          關卡選擇器又可以細分為三個區塊，章節選擇、大關選擇、關卡選擇。要選擇章節，點擊螢幕左下角的"選擇關卡"，
+          即可展開側邊選擇列，點選從各細項分類的名稱展開，再點選欲查詢的章節後，頁面頂端的大關選擇區就會出現該章節下
+          的各大關名稱，同理，點及大關名稱則會在旁邊的關卡選擇顯示個小關的名稱，即可在這裡選擇欲查詢的關卡。<br />
+          大關選擇與關卡選擇的區域如下圖。 </p>
+        <div class="lv_sg_box" >
+          <div id="select_stage" ><button value="0" style="width:180px;height:40px;margin:5px">大關選擇</button></div>
+          <div id="select_level" ><span class="card" style="background-image:url('../public/css/footage/stage/fight_BG_03.png')">關卡選擇</span></div>
+        </div>
+        <p>
+          另外，關卡資料庫也提供文字搜尋的功能，輸入關鍵字後按下enter或搜尋，系統即會遍歷所有關卡，
+          找出名稱中含有關鍵字的大關或關卡，呈現在如下圖中的搜尋結果框裡。<br />
+          每一筆搜尋結果的開頭會標示這是大關還是關卡，點擊結果後，若為大關則會將該大關下的各關卡名稱
+          顯示在"關卡選擇"的欄位內；若為關卡，則會直接在下方關卡資訊區顯示資訊。右上角的
+          <i class="material-icons" style="cursor:pointer;margin-bottom:5"></i>可以收合結果區，
+          如欲再次展開請重新搜尋。</p>
+        <div id="searchResult" style="display: block;border: 3px solid black;">
+          <div style="display:flex;font-size: 20px; border-bottom: 1px solid;">
+            <div style="flex:2">共<b id="num">10</b>筆搜尋結果</div>
+            <i class="material-icons" style="cursor:pointer;margin-bottom:5"></i>
+          </div>
+          <div class="result">
+            <span id="crazy-s01108-1"><c>關卡</c>  <d>狂亂系列</d> <d>大狂亂魚貓降臨</d> <d><b>鬼</b>島DX 極難</d></span>
+            <span id="maylook-s02048-3"><c>關卡</c>  <d>梅露可合作關卡</d> <d>神秘的梅露可物語</d> <d>鎮<b>鬼</b>儀式</d></span>
+            <span id="month-s01012-1"><c>關卡</c>  <d>月間關</d> <d>被召喚的福</d> <d><b>鬼</b>在外,福在內</d></span>
+            <span id="month-s01084"><c>大關</c>  <d>月間關</d> <d>開眼我是<b>鬼</b>來襲!</d></span>
+            <span id="month-s01084-1"><c>關卡</c>  <d>月間關</d> <d>開眼我是<b>鬼</b>來襲!</d> <d>我是<b>鬼</b>的進化之路 困難</d></span>
+            <span id="month-s01084-2"><c>關卡</c>  <d>月間關</d> <d>開眼我是<b>鬼</b>來襲!</d> <d>我是<b>鬼</b>的進化之路 超級難</d></span>
+            <span id="story-s00007-3"><c>關卡</c>  <d>傳說故事</d> <d>竹子島</d> <d>殺人<b>鬼</b>叢林</d></span>
+            <span id="story-s00023-4"><c>關卡</c>  <d>傳說故事</d> <d>大混戰</d> <d>膽小<b>鬼</b>的陷阱</d></span>
+            <span id="story-s00033-1"><c>關卡</c>  <d>傳說故事</d> <d>亡者聚集之地</d> <d>亡魂<b>鬼</b>屋</d></span>
+            <span id="story-s00033-3"><c>關卡</c>  <d>傳說故事</d> <d>亡者聚集之地</d> <d>半夜<b>鬼</b>上床</d></span></div>
+        </div>
+        <h1 id="6"><b>關卡資料結果</b></h1>
+        <div style="display:flex;width:100%">
+          <div style="flex:3">
+            <p>
+              在資料顯示區的右邊，有如右的懸浮工具列，各工具的功能如下:
+            </p>
+            <ul>
+              <li><i class="material-icons">&#xE5C4;</i> : 在該大關中，此關卡的前一個關卡(如果有)</li>
+              <li><i class="material-icons">&#xE5C8;</i> : 在該大關中，此關卡的下一個關卡(如果有)</li>
+              <li><i class="material-icons">&#xe895;</i> : 則會在新分頁開啟這關卡的超絕網站的連結</li>
+              <li><i class="material-icons">&#xe439;</i> : 截圖整個資料顯示區</li>
+              <li><i class="material-icons">&#xE242;</i> : 將關卡中的所有敵人加入敵人比較序列(前往敵人比較序列以進行比較)</li>
+              <li><i class="material-icons">&#xE25A;</i> : 回到資料顯示區的最頂端</li>
+            </ul>
+          </div>
+          <div id='more_option' style="position:relative;top:0;left:0;z-index:0;border: 3px solid black;background-color: #dedede;">
+            <div> <i class="material-icons">&#xE5C4;</i> <span class="tag">上一關</span> </div>
+            <div> <i class="material-icons">&#xE5C8;</i> <span class="tag">下一關</span> </div>
+            <div> <a target='blank'><i class="material-icons">&#xe895;</i></a> <span class="tag">在超絕攻略網打開</span> </div>
+            <div> <i class="material-icons">&#xe439;</i> <span class="tag">截圖</span> </div>
+            <div> <i class="material-icons">&#xE242;</i> <span class="tag">加入比較序列</span> </div>
+            <div> <i class="material-icons">&#xE25A;</i> <span class="tag">回到頂端</span> </div>
+          </div>
+        </div>
+        <p>
+          關卡的資料顯示區如下圖所示，會顯示關卡的各種基本資訊、過關獎勵與關卡敵人。
+          關卡名稱前面兩欄，分別為章節名稱與大關名稱，點擊章節名稱可以在"大關選擇"中顯示該章節的各大關；
+          而點擊大關名稱可以在"關卡選擇"顯示該大關的各關卡。<br />
+          在關卡敵人中，點擊敵人圖片可以切換到敵人資料庫，顯示該敵人的詳細資料，若過關獎勵中有貓咪獎勵，
+          也同樣可以點擊切換到貓咪資料庫。另外點選
+          <b>倍率</b>、<b>數量</b>、<b>城連動</b>、<b>首次出現</b>、<b>再次出現</b>
+          等表頭，可以將敵人依照該特性從小到大排列(再點一次則從大到小)。
+          從小到大排列時，表頭上會有藍色標示；反之則以橘色標示表示此欄是從大到小排列。
         </p>
-      </div>
-    </div>
-    <div class="section">
-      <div class="section_title"> </div>
-      <div class="content">
+        <div style="width:100%;display:flex;justify-content:space-around">
+          <button onclick='nav_Data(1)'>電腦版</button>
+          <button onclick='nav_Data(0)'>手機板</button>
+        </div>
+        <table class="dataTable non_mobile" style="border: 3px solid black;background-color: #dedede;">
+          <tr><th rowspan="2" colspan="1" id="chapter">貓咪<br>風雲塔</th><th rowspan="2" colspan="1" id="stage">貓咪風雲塔</th><th rowspan="2" colspan="2">39階</th><th>接關</th><td>不行</td></tr>
+          <tr><th>統帥力</th><td>200</td></tr><tr><th>城堡體力</th><td>750,000</td><th>戰線長度</th><td>6,200</td><th>經驗值</th><td>15960</td></tr>
+          <tr><th>我方出擊限制</th><td colspan="3">無</td><th>敵人出擊限制</th><td>15</td></tr>
+          <tr><th colspan="6">過關獎勵</th></tr>
+          <tr><th>經驗值</th><td>3,000,000</td><th>取得機率</th><td>100％</td><th>取得上限</th><td>1</td></tr>
+          <tr><th colspan="6">關卡敵人</th></tr>
+          <tr><th>敵人</th><th class="enemy_head" id="multiple">倍率</th><th class="enemy_head">數量</th><th class="enemy_head">城連動</th><th class="enemy_head">首次出現(s)</th><th class="enemy_head">再次出現(s)</th></tr>
+          <tr class="enemy_row"> <td class="enemy"style="padding:0;border:5px solid rgb(244, 89, 89)"><img src="../public/css/footage/enemy/e260.png" style="width:100%"></td> <td>200％</td><td>1</td><td>100％</td> <td>26.7</td><td>-</td></tr>
+          <tr class="enemy_row" id="1"> <td class="enemy" id="212" style="padding:0;"><img src="../public/css/footage/enemy/e212.png" style="width:100%"></td><td>300％</td><td>1</td><td>100％</td><td>10.0</td><td>-</td></tr>
+          <tr class="enemy_row" id="2"><td class="enemy" id="258" style="padding:0;"><img src="../public/css/footage/enemy/e258.png" style="width:100%"></td><td>200％</td><td>5</td><td>100％</td><td>33.3</td><td>26.7</td></tr>
+          <tr class="enemy_row" id="3"><td class="enemy" id="237" style="padding:0;"><img src="../public/css/footage/enemy/e237.png" style="width:100%"></td><td>100％</td><td>4</td><td>100％</td><td>26.7</td><td>20.0</td></tr>
+          <tr class="enemy_row" id="4"><td class="enemy" id="023" style="padding:0;"><img src="../public/css/footage/enemy/e023.png" style="width:100%"></td><td>100％</td><td>1</td><td>100％</td><td>900.0</td><td>-</td></tr>
+        </table>
+        <table class="dataTable mobile"style="display: none;border: 3px solid black;background-color: #dedede;">
+          <tr><th colspan="1" id="chapter">貓咪<br>風雲塔</th><th colspan="1" id="stage">貓咪風雲塔</th><th colspan="2">39階</th></tr>
+          <tr><th>經驗值</th><td>15960</td><th>統帥力</th><td>200</td></tr> <tr><th>城堡體力</th><td colspan="3">750,000</td></tr>
+          <tr><th>戰線長度</th><td colspan="3">6,200</td></tr> <tr><th>敵方出擊限制</th><td colspan="3">15</td></tr> <tr><th>我方出擊限制</th><td colspan="3">無</td></tr>
+          <tr><th colspan="4">過關獎勵</th></tr>
+          <tr><th colspan="2">經驗值</th><td colspan="2">3,000,000</td></tr> <tr><th>取得機率</th><td>100％</td><th>取得上限</th><td>1</td></tr>
+          <tr><th colspan="6">關卡敵人</th></tr>
+          <tr class="enemy_row"><td class="enemy" style="padding:0;border:5px solid rgb(244, 89, 89)"><img src="../public/css/footage/enemy/e260.png" style="width:100%"></td><td>200％</td><th>數量</th><td>1</td></tr>
+          <tr><th>出現條件</th><td colspan="3">城體力小於<b>100％</b><br>且開場已過<b>26.7</b>秒後出現<br>間隔<b>-</b>秒後再次出現</td></tr>
+          <tr class="enemy_row"><td class="enemy" style="padding:0;"><img src="../public/css/footage/enemy/e212.png" style="width:100%"></td><td>300％</td><th>數量</th><td>1</td></tr>
+          <tr><th>出現條件</th><td colspan="3">城體力小於<b>100％</b><br>且開場已過<b>10.0</b>秒後出現<br>間隔<b>-</b>秒後再次出現</td></tr>
+          <tr class="enemy_row"><td class="enemy" style="padding:0;"><img src="../public/css/footage/enemy/e258.png" style="width:100%"></td><td>200％</td><th>數量</th><td>5</td></tr>
+          <tr><th>出現條件</th><td colspan="3">城體力小於<b>100％</b><br>且開場已過<b>33.3</b>秒後出現<br>間隔<b>26.7</b>秒後再次出現</td></tr>
+          <tr class="enemy_row"><td class="enemy" style="padding:0;"><img src="../public/css/footage/enemy/e237.png" style="width:100%"></td><td>100％</td><th>數量</th><td>4</td></tr>
+          <tr><th>出現條件</th><td colspan="3">城體力小於<b>100％</b><br>且開場已過<b>26.7</b>秒後出現<br>間隔<b>20.0</b>秒後再次出現</td></tr>
+          <tr class="enemy_row"><td class="enemy" style="padding:0;"><img src="../public/css/footage/enemy/e023.png" style="width:100%"></td><td>100％</td><th>數量</th><td>1</td></tr>
+          <tr><th>出現條件</th><td colspan="3">城體力小於<b>100％</b><br>且開場已過<b>900.0</b>秒後出現<br>間隔<b>-</b>秒後再次出現</td></tr>
+        </table>
 
       </div>
     </div>
-    <div class="section">
-      <div class="section_title"> </div>
+    <div class="section" id="compare">
+      <div class="section_title">貓咪、敵人比較器<i class="material-icons"onclick="scrollToDiv('compare')">&#xE25A;</i></div>
       <div class="content">
-
+        <p>
+          本功能是用來比較多隻貓咪或敵人的數值，使用前先將要比較的貓咪或敵人加入
+          <b onclick="scrollToDiv('4')" style="text-decoration:underline;">購物車</b>
+          ，接著直接進入本頁面即可開始比較。</p>
+        <p>
+          比較器的外觀如下。Level可以直接更改，改變的等級同時也會改變在貓咪資料庫中的顯示等級。
+          在等級旁有更多選項的按鈕，展開後可以選擇將選取的對象刪除、隱藏、切換階級或標記為我擁有的貓。
+          刪除的貓如欲加回比較序列，須重新從資料庫加回；隱藏的貓則可以由
+          <b style="text-decoration:underline"onclick='scrollToDiv(7)'>側邊功能欄</b>重新顯示。
+          此功能僅在貓咪比較器中出現。
+          底下的資料區內，標示為橘色粗體的值，代表該值是同類型數據中最好的(非最大值，
+          故花費與再生產皆是標記最小值)。此處同樣可以點擊表頭來排序值，從小到大排列時，表頭上會有藍色標示；反之則以橘色標示表示此欄是從大到小排列。
+          另外，點擊特性可以切換特性的"詳細/簡略"敘述。 </p>
+        <div class="compareTable"style="border: 3px solid black;background-color: #dedede;">
+          <div class="comparedatahead" style="flex:1">
+            <table>
+              <tbody><tr><th>Level</th></tr> <tr><th style="height:80px;">Picture</th></tr>
+              <tr><th>全名</th></tr> <tr><th>稀有度</th></tr> <tr><th>體力</th></tr>
+              <tr><th>KB</th></tr> <tr><th>硬度</th></tr> <tr><th>攻擊力</th></tr>
+              <tr><th>DPS</th></tr> <tr><th>射程</th></tr> <tr><th>攻頻</th></tr>
+              <tr><th>跑速</th></tr> <tr><th>範圍</th></tr> <tr><th>花費</th></tr>
+              <tr><th>再生産</th></tr> <tr><th id="char">特性</th></tr>
+            </tbody></table>
+          </div>
+          <div class="comparedataholder" style="flex:5">
+            <div style="display:flex" class="comparedatabody">
+              <div style="flex:1" class="comparedata" id="334-2" bro="334-1"><table><tbody>
+                  <tr><th id="level"style="width:100%"><span>40</span><i class="material-icons"></i></th></tr>
+                  <tr><th style="height:80px;padding:0"><img src="../public/css/footage/cat/u334-2.png" style="height:100%"></th></tr>
+                  <tr><th >皇獸黑暗牙王</th></tr><tr><th>超激稀有</th></tr><tr><td class="best">125400</td></tr>
+                  <tr><td >4</td></tr><tr><td class="best">31350</td></tr><tr><td class="best">50600</td></tr>
+                  <tr><td  class="best">8118</td></tr><tr><td class="best">480</td></tr><tr><td>6.23</td></tr>
+                  <tr><td  class="best">9</td></tr><tr><td class="best">範圍</td></tr><tr><td>6000</td></tr>
+                  <tr><td  class="best">158.2</td></tr><tr><td id="tag">對白色/超大傷害/暫停/免疫波動/免疫擊退</td></tr>
+                  <tr style="display:none"><td id="char">
+                    對<span id="color">白色敵人</span><span id="type">超大傷害 (攻擊力x3)</span><br>
+                    對<span id="color">白色敵人</span>100%的機率<span id="type">暫停</span>1秒<br>
+                    <span id="type">免疫波動 </span><br><span id="type">免疫擊退</span><br></td></tr>
+              </tbody></table></div>
+              <div style="flex:1" class="comparedata" id="379-2" bro="379-1"> <table><tbody>
+                  <tr><th id="level"style="width:100%"><span>40</span><i class="material-icons"></i></th></tr>
+                  <tr><th style="height:80px;padding:0"><img src="../public/css/footage/cat/u379-2.png" style="height:100%"></th></tr>
+                  <tr><th >深靛黑蝶御靈</th></tr><tr><th>超激稀有</th></tr><tr><td>57750</td></tr>
+                  <tr><td  class="best">15</td></tr><tr><td>3850</td></tr><tr><td>35200</td></tr>
+                  <tr><td >7040</td></tr><tr><td>375</td></tr><tr><td class="best">5.00</td></tr>
+                  <tr><td >6</td></tr><tr><td class="best">範圍</td></tr><tr><td class="best">5250</td></tr>
+                  <tr><td >164.9</td></tr>
+                  <tr><td id="tag">對白色/很耐打/緩速/降攻/遠方攻擊/免疫波動/免疫擊退/免疫暫停/免疫緩速/免疫降攻</td></tr>
+                  <tr style="display:none"><td id="char">
+                    對<span id="color">白色敵人</span><span id="type">很耐打 (受到傷害x0.25)</span>
+                    <br>對<span id="color">白色敵人</span>100%的機率<span id="type">緩速</span>3.3秒
+                    <br>對<span id="color">白色敵人</span>100%的機率<span id="type">降攻</span>50%3.3秒
+                    <br><span id="type">遠方攻擊</span> 250~650 <br><span id="type">免疫波動 </span>
+                    <br><span id="type">免疫擊退</span> <br><span id="type">免疫暫停</span><br>
+                    <span id="type">免疫緩速</span><br><span id="type">免疫降攻</span><br></td>
+              </tbody></table></div></div>
+              <div class='panel' value='0' style="position:absolute">
+                <span id="del">移除</span>
+                <span id="hide">隱藏</span>
+                <span id="switch">切換階級</span>
+                <span id="own">我有這隻貓</span>
+              </div>
+            </div>
+        </div>
+        <div id="7" style="display:flex;width:100%;margin:10 0">
+          <div style="flex:2">
+            <p>把滑鼠移至頁面右手邊，可以叫出如右圖的右側功能欄，在功能欄中的各功能如下: </p>
+            <ul>
+              <li><i class="material-icons">&#xe145;</i> : 放大顯示區</li>
+              <li><i class="material-icons">&#xe15b;</i> : 縮小顯示區</li>
+              <li><i class="material-icons">&#xe5d1;</i> : 恢復原始顯示比例</li>
+              <li><i class="material-icons">&#xe417;</i> : 顯示所有隱藏的貓(僅限貓咪比較器)</li>
+              <li><i class="material-icons">&#xe439;</i> : 截圖顯示區</li>
+            </ul>
+          </div>
+          <div style="border: 3px solid black;background-color: #dedede;">
+            <div style="top:0;right:0;margin:5px" class="floatbutton"><i class="material-icons">&#xe145;</i></div>
+            <div style="top:0;right:0;margin:5px" class="floatbutton"><i class="material-icons">&#xe15b;</i></div>
+            <div style="top:0;right:0;margin:5px" class="floatbutton"><i class="material-icons">&#xe5d1;</i></div>
+            <div style="top:0;right:0;margin:5px" class="floatbutton"><i class="material-icons">&#xe417;</i></div>
+            <div style="top:0;right:0;margin:5px" class="floatbutton"><i class="material-icons">&#xe439;</i></div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -593,10 +786,12 @@
       function nav_Data(n) {
         if(n) {
           $("#database").find('.mobile').hide().siblings('.non_mobile').show();
+          $("#stage").find('.mobile').hide().siblings('.non_mobile').show();
           $("#database").find(".slider").parent().show().next().attr('colspan',1);
         }
         else{
            $("#database").find('.mobile').show().siblings('.non_mobile').hide();
+           $("#stage").find('.mobile').show().siblings('.non_mobile').hide();
            $("#database").find(".slider").parent().hide().next().attr('colspan',5);
          }
       }
@@ -667,6 +862,33 @@
             return  Number($(this).text())+(aa?(-1):1)
           });
       });
+      $(".lv_sg_box div").click(function () { $(this).css("flex",'3').siblings().css('flex','1'); });
+      $('.comparedatabody #level i').click(function () {
+        let width = $(this).parent()[0].offsetWidth,
+            top = $(this).parent().offset().top-100,
+            left = $(this).parent().offset().left,
+            value = Number($(".panel").attr('value')),
+            id = $(this).parents('.comparedata').attr("id"),
+            panel_id = $(".panel").attr('id');
+        $(".panel").css({
+          width:width,
+          top:top,
+          left:left,
+          height:id==panel_id?(value?0:100):100
+        }).attr({
+          id:$(this).parents('.comparedata').attr("id"),
+          value:id==panel_id?(value?0:1):1
+        });
+        $(this).css('transform',function () {
+          return Number($(".panel").attr('value'))?'rotate(180deg)':'rotate(0deg)'
+        }).parents('.comparedata').siblings().each(function () {
+          $(this).find("#level i").css('transform','rotate(0deg)');
+        });
+        $('.panel #switch').html("切換階級");
+      });
+      $(".comparedatahead table #char").click(function () {
+        $('.comparedata table #tag').parent().toggle().next().toggle();
+      })
     </script>
 
 

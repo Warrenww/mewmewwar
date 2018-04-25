@@ -9,13 +9,13 @@ $(document).ready(function () {
     else  console.log('did not sign in');
   });
   socket.on("current_user_data",function (data) {
-    // console.log(data);
+    console.log(data);
     current_user_uid = data.uid;
     cat_history = data.history.cat;
     enemy_history = data.history.enemy;
     stage_history = data.history.stage;
     combo_history = data.history.combo;
-    last_gacha = data.history.last_gacha;
+    gacha_history = data.history.gacha;
     if(cat_history){
       $(".main_board").empty();
       for(i in cat_history){
@@ -72,25 +72,47 @@ $(document).ready(function () {
             "</div>");
         }
       }
+      else if (type == 'gacha') {
+        for(i in gacha_history){
+          $(".main_board").prepend(
+            "<div id='"+gacha_history[i].id+"' class='gacha' style='background-image:url()'>"+
+            "<img src='"+image_url_gacha+gacha_history[i].id+".png'>"+
+            "<ww style='display:flex;flex-direction:column;flex:2;align-items:center'>"+
+            "<span class='name'><b>"+ gacha_history[i].name+"</b></span>"+
+            "<ww style='font-size:14px;font-weight:bold'>"+
+            "<span style='color:#18a651'>稀有 : "+gacha_history[i].r+"\t</span>"+
+            "<span style='color:#eeb62e'>激稀有 : "+gacha_history[i].sr+"\t</span>"+
+            "<span style='color:#8e18a6'>超激稀有 : "+gacha_history[i].ssr+"\t</span></ww></ww>"+
+            "<span class='time'>"+parseTime(gacha_history[i].time)+"</span>"+
+            "</div>");
+        }
+      }
     }
   });
   $(document).on('click',".main_board div",function () {
     let type = $(this).attr("class"),
         id = $(this).attr("id");
         console.log(type,id);
-    if(type != 'stage'){
-      socket.emit("display "+type,{
-        uid : current_user_uid,
-        cat : id,
-        id : id,
-        history : true
-      });
-    } else {
+    if(type == 'stage'){
       socket.emit("required level data",{
         uid: current_user_uid,
         chapter:id.split("-")[0],
         stage:id.split("-")[1],
         level:id.split("-")[2]
+      });
+    }
+    else if(type == 'gacha'){
+      socket.emit("record gacha",{
+        uid:current_user_uid,
+        gacha:id
+      });
+    }
+    else {
+      socket.emit("display "+type,{
+        uid : current_user_uid,
+        cat : id,
+        id : id,
+        history : true
       });
     }
     window.parent.reloadIframe(type);
@@ -108,6 +130,7 @@ function parseTime(n) {
       today = new Date();
   if (dd == today.getDate()&&mm == today.getMonth()+1) return "今天 "+h+":"+m
   else if(dd == today.getDate()-1&&mm == today.getMonth()+1) return "昨天 "+h+":"+m
+  else if(yy == today.getFullYear()) return mm+"/"+dd+" "+h+":"+m
   else return yy+"/"+mm+"/"+dd+" "+h+":"+m
 
 }

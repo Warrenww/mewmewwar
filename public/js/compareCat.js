@@ -359,6 +359,8 @@ $(document).ready(function () {
       "</tr><tr>"+
       "<th id='name'>"+data.Name+"</th>"+
       "</tr><tr>"+
+      "<th id='rarity'>"+parseRarity(data.rarity)+"</th>"+
+      "</tr><tr>"+
       "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
       "</tr><tr>"+
       "<td id='KB'>"+data.kb+"</td>"+

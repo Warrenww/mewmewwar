@@ -330,6 +330,19 @@
   transition: .3s ease-in-out;
 }
 .compareSorce .title:hover span #query{opacity: 1}
+#zoomImg{
+  position:fixed;
+  background-color:rgba(0,0,0,.4);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width: 100%;
+  height: 0%;
+  top: 0;
+  z-index: 3;
+  transition: .4s ease-in-out
+}
+#zoomImg img{ width: 60% }
 @keyframes rotate {
   0%{transform:rotate(0deg);}
   50%{transform:rotate(720deg);}

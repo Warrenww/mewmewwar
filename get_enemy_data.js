@@ -217,6 +217,15 @@ var config = {
             time:Number(aa[1].split('（')[1].split('F）')[0])
           });
         }
+        else if(c[i].indexOf("古代の呪い")!=-1){
+          let aa = c[i].split("％");
+          obj.tag.push("古代詛咒");
+          obj.char.push({
+            type:"特殊能力封印",
+            chance:/[0-9]+％/.exec(c[i])[0].split("％")[0],
+            time:/[0-9]+F/.exec(c[i])[0].split("F")[0]/30
+          });
+        }
         else if (c[i].indexOf("の確率で")!=-1) {
           c[i] = c[i].split(" ※")[0];
           let aa = c[i].split("％の確率で")[0].split(" "),

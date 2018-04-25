@@ -7,8 +7,7 @@ nav{
     z-index: 999
 }
 nav img{
-   width:120px;
-   height:60px;
+   height:50px;
    margin-left:20px;
    cursor: pointer;
 }

@@ -130,7 +130,7 @@ $(document).ready(function () {
 
     socket.emit("gacha history",{
       uid:current_user_data.uid,
-      gacha:current_gacha_data.name,
+      gacha:current_gacha_data.key,
       ssr,sr,r
     });
   }

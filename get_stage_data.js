@@ -44,6 +44,7 @@ var config = {
         exp : "",
         castle : "",
         length : "",
+        count : 0,
         limit_no : "",
         reward : [],
         enemy : [],
@@ -64,7 +65,7 @@ var config = {
         thead = content.children("thead").eq(0).children("tr"),
         tbody_1 = content.children("tbody").eq(final?1:0).children("tr"),
         tbody_2 = content.children("tbody").eq(final?2:1).children("tr");
-
+        console.log(final);
         obj.final = final;
         obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
         obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
@@ -86,10 +87,11 @@ var config = {
         }
         for(let k=0;k<tbody_2.length;k++){
           // console.log("enemy "+k);
-          let ene = tbody_2.eq(k).children("td")
+          let ene = tbody_2.eq(k).children("td");
+          // console.log(ene.eq(1).text());s
           obj.enemy.push({
             Boss : ene.eq(0).text() == "BOSS" ? true : false,
-            id : ene.eq(1).children("a").attr("href").split("/")[2].split(".html")[0],
+            id : ene.eq(2).children("a").attr("href").split("/")[2].split(".html")[0],
             multiple : ene.eq(3).text(),
             amount : ene.eq(4).text(),
             castle : ene.eq(5).text(),

@@ -348,6 +348,9 @@ var config = {
       case "めっぽう強い":
         s = "善於攻擊 (攻擊力x1.5 受到傷害x0.5)";
         break;
+      case "古代の呪い":
+        s = "古代詛咒";
+        break;
       case "バリアブレイカー":
         s = "破盾";
         break;
@@ -414,10 +417,10 @@ var config = {
         let g = s.indexOf("緑"),p = s.indexOf("紫"),
         r = s.indexOf("赤"),b = s.indexOf("青"),
         y = s.indexOf("黄"),ra = s.indexOf("虹"),
-        se = s.indexOf("種");
+        se = s.indexOf("種"),an = s.indexOf("古");
         condition.fruit = {};
         // console.log(g+","+p+","+r+","+b+","+y+","+ra+","+se);
-        let arr = [r,b,p,g,y,ra],brr = ['綠色','紫色','紅色','藍色','黃色','彩虹'];
+        let arr = [r,b,p,g,y,ra,an],brr = ['綠色','紫色','紅色','藍色','黃色','彩虹','古代'];
         // console.log(arr);
         for (let i in arr){
           if(arr[i] != -1){

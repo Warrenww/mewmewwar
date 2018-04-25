@@ -54,7 +54,6 @@ var catdata,
     stagedata,
     gachadata,
     rankdata,
-    userdata,
     catComment ;
 var __numberOfCat = 0,
     mostSearchCat = {name:"",count:-999},
@@ -281,6 +280,26 @@ io.on('connection', function(socket){
     // console.log(buffer);
     socket.emit("search result",{result:buffer,query:data.query,type:data.query_type});
   });
+  socket.on('text search stage',function (text) {
+    let buffer = [];
+    console.log('text search stage: ',text);
+    for(let i in stagedata){
+      for(let j in stagedata[i]){
+        if(stagedata[i][j].name.indexOf(text)!=-1)
+          buffer.push({id:i+"-"+j,name:stagedata[i][j].name});
+        for(let k in stagedata[i][j]){
+          if (k=='name') continue
+          if(stagedata[i][j][k].name.indexOf(text)!=-1)
+            buffer.push({
+              id:i+"-"+j+"-"+k,
+              name:stagedata[i][j].name+"/"+stagedata[i][j][k].name
+            });
+        }
+      }
+    }
+    socket.emit('text search stage',buffer);
+  });
+
   socket.on("display cat",function (data) {
     console.log("display cat");
     console.log(data);
@@ -311,8 +330,8 @@ io.on('connection', function(socket){
       result.lv = storge_lv?storge_lv:default_lv;
       result.count = storge_count;
       result.own = own;
-      result.survey = variable ? (variable.survey?(variable.survey[id]?variable.survey[id]:false):false):false;
-      result.this.statistic = catdata[id].statistic;
+      result.survey = variable ? (variable.survey?(variable.survey[grossID]?variable.survey[grossID]:false):false):false;
+      result.this.statistic = catComment[grossID].statistic;
       socket.emit("display cat result",result);
       let history = userdata[uid].history.cat,
           last = userdata[uid].history.last_cat;
@@ -331,6 +350,7 @@ io.on('connection', function(socket){
         userdata[uid].variable.cat[grossID].count = storge_count;
         database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(storge_count);
         console.log("count cat search time(global)");
+        if(!catdata[id].count) catdata[id].count = 0;
         catdata[id].count ++;
         database.ref("/newCatData/"+id+"/count").set(catdata[id].count);
       }
@@ -507,7 +527,7 @@ io.on('connection', function(socket){
     else if(page == 'compareEnemy'){CurrentUserData.compare_e2e = brr;}
     else if(page == 'fight'){CurrentUserData.fight = fight;}
     else if(page == 'history'){
-      obj = {cat:{},enemy:{},stage:{}};
+      obj = {cat:{},enemy:{},stage:{},gacha:{}};
       for(i in history.cat){
         let id = history.cat[i].id,
             name = catdata[id].name?catdata[id].name:catdata[id].jp_name,
@@ -530,7 +550,18 @@ io.on('connection', function(socket){
           chapter:chapter,level:level,stage:stage
         }
       }
-      obj.last_gacha = last_gacha;
+      for(i in history.gacha){
+        let id = history.gacha[i].name,
+            name = gachadata[id].name;
+        obj.gacha[i] = {
+          id:id,
+          time:history.gacha[i].time,
+          name:name,
+          ssr : history.gacha[i].ssr,
+          sr : history.gacha[i].sr,
+          r : history.gacha[i].r,
+        }
+      }
       CurrentUserData.history = obj;
     }
     else if(page == 'stage'){
@@ -827,10 +858,11 @@ io.on('connection', function(socket){
         result = JSON.parse(JSON.stringify(gachadata[gacha]));
     if(!uid||!gacha) return
     console.log("user",uid,"select gacha",gacha);
+    result.key = gacha;
     userdata[uid].history.last_gacha = gacha;
     database.ref("/user/"+uid+"/history/last_gacha").set(gacha);
     for(let i in result){
-      if (i=='id'||i=='name') continue
+      if (i=='id'||i=='name'||i=='key') continue
       for(let j in result[i]){
         let id = result[i][j];
         result[i][j] = {
@@ -913,9 +945,9 @@ io.on('connection', function(socket){
     if(!data.cat) return
     let user = userdata[uid],
         setting = user.setting,
-        target = user.variable.cat[cat.substring(0,3)];
+        target = user.variable.cat[cat];
     target = target?target:{}
-    var exist = target.survey?(target.survey[cat]?(target.survey[cat][type]?target.survey[cat][type]:false):false):false,
+    var exist = target.survey?(target.survey[type]?target.survey[type]:false):false,
         count = setting.cat_survey_count?setting.cat_survey_count:0;
     if(!exist) count += 0.25;
     console.log(uid,"update",cat,"statistic",type);
@@ -924,39 +956,36 @@ io.on('connection', function(socket){
     if(type == 'nickname'){
       exist = exist?exist:[];
       exist.push(val);
-      var survey = userdata[uid].variable.cat[cat.substring(0,3)].survey;
+      var survey = userdata[uid].variable.cat[cat].survey;
       survey = survey?survey:{};
-      survey[cat] = survey[cat]?survey[cat]:{};
-      survey[cat][type] = exist;
-      database.ref("/user/"+uid+"/variable/cat/"+
-      cat.substring(0,3)+"/survey/"+cat+"/"+type).set(exist);
-      catdata[cat].statistic = catdata[cat].statistic?catdata[cat].statistic:{};
-      catdata[cat].statistic[type] = data.all;
-      database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
+      survey[type] = exist;
+      database.ref("/user/"+uid+"/variable/cat/"+cat+"/survey/"+type).set(exist);
+      catComment[cat].statistic = catComment[cat].statistic?catComment[cat].statistic:{};
+      catComment[cat].statistic[type] = data.all;
+      database.ref("/catComment/"+cat+"/statistic/"+type).set(data.all);
     }
     else {
-      catdata[cat].statistic = catdata[cat].statistic?catdata[cat].statistic:{};
-      catdata[cat].statistic[type] = data.all;
-      database.ref("/newCatData/"+cat+"/statistic/"+type).set(data.all);
-      var survey = userdata[uid].variable.cat[cat.substring(0,3)].survey;
+      catComment[cat].statistic = catComment[cat].statistic?catComment[cat].statistic:{};
+      catComment[cat].statistic[type] = data.all;
+      database.ref("/catComment/"+cat+"/statistic/"+type).set(data.all);
+      var survey = userdata[uid].variable.cat[cat].survey;
       survey = survey?survey:{};
-      survey[cat] = survey[cat]?survey[cat]:{};
-      survey[cat][type] = val;
-      database.ref("/user/"+uid+"/variable/cat/"+
-      cat.substring(0,3)+"/survey/"+cat+"/"+type).set(val);
+      survey[type] = val;
+      database.ref("/user/"+uid+"/variable/cat/"+cat+"/survey/"+type).set(val);
     }
   });
   socket.on('comment cat',function (data) {
     if(!data.cat) return
     var key = database.ref().push().key;
     console.log(data.owner,'comment on',data.cat,'with key',key);
-    catComment[data.cat.substring(0,3)] = catComment[data.cat.substring(0,3)]?catComment[data.cat.substring(0,3)]:{};
-    catComment[data.cat.substring(0,3)][key] = {
+    if(!catComment[data.cat]) catComment[data.cat] = {comment:{}}
+    if(!catComment[data.cat].comment) catComment[data.cat].comment = {};
+    catComment[data.cat].comment[key] = {
       owner:data.owner,
       comment:data.comment,
       time:data.time
     };
-    database.ref("/catComment/"+data.cat.substring(0,3)+"/"+key).set({
+    database.ref("/catComment/"+data.cat+"/comment/"+key).set({
       owner:data.owner,
       comment:data.comment,
       time:data.time
@@ -972,26 +1001,26 @@ io.on('connection', function(socket){
   });
   socket.on('required cat comment',function (cat) {
     console.log('required cat comment',cat);
-    socket.emit("comment",catComment[cat]);
+    socket.emit("comment",catComment[cat].comment);
   });
   socket.on('comment function',function (data) {
     console.log(data.uid,data.type,'comment in',data.cat);
     if(data.type == 'like'){
       if(data.inverse){
-      catComment[data.cat][data.key].like[data.uid] = null;
-      database.ref("/catComment/"+data.cat+"/"+data.key+"/like/"+data.uid).set(null);
+        catComment[data.cat].comment[data.key].like[data.uid] = null;
+        database.ref("/catComment/"+data.cat+"/comment/"+data.key+"/like/"+data.uid).set(null);
       } else {
-      catComment[data.cat][data.key].like = catComment[data.cat][data.key].like ?
-        catComment[data.cat][data.key].like:{};
-      delete catComment[data.cat][data.key].like[data.uid];
-      database.ref("/catComment/"+data.cat+"/"+data.key+"/like/"+data.uid).set(1);
+        catComment[data.cat].comment[data.key].like = catComment[data.cat].comment[data.key].like ?
+          catComment[data.cat].comment[data.key].like:{};
+        delete catComment[data.cat].comment[data.key].like[data.uid];
+        database.ref("/catComment/"+data.cat+"/comment/"+data.key+"/like/"+data.uid).set(1);
       }
     }else if(data.type == 'del'){
-      delete catComment[data.cat][data.key] ;
-      database.ref("/catComment/"+data.cat+"/"+data.key).set(null);
+      delete catComment[data.cat].comment[data.key] ;
+      database.ref("/catComment/"+data.cat+"/comment/"+data.key).set(null);
     }else if(data.type == 'edit'){
-      catComment[data.cat][data.key].comment = data.val;
-      database.ref("/catComment/"+data.cat+"/"+data.key+"/comment").set(data.val);
+      catComment[data.cat].comment[data.key].comment = data.val;
+      database.ref("/catComment/"+data.cat+"/comment/"+data.key+"/comment").set(data.val);
     }
   });
 
@@ -1230,7 +1259,6 @@ function AddZero(n) {
   return n<10 ? "0"+n : n
 }
 
-
 const port = 8000 ;
 http.listen(process.env.PORT || port, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
@@ -1240,3 +1268,125 @@ app.get('/', function(req, res){
 res.sendFile(__dirname + '/view/index.html');
 });
 app.use(express.static(path.join(__dirname, '/')));// to import css and javascript
+
+
+//
+//
+// var bodyParser = require('body-parser'),
+//       crypto = require('crypto');
+//
+// app.use(bodyParser.json({ verify: verifyRequestSignature }));
+//
+//
+// // App Secret can be retrieved from the App Dashboard
+// const APP_SECRET = '93dea74c38a913b9851c93f347209c29'
+// // Arbitrary value used to validate a webhook
+// const  PAGE_ACCESS_TOKEN = 'EAACSfPzGRVMBAEXi5fAGulyDjMMQlCImepPNhMdwthn2nZCkRjfty46ky7SSMOlnX7ATI0hBFuTjQdKbvqXVJi6JlyNg049vBV1E8vzWH9YpjUW3divcPrQRwzjkrmTt3qkZBYCZAk3jC5y1ZCiDe4qXFJAVztP6JgMO43RaJXZBiV8ArjSZCE'
+// // Generate a page access token for your page from the App Dashboard
+// const  VALIDATION_TOKEN = 'mewmewwar'
+// // URL where the app is running (include protocol). Used to point to scripts and
+// // assets located at this address.
+// const SERVER_URL = 'https://dbec4e37.ngrok.io'
+//
+// if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
+//   console.error("Missing config values");
+//   process.exit(1);
+// }
+// function verifyRequestSignature(req, res, buf) {
+//   var signature = req.headers["x-hub-signature"];
+//
+//   if (!signature) {
+//     // For testing, let's log an error. In production, you should throw an
+//     // error.
+//     console.error("Couldn't validate the signature.");
+//   } else {
+//     var elements = signature.split('=');
+//     var method = elements[0];
+//     var signatureHash = elements[1];
+//
+//     var expectedHash = crypto.createHmac('sha1', APP_SECRET)
+//                         .update(buf)
+//                         .digest('hex');
+//
+//     if (signatureHash != expectedHash) {
+//       throw new Error("Couldn't validate the request signature.");
+//     }
+//   }
+// }
+// app.get('/webhook', function(req, res) {
+//   if (req.query['hub.mode'] === 'subscribe' &&
+//       req.query['hub.verify_token'] === VALIDATION_TOKEN) {
+//     console.log("Validating webhook");
+//     res.status(200).send(req.query['hub.challenge']);
+//   } else {
+//     console.error("Failed validation. Make sure the validation tokens match.");
+//     res.sendStatus(403);
+//   }
+// });
+// app.post('/webhook', function (req, res) {
+//   var data = req.body;
+//
+//   // Make sure this is a page subscription
+//   if (data.object == 'page') {
+//     // Iterate over each entry
+//     // There may be multiple if batched
+//     data.entry.forEach(function(pageEntry) {
+//       var pageID = pageEntry.id;
+//       var timeOfEvent = pageEntry.time;
+//
+//       // Iterate over each messaging event
+//       pageEntry.messaging.forEach(function(messagingEvent) {
+//         if (messagingEvent.optin) {
+//           receivedAuthentication(messagingEvent);
+//         } else if (messagingEvent.message) {
+//           receivedMessage(messagingEvent);
+//         } else if (messagingEvent.delivery) {
+//           receivedDeliveryConfirmation(messagingEvent);
+//         } else if (messagingEvent.postback) {
+//           receivedPostback(messagingEvent);
+//         } else if (messagingEvent.read) {
+//           receivedMessageRead(messagingEvent);
+//         } else if (messagingEvent.account_linking) {
+//           receivedAccountLink(messagingEvent);
+//         } else {
+//           console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+//         }
+//       });
+//     });
+//
+//     // Assume all went well.
+//     //
+//     // You must send back a 200, within 20 seconds, to let us know you've
+//     // successfully received the callback. Otherwise, the request will time out.
+//     res.sendStatus(200);
+//   }
+// });
+//
+// function receivedMessage(event) {
+//   var senderID = event.sender.id;
+//   var recipientID = event.recipient.id;
+//   var timeOfMessage = event.timestamp;
+//   var message = event.message;
+//
+//   // console.log("Received message for user %d and page %d at %d with message:",
+//     // senderID, recipientID, timeOfMessage);
+//   console.log(JSON.stringify(message));
+//
+//   var isEcho = message.is_echo;
+//   var messageId = message.mid;
+//   var appId = message.app_id;
+//   var metadata = message.metadata;
+//
+//   // You may get a text or attachment but not both
+//   var messageText = message.text;
+//   var messageAttachments = message.attachments;
+//   var quickReply = message.quick_reply;
+//
+//   if (messageText) {
+//     console.log(messageText);
+//     // apiai(event);
+//   }
+//   else if (messageAttachments) {
+//     sendTextMessage(senderID, "Message with attachment received");
+//   }
+// }

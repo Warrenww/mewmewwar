@@ -11,73 +11,92 @@
 'use strict';
 
 
-const 
+const
   bodyParser = require('body-parser'),
-  config = require('config'),
+  // config = require('config'),
   crypto = require('crypto'),
   express = require('express'),
-  https = require('https'),  
+  https = require('https'),
   request = require('request');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
 app.use(bodyParser.json({ verify: verifyRequestSignature }));
 app.use(express.static('public'));
 
 /*
- * Be sure to setup your config values before running this code. You can 
+ * Be sure to setup your config values before running this code. You can
  * set them using environment variables or modifying the config file in /config.
  *
  */
 
 // App Secret can be retrieved from the App Dashboard
-const APP_SECRET = (process.env.MESSENGER_APP_SECRET) ? 
-  process.env.MESSENGER_APP_SECRET :
-  config.get('appSecret');
+const APP_SECRET = '93dea74c38a913b9851c93f347209c29'
 
 // Arbitrary value used to validate a webhook
-const VALIDATION_TOKEN = (process.env.MESSENGER_VALIDATION_TOKEN) ?
-  (process.env.MESSENGER_VALIDATION_TOKEN) :
-  config.get('validationToken');
+const VALIDATION_TOKEN = 'mewmewwar'
 
 // Generate a page access token for your page from the App Dashboard
-const PAGE_ACCESS_TOKEN = (process.env.MESSENGER_PAGE_ACCESS_TOKEN) ?
-  (process.env.MESSENGER_PAGE_ACCESS_TOKEN) :
-  config.get('pageAccessToken');
+const PAGE_ACCESS_TOKEN = 'EAACSfPzGRVMBAAAbtVZC0ZB3e5lv8rZCwqPxV3d0jnOI52YxcdIPWDufZCrLhjGXShSuL3sWM6iqeSmJJoyZB06zvMbKAyKAhYkehnoc6ESavLEWkS4kwEazfRVk9jUFXVuAGBZCDPgwqlfqpFZAFt8hm5YkvbuVdOKI6icQB3lQPTCGhADFkkC'
 
-// URL where the app is running (include protocol). Used to point to scripts and 
-// assets located at this address. 
-const SERVER_URL = (process.env.SERVER_URL) ?
-  (process.env.SERVER_URL) :
-  config.get('serverURL');
+// URL where the app is running (include protocol). Used to point to scripts and
+// assets located at this address.
+// const SERVER_URL = (process.env.SERVER_URL) ?
+//   (process.env.SERVER_URL) :
+//   config.get('serverURL');
 
-if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
-  console.error("Missing config values");
-  process.exit(1);
-}
+// if (!(APP_SECRET && VALIDATION_TOKEN && PAGE_ACCESS_TOKEN && SERVER_URL)) {
+//   console.error("Missing config values");
+//   process.exit(1);
+// }
 
 /*
- * Use your own validation token. Check that the token used in the Webhook 
+ * Use your own validation token. Check that the token used in the Webhook
  * setup is the same token used here.
  *
  */
-app.get('/webhook', function(req, res) {
-  if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === VALIDATION_TOKEN) {
-    console.log("Validating webhook");
-    res.status(200).send(req.query['hub.challenge']);
-  } else {
-    console.error("Failed validation. Make sure the validation tokens match.");
-    res.sendStatus(403);          
-  }  
-});
+// app.get('/webhook', function(req, res) {
+//   if (req.query['hub.mode'] === 'subscribe' &&
+//       req.query['hub.verify_token'] === VALIDATION_TOKEN) {
+//     console.log("Validating webhook");
+//     res.status(200).send(req.query['hub.challenge']);
+//   } else {
+//     console.error("Failed validation. Make sure the validation tokens match.");
+//     res.sendStatus(403);
+//   }
+// });
 
+// Creates the endpoint for our webhook
+app.post('/webhook', (req, res) => {
+
+  let body = req.body;
+
+  // Checks this is an event from a page subscription
+  if (body.object === 'page') {
+
+    // Iterates over each entry - there may be multiple if batched
+    body.entry.forEach(function(entry) {
+
+      // Gets the message. entry.messaging is an array, but
+      // will only ever contain one message, so we get index 0
+      let webhook_event = entry.messaging[0];
+      console.log(webhook_event);
+    });
+
+    // Returns a '200 OK' response to all requests
+    res.status(200).send('EVENT_RECEIVED');
+  } else {
+    // Returns a '404 Not Found' if event is not from a page subscription
+    res.sendStatus(404);
+  }
+
+});
 
 /*
  * All callbacks for Messenger are POST-ed. They will be sent to the same
  * webhook. Be sure to subscribe your app to your page to receive callbacks
- * for your page. 
+ * for your page.
  * https://developers.facebook.com/docs/messenger-platform/product-overview/setup#subscribe_app
  *
  */
@@ -114,7 +133,7 @@ app.post('/webhook', function (req, res) {
 
     // Assume all went well.
     //
-    // You must send back a 200, within 20 seconds, to let us know you've 
+    // You must send back a 200, within 20 seconds, to let us know you've
     // successfully received the callback. Otherwise, the request will time out.
     res.sendStatus(200);
   }
@@ -122,14 +141,14 @@ app.post('/webhook', function (req, res) {
 
 /*
  * This path is used for account linking. The account linking call-to-action
- * (sendAccountLinking) is pointed to this URL. 
- * 
+ * (sendAccountLinking) is pointed to this URL.
+ *
  */
 app.get('/authorize', function(req, res) {
   var accountLinkingToken = req.query.account_linking_token;
   var redirectURI = req.query.redirect_uri;
 
-  // Authorization Code should be generated per user by the developer. This will 
+  // Authorization Code should be generated per user by the developer. This will
   // be passed to the Account Linking callback.
   var authCode = "1234567890";
 
@@ -144,8 +163,8 @@ app.get('/authorize', function(req, res) {
 });
 
 /*
- * Verify that the callback came from Facebook. Using the App Secret from 
- * the App Dashboard, we can verify the signature that is sent with each 
+ * Verify that the callback came from Facebook. Using the App Secret from
+ * the App Dashboard, we can verify the signature that is sent with each
  * callback in the x-hub-signature field, located in the header.
  *
  * https://developers.facebook.com/docs/graph-api/webhooks#setup
@@ -155,7 +174,7 @@ function verifyRequestSignature(req, res, buf) {
   var signature = req.headers["x-hub-signature"];
 
   if (!signature) {
-    // For testing, let's log an error. In production, you should throw an 
+    // For testing, let's log an error. In production, you should throw an
     // error.
     console.error("Couldn't validate the signature.");
   } else {
@@ -176,8 +195,8 @@ function verifyRequestSignature(req, res, buf) {
 /*
  * Authorization Event
  *
- * The value for 'optin.ref' is defined in the entry point. For the "Send to 
- * Messenger" plugin, it is the 'data-ref' field. Read more at 
+ * The value for 'optin.ref' is defined in the entry point. For the "Send to
+ * Messenger" plugin, it is the 'data-ref' field. Read more at
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/authentication
  *
  */
@@ -187,14 +206,14 @@ function receivedAuthentication(event) {
   var timeOfAuth = event.timestamp;
 
   // The 'ref' field is set in the 'Send to Messenger' plugin, in the 'data-ref'
-  // The developer can set this to an arbitrary value to associate the 
+  // The developer can set this to an arbitrary value to associate the
   // authentication callback with the 'Send to Messenger' click event. This is
-  // a way to do account linking when the user clicks the 'Send to Messenger' 
+  // a way to do account linking when the user clicks the 'Send to Messenger'
   // plugin.
   var passThroughParam = event.optin.ref;
 
   console.log("Received authentication for user %d and page %d with pass " +
-    "through param '%s' at %d", senderID, recipientID, passThroughParam, 
+    "through param '%s' at %d", senderID, recipientID, passThroughParam,
     timeOfAuth);
 
   // When an authentication is received, we'll send a message back to the sender
@@ -205,16 +224,16 @@ function receivedAuthentication(event) {
 /*
  * Message Event
  *
- * This event is called when a message is sent to your page. The 'message' 
+ * This event is called when a message is sent to your page. The 'message'
  * object format can vary depending on the kind of message that was received.
  * Read more at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-received
  *
- * For this example, we're going to echo any text that we get. If we get some 
+ * For this example, we're going to echo any text that we get. If we get some
  * special keywords ('button', 'generic', 'receipt'), then we'll send back
- * examples of those bubbles to illustrate the special message bubbles we've 
- * created. If we receive a message with an attachment (image, video, audio), 
+ * examples of those bubbles to illustrate the special message bubbles we've
+ * created. If we receive a message with an attachment (image, video, audio),
  * then we'll simply confirm that we've received the attachment.
- * 
+ *
  */
 function receivedMessage(event) {
   var senderID = event.sender.id;
@@ -222,7 +241,7 @@ function receivedMessage(event) {
   var timeOfMessage = event.timestamp;
   var message = event.message;
 
-  console.log("Received message for user %d and page %d at %d with message:", 
+  console.log("Received message for user %d and page %d at %d with message:",
     senderID, recipientID, timeOfMessage);
   console.log(JSON.stringify(message));
 
@@ -239,10 +258,10 @@ function receivedMessage(event) {
 /*
   if (isEcho) {
     // Just logging message echoes to console
-    console.log("Received echo for message %s and app %d with metadata %s", 
+    console.log("Received echo for message %s and app %d with metadata %s",
       messageId, appId, metadata);
     return;
-  } 
+  }
   else if (quickReply) {
     var quickReplyPayload = quickReply.payload;
     console.log("Quick reply for message %s with payload %s",
@@ -294,19 +313,19 @@ function receivedMessage(event) {
 
       case 'quick reply':
         sendQuickReply(senderID);
-        break;        
+        break;
 
       case 'read receipt':
         sendReadReceipt(senderID);
-        break;        
+        break;
 
       case 'typing on':
         sendTypingOn(senderID);
-        break;        
+        break;
 
       case 'typing off':
         sendTypingOff(senderID);
-        break;        
+        break;
 
       case 'account linking':
         sendAccountLinking(senderID);
@@ -317,9 +336,9 @@ function receivedMessage(event) {
     }
     */
     //sendTextMessage(senderID, "out of function");
-    
+
     apiai(event);
-  } 
+  }
   else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
@@ -330,15 +349,15 @@ function receivedMessage(event) {
 function apiai(obj){
   let text = obj.message.text ;
   let senderID = obj.sender.id ;
-  
+
   var apiai = require('apiai');
- 
+
   var app = apiai("5bd4e2bcf327481fa46de878a0623438");
-   
+
   var request = app.textRequest(text, {
       sessionId: 'cf32dac3-3e77-4c8e-b042-b792c854fd6c'
   });
-   
+
   request.on('response', function(response) {
     let action = response.result.action ;
     let complete = !response.result.actionIncomplete ;
@@ -346,39 +365,39 @@ function apiai(obj){
     if(action == 'search.SSR' || action == "search.ability" || action == 'compare'){
       searchCat(obj,response) ;
     }
-    
-    
+
+
     //sendTextMessage(senderID,speech);
   });
-   
+
   request.on('error', function(error) {
       console.log(error);
   });
-   
+
   request.end();
 }
 
 function searchCat(obj,response) {
   var ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
-  
+
   let action = response.result.action ;
   let complete = !response.result.actionIncomplete ;
-  
-  
+
+
   var gsjson = require('google-spreadsheet-to-json');
-  
-  
+
+
     gsjson({
         spreadsheetId: ID,
         hash : 'id' ,
         //propertyMode: 'pascal'
-        //worksheet: 3 
-        // other options... 
+        //worksheet: 3
+        // other options...
     })
     .then(function(result) {
       //console.log(result.length);
       let senderID = obj.sender.id ;
-      
+
       if(action == 'search.SSR' && complete){
         let catID = response.result.parameters.SSR ;
         let catSta = response.result.parameters.state ;
@@ -386,7 +405,7 @@ function searchCat(obj,response) {
         let cat = catID + "-" + catSta ;
         let data = '' ;
         console.log(cat);
-        
+
         if(result[cat] == undefined){
           console.log(catID+'not yet upgrade ') ;
           cat = catID + "-1" ;
@@ -397,7 +416,7 @@ function searchCat(obj,response) {
           sendQuickReply(senderID,arr) ;
           return ;
         }
-        
+
         for(let i in result[cat]){
               if(i != 'picture' && i != 'id' && i != 'tag')
               {data += i+':'+result[cat][i]+'\n' ;}
@@ -405,13 +424,13 @@ function searchCat(obj,response) {
         console.log(data);
         sendTextMessage(senderID,data);
         sendImageMessage(senderID,result[cat].picture);
-        
+
 
         /*
         for(let j in result){
           if(result[j]['id'] == cat){
             console.log(j+":"+'match!') ;
-            
+
             for(let i in result[j]){
               if(i != 'picture' && i != 'id' && i != 'tag')
               {data += i+':'+result[j][i]+'\n' ;}
@@ -422,14 +441,14 @@ function searchCat(obj,response) {
             return ;
           }
         }
-     
+
         console.log(catID+'not yet upgrade ') ;
         cat = catID + "-1" ;
         let name ;
         // for(let j in result){if(result[j]['id'] == cat){name = result[j]['全名'];}}
         name = result[cat]['全名'] ;
         sendTextMessage(senderID,name+'還沒有'+catSta+'階進化噢' );
-        
+
         //*/
       }
       else if(action == "search.ability"){
@@ -439,22 +458,22 @@ function searchCat(obj,response) {
         let answer = '' ;
         let exist = '000' ;
         let buffer = [] ;
-        
+
         if(color == '') color = '[' ;
         if(ability == '') ability = '[' ;
-        
+
         console.log(color+";"+rare+";"+ability);
-        
+
         if(rare != '' ){
           for(let i in result){
             let current = result[i].id.substr(0,3) ;
-            
+
             if(current == exist) continue ;
             else exist = current ;
-            
+
             let colorTag = result[i]['tag'].trim().indexOf(color) ;
             let abilityTag = result[i]['tag'].trim().indexOf(ability) ;
-            
+
             if(result[i]['稀有度'] == rare){
               //console.log(i+":"+colorTag+";"+abilityTag);
               if(colorTag != -1 && abilityTag != -1)
@@ -472,26 +491,26 @@ function searchCat(obj,response) {
             sendTextMessage(senderID,answer );
             setTimeout(function(){selectSearch(buffer,senderID);}, 500);
           }
-         
+
 
         }
         else{
           for(let i in result){
               let current = result[i].id.substr(0,3) ;
-              
+
               if(current == exist) continue ;
               else exist = current ;
-              
+
               let colorTag = result[i]['tag'].trim().indexOf(color) ;
               let abilityTag = result[i]['tag'].trim().indexOf(ability) ;
-              
+
               if(colorTag != -1 && abilityTag != -1){
                 buffer.push(result[i]['全名']) ;
                 answer += result[i]['全名']+'\n' ;
-              } 
-                
+              }
+
           }
-          
+
           if(answer == ''){
             answer = '沒有符合條件的貓咪>_<' ;
             sendTextMessage(senderID,answer );
@@ -500,17 +519,17 @@ function searchCat(obj,response) {
             sendTextMessage(senderID,answer );
             setTimeout(function(){selectSearch(buffer,senderID);}, 500);
           }
-          
-        }
-        
-        
 
-        
+        }
+
+
+
+
       }
       else if(action == "compare"){
-        
+
       }
-      
+
     })
     .catch(function(err) {
         console.log(err.message);
@@ -523,7 +542,7 @@ function selectSearch(array,senderID) {
   let random ;
   let result = [] ;
   console.log(array);
-  
+
   result.push('想查詢他們的資料嗎?');
   for(let i=0 ; i<4 ; i++){
     random = Math.random()*array.length ;
@@ -549,7 +568,7 @@ function sendImageMessage(recipientId,url) {
       attachment: {
         type: "image",
         payload: {
-          url: url 
+          url: url
         }
       }
     }
@@ -563,7 +582,7 @@ function sendImageMessage(recipientId,url) {
  *
  */
 function sendQuickReply(recipientId,arr) {
-  
+
   let reply = [] ;
   let json = {} ;
   for(let i = 1 ; i<arr.length ; i++){
@@ -573,7 +592,7 @@ function sendQuickReply(recipientId,arr) {
     reply.push(json) ;
     json = {} ;
   }
-  
+
   var messageData = {
     recipient: {
       id: recipientId
@@ -581,7 +600,7 @@ function sendQuickReply(recipientId,arr) {
     message: {
       text: arr[0],
       quick_replies: reply
-  
+
     }
   };
 
@@ -595,7 +614,7 @@ function sendQuickReply(recipientId,arr) {
 /*
  * Delivery Confirmation Event
  *
- * This event is sent to confirm the delivery of a message. Read more about 
+ * This event is sent to confirm the delivery of a message. Read more about
  * these fields at https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-delivered
  *
  */
@@ -609,7 +628,7 @@ function receivedDeliveryConfirmation(event) {
 
   if (messageIDs) {
     messageIDs.forEach(function(messageID) {
-      console.log("Received delivery confirmation for message ID: %s", 
+      console.log("Received delivery confirmation for message ID: %s",
         messageID);
     });
   }
@@ -621,23 +640,23 @@ function receivedDeliveryConfirmation(event) {
 /*
  * Postback Event
  *
- * This event is called when a postback is tapped on a Structured Message. 
+ * This event is called when a postback is tapped on a Structured Message.
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received
- * 
+ *
  */
 function receivedPostback(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
   var timeOfPostback = event.timestamp;
 
-  // The 'payload' param is a developer-defined field which is set in a postback 
-  // button for Structured Messages. 
+  // The 'payload' param is a developer-defined field which is set in a postback
+  // button for Structured Messages.
   var payload = event.postback.payload;
 
-  console.log("Received postback for user %d and page %d with payload '%s' " + 
+  console.log("Received postback for user %d and page %d with payload '%s' " +
     "at %d", senderID, recipientID, payload, timeOfPostback);
 
-  // When a postback is called, we'll send a message back to the sender to 
+  // When a postback is called, we'll send a message back to the sender to
   // let them know it was successful
   sendTextMessage(senderID, "Postback called");
 }
@@ -647,7 +666,7 @@ function receivedPostback(event) {
  *
  * This event is called when a previously-sent message has been read.
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/message-read
- * 
+ *
  */
 function receivedMessageRead(event) {
   var senderID = event.sender.id;
@@ -667,7 +686,7 @@ function receivedMessageRead(event) {
  * This event is called when the Link Account or UnLink Account action has been
  * tapped.
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference/account-linking
- * 
+ *
  */
 function receivedAccountLink(event) {
   var senderID = event.sender.id;
@@ -819,7 +838,7 @@ function sendButtonMessage(recipientId) {
         }
       }
     }
-  };  
+  };
 
   callSendAPI(messageData);
 }
@@ -841,7 +860,7 @@ function sendGenericMessage(recipientId) {
           elements: [{
             title: "rift",
             subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",               
+            item_url: "https://www.oculus.com/en-us/rift/",
             image_url: SERVER_URL + "/assets/rift.png",
             buttons: [{
               type: "web_url",
@@ -855,7 +874,7 @@ function sendGenericMessage(recipientId) {
           }, {
             title: "touch",
             subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",               
+            item_url: "https://www.oculus.com/en-us/touch/",
             image_url: SERVER_URL + "/assets/touch.png",
             buttons: [{
               type: "web_url",
@@ -870,7 +889,7 @@ function sendGenericMessage(recipientId) {
         }
       }
     }
-  };  
+  };
 
   callSendAPI(messageData);
 }
@@ -895,8 +914,8 @@ function sendReceiptMessage(recipientId) {
           recipient_name: "Peter Chang",
           order_number: receiptId,
           currency: "USD",
-          payment_method: "Visa 1234",        
-          timestamp: "1428444852", 
+          payment_method: "Visa 1234",
+          timestamp: "1428444852",
           elements: [{
             title: "Oculus Rift",
             subtitle: "Includes: headset, sensor, remote",
@@ -1014,14 +1033,14 @@ function sendAccountLinking(recipientId) {
         }
       }
     }
-  };  
+  };
 
   callSendAPI(messageData);
 }
 
 /*
- * Call the Send API. The message data goes in the body. If successful, we'll 
- * get the message id in a response 
+ * Call the Send API. The message data goes in the body. If successful, we'll
+ * get the message id in a response
  *
  */
 function callSendAPI(messageData) {
@@ -1037,25 +1056,23 @@ function callSendAPI(messageData) {
       var messageId = body.message_id;
 
       if (messageId) {
-        console.log("Successfully sent message with id %s to recipient %s", 
+        console.log("Successfully sent message with id %s to recipient %s",
           messageId, recipientId);
       } else {
-      console.log("Successfully called Send API for recipient %s", 
+      console.log("Successfully called Send API for recipient %s",
         recipientId);
       }
     } else {
       console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
     }
-  });  
+  });
 }
 
 // Start server
-// Webhooks must be available via SSL with a certificate signed by a valid 
+// Webhooks must be available via SSL with a certificate signed by a valid
 // certificate authority.
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
 
 module.exports = app;
-
-

@@ -25,24 +25,35 @@ var catdata;
 firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
-
+//
 // database.ref("/newCatData").once("value",function (snapshot) {
-//   catdata = snapshot.val();
+//   let catdata = snapshot.val();
 //   console.log("cat data load complete");
-//   for(let i in catdata){
-//     if(catdata[i].condition.stage){
-//       console.log(catdata[i].condition.stage);
-//       // database.ref("/newCatData/"+i+"/id").set(i);
-//     }
-//   }
+//   let statistic,exist = '000';
+//
 //   console.log("finish");
 //   // process.exit();
 // });
 
+// var gachadata = {};
 // database.ref("/gachadata").once("value",function (snapshot) {
-//   for(let i in snapshot.val()){
-//     console.log(i,snapshot.val()[i].name);
+//   data = snapshot.val();
+//   for(let i in data){
+//     gachadata[data[i].name] = i;
 //   }
+//   console.log('gacha map complete');
+// });
+// database.ref("/user").once("value",function (snapshot) {
+//   console.log('get user data');
+//   userdata = snapshot.val();
+//   for(let i in userdata){
+//     let history = userdata[i].history.gacha;
+//     for (let j in history) {
+//       let key = gachadata[history[j].name];
+//       if(key) database.ref("/user/"+i+"/history/gacha/"+j+"/name").set(key);
+//     }
+//   }
+//   console.log('finfish');
 // });
 
 // database.ref("/enemydata").once("value",function (snapshot) {
@@ -68,28 +79,6 @@ console.log('start');
 //     },2000)
 // });
 
-// database.ref("/user").once("value",function (snapshot) {
-//   console.log('get user data');
-//   userdata = snapshot.val();
-//   let count = 0 ;
-//   for(let i in userdata){
-//     process.stdout.clearLine();
-//     process.stdout.cursorTo(0);
-//     process.stdout.write("loading user data "+i);
-//     process.stdout.write((Number(count)/811*100).toFixed(2).toString());
-//     process.stdout.write("%");
-//     let owned = userdata[i].folder!='0'&&userdata[i].folder?
-//         (userdata[i].folder.owned!="0"&&userdata[i].folder.owned?userdata[i].folder.owned:[]):[];
-//     let arr = [];
-//     for(let j in owned){
-//       if(arr.indexOf(owned[j])==-1)arr.push(owned[j])
-//     }
-//     database.ref("/user/"+i+"/folder/owned").set(arr)
-//     count++;
-//   }
-//   console.log('finfish');
-// });
-
 // database.ref("/stagedata").once('value',function (snapshot) {
 //   let data = snapshot.val();
 //     for(let i in data){
@@ -101,129 +90,16 @@ console.log('start');
 //           // if (!data[i][j][k].count) database.ref("/stagedata/"+i+"/"+j+"/"+k+"/count").set(0)
 //         }
 //       }
-    }
-
-
-});
+//     }
+//
+//
+// });
+// database.ref("/user").once('value',function (snapshot) {
+//   let userdata = snapshot.val(),survey;
+//
+// });
 
 // geteventDay()
-
-function geteventDay() {
-  var t = new Date(),
-      y = t.getFullYear(),
-      m = t.getMonth()+1,
-      d = t.getDate(),
-      predic_url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
-      root = 'https://forum.gamer.com.tw/';
-  var start,end;
-      console.log("get event day")
-      console.log(y+AddZero(m)+AddZero(d));
-
-  database.ref("/event_date").once('value',function (snapshot) {
-    var eventdate = snapshot.val();
-    //update prediction
-    request({
-      url: predic_url,
-      method: "GET"
-    },function (e,r,b) {
-      if(!e){
-        $ = cheerio.load(b);
-        let title = $(".b-list__row");
-        let today = y+AddZero(m)+AddZero(d);
-        let arr = [];
-        title.each(function () {
-          let a = $(this).children(".b-list__main").find("a");
-          if(a.text().indexOf("活動資訊")!=-1){
-            let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
-            for(let i in b){
-              b[i] = b[i].split("/");
-              for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
-              b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
-            }
-            if(b[1]>today){
-              // console.log(a.text());
-              start = b[0];end=b[1];
-              // console.log(start,end);
-              arr.push({url:root+a.attr("href"),start:start,end:end,name:a.text()});
-            }
-          }
-        });
-        // console.log(arr);
-        for(i in arr){
-          if (arr[i].url == eventdate.prediction.source||
-              arr[i].url == eventdate.prediction_jp.source) continue
-          console.log('update prediction');
-          parsePrediction(arr[i],eventdate);
-        }
-      }
-    });
-  });
-  setTimeout(function () { geteventDay() },12*3600*1000);
-}
-function parsePrediction(obj,eventdate) {
-  console.log(obj.name);
-  let path = "/event_date/prediction";
-  if(obj.name.indexOf('日版')!=-1){
-    // console.log(/snA=[0-9]+/.exec(eventdate.prediction_jp.source)[0].split('=')[1]);
-    if (Number(/snA=[0-9]+/.exec(eventdate.prediction_jp.source)[0].split('=')[1])>
-        Number(/snA=[0-9]+/.exec(obj.url)[0].split('=')[1])) {console.log("don't update");return}
-    path += '_jp';
-  } else {
-    if (Number(/snA=[0-9]+/.exec(eventdate.prediction.source)[0].split('=')[1])>
-        Number(/snA=[0-9]+/.exec(obj.url)[0].split('=')[1])) {console.log("don't update");return}
-  }
-  request({
-    url:obj.url,
-    method:"GET"
-  },function (e,r,b) {
-    if(!e){
-      $ = cheerio.load(b);
-      var gachaP = $("section").eq(0).find(".c-article__content"),
-          eventP = $("section").eq(1).find(".c-article__content");
-      var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
-      gachaP.children("div").each(function () {
-        let content = $(this).text();
-        console.log(content);
-        if(content&&content.length<30){
-          let arr = content.split(' ');
-          let brr = arr[0].split("~");
-          let cc = dateRe.test(arr[0]);
-          if(cc){
-            gachaObj.push({
-              date:brr,name:arr[1],
-              sure:arr[2]?arr[2].indexOf('必中')!=-1:false
-            });
-          }
-        }
-      });
-      eventP.children("div").each(function () {
-        let content = $(this).text();
-        console.log(content);
-        if( content.indexOf('課金')!=-1||
-            content.indexOf('出售')!=-1||
-            content.indexOf('來源')!=-1||!content) return
-        arr = content.trim().split(' ');
-        let brr = arr[0].split("~");
-        let cc = dateRe.test(arr[0]);
-        if(cc){
-          eventObj.push({
-            date:brr,
-            name:arr[1]+(arr[2]?(" "+arr[2]):"")
-          });
-        }
-      });
-    }
-    console.log(gachaObj);
-    console.log(eventObj);
-    // database.ref(path).set({
-    //   start:obj.start,
-    //   end:obj.end,
-    //   source:obj.url,
-    //   eventP:eventObj,
-    //   gachaP:gachaObj
-    // });
-  });
-}
 
 function AddZero(n) {
   return n<10 ? "0"+n : n

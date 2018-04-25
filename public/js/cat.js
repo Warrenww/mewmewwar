@@ -802,7 +802,7 @@ $(document).ready(function () {
     ga('send', 'event', 'survey_cat', 'rank',current_cat_data.id);
     socket.emit("cat survey",{
       uid : current_user_id,
-      cat : current_cat_data.id,
+      cat : current_cat_data.id.substring(0,3),
       type : 'rank',
       add : current_cat_survey.rank,
       all : current_cat_statistic.rank
@@ -830,7 +830,7 @@ $(document).ready(function () {
     ga('send', 'event', 'survey_cat', 'application',current_cat_data.id);
     socket.emit("cat survey",{
       uid : current_user_id,
-      cat : current_cat_data.id,
+      cat : current_cat_data.id.substring(0,3),
       type : 'application',
       add : current_cat_survey.application,
       all : current_cat_statistic.application
@@ -868,7 +868,7 @@ $(document).ready(function () {
     org.push(val);
     socket.emit("cat survey",{
       uid : current_user_id,
-      cat : current_cat_data.id,
+      cat : current_cat_data.id.substring(0,3),
       type : 'nickname',
       add : obj,
       all : quene
@@ -973,7 +973,7 @@ $(document).ready(function () {
     // console.log(comment);
     if(!comment) return
     socket.emit('comment cat',{
-      cat:current_cat_data.id,
+      cat:current_cat_data.id.substring(0,3),
       owner:current_user_id,
       comment:comment,
       time:new Date().getTime()
@@ -1222,11 +1222,4 @@ function Thisbro(arr) {
   }
   html += "</div>" ;
   return html
-}
-
-function parseRarity(r) {
-  let arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'],
-      brr = ['B','EX','R','SR','SR_alt','SSR'];
-
-  return arr[brr.indexOf(r)]
 }

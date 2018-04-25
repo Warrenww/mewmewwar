@@ -47,6 +47,8 @@
           <button id='month' value='0'>月間關</button>
           <button id='easter' value='0'>復活節關卡</button>
         </div>
+        <span>特殊關卡</span>
+        <div style="display:none"> <button id='memory' value='0'>紀念關</button> </div>
         <span>合作關卡</span>
         <div style="display:none">
           <button id='eva' value='0'>福音戰士<br />合作關卡</button>
@@ -61,6 +63,17 @@
     </div>
 
     <div class="content" id="selector">
+      <div class="search" style="margin:20px;width:100%">
+        <input type="text" id="searchBox" placeholder="搜尋關卡...">
+        <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
+      </div>
+      <div id="searchResult">
+        <div style="display:flex;font-size: 20px; border-bottom: 1px solid;">
+          <div style="flex:2">共<b id="num"></b>筆搜尋結果</div>
+          <i class="material-icons" style="cursor:pointer;margin-bottom:5">&#xE14C;</i>
+        </div>
+        <div class="result"> </div>
+      </div>
       <div class="lv_sg_box" >
         <div id="select_stage" ></div>
         <div id="select_level" ></div>

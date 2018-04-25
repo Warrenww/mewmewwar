@@ -105,13 +105,10 @@ nav .mobile,
     width: 30px;
     height: 30px;
   }
-
-  #snapshot {width: 60px;height: 60px}
-  #snapshot i {font-size: 30px}
   #year_event{padding: 5% 0;font-size: 16px}
   #bulletin .main{width: 95%}
   #more_option{
-    top: 60%;
+    top: 50%;
     background-color: rgba(0, 0, 0, 0.35);
     left: 100%;
     justify-content: center;
@@ -133,6 +130,8 @@ nav .mobile,
     margin: 3px
   }
   .compareNav div{right: 40px;top: 70px}
+  #zoomImg img{ width: 80% }
+
 }
 @media screen and (max-width:425px) {
   .select,
@@ -145,4 +144,5 @@ nav .mobile,
   .search_type .search{justify-content: center;}
   body::-webkit-scrollbar {width: 0px;}
   #mine_alert .content div,#mine_alert span{width: 90%}
+  #zoomImg img{ width: 90% }
 }

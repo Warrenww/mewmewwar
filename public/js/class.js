@@ -114,7 +114,7 @@ class Cat{
     (cond.can?"貓罐頭"+cond.can+"個+<br>":"")+
     (cond.stage?"<span type='stage' id='"+cond.stage.id+"'>"+cond.stage.name+"</span>通關後機率獲得<br>":"")+
     (cond.gacha?this.parseGacha(cond.gacha):"")+
-    (cond.other?cond.other:"")+
+    (cond.other?cond.other+"<br>":"")+
     (cond.fruit?this.parseFruit(cond.fruit):"");
     return html
   }
