@@ -113,8 +113,9 @@ nav .mobile,
     left: 100%;
     justify-content: center;
   }
-  #more_option .tag{
-    top: 30px;left:-8;font-size: 14px
+  #more_option i::before{
+    left: -110px;
+    text-align: right;
   }
 
 }

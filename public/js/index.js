@@ -104,6 +104,15 @@ $(document).ready(function () {
           },100000);
         }
       }
+      console.log(data);
+      dataArr = ['name','hp','atk','count'];
+      dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
+      for(let i in data.legend){
+        let target = $(".catCard").eq(i);
+        target.children("img").attr("src",image_url_cat+data.legend[i].id+'.png');
+        for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend[i][dataArr[j]]);
+        target.attr("id",data.legend[i].id);
+      }
     });
 
     //mobile navigation reaction
@@ -285,6 +294,17 @@ $(document).ready(function () {
           socket.emit("notice mine",{uid:current_user_data.uid,accept:false});
         }
       }
+    });
+
+    $(".searchMore").click(function () {
+      let id = $(this).parent().attr("id");
+      socket.emit("display cat",{
+        uid : current_user_data.uid,
+        cat : id,
+        history : true
+      });
+      $('#iframe_holder').css('right',0);
+      window.parent.reloadIframe('cat');
     });
 
     var xmlhttp = new XMLHttpRequest() ;

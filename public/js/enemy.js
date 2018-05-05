@@ -195,7 +195,7 @@ $(document).ready(function () {
     return html ;
   }
   var result_expand = 0,originHeight;
-  $(document).on('click','.compareSorce .title #option div',function () {
+  $(document).on('click','.compareSorce .title #option i',function () {
     let type = $(this).attr("id");
     if(type == 'result_snapshot'){
       let target = $("#selected")[0];

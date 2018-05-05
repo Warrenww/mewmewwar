@@ -131,12 +131,6 @@ $(document).ready(function () {
 //compare tag for cat and enemy
   $(document).on('click','#compareTarget_tag',showhidecomparetarget);
 
-  $('#more_option div,.compareSorce .title #option div').hover(function () {
-    $(this).children('.tag').show(400);
-  },function () {
-    $(this).children('.tag').hide(400);
-  });
-
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
       nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];

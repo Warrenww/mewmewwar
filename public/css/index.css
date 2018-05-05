@@ -148,3 +148,55 @@ nav a{cursor: pointer;}
   overflow-y: scroll;
 }
 .content::-webkit-scrollbar {width: 0}
+.catCardholder{
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+.catCard{
+  display: flex;
+  width: 30%;
+  flex-direction: column;
+  padding: 5px;
+  border: 2px dashed;
+  border-radius: 10px;
+  position: relative;
+}
+.catCard img{width: 100%}
+.catCard span{
+    font-weight: bold;
+    margin: 3 5;
+    border-bottom: 1px solid lightgray;
+}
+.catCard span:first-of-type{text-align: center;}
+.catCard span:last-child{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 0
+}
+.catCard span:last-child:hover{color: rgb(231, 167, 87)}
+.catCard::before,.catCard::after{
+  content: '';
+  position: absolute;
+  top: -10;
+  left: -10;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+  border-left: 10px solid;
+  border-right: 10px solid;
+  border-color: #c6c6c6;
+  border-top: 10px solid transparent;
+  transform: matrix(1,-0.3,0,1.4,0,0);
+  box-shadow: 4px 3px 3px 0px rgba(0,0,0,0.8)
+}
+.catCard::after{
+  left: 10;
+  transform: matrix(1,0.3,0,1.4,0,0);
+}
+.catCard:first-of-type::before,
+.catCard:first-of-type::after{border-color: #eec336;border-top: 10px solid transparent;}
+.catCard:last-of-type::before,
+.catCard:last-of-type::after{border-color: #c37c12;border-top: 10px solid transparent;}

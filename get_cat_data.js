@@ -184,6 +184,13 @@ var config = {
             range:c[i].split("（")[1].split("）")[0].split("～")
           });
         }
+        else if(c[i].indexOf("使徒キラー")!=-1){
+          obj.tag.push("使徒殺手");
+          obj.char.push({
+            against:["使徒"],
+            type:"使徒殺手 (攻擊力x5 受到傷害x0.2)",
+          });
+        }
         else if(c[i].indexOf("無効（")!=-1){
           let aa = c[i].split("（")[1].split("）")[0].split(" ");
           console.log(aa);
@@ -542,6 +549,8 @@ function parseGacha(n) {
       return '2017_year_end'
     case '実況パワフルプロ野球コラボ':
       return 'baseball'
+    case 'エヴァンゲリオンコラボ':
+      return 'eva'
     default:
         return "no_this_gacha"
   }

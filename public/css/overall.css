@@ -377,9 +377,11 @@ table {
   z-index: 3;
   left: 86%;
   overflow: visible;
+  display: flex;
 }
-.compareSorce .title #option div,
-#more_option div{
+.compareSorce .title #option i,
+#more_option i,
+#edit_function i{
   margin: 10px;
   background-color: rgba(255, 255, 255, 0.71);
   padding: 5px;
@@ -393,28 +395,42 @@ table {
   top: 0;
   left: 0;
 }
-.compareSorce .title #option div{
+.compareSorce .title #option i::before,
+#more_option i::before,
+#edit_function i::before{
+  content: attr(text);
+  position: absolute;
+  z-index: 3;
+  left: -35px;
+  width: 100px;
+  text-align: center;
+  top: -75%;
+  font-size: 16px;
+  font-family: Microsoft JhengHei;
+  font-weight: bold;
+  color: black;
+  opacity: 0;
+  transition: .3s ease-in-out;
+  white-space: nowrap;
+}
+.compareSorce .title #option i:hover::before,
+#more_option i:hover::before,
+#edit_function i:hover::before
+{opacity: 1;}
+.compareSorce .title #option i{
   border: 1px solid;
   margin: 0 20px;
 }
-.compareSorce .title #option div:hover,
-#more_option div:hover{
+.compareSorce .title #option i:hover,
+#more_option i:hover,
+#edit_function i:hover{
   background-color: rgba(150, 150, 150, 0.88);
   color: rgb(244, 214, 43);
 }
-.compareSorce .title #option div .tag,
-#more_option .tag{
-  display: none;
-  top: 0;
-  position: absolute;
-  left: 30px;
-  padding: 5px 10px;
-  width: 200px;
-  font-weight: bold;
-  color: black !important;
-}
-.compareSorce .title #option div .tag{
-  top: 30px;left:-8;font-size: 14px
+#more_option i::before{
+  top: 20%;
+  left: 120%;
+  text-align: left;
 }
 #copy_alert,
 #fight_alert,

@@ -56,9 +56,9 @@ var catdata,
     rankdata,
     catComment ;
 var __numberOfCat = 0,
-    mostSearchCat = {name:"",count:-999},
-    secondMostSearchCat = {name:"",count:-999},
-    thirdMostSearchCat = {name:"",count:-999};
+    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
 ReloadAllData();
 function ReloadAllData() {
   database.ref("/").once("value",function (snapshot) {
@@ -81,7 +81,13 @@ function ReloadAllData() {
           }
           secondMostSearchCat = Object.assign({},mostSearchCat);
         }
-        mostSearchCat = {name:catdata[i].name,count:catdata[i].count};
+        mostSearchCat = {
+          name:catdata[i].name,
+          count:catdata[i].count,
+          id:i,
+          hp:levelToValue(catdata[i].hp,catdata[i].rarity,30),
+          atk:levelToValue(catdata[i].atk,catdata[i].rarity,30),
+        };
       }
     }
     console.log("most Search Cat : ",mostSearchCat);
@@ -117,7 +123,8 @@ io.on('connection', function(socket){
         if(catdata[id]){
           let obj = {
             id : id,
-            name : catdata[id].name?catdata[id].name:catdata[id].jp_name
+            name : catdata[id].name?catdata[id].name:catdata[id].jp_name,
+            cost : catdata[id].cost
           }
           buffer_1.push(obj);
         }
@@ -129,7 +136,6 @@ io.on('connection', function(socket){
   socket.on("normal search",function (data) {
         console.log("searching "+data.type+"....");
         console.log(data);
-        if(!data.uid) return
         let rFilter = data.query.rFilter?data.query.rFilter:[],
             cFilter = data.query.cFilter?data.query.cFilter:[],
             aFilter = data.query.aFilter?data.query.aFilter:[],
@@ -141,6 +147,7 @@ io.on('connection', function(socket){
             user = data.uid,
             flag = true;
         console.log("recording last search quene");
+        if(user)
         database.ref("/user/"+user+"/history/last_"+type+"_search").set(data)
         .then(userdata[user].history["last_"+data.type+"_search"] = data);
         switch (type) {
@@ -153,8 +160,8 @@ io.on('connection', function(socket){
           default:
         } ;
 
-        let level = userdata[user].setting.default_cat_lv,
-            showJP = userdata[user].setting.show_jp_cat;
+        let level = user?userdata[user].setting.default_cat_lv:30,
+            showJP = user?userdata[user].setting.show_jp_cat:false;
         if(cFilter.length != 0){
           for(let i in load_data){
             for(let j in cFilter){
@@ -216,7 +223,8 @@ io.on('connection', function(socket){
           for(let i in buffer_2) {
             let obj = {
               id : buffer_2[i].id,
-              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
+              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name,
+              cost : buffer_2[i].cost?buffer_2[i].cost:0
             }
             if(buffer_2[i].region.indexOf("[TW]")==-1) continue
             else buffer_1.push(obj) ;
@@ -226,7 +234,8 @@ io.on('connection', function(socket){
           for(let i in buffer_2) {
             let obj = {
               id : buffer_2[i].id,
-              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name
+              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name,
+              cost : buffer_2[i].cost?buffer_2[i].cost:0
             }
             buffer_1.push(obj);
           }
@@ -234,7 +243,6 @@ io.on('connection', function(socket){
         console.log("Result length:",buffer_1.length);
         if(type == 'enemy') socket.emit("search result enemy",{result:buffer_1,query:data.query,type:data.query_type});
         else  socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
-
   });
   socket.on("text search",function (obj) {
     console.log("Text Search : "+obj.type+"_"+obj.key);
@@ -255,7 +263,8 @@ io.on('connection', function(socket){
         if (i.indexOf(obj.key)!=-1) {
           buffer.push({
             name : load_data[i].name?load_data[i].name:load_data[i].jp_name,
-            id : load_data[i].id
+            id : load_data[i].id,
+            cost : load_data[i].cost?load_data[i].cost:0
           });
         }
       }
@@ -269,7 +278,8 @@ io.on('connection', function(socket){
           if(load_data[x]) {
             let obj = {
               name : load_data[x].name,
-              id : load_data[x].id
+              id : load_data[x].id,
+              cost : load_data[x].cost?load_data[x].cost:0
             };
             buffer.push(obj) ;
             if(obj.type == 'enemy') break
@@ -494,7 +504,8 @@ io.on('connection', function(socket){
     if(page == 'index'){
       CurrentUserData.name = userdata[user.uid].nickname;
       CurrentUserData.first_login = userdata[user.uid].first_login;
-      CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert}
+      CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
+      CurrentUserData.legend = [mostSearchCat, secondMostSearchCat, thirdMostSearchCat];
     }
     else if(page == 'book'){
       CurrentUserData.folder = {owned:userdata[user.uid].folder.owned};
@@ -573,16 +584,14 @@ io.on('connection', function(socket){
       CurrentUserData.name = userdata[user.uid].nickname;
       CurrentUserData.setting = {show_more_option:setting.show_more_option}
     }
-    else if(page == 'event'){
-      CurrentUserData.setting = {show_jp_cat:setting.show_jp_cat}
-    }
-    else if(page == 'gacha'){
-      CurrentUserData.last_gacha = last_gacha
+    else if(page == 'event'){ CurrentUserData.setting = {show_jp_cat:setting.show_jp_cat} }
+    else if(page == 'gacha'){ CurrentUserData.last_gacha = last_gacha }
+    else if (page == 'list') { CurrentUserData.last_cat_search = last_cat_search;
     }
     socket.emit("current_user_data",CurrentUserData);
     console.log('user data send');
   });
-  socket.on("search combo",function (data) {
+  socket.on("combo search",function (data) {
     console.log("searching combo......") ;
     let buffer = [] ;
     let arr = data.id,uid = data.uid;
@@ -592,6 +601,7 @@ io.on('connection', function(socket){
       }
     }
     socket.emit("combo result",buffer) ;
+    if(!uid) return
     console.log("recording user history");
     var key = database.ref().push().key;
     userdata[uid].history.combo[key] = {type : "combo",id : arr,time:new Date().getTime()};
@@ -1050,6 +1060,43 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/last_stage").set(location);
     }
     socket.emit('cat to stage',{find,stage});
+  });
+
+  socket.on("save list",function (data) {
+    let uid = data.uid,
+        name = data.name,
+        list = data.list,
+        note = data.note,
+        key = data.key?data.key:database.ref().push().key,
+        combo = [];
+
+    console.log(uid,data.key?'update':'create','a list with key',key);
+    let default_lv = userdata[uid].setting.default_cat_lv,
+        variable = userdata[uid].variable.cat,
+        exist_combo = [];
+    for(let i in combodata){
+      let flag = true ;
+      for(let j in combodata[i].cat) {
+        if(combodata[i].cat[j] == '-') continue
+        if(!checkList(list.upper,combodata[i].cat[j])) flag = false;
+      }
+      if(!flag||exist_combo.indexOf(combodata[i].id)!=-1) continue
+      exist_combo.push(combodata[i].id);
+      combo.push(combodata[i]);
+    }
+    for(let i in list){
+      for(let j in list[i]){
+        let id = list[i][j],cost = catdata[id].cost,bro = 0,grossID = id.substring(0,3),
+            lv = variable[grossID]?(variable[grossID].lv?variable[grossID].lv:default_lv):default_lv;
+        for(let k=1;k<4;k++) if(catdata[grossID+"-"+k]) bro ++;
+        list[i][j] = { id:id,cost:cost,lv:"Lv."+lv,bro:bro }
+      }
+    }
+    socket.emit("list save complete",{ key,list,combo });
+    function checkList(list,id) {
+      for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
+      return false
+    }
   });
 });
 function arrangeUserData() {

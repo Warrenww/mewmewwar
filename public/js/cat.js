@@ -271,8 +271,8 @@ $(document).ready(function () {
         id = data.id,
         grossID = id.substring(0,3);
 
-    if(own) $("#more_option #mark_own").attr({"value":1,'cat':grossID}).find("i").html("&#xE8E6;").siblings().children().fadeOut();
-    else $("#more_option #mark_own").attr({"value":0,'cat':grossID}).find("i").html("&#xE8E7;").siblings().children().fadeIn();
+    if(own) $("#more_option #mark_own").attr({"value":1,'cat':grossID,'text':'我有這隻貓'}).html("&#xE8E6;");
+    else $("#more_option #mark_own").attr({"value":0,'cat':grossID,'text':'我沒有這隻貓'}).html("&#xE8E7;");
     $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+grossID+".html");
 
     for (let i in data){
@@ -399,7 +399,7 @@ $(document).ready(function () {
     scroll_to_div('selected');
   }
   var result_expand = 0,originHeight;
-  $(document).on('click','.compareSorce .title #option div',function () {
+  $(document).on('click','.compareSorce .title #option i',function () {
     let type = $(this).attr("id");
     if(type == 'result_snapshot'){
       let target = $("#selected")[0];
@@ -466,7 +466,9 @@ $(document).ready(function () {
     let val = Number($(this).attr("value"))?0:1,
         cat = $(this).attr("cat"),
         icon = val?"&#xE8E6;":"&#xE8E7;";
-    $(this).find("i").html(icon);
+    $(this).attr("text",function () {
+      return "我"+(val?"":"沒")+"有這隻貓"
+    }).html(icon);
     if(cat)
       socket.emit("mark own",{
         uid:current_user_id,

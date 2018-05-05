@@ -1,6 +1,5 @@
 $(document).ready(function () {
   var socket = io.connect();
-  const image_url =  "../public/css/footage/cat/u" ;
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
@@ -11,33 +10,11 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     current_user_data = data ;
-    if(data.last_combo)  socket.emit("search combo",{uid:data.uid,id:data.last_combo}) ;
+    if(data.last_combo)  socket.emit("combo search",{uid:data.uid,id:data.last_combo}) ;
     for(let i in data.last_combo){
       $(".button[name~='"+data.last_combo[i]+"']").attr('value',1);
     }
   });
-
-  var effect = {
-        '角色性能' : ['角色攻擊力UP','角色體力UP','角色移動速度UP'],
-        '角色特殊能力' : ['「善於攻擊」的效果UP','「超大傷害」的效果UP','「很耐打」 的效果UP',
-                        '「打飛敵人」的效果UP','「使動作變慢」的時間UP','「使動作停止」的時間UP',
-                        '「攻擊力下降」的時間UP', '「攻擊力上升」的效果UP','「使徒殺手」 的效果UP','「會心一擊」 的機率UP'],
-        '貓咪城' : ['初期貓咪砲能量值UP','貓咪砲玫擊力UP','貓咪砲充電速度UP','城堡耐久力UP'],
-        '持有金額．工作狂貓' : ['初期所持金額UP','初期工作狂貓等級UP','工作狂貓錢包UP'],
-        '戰鬥效果' : ['研究力UP','會計能力UP','學習力UP']
-      };
-  var eff_count = 0 ;
-  for(let i in effect) {
-    let effect_html = "" ;
-    for(let j in effect[i]) effect_html += "<span class='button' name='C"+eff_count+"E"+j+"' value='0'>"+effect[i][j]+"</span>" ;
-    $("#upper_table").append(
-      "<tr>"+
-      "<th colspan='2' id='C"+eff_count+"'>"+i+"</th>"+
-      "<td colspan='4' class='select_effect' >"+effect_html+"</td>"+
-      "</tr>"
-    ) ;
-    eff_count ++ ;
-  }
 
   $(document).on('click','#search_combo',function () {
     let A_search = [] ;
@@ -46,19 +23,14 @@ $(document).ready(function () {
         A_search.push($(this).attr('name'));
       });
     }) ;
-    console.log(A_search);
-    socket.emit("search combo",{
+    // console.log(A_search);
+    socket.emit("combo search",{
       uid:current_user_data.uid,
       id:A_search
     }) ;
-    socket.emit("user Search",{
-      uid : current_user_data.uid,
-      type : 'combo',
-      id : A_search
-    });
   });
   socket.on("combo result",function (arr) {
-    console.log(arr);
+    // console.log(arr);
     searchCombo(arr);
   }) ;
 
@@ -85,7 +57,7 @@ $(document).ready(function () {
             pic_html +=
             '<span class="card" value="'+arr[i].cat[j]+'" '+
             'style="background-image:url('+
-            image_url+arr[i].cat[j]+'.png);'+
+            image_url_cat+arr[i].cat[j]+'.png);'+
             (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
             +'"></span>' ;
           }
