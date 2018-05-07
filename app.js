@@ -341,7 +341,7 @@ io.on('connection', function(socket){
       result.count = storge_count;
       result.own = own;
       result.survey = variable ? (variable.survey?(variable.survey[grossID]?variable.survey[grossID]:false):false):false;
-      result.this.statistic = catComment[grossID].statistic;
+      result.this.statistic = catComment[grossID]?catComment[grossID].statistic:{};
       socket.emit("display cat result",result);
       let history = userdata[uid].history.cat,
           last = userdata[uid].history.last_cat;
