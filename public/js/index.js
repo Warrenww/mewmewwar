@@ -243,7 +243,7 @@ $(document).ready(function () {
       "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
       "gacha":"轉蛋資訊", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
       "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
-      "setting":"設定","rank":"等級排行","history":"歷程記錄"
+      "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表"
     }
     function parse_iframe_name(str) {
       return iframeName[str]

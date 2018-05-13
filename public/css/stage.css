@@ -196,7 +196,7 @@
   font-weight: bold;
   cursor: pointer;
 }
-.display{position: relative;top:-300px}
+.display{position: relative;top:-400px}
 #searchResult{
   width: 100%;
   background-color: rgba(255,255,255,.8);
@@ -220,3 +220,8 @@
 }
 #searchResult i{border-radius: 50%}
 #searchResult i:hover{background-color: rgb(205, 205, 205)}
+#more_option i::before{
+  top:30%;
+  left:125%;
+  text-align: left;
+}

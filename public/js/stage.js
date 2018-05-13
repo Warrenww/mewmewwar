@@ -70,8 +70,10 @@ $(document).ready(function () {
         level:id[2]
       });
     } else {
-      socket.emit("required stage name",{chapter:id[0]});
+      socket.emit("required stage name",id[0]);
+      $("#select_stage").attr("chapter",id[0]);
       socket.emit("required level name",{chapter:id[0],stage:id[1]});
+      $("#select_level").attr("stage",id[1]);
       scroll_to_class("lv_sg_box",0);
     }
   });

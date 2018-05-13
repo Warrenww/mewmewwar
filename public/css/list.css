@@ -1,4 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Gugi');
+#screen{
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+#screen::-webkit-scrollbar{width: 0}
 .list_holder{
   width: 100%;
   display: flex;
@@ -13,12 +20,14 @@
   border-radius:7;
   overflow:hidden
 }
-#edit_pannel{
+#edit_pannel,
+#display_pannel{
   position: absolute;
   width: 100%;
   transition: .4s ease-in-out;
-  left: 0
+  left: -100%;
 }
+#display_pannel{left:0}
 .select_ability .button span{display: none;}
 .select_ability .button i{width: 40;height: 40}
 .seat,
@@ -33,6 +42,7 @@
   color: #b4b4b4;
   margin: 5
 }
+
 #trash{
   width: 640;
   display: flex;
@@ -71,6 +81,7 @@
   background-color: rgba(0,0,0,0.6);
   position: fixed;
   top: 0;
+  left:0;
   padding: 5% 20%;
   z-index: 5;
   display: none;
@@ -153,6 +164,7 @@
 font-weight: bold;
 text-decoration: underline;
 }
+#edit_function i::before{top: 125%;}
 .switch {
   position: relative;
   display: inline-block;
@@ -197,17 +209,29 @@ input:checked + .slider_but:before {
   animation: blink .5s infinite;
   border: 2px solid;
 }
-#close_edit{
+#close_edit,
+#new_list{
   font-size: 32;
   border: 3px solid;
   font-weight: bold;
   border-radius: 50%;
   position: fixed;
-  top: 40;
+  top: 60;
   right: 3%;
   cursor: pointer;
-  transition: .2s ease-in-out
+  transition: .2s ease-in-out;
+  display: none;
 }
+#new_list{
+  top: 85%;
+  display: block;
+  right: 5%;
+  background-color: rgb(255, 176, 51);
+  color: white;
+  border: 0;
+  padding: 15;
+}
+#new_list:hover{background-color: rgb(235, 75, 73)}
 #close_edit:hover{color:rgb(241, 59, 59)}
 #close_alert{
   position: fixed;
@@ -230,8 +254,113 @@ input:checked + .slider_but:before {
   font-weight: bold;
 }
 #close_alert button{font-size: 16}
+select{
+  font-size: 16;
+  border: 0;
+  border-radius: 20px;
+  font-weight: bold;
+  padding: 3 10;
+  background-color: rgba(255,255,255,.7);
+  -webkit-appearance: none;
+  position: relative;
+  margin: 0 8
+}
+select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94)}
+.stageselectholder{
+  display: flex;
+  margin: 10;
+  justify-content: flex-start;
+}
+.list_display_holder,
+#analyze_area{
+  width: 100%;
+  display: flex;
+  background-color: rgba(232, 232, 232, 0.81);
+  margin-bottom: 20px;
+  border-radius: 20px;
+  box-shadow: 4px 4px 10px 0px;
+}
+.list_display_holder div{display: flex;}
+.list_display{
+  flex-direction: column;
+  border-right: 3px dashed orange;
+  margin: 10 0;
+  padding: 0 20;
+  justify-content: center;
+}
+.list_data,.list_detail{
+  flex-direction: column;
+  margin: 0 0 10 20;
+}
+.list_display .card,
+.list_display .seat{
+  width: 90;
+  height: 60;
+  position: relative;
+  margin: 5;
+  font-size: 40;
+}
+.option{
+  flex-direction: column;
+  justify-content: center;
+  float: right;
+  flex: 2;
+  align-items: flex-end;
+}
+.list_display_holder .option i::before{
+  top: 20%;
+  left: -120%;
+  text-align: left;
+}
+.list_detail .combo,
+.list_detail .stage,
+.list_detail .note{border-bottom: 1px solid gray}
+#analyze_area{
+    flex-direction: column;
+    align-items: center;
+    padding:30 10;
+    position: relative;
+}
+#analyze_area table{
+  width: 90%;
+}
+#analyze_area div i::before{left:-100%}
+#analyze_area div{
+  display: flex;
+  align-items: center;
+  width: 90%;
+  font-weight: bold;
+}
+.best{color:#f08d2b;font-weight: bold;}
 @keyframes blink {
   0%{border-color: rgb(255, 93, 46)}
   50%{border-color: yellow}
   100%{border-color: orange}
+}
+@media screen and  (max-width: 1024px) {
+  .list_display .card,
+  .list_display .seat{
+    width: 75;
+    height: 50;
+    position: relative;
+    margin: 5;
+    font-size: 30
+  }
+}
+@media screen and  (max-width: 768px){
+  .list_display_holder,#analyze_area{width: 90%;flex-direction: column;}
+  .list_display_holder .option{flex:1;flex-direction: row;}
+  .list_display_holder .list_display{
+    border-right: 0;
+    border-bottom: 3px dashed orange;
+    padding: 10 0;
+    margin: 0 20;
+  }
+  .list_display_holder .list_display div{justify-content: center;}
+  .list_display_holder .list_data{margin: 20;}
+  .list_display_holder .option i::before{
+    top: -75%;
+    left: 0;
+    text-align: left;
+  }
 }

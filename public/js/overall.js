@@ -386,3 +386,30 @@ function parseRarity(r) {
 
   return arr[brr.indexOf(r)]
 }
+function sum(list) {
+  let sum = 0 ;
+  for(let i in list) sum += Number(list[i])?Number(list[i]):0;
+  return sum
+}
+function avg(list) {
+  return (sum(list)/list.length).toFixed(2)
+}
+function max(list) {
+  let max = -1e10 ;
+  for(let i in list) if(Number(list[i])>max) max = Number(list[i]);
+  return max
+}
+function min(list) {
+  let min = 1e10 ;
+  for(let i in list) if(Number(list[i])<min) min = Number(list[i]);
+  return min
+}
+function vary(list) {
+  let average = avg(list),
+      sum = 0;
+  for(let i in list) sum += (Number(list[i])-average)*(Number(list[i])-average);
+  return Math.sqrt(sum/(list.length-1)).toFixed(2)
+}
+function Range(list) {
+  return [min(list),max(list)]
+}

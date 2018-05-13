@@ -340,7 +340,7 @@ io.on('connection', function(socket){
       result.lv = storge_lv?storge_lv:default_lv;
       result.count = storge_count;
       result.own = own;
-      result.survey = variable ? (variable.survey?(variable.survey[grossID]?variable.survey[grossID]:false):false):false;
+      result.survey = variable ? (variable.survey?variable.survey:false):false;
       result.this.statistic = catComment[grossID]?catComment[grossID].statistic:{};
       socket.emit("display cat result",result);
       let history = userdata[uid].history.cat,
@@ -586,7 +586,9 @@ io.on('connection', function(socket){
     }
     else if(page == 'event'){ CurrentUserData.setting = {show_jp_cat:setting.show_jp_cat} }
     else if(page == 'gacha'){ CurrentUserData.last_gacha = last_gacha }
-    else if (page == 'list') { CurrentUserData.last_cat_search = last_cat_search;
+    else if (page == 'list') {
+      CurrentUserData.last_cat_search = last_cat_search;
+      CurrentUserData.list = userdata[user.uid].list;
     }
     socket.emit("current_user_data",CurrentUserData);
     console.log('user data send');
@@ -1011,7 +1013,7 @@ io.on('connection', function(socket){
   });
   socket.on('required cat comment',function (cat) {
     console.log('required cat comment',cat);
-    socket.emit("comment",catComment[cat].comment);
+    socket.emit("comment",catComment[cat]?catComment[cat].comment:undefined);
   });
   socket.on('comment function',function (data) {
     console.log(data.uid,data.type,'comment in',data.cat);
@@ -1067,10 +1069,13 @@ io.on('connection', function(socket){
         name = data.name,
         list = data.list,
         note = data.note,
+        stageBind = data.stageBind,
         key = data.key?data.key:database.ref().push().key,
         combo = [];
 
     console.log(uid,data.key?'update':'create','a list with key',key);
+    console.log(data);
+    if(!uid) return
     let default_lv = userdata[uid].setting.default_cat_lv,
         variable = userdata[uid].variable.cat,
         exist_combo = [];
@@ -1092,10 +1097,49 @@ io.on('connection', function(socket){
         list[i][j] = { id:id,cost:cost,lv:"Lv."+lv,bro:bro }
       }
     }
-    socket.emit("list save complete",{ key,list,combo });
+    socket.emit("list save complete",{ key,list,combo,stageBind,note,name,'public':data.public });
+    if(!userdata[uid].list) userdata[uid].list = {};
+
+    userdata[uid].list[key] = {name,list,combo,stageBind,note,'public':data.public};
+    database.ref("/user/"+uid+"/list/"+key).set({name,list,combo,stageBind,note,'public':data.public});
+    if(data.public){
+      for(let i in stageBind){
+        let id = stageBind[i].id.split("-"),
+            target = stagedata[id[0]][id[1]][id[2]];
+        if(!target.list) target.list = {};
+        target.list[key] = {name,list,combo,stageBind,note,owner:uid};
+        database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key).set({name,list,combo,stageBind,note,owner:uid});
+      }
+    } else {
+      for(let i in stageBind){
+        let id = stageBind[i].id.split("-"),
+            target = stagedata[id[0]][id[1]][id[2]];
+        delete target.list[key];
+        database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key).set(null);
+      }
+    }
+    for(let i in data.removeStageBind){
+      if(!data.removeStageBind[i]) continue
+      let id = data.removeStageBind[i].split("-"),
+          target = stagedata[id[0]][id[1]][id[2]];
+      delete target.list[key];
+      database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key).set(null);
+    }
     function checkList(list,id) {
       for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
       return false
+    }
+  });
+
+  socket.on("delete list",function (data) {
+    console.log(data.uid,'delete list',data.key);
+    delete userdata[data.uid].list[data.key];
+    database.ref("/user/"+data.uid+"/list/"+data.key).set(null);
+    for(let i in data.stageBind){
+      let id = data.stageBind[i].id.split("-"),
+          target = stagedata[id[0]][id[1]][id[2]];
+      delete target.list[data.key];
+      database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+data.key).set(null);
     }
   });
 });

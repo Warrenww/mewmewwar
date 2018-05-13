@@ -381,7 +381,9 @@ table {
 }
 .compareSorce .title #option i,
 #more_option i,
-#edit_function i{
+#edit_function i,
+.list_display_holder .option i,
+#analyze_area i{
   margin: 10px;
   background-color: rgba(255, 255, 255, 0.71);
   padding: 5px;
@@ -397,12 +399,14 @@ table {
 }
 .compareSorce .title #option i::before,
 #more_option i::before,
-#edit_function i::before{
+#edit_function i::before,
+.list_display_holder .option i::before,
+#analyze_area div i::before{
   content: attr(text);
   position: absolute;
   z-index: 3;
-  left: -35px;
-  width: 100px;
+  left: -30;
+  width: 0;
   text-align: center;
   top: -75%;
   font-size: 16px;
@@ -412,22 +416,27 @@ table {
   opacity: 0;
   transition: .3s ease-in-out;
   white-space: nowrap;
+  overflow: hidden;
 }
 .compareSorce .title #option i:hover::before,
 #more_option i:hover::before,
-#edit_function i:hover::before
-{opacity: 1;}
+#edit_function i:hover::before,
+.list_display_holder .option i:hover::before,
+#analyze_area div i:hover::before
+{opacity: 1;width: 100;overflow: visible;}
 .compareSorce .title #option i{
   border: 1px solid;
   margin: 0 20px;
 }
 .compareSorce .title #option i:hover,
 #more_option i:hover,
-#edit_function i:hover{
+#edit_function i:hover,
+.list_display_holder .option i:hover,
+#analyze_area div i:hover{
   background-color: rgba(150, 150, 150, 0.88);
   color: rgb(244, 214, 43);
 }
-#more_option i::before{
+#more_option div i::before{
   top: 20%;
   left: 120%;
   text-align: left;
