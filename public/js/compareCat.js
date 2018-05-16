@@ -21,7 +21,10 @@ $(document).ready(function () {
         buffer.push(id);
       }
       socket.emit("start compare c2c",{id:data.uid,target:buffer});
+    } else {
     }
+    if(!data.compare_c2c.length) $("#tutorial").show(300);
+
   });
 
   socket.on("c2c compare", function (compare){
@@ -391,4 +394,7 @@ $(document).ready(function () {
       "</div>";
       return html
   }
+  $("#tutorial").click(function () {
+    $(this).hide(300);
+  });
 });

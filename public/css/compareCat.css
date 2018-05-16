@@ -69,6 +69,18 @@
   justify-content: space-around;
   border: 0;
 }
+#tutorial{
+  position: fixed;
+  top: 0;
+  width: 80%;
+  margin: 50 10%;
+  padding: 3%;
+  background: rgba(255,255,255,.9);
+  box-shadow: 0px 5px 10px 3px;
+  border-radius: 30px;
+  display: none;
+}
+#tutorial p,#tutorial li{font-size: 16;font-weight: bold;}
 .panel span{cursor: pointer;display: flex;justify-content: space-around;}
 .panel span:hover{color: rgb(233, 138, 27);font-weight: bold;}
 .panel span span:hover{color: rgb(27, 134, 233);font-weight: bold;}

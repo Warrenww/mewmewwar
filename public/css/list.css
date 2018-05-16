@@ -332,6 +332,7 @@ select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94
   font-weight: bold;
 }
 .best{color:#f08d2b;font-weight: bold;}
+
 @keyframes blink {
   0%{border-color: rgb(255, 93, 46)}
   50%{border-color: yellow}

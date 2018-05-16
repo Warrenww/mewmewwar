@@ -207,7 +207,9 @@ table {
   display: flex;
   justify-content: space-between;
   position: relative;
-  min-height: 46px
+  min-height: 46px;
+  top: 0;
+  z-index: 5;
 }
 .compareSorce .title #option{
   display: flex;

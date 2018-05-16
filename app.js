@@ -1102,21 +1102,13 @@ io.on('connection', function(socket){
 
     userdata[uid].list[key] = {name,list,combo,stageBind,note,'public':data.public};
     database.ref("/user/"+uid+"/list/"+key).set({name,list,combo,stageBind,note,'public':data.public});
-    if(data.public){
-      for(let i in stageBind){
-        let id = stageBind[i].id.split("-"),
-            target = stagedata[id[0]][id[1]][id[2]];
-        if(!target.list) target.list = {};
-        target.list[key] = {name,list,combo,stageBind,note,owner:uid};
-        database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key).set({name,list,combo,stageBind,note,owner:uid});
-      }
-    } else {
-      for(let i in stageBind){
-        let id = stageBind[i].id.split("-"),
-            target = stagedata[id[0]][id[1]][id[2]];
-        delete target.list[key];
-        database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key).set(null);
-      }
+    for(let i in stageBind){
+      let id = stageBind[i].id.split("-"),
+      target = stagedata[id[0]][id[1]][id[2]];
+      if(!target.list) target.list = {};
+      target.list[key] = {name,list,combo,stageBind,note,owner:uid,public:data.public};
+      database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key)
+        .set({name,list,combo,stageBind,note,owner:uid,public:data.public});
     }
     for(let i in data.removeStageBind){
       if(!data.removeStageBind[i]) continue

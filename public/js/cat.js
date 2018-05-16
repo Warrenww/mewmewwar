@@ -414,10 +414,14 @@ $(document).ready(function () {
       if(!result_expand){
         originHeight = $("#selected")[0].offsetHeight;
       }
+      $(".compareSorce .title").css('position',function () {
+        return result_expand?'relative':'sticky'
+      });
       $("#selected").css("height",function () {
         return result_expand?originHeight:trueHeight
       });
       result_expand = result_expand?0:1;
+      scroll_to_class("title",0);
     }
     else if(type == 'batch_own'){
       let r = confirm("確定批次加入「我擁有的貓咪」?!");

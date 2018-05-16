@@ -79,7 +79,7 @@ var config = {
         for(let k = 0;k<tbody_1.length;k++){
           process.stdout.write("reward "+k);
           obj.reward.push({
-            prize : parsePrize(tbody_1.eq(k).children("td").eq(1)),
+            prize : parsePrize(tbody_1.eq(k).children("td").eq(2)),
             chance : tbody_1.eq(k).children("td").eq(3).text(),
             limit : tbody_1.eq(k).children("td").eq(4).text() == '無制限' ? "無限" : tbody_1.eq(k).children("td").eq(4).text()
           });
@@ -126,6 +126,7 @@ var config = {
   function parsePrize(p) {
     let obj ={name:"",amount:""},
     s = p.text();
+    console.log(s);
     if(s.indexOf("XP+")!=-1){
       obj.name = "經驗值";
       obj.amount = s.substring(3);

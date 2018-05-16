@@ -173,79 +173,31 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    // console.log(obj);
+    console.log(obj);
     current_level_data = obj;
     let html = "",
         data = obj.data,
         prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
         next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
-    $(".dataTable").empty();
+    $(".dataTable td").empty();
+    $(".reward").remove();
+    $(".enemy_row").remove();
+    $(".dataTable #chapter").text(chapterName(obj.chapter)).attr('value',obj.chapter);
+    $(".dataTable #stage").text(obj.parent).attr('value',obj.stage);
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
-    html += screen.width > 768 ?
-            ( "<tr>"+
-              "<th rowspan=2 colspan=1 id='chapter' value='"+obj.chapter+"'>"
-              +chapterName(obj.chapter)+"</th>"+
-              "<th rowspan=2 colspan=1 id='stage' value='"+obj.stage+"'>"
-              +obj.parent+"</th>"+
-              "<th rowspan=2 colspan=2>"+data.name+"</th>"+
-              "<th>接關</th><td>"+(data.continue?"可以":"不行")+"</td>"+
-              "</tr><tr>"+
-              "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
-              "</tr><tr>"+
-              "<th>城堡體力</th>"+"<td>"+data.castle+"</td>"+
-              "<th>戰線長度</th>"+"<td>"+data.length+"</td>"+
-              "<th>經驗值</th>"+"<td>"+parseEXP(data.exp)+"</td>"+
-              "</tr><tr>"+
-              "<th>我方出擊限制</th>"+"<td colspan='3'>"+(data.constrain?data.constrain:"無")+"</td>+"+
-              "<th>敵人出擊限制</th>"+"<td>"+data.limit_no+"</td>"+
-              "</tr><tr>"+
-              "<th colspan=6>過關獎勵</th>"+
-              "</tr><tr>"+Addreward(data.reward,data.integral)+
-              "</tr><tr>"+
-              "<th colspan=6>關卡敵人</th>"+
-              "</tr><tr>"+
-              "<th>敵人</th><th class='enemy_head' id='multiple'>倍率</th>"+
-              "<th class='enemy_head' id='amount'>數量</th>"+
-              "<th class='enemy_head' id='castle'>城連動</th>"+
-              "<th class='enemy_head' id='first_show'>首次出現(s)</th>"+
-              "<th class='enemy_head' id='next_time'>再次出現(s)</th>"+
-              "</tr><tr>"+Addenemy(data.enemy)+
-              "</tr><tr>"+
-              "</tr>" ):(
-              "<tr>"+
-              "<th colspan=1 id='chapter' value='"+obj.chapter+"'>"
-              +chapterName(obj.chapter)+"</th>"+
-              "<th colspan=1 id='stage' value='"+obj.stage+"'>"
-              +obj.parent+"</th>"+
-              "<th colspan=2>"+data.name+"</th>"+
-              "</tr><tr>"+
-              "<th>經驗值</th>"+"<td>"+parseEXP(data.exp)+"</td>"+
-              "<th>統帥力</th>"+"<td>"+data.energy+"</td>"+
-              "</tr><tr>"+
-              "<th>城堡體力</th>"+"<td colspan=3>"+data.castle+"</td>"+
-              "</tr><tr>"+
-              "<th>戰線長度</th>"+"<td colspan=3>"+data.length+"</td>"+
-              "</tr><tr>"+
-              "<th>敵方出擊限制</th>"+"<td colspan=3>"+data.limit_no+"</td>"+
-              "</tr><tr>"+
-              "<th>我方出擊限制</th>"+"<td colspan=3>"+(data.constrain?data.constrain:"無")+"</td>"+
-              "</tr><tr>"+
-              "<th colspan=4>過關獎勵</th>"+
-              "</tr><tr>"+Addreward(data.reward,data.integral)+
-              "</tr><tr>"+
-              "<th colspan=6>關卡敵人</th>"+
-              "</tr><tr>"+Addenemy(data.enemy)+
-              "</tr>"
-            ) ;
-
-    $(".dataTable").append(html);
-    // $(".display_BG").css('background-image','url(\"../public/css/footage/fight_BG_02.png\")');
-
+    for(let i in data){
+      if (i == 'exp') $(".dataTable").find("#"+i).text(parseEXP(data[i]));
+      else if (i == 'continue') $(".dataTable").find("#"+i).text(data[i]?"可以":"不行");
+      else $(".dataTable").find("#"+i).text(data[i]?data[i]:'-');
+    }
+    $(Addreward(data.reward,data.integral)).insertAfter($("#reward_head"))
+    $(Addenemy(data.enemy)).insertAfter($("#enemy_head"));
+    // $(Addlist(data.list)).insertAfter($("#list_toggle"));
     scroll_to_class('display',0);
   });
-  $(document).on("click",'#prev,#next',function () {
+  $('#prev,#next').click(function () {
     let data = JSON.parse($(this).attr('query'));
     // console.log(data.level);
     if(data.level)
@@ -256,7 +208,7 @@ $(document).ready(function () {
         level:data.level
       });
   })
-  $(document).on("click","#AddToCompare",function () {
+  $("#AddToCompare").click(function () {
     let enemy = current_level_data.data.enemy,
         arr = [];
     for(let i in enemy){
@@ -276,24 +228,40 @@ $(document).ready(function () {
     socket.emit("compare enemy",{id:current_user_data.uid,target:arr});
     window.parent.reloadIframe('compareEnemy');
   });
-  $(document).on("click",".dataTable #chapter",function () {
+  $(".dataTable #chapter").click(function () {
     scroll_to_div('selector');
     $(".select_chapter").find("button[id='"+$(this).attr('value')+"']").click();
   });
-  $(document).on("click",".dataTable #stage",function () {
+  $(".dataTable #stage").click(function () {
     let chapter = $(this).siblings("#chapter").attr("value"),
         stage = $(this).attr('value');
     socket.emit("required level name",{chapter:chapter,stage:stage});
+  });
+  $("#reward_head").click(function () {
+    $(".reward").toggle();
+    $(this).find('i').attr("value",function () {
+      return Number($(this).attr("value"))+1
+    }).css("transform",function () {
+      return "rotate("+Number($(this).attr("value"))*180+"deg)"
+    });
+  });
+  $("#enemy_toggle").click(function () {
+    $(".enemy_row,#enemy_head").toggle();
+    $(this).find('i').attr("value",function () {
+      return Number($(this).attr("value"))+1
+    }).css("transform",function () {
+      return "rotate("+Number($(this).attr("value"))*180+"deg)"
+    });
   });
   function Addreward(arr,b) {
     // console.log(arr);
     let html ="";
     for(let i in arr){
       html += screen.width > 768 ?
-              ( "<tr><th>"+prize(arr[i].prize.name)+"</th>"+
+              ( "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
                 "<td>"+arr[i].prize.amount+"</td>"
               ):(
-                "<tr><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
+                "<tr class='reward'><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
                 "<td colspan=2>"+arr[i].prize.amount+"</td></tr>"
               );
       html += "<th>"+(b?(arr[i].chance.indexOf("%")!=-1?"取得機率":"累計積分"):"取得機率")+
@@ -330,6 +298,58 @@ $(document).ready(function () {
             )
     }
     return html
+  }
+  function Addlist(list) {
+    let html = '';
+    for(let i in list){
+      if(list[i].public||list[i].owner == current_user_data.uid){
+        html+="<tr class='list'><td colspan=6>"+
+        "<div id='"+list[i].key+"' class='list_display_holder' public='"+list[i].public+"'>"+
+        "<div class='list_display'>"+appendCat(list[i].list.upper)+appendCat(list[i].list.lower)+"</div>"+
+        "<div class='list_data'>"+"<h3>"+list[i].name+"</h3>"+
+        "<div class='list_detail'>"+
+        "<span class='combo'>發動聯組 : <b>"+appendCombo(list[i].combo)+"</b></span>"+
+        "<span>連結關卡 : </span>"+
+        "<span class='stage'><b>"+appendStage(list[i].stageBind)+"</b></span>"+
+        "<span>備註 : </span>"+
+        "<span class='note'><b>"+list[i].note.split("\n").join("<br>")+"</b></span>"+
+        "</div>"+
+        "</div>"+
+        "<div class='option'>"+
+        "<i class=\"material-icons\"id='edit'text='編輯'>create</i>"+
+        "<i class=\"material-icons\"id='del'text='刪除'>delete</i>"+
+        "<i class=\"material-icons\"id='analyze'text='分析'>pie_chart</i>"+
+        "</div>"+
+        "</div></td></tr>"
+      }
+    }
+    return html
+  }
+  function appendCat(list) {
+    let html = "<div>",count=0;
+    for(let i in list){
+      html +=
+      '<span class="card" value="'+list[i].id+'"'+
+      'style="background-image:url(\''+image_url_cat+list[i].id+'.png\')"'+
+      'cost="'+list[i].cost+'"lv="'+list[i].lv+'"bro="'+list[i].bro+'" detail="cost"></span>';
+      count++;
+    }
+    for(let i=count;i<5;i++){
+      html += "<span class='seat'>-</span>"
+    }
+    html += "</div>"
+    return html
+  }
+  function appendCombo(combo) {
+    let html = "";
+    for(let i in combo) html += "<span data='"+JSON.stringify(combo[i])+"'>"+combo[i].effect+"</span> / ";;
+    return html.substring(0,html.length-2)
+  }
+  function appendStage(stage=[]) {
+    let html = "";
+    for(let i in stage) html += "<span id='"+stage[i].id+"'>"+stage[i].name+"</span><br>";
+    if(stage.length) return html
+    else return "無"
   }
   function chapterName(s) {
     var name='';
@@ -382,7 +402,7 @@ $(document).ready(function () {
   });
 
 
-  $(document).on('click','.enemy_head',sortStageEnemy);
+  $(document).on('click','#enemy_head th',sortStageEnemy);
   function sortStageEnemy() {
     let name = $(this).attr('id');
     var arr = [] ;

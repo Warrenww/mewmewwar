@@ -44,6 +44,7 @@
         </div>
         <span>時節性關卡</span>
         <div style="display:none">
+          <button id='weekly' value='0'>每日關卡</button>
           <button id='month' value='0'>月間關</button>
           <button id='easter' value='0'>復活節關卡</button>
         </div>
@@ -89,7 +90,50 @@
         <i class="material-icons"text='回到頂端'id='top'>&#xE25A;</i>
       </div>
       <div class="display">
-        <table class="dataTable"></table>
+        <table class="dataTable">
+          <tr>
+            <th rowspan=2 colspan=1 id='chapter' value=''></th>
+            <th rowspan=2 colspan=1 id='stage' value=''></th>
+            <th rowspan=2 colspan=2 id="name"></th>
+            <th>接關</th><td id="continue"></td>
+          </tr>
+          <tr><th>統帥力</th><td id="energy"></td></tr>
+          <tr>
+            <th>城堡體力</th><td id="castle"></td>
+            <th>戰線長度</th><td id="length"></td>
+            <th>經驗值</th><td id="exp"></td>
+          </tr>
+          <tr>
+            <th>我方出擊限制</th><td colspan='3' id="constrain"></td>
+            <th>敵人出擊限制</th><td id="limit_no"></td>
+          </tr>
+          <tr id="reward_head">
+            <th colspan=6>
+              過關獎勵
+              <i class="material-icons"value='0'>expand_more</i>
+            </th>
+          </tr>
+          <tr id="enemy_toggle">
+            <th colspan=6>
+              關卡敵人
+              <i class="material-icons"value='0'>expand_more</i>
+            </th>
+          </tr>
+          <tr id='enemy_head'>
+            <th>敵人</th>
+            <th id='multiple'>倍率</th>
+            <th id='amount'>數量</th>
+            <th id='castle'>城連動</th>
+            <th id='first_show'>首次出現(s)</th>
+            <th id='next_time'>再次出現(s)</th>
+          </tr>
+          <!-- <tr id="list_toggle">
+            <th colspan=6>
+              相關出陣列表
+              <i class="material-icons"value='0'>expand_more</i>
+            </th>
+          </tr> -->
+        </table>
       </div>
     </div>
 
