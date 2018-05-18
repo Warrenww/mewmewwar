@@ -947,8 +947,16 @@ $(document).ready(function () {
       });
   }
   function update_application(app) {
-    for(let i in app)
+    let max = -1e10,maxapp = null ;
+    for(let i in app) {
+      if(Number(app[i])>max) {max = app[i];maxapp = [i]}
+      else if(Number(app[i])==max) {max = app[i];maxapp.push(i);}
       $('.survey .application[type="'+i+'"]').prev(".num").text(app[i]+"票");
+    }
+    $('.survey .application').prev(".num").css({"color":"black","font-weight":"normal"});
+    for(let i in maxapp)
+    $('.survey .application[type="'+maxapp[i]+'"]').prev(".num")
+    .css({"color":"#f79942","font-weight":'bold'})
   }
   socket.on("comment",function (comment) { append_comment(comment); });
   var commentMap = {};

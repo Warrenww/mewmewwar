@@ -126,7 +126,7 @@ var config = {
   function parsePrize(p) {
     let obj ={name:"",amount:""},
     s = p.text();
-    console.log(s);
+    // console.log(s);
     if(s.indexOf("XP+")!=-1){
       obj.name = "經驗值";
       obj.amount = s.substring(3);

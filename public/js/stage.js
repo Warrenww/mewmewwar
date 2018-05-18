@@ -354,7 +354,7 @@ $(document).ready(function () {
   function chapterName(s) {
     var name='';
     $(".select_chapter").find('button').each(function () {
-      if($(this).attr("id")==s) name = $(this).html();
+      if($(this).attr("id")==s) name = $(this).text();
     });
     return name
   }

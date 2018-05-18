@@ -123,6 +123,9 @@
 .select_color .button[name~='對不死'][value~='1'],
 .select_color .button[name~='不死敵人'][value~='1']
 {background:linear-gradient(rgb(201, 117, 236), rgb(141, 47, 161))}
+.select_color .button[name~='對古代'][value~='1'],
+.select_color .button[name~='古代種'][value~='1']
+{background:linear-gradient(rgb(91, 134, 15), rgb(82, 87, 7))}
 .ability_icon{
   width: 30px;
   height: 30px;

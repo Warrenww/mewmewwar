@@ -1052,7 +1052,7 @@ io.on('connection', function(socket){
           if(find) break
           if((j+"-"+k) == stage){
             find = true;
-            location = i+"-"+j+"-"+"k";
+            location = i+"-"+j+"-"+k;
           }
         }
       }
