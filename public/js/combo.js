@@ -44,44 +44,67 @@ $(document).ready(function () {
     // window.parent.changeIframe('cat');
     window.parent.reloadIframe('cat');
   });
-
+  $(document).on("click",".dataTable i",function () {
+    let catArr = [];
+    $(this).siblings('.card').each(function () {
+      catArr.push($(this).attr('value'));
+    });
+    // alert(catArr);
+    socket.emit("more combo",catArr);
+    $("#more_combo").remove();
+    $("<tr id='more_combo'></tr>").insertAfter($(this).parents('tr').next())
+  });
+  socket.on("more combo",function (data) {
+    let target = data.pop();
+    // console.log(data);
+    // console.log(target);
+    if(data.length) $("#more_combo").append("<td colspan='6'><table></table></td>");
+    else  $("#more_combo").append("<td colspan='6'><b>此聯組中的所有貓咪皆無出現於其他聯組或數量超過上限</b></td>");
+    for(let i in data) $("#more_combo td table").append(comboTR(data[i]));
+    $("#more_combo").find(".comboPic").each(function () {
+      $(this).find('.card').each(function () {
+        if(checkList(target,$(this).attr("value"))) $(this).css('border-color','#e78a52');
+      });
+    });
+  });
+  function checkList(list,id) {
+    for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
+    return false
+  }
   function searchCombo(arr) {
     $(".dataTable").empty();
-    let html = "" ;
-    for(let i in arr){
-        // console.log(arr[i].id);
-        let pic_html = "<div style='display:flex'>" ;
-        for(let j in arr[i].cat){
-          // console.log(arr[i].cat[j])
-          if(arr[i].cat[j] != "-"){
-            pic_html +=
-            '<span class="card" value="'+arr[i].cat[j]+'" '+
-            'style="background-image:url('+
-            image_url_cat+arr[i].cat[j]+'.png);'+
-            (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
-            +'"></span>' ;
-          }
-        }
-        pic_html += "</div>" ;
-        html = screen.width > 768 ?
-                ("</tr><tr>"+
-                "<th class='searchCombo' val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-                "<td>"+arr[i].name+"</td>"+
-                "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
-                "</tr><tr>"+
-                "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
-                ("</tr><tr>"+
-                "<th colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-                "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
-                "</tr><tr>"+
-                "<td colspan=2 >"+arr[i].name+"</td>"+
-                "</tr><tr>"+
-                "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
-                "</tr><tr>");
-          $(".dataTable").append(html);
-
-    }
-
+    for(let i in arr) $(".dataTable").append(comboTR(arr[i]));
     scroll_to_class("display",0) ;
+  }
+  function comboTR(item) {
+    let html = '',
+        pic_html = "<div style='display:flex;position:relative'>" ;
+    for(let j in item.cat){
+      if(item.cat[j] != "-"){
+        pic_html +=
+        '<span class="card" value="'+item.cat[j]+'" '+
+        'style="background-image:url('+
+        image_url_cat+item.cat[j]+'.png);'+
+        (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
+        +'"></span>' ;
+      } else  pic_html += "<span class='seat'>-</span>";
+    }
+    pic_html += "<i class='material-icons'>playlist_add</i></div>" ;
+    html = screen.width > 768 ?
+    ("</tr><tr>"+
+    "<th class='searchCombo' val='"+item.id.substring(0,2)+"'>"+item.catagory+"</th>"+
+    "<td>"+item.name+"</td>"+
+    "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
+    "</tr><tr>"+
+    "<td colspan=2 class='searchCombo' val='"+item.id.substring(0,4)+"'>"+item.effect+"</td>") :
+    ("</tr><tr>"+
+    "<th colspan=2 class='searchCombo' val='"+item.id.substring(0,2)+"'>"+item.catagory+"</th>"+
+    "<td colspan=4 rowspan=2 class='searchCombo' val='"+item.id.substring(0,4)+"'>"+item.effect+"</td>"+
+    "</tr><tr>"+
+    "<td colspan=2 >"+item.name+"</td>"+
+    "</tr><tr>"+
+    "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
+    "</tr><tr>");
+    return html
   }
 });

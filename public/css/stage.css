@@ -48,7 +48,7 @@
   background-size: 150%;
   background-position: 50% 10%;
 }
-#story{
+#story,#trueStory{
   background-image: url("footage/stage/story_BG.png");
   background-color: transparent;
 }

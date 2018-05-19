@@ -187,6 +187,7 @@ $(document).ready(function () {
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
+    $("#enemy_head th").css("border",0);
     for(let i in data){
       if (i == 'exp') $(".dataTable").find("#"+i).text(parseEXP(data[i]));
       else if (i == 'continue') $(".dataTable").find("#"+i).text(data[i]?"可以":"不行");
@@ -257,13 +258,15 @@ $(document).ready(function () {
     // console.log(arr);
     let html ="";
     for(let i in arr){
-      html += screen.width > 768 ?
-              ( "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
-                "<td>"+arr[i].prize.amount+"</td>"
-              ):(
-                "<tr class='reward'><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
-                "<td colspan=2>"+arr[i].prize.amount+"</td></tr>"
-              );
+      html += "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
+                "<td>"+arr[i].prize.amount+"</td>";
+      // html += screen.width > 768 ?
+      //         ( "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
+      //           "<td>"+arr[i].prize.amount+"</td>"
+      //         ):(
+      //           "<tr class='reward'><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
+      //           "<td colspan=2>"+arr[i].prize.amount+"</td></tr>"
+      //         );
       html += "<th>"+(b?(arr[i].chance.indexOf("%")!=-1?"取得機率":"累計積分"):"取得機率")+
               "</th>"+"<td>"+arr[i].chance+"</td>"+
               "<th>取得上限</th>"+"<td>"+arr[i].limit+"</td>"+
@@ -281,21 +284,27 @@ $(document).ready(function () {
               (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
               "'><img src='"+image_url_enemy+arr[i].id+
               ".png' style='width:100%'/></td>" ;
-      html += screen.width > 768 ?(
-            "<td id='multiple'>"+arr[i].multiple+"</td>"+
-            "<td id='amount'>"+arr[i].amount+"</td>"+
-            "<td id='castle'>"+arr[i].castle+"</td>"+
-            "<td id='first_show'>"+arr[i].first_show+"</td>"+
-            "<td id='next_time'>"+arr[i].next_time+"</td>"+
-            "</tr>"):(
-              "<td>"+arr[i].multiple+"</td>"+
-              "<th>數量</th>"+"<td>"+arr[i].amount+"</td>"+
-              "</tr><tr>"+
-              "<th>出現條件</th>"+
-              "<td colspan='3'>城體力小於<b>"+arr[i].castle+
-              "</b></br>且開場已過<b>"+arr[i].first_show+"</b>秒後出現"+
-              "</br>間隔<b>"+arr[i].next_time+"</b>秒後再次出現</td><tr>"
-            )
+      html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
+              "<td id='amount'>"+arr[i].amount+"</td>"+
+              "<td id='castle'>"+arr[i].castle+"</td>"+
+              "<td id='first_show'>"+arr[i].first_show+"</td>"+
+              "<td id='next_time'>"+arr[i].next_time+"</td>"+
+              "</tr>";
+      // html += screen.width > 768 ?(
+      //       "<td id='multiple'>"+arr[i].multiple+"</td>"+
+      //       "<td id='amount'>"+arr[i].amount+"</td>"+
+      //       "<td id='castle'>"+arr[i].castle+"</td>"+
+      //       "<td id='first_show'>"+arr[i].first_show+"</td>"+
+      //       "<td id='next_time'>"+arr[i].next_time+"</td>"+
+      //       "</tr>"):(
+      //         "<td>"+arr[i].multiple+"</td>"+
+      //         "<th>數量</th>"+"<td>"+arr[i].amount+"</td>"+
+      //         "</tr><tr>"+
+      //         "<th>出現條件</th>"+
+      //         "<td colspan='3'>城體力小於<b>"+arr[i].castle+
+      //         "</b></br>且開場已過<b>"+arr[i].first_show+"</b>秒後出現"+
+      //         "</br>間隔<b>"+arr[i].next_time+"</b>秒後再次出現</td><tr>"
+      //       )
     }
     return html
   }

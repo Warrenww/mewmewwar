@@ -611,6 +611,24 @@ io.on('connection', function(socket){
     userdata[uid].history.last_combo = arr;
     database.ref("/user/"+uid+"/history/last_combo").set(arr);
   }) ;
+  socket.on("more combo",function (arr) {
+    let length = arr.length, buffer = [];
+    if(length == 5) {}
+    else
+    for(let i in combodata){
+      let cat = combodata[i].cat,flag = 0;
+      for(let j in arr) if(checkList(cat,arr[j])) flag ++;
+      if(!flag) continue
+      else if (flag == length&&combodata[i].amount==length) continue
+      if(combodata[i].amount+length-flag<6) {
+        if(flag>1) buffer.splice(0,0,combodata[i]);
+        else buffer.push(combodata[i]);
+      }
+    }
+    buffer.push(arr);
+    socket.emit("more combo",buffer);
+  });
+
   socket.on("compare cat",function (data) {
     console.log("compare cat!!");
     console.log(data);
@@ -1117,11 +1135,12 @@ io.on('connection', function(socket){
       delete target.list[key];
       database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]+"/list/"+key).set(null);
     }
-    function checkList(list,id) {
-      for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
-      return false
-    }
   });
+
+  function checkList(list,id) {
+    for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
+    return false
+  }
 
   socket.on("delete list",function (data) {
     console.log(data.uid,'delete list',data.key);

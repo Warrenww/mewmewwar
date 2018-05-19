@@ -11,6 +11,39 @@
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/overall.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
+    <style>
+      .dataTable i{
+        position: absolute;
+        right: 10px;
+        top: 30%;
+        border-radius: 50%;
+        padding: 3px;
+        background-color: lightgray;
+        transition: .2s ease-in-out;
+        cursor: pointer;
+      }
+      .dataTable i:hover{
+        background-color: gray;
+        color:#e9ad3f;
+      }
+      #more_combo td{background-color: rgba(255, 255, 255, 0.6)}
+      #more_combo i{display: none;}
+      .seat{
+        width: 90px;
+        height: 60px;
+        display: block;
+        background-color: rgba(195, 195, 195, 0.8);
+        text-align: center;
+        font-size: 40;
+        font-weight: bold;
+        color: #b4b4b4;
+        margin: 5
+      }
+      @media screen and (max-width:768px) {
+        .seat{width: 75;height: 50}
+        .comboPic div{justify-content: center;}
+      }
+    </style>
   </head>
   <body>
 
