@@ -53,65 +53,91 @@ var stdin = process.openStdin();
 // database.ref('/user').once("value",function (snapshot) {
 //   console.log('finish');
 // });
+var stagedata
+database.ref("/stagedata").once("value",function (snapshot){
+  stagedata = snapshot.val();
+  getthewww();
+});
+function stageID(s) {
+  if(s == '超級游擊經驗值！') return 'XP-s01059'
+  if(s == '寶物嘉年華（世界篇）') return 'world-s03000'
+  if(s == '寶物嘉年華（未來篇）') return 'future-s03003'
+  for(let i in stagedata){
+    for(let j in stagedata[i]){
+      if(j == 'name') continue
+      if(stagedata[i][j].name == s) return [i,j].join("-")
+      for(let k in stagedata[i][j]){
+        if(k == 'name') continue
+        if(stagedata[i][j][k].name == s) return [i,j,k].join("-")
+      }
+    }
+  }
+}
 
-// function getthewww(i) {
-//   // console.log(AddZero(i));
-//   request({
-//     url: "http://battlecats-db.com/unit/"+AddZero(i)+".html",
-//     method: "GET"
-//   },function (e,r,b) {
-//     if(!e){
-//       $ = cheerio.load(b);
-//       let j = 1;
-//       $("tr").each(function () {
-//         let stage = $(this).children("td").eq(0).text();
-//         let name = $(this).children("td").eq(1).text();
-//         // console.log(stage+":"+name);
-//         if(stage == '開放条件'){
-//           let id = AddZero(i)+"-"+j;
-//           process.stdout.clearLine();
-//           process.stdout.cursorTo(0);
-//           process.stdout.write("loading cat data "+id+"---");
-//           process.stdout.write((Number(i)/384*100).toFixed(2).toString());
-//           process.stdout.write("%");
-//           // console.log(id,parseCondition(name,id));
-//           database.ref("/catdata/"+id+"/get_method").set(parseCondition(name,id));
-//           j++
-//         }
-//         // console.log("/stagedata/story/s000"+(AddZero(stage[0])-1)+"/"+stage[1]);
-//       });
-//       i++;
-//       if(i<384) getthewww(i)
-//
-//     } else {console.log(e);}
-//   });
-//
-// }
+function getthewww() {
+  // console.log(AddZero(i));
+
+  request({
+    url: "https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html",
+    method: "GET"
+  },function (e,r,b) {
+    console.log("Get!!");
+    if(!e){
+      $ = cheerio.load(b);
+      var dailyEvent = {}
+      for(let i=0;i<8;i++){
+        var target = $(".cld_box01").eq(i);
+        dailyEvent[i+1] = { allday:[],hours:[] }
+        target.find('.red').each(function () {
+          let text = $(this).text().trim().split("・")[1].split("（")[0];
+          dailyEvent[i+1].allday.push({id:stageID(text),name:text});
+        });
+        let count = 0;
+        target.find(".hour").each(function () {
+          dailyEvent[i+1].hours[count] = []
+          $(this).next().find("span").each(function () {
+            let text = $(this).text().trim().split("・")[1].split("\n")[0];
+            dailyEvent[i+1].hours[count].push({id:stageID(text),name:text});
+          });
+          count ++;
+        });
+      }
+      // fs.writeFile('public/calendar.txt', JSON.stringify(dailyEvent), function (err) {
+      //   if (err) throw err;
+      //   console.log('Saved!');
+      //   process.exit()
+      // });
+    } else {
+      console.log(e);
+    }
+  });
+
+}
 function AddZero(n) {
   return n>99 ? n : (n>9 ? "0"+n : "00"+n)
 }
-
-
-var ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
-gsjson({
-    spreadsheetId: ID,
-    // hash : 'id' ,
-    //propertyMode: 'pascal'
-    worksheet: 1
-    // other options...
-})
-.then(function (result) {
-  // console.log(result);
-  for(let i in result){
-    console.log(result[i].id);
-    result[i] = {
-      id : result[i].id,
-      catagory : result[i].catagory,
-      name : result[i].name,
-      effect : result[i].effect,
-      amount : result[i].amount,
-      cat : [result[i].cat_1,result[i].cat_2,result[i].cat_3,result[i].cat_4,result[i].cat_5]
-    }
-    database.ref("/combodata/"+result[i].id).set(result[i]);
-  }
-});
+//
+//
+// var ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
+// gsjson({
+//     spreadsheetId: ID,
+//     // hash : 'id' ,
+//     //propertyMode: 'pascal'
+//     worksheet: 1
+//     // other options...
+// })
+// .then(function (result) {
+//   // console.log(result);
+//   for(let i in result){
+//     console.log(result[i].id);
+//     result[i] = {
+//       id : result[i].id,
+//       catagory : result[i].catagory,
+//       name : result[i].name,
+//       effect : result[i].effect,
+//       amount : result[i].amount,
+//       cat : [result[i].cat_1,result[i].cat_2,result[i].cat_3,result[i].cat_4,result[i].cat_5]
+//     }
+//     // database.ref("/combodata/"+result[i].id).set(result[i]);
+//   }
+// });

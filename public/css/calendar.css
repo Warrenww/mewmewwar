@@ -1,0 +1,72 @@
+  .box{
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    align-items: center;
+  }
+  .calendar{cursor: pointer;}
+  .calendar_holder{ height: 200; }
+  #faceState{width:400}
+  #faceState span{font-size: 24;font-weight: bold;padding: 3 5}
+  h2{font-weight: bold;}
+  #alldayevent ul{
+    columns:2;
+    list-style-position: inside;
+    width: 90%;
+  }
+  #alldayevent li{
+    font-size: 20;
+    margin-bottom: 10;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  #dataTable span{cursor: pointer;font-weight: bold;}
+  #dataTable span:hover{text-decoration: underline;}
+  #alldayevent li:hover{font-weight: bold;}
+  #dataTable span[id^='castleMaterial']{color: #e2a92a;}
+  #dataTable span[id^='world']{color: #47b519;}
+  #dataTable span[id^='future']{color: #199eb5;}
+  #dataTable span[id^='XP']{color: #9b19b5;}
+  #dataTable span[id^='ticket']{color: #7e7e7e;}
+  #dataTable span[id^='evolution']{color: #628004;}
+  #dataTable span[id^='openeye']{color: #be0069;}
+  #dataTable .border td{border: 3px solid #f2933a;}
+  #prev,#next{
+    display: flex;
+    width: 80;
+    height: 80;
+    border: 40px solid transparent;
+    position: relative;
+    animation-duration: .4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    cursor: pointer;
+  }
+  #prev{border-right: 40px solid #eba957}
+  #next{border-left: 40px solid #eba957}
+  #prev:hover{animation-name: move-left}
+  #next:hover{animation-name: move-right}
+
+  #out{
+    position: fixed;
+    bottom: 20;
+    right: 20;
+    background: #099e8e;
+    padding: 15px;
+    border-radius: 50%;
+    box-shadow: 1px 1px 11px 0px black;
+    margin: 10;
+  }
+  @keyframes move-left {
+    0% {right:0}
+    50% {right:10}
+    100% {right:0}
+  }
+  @keyframes move-right {
+    0% {left:0}
+    50% {left:10}
+    100% {left:0}
+  }
+@media screen and (max-width:425px) {
+    #alldayevent ul{columns: 1}
+}

@@ -72,9 +72,10 @@ function ReloadAllData() {
     eventdata = snapshot.val().event_date ;
     catComment = snapshot.val().catComment ;
     console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
+    var exist ;
     for(let i in catdata){
       __numberOfCat ++ ;
-      if(catdata[i].count>mostSearchCat.count){
+      if(catdata[i].count>mostSearchCat.count && i.substring(0,3) != exist){
         if(mostSearchCat.count>secondMostSearchCat.count){
           if(secondMostSearchCat.count>thirdMostSearchCat.count){
             thirdMostSearchCat = Object.assign({},secondMostSearchCat);
@@ -89,6 +90,7 @@ function ReloadAllData() {
           atk:levelToValue(catdata[i].atk,catdata[i].rarity,30),
         };
       }
+      exist = i.substring(0,3);
     }
     console.log("most Search Cat : ",mostSearchCat);
     console.log("second most Search Cat : ",secondMostSearchCat);
@@ -1447,7 +1449,7 @@ io.on('connection', function(socket){
       console.log(e);
       let time = new Date().getTime();
       database.ref("/error_log").push({
-        time:time,error:e
+        time:time,error:e.toString()
       })
     }
   });

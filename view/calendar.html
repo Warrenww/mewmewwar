@@ -10,33 +10,80 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="../public/css/navBar.css" />
     <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/calendar.css" />
     <link rel="stylesheet" href="../public/css/rwd.css" />
   </head>
   <body>
-    <!-- <nav>
-      <a href="\">
-        <img src="../public/css/footage/title.png" />
-      </a>
-      <div class="navLinkBox">
+    <!-- <iframe src="https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html"></iframe> -->
+
+    <div class="content">
+      <div class="calendar_holder box">
+        <div id="prev"></div>
+        <div class="calendar" >
+          <?xml version="1.0" encoding="utf-8"?>
+          <svg xmlns="http://www.w3.org/2000/svg" style="width:100;height:100;transform:scale(2)">
+          <style type="text/css">
+          	.st0{fill:#FFFFFF;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:10;}
+          	.st1{fill:#29ABE2;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+          	.st2{fill:#FFFFFF;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+          	.st3{fill:#808080;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+          	.st4{fill:#0071BC;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+          	.st6{font-size:28px;}
+          	.st7{font-size:12px;}
+          </style>
+          <rect x="19.1" y="22" class="st0" width="59.8" height="59.8"/>
+          <rect x="15.5" y="11" class="st1" width="67" height="11"/>
+          <path class="st2" d="M66.4,68.7l0.1,13.1l0,0c5.5-2.2,10.1-7.5,12.5-13.1H66.4z"/>
+          <polyline class="st3" points="78.9,81.8 84.6,74.3 84.6,20.2 78.9,23.2"/>
+          <polygon class="st4" points="86.7,8.3 86.7,18.4 82.6,22 82.6,11 "/>
+          <text transform="matrix(1 0 0 1 31.85 58.9492)" class="st5 st6" id="day">01</text>
+          <text transform="matrix(1 0 0 1 28.4091 76.2261)" class="st5 st7" id="week">Mon.</text>
+          <text transform="matrix(1 0 0 1 23.6792 33.9183)" class="st5 st7" id="month">01</text>
+          <polygon class="st4" points="19.1,8.3 15.5,11 82.6,11 86.7,8.3 "/>
+          </svg>
+        </div>
+        <div id="next"></div>
       </div>
-      <div class="settingBox">
+      <div style="width:100%;background:rgba(255,255,255,.8);border-radius:20px;display:flex;flex-direction:column;align-items:center;padding-bottom:30px;">
+        <div id="alldayevent" class="content" style="padding-top:3%;">
+          <h2>全天活動</h2>
+          <ul></ul>
+        </div>
+        <div class="box" id="faceState">
+          <img src="/public/css/footage/face.png" id="ticket-s01078-1" style="height:50;cursor:pointer"/>
+          <span>上午場</span>
+          <span>下午場</span>
+          <span>今日休息</span>
+        </div>
       </div>
-      <div class="mobile">
-        <i class="material-icons" id="m_nav_menu">menu</i>
+      <div class="content" id="dataTable">
+        <table>
+          <thead>
+            <tr> <th> 時間 </th> <th> 活動名稱 </th> </tr>
+          </thead>
+          <tbody>
+            <tr id="700"><th>7:00 ~ 8:00</th><td> </td></tr>
+            <tr id="800"><th>8:00 ~ 9:00</th><td> </td></tr>
+            <tr id="900"><th>9:00 ~ 10:00</th><td> </td></tr>
+            <tr id="1000"><th>10:00 ~ 11:00</th><td> </td></tr>
+            <tr id="1100"><th>11:00 ~ 12:00</th><td> </td></tr>
+            <tr id="1200"><th>12:00 ~ 13:00</th><td> </td></tr>
+            <tr id="1300"><th>13:00 ~ 14:00</th><td> </td></tr>
+            <tr id="1400"><th>14:00 ~ 15:00</th><td> </td></tr>
+            <tr id="1500"><th>15:00 ~ 16:00</th><td> </td></tr>
+            <tr id="1600"><th>16:00 ~ 17:00</th><td> </td></tr>
+            <tr id="1700"><th>17:00 ~ 18:00</th><td> </td></tr>
+            <tr id="1800"><th>18:00 ~ 19:00</th><td> </td></tr>
+            <tr id="1900"><th>19:00 ~ 20:00</th><td> </td></tr>
+            <tr id="2000"><th>20:00 ~ 21:00</th><td> </td></tr>
+            <tr id="2100"><th>21:00 ~ 22:00</th><td> </td></tr>
+            <tr id="2200"><th>22:00 ~ 23:00</th><td> </td></tr>
+            <tr id="2300"><th>23:00 ~ 24:00</th><td> </td></tr>
+          </tbody>
+        </table>
       </div>
-    </nav>
-    <div id="m_nav_panel_BG">
 
     </div>
-    <div class="m_nav_panel">
-      <div class="m_navLinkBox">
-      </div>
-      <div class="m_settingBox">
-      </div>
-    </div> -->
-
-    <iframe src="https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html"></iframe>
-
 
     <div class="modal fade" id="helpModal" role="dialog">
       <div class="modal-dialog">
@@ -55,15 +102,19 @@
       </div>
     </div>
 
+    <a target='_blank'id="out" href="https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html">
+      <i class="material-icons" style="font-size:30;color:white">&#xe895;</i>
+    </a>
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../public/js/html2canvas.min.js"></script>
-    <script src="../public/js/index.js"></script>
     <script src="../public/js/class.js"></script>
     <script src="../public/js/overall.js"></script>
+    <script src="../public/js/calendar.js"></script>
     <script src="../js/jquery.easing.1.3.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="../public/js/firebaseConfig.js"></script>
