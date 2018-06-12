@@ -26,14 +26,32 @@ firebase.initializeApp(config);
 var database = firebase.database();
 console.log('start');
 //
-// database.ref("/newCatData").once("value",function (snapshot) {
-//   let catdata = snapshot.val();
-//   console.log("cat data load complete");
-//   let statistic,exist = '000';
-//
-//   console.log("finish");
-//   // process.exit();
-// });
+database.ref("/newCatData").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  console.log("cat data load complete");
+  let statistic,exist = '000';
+  database.ref("/stagedata/openeye").once("value",function (snapshot) {
+    let data = snapshot.val();
+    console.log("data load complete");
+    for(let i in data){
+      // console.log(i);
+      for(let j in data[i]){
+        if(j != 'name'){
+          let id = data[i][j].reward[0].prize.name.split('u')[1]+"-3" ;
+          console.log(i,id,catdata[id].name);
+          
+        }
+
+      }
+    }
+
+    console.log("finish");
+    // process.exit();
+  });
+  // console.log("finish");
+  // process.exit();
+});
+
 
 // var gachadata = {};
 // database.ref("/gachadata").once("value",function (snapshot) {

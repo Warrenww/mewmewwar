@@ -242,7 +242,8 @@ $(document).ready(function () {
     let html = '<span class="card-group" hidden>' ;
     for(let i in data){
       if(!data[i].id) continue
-      let name = data[i].name,id = data[i].id,current = id.substring(0,3) ;
+      let name = data[i].name?data[i].name:data[i].jp_name,
+          id = data[i].id,current = id.substring(0,3) ;
       if(current == now){
         html += '<span class="card" value="'+id+'" '+
         'style="background-image:url('+

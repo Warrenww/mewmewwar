@@ -178,6 +178,10 @@
 #select_stage button[id~='s03001z'][value~='1'],
 #select_stage button[id~='s03002z'][value~='1']
 {background: linear-gradient(rgb(236, 99, 235),rgb(144, 12, 79))}
+#select_stage[chapter='trueStory'] button
+{background: linear-gradient(#aeeb71,#a9db2f)}
+#select_stage[chapter='trueStory'] button[value='1']
+{background: linear-gradient(#acdd7c,#86ad24)}
 #expend_sl_chap{
   width: 100%;
   background-color: rgba(255,255,255,.7);

@@ -312,7 +312,7 @@ $(document).ready(function () {
     scroll_to_class("display",0) ;
   }
   function updateState(level) {
-    let change = ['hp','hardness','atk','DPS'] ;
+    let change = ['hp','hardness','atk','dps'] ;
     for(let i in change){
       let target = $('.dataTable').find('#'+change[i]) ;
       let original = target.attr('original');
