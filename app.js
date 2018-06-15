@@ -56,9 +56,9 @@ var catdata,
     rankdata,
     catComment ;
 var __numberOfCat = 0,
-    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
+    mostSearchCat,
+    secondMostSearchCat,
+    thirdMostSearchCat;
 ReloadAllData();
 function ReloadAllData() {
   database.ref("/").once("value",function (snapshot) {
@@ -73,8 +73,12 @@ function ReloadAllData() {
     catComment = snapshot.val().catComment ;
     console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
     var exist ;
+    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
     for(let i in catdata){
       __numberOfCat ++ ;
+      localCount = catdata[i].count;
       if(catdata[i].count>mostSearchCat.count && i.substring(0,3) != exist){
         if(mostSearchCat.count>secondMostSearchCat.count){
           if(secondMostSearchCat.count>thirdMostSearchCat.count){
@@ -153,11 +157,7 @@ io.on('connection', function(socket){
       }
       socket.emit("required data",buffer);
     } catch (e) {
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString(),data:data
-      });
+      __handalError(e);
     }
   });
 
@@ -192,11 +192,7 @@ io.on('connection', function(socket){
       // console.log(buffer_1);
       socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("normal search",function (data) {
@@ -312,11 +308,7 @@ io.on('connection', function(socket){
         else  socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
         }
         catch(e){
-          console.log(e);
-          let time = new Date().getTime();
-          database.ref("/error_log").push({
-            time:time,error:e.toString()
-          })
+          __handalError(e);
         }
   });
   socket.on("text search",function (obj) {
@@ -367,11 +359,7 @@ io.on('connection', function(socket){
       socket.emit("search result",{result:buffer,query:data.query,type:data.query_type});
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on('text search stage',function (text) {
@@ -395,11 +383,7 @@ io.on('connection', function(socket){
       socket.emit('text search stage',buffer);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -463,11 +447,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("display enemy",function (data) {
@@ -512,11 +492,7 @@ io.on('connection', function(socket){
       } else socket.emit('display enemy result',buffer);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -571,11 +547,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("user connect",function (data){
@@ -714,11 +686,7 @@ io.on('connection', function(socket){
       socket.emit("current_user_data",CurrentUserData);
       console.log('user data send');
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("combo search",function (data) {
@@ -741,11 +709,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/last_combo").set(arr);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   }) ;
   socket.on("more combo",function (arr) {
@@ -767,11 +731,7 @@ io.on('connection', function(socket){
       socket.emit("more combo",buffer);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -783,11 +743,7 @@ io.on('connection', function(socket){
       database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("compare enemy",function (data) {
@@ -798,11 +754,7 @@ io.on('connection', function(socket){
       database.ref('/user/'+data.id+"/compare/enemy2enemy").set(data.target);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("start compare c2c",function (data) {
@@ -824,11 +776,7 @@ io.on('connection', function(socket){
       socket.emit("c2c compare",compare);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      });
+      __handalError(e);
     }
   });
   socket.on("start compare e2e",function (data) {
@@ -848,11 +796,7 @@ io.on('connection', function(socket){
       userdata[data.uid].nickname = data.name;
       database.ref("/user/"+data.uid+"/nickname").set(data.name);
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      });
+      __handalError(e);
     }
   });
   socket.on("history",function (uid) {
@@ -868,11 +812,7 @@ io.on('connection', function(socket){
       for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
       socket.emit("return history",buffer);
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("store level",function (data) {
@@ -886,11 +826,7 @@ io.on('connection', function(socket){
       buffer.lv = data.lv;
       database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("mark own",function (data) {
@@ -921,11 +857,7 @@ io.on('connection', function(socket){
       userdata[data.uid].folder.owned = arr ;
       database.ref("/user/"+data.uid+"/folder").update({owned:arr});
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      });
+      __handalError(e);
     }
   });
 
@@ -945,11 +877,7 @@ io.on('connection', function(socket){
       });
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("set default cat level",function (data) {
@@ -959,11 +887,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/setting/default_cat_lv").set(data.lv);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("reset cat level",function (id) {
@@ -977,11 +901,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("reset owned cat",function (id) {
@@ -996,11 +916,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+id+"/folder/owned").set("0");
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("change setting",function (data) {
@@ -1020,11 +936,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("user photo",function (data) {
@@ -1050,11 +962,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("required users photo",function (arr) {
@@ -1139,11 +1047,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -1173,11 +1077,7 @@ io.on('connection', function(socket){
       socket.emit("gacha result",{ result:result});
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on("gacha history",function (data) {
@@ -1200,11 +1100,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/gacha/"+key).set(userdata[uid].history.gacha[key]);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -1216,11 +1112,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/compare/cat2enemy").update(data.target)
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -1241,11 +1133,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/setting/show_miner").set(true);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -1272,11 +1160,7 @@ io.on('connection', function(socket){
       socket.emit("owned data",arr);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -1320,11 +1204,7 @@ io.on('connection', function(socket){
 
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on('comment cat',function (data) {
@@ -1354,11 +1234,7 @@ io.on('connection', function(socket){
 
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
   socket.on('required cat comment',function (cat) {
@@ -1387,11 +1263,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 
@@ -1423,11 +1295,7 @@ io.on('connection', function(socket){
       }
       socket.emit('cat to stage',{find,stage});
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
     });
 
@@ -1504,11 +1372,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
   });
 });
@@ -1719,6 +1583,16 @@ function levelToValue(origin,rarity,lv) {
 }
 function AddZero(n) {
   return n<10 ? "0"+n : n
+}
+function __handalError(e) {
+  console.log(e);
+  let time = new Date().getTime();
+  database.ref("/error_log").push({
+    time:time,
+    code:e.code,
+    message:e.message,
+    stack:e.stack
+  });
 }
 
 const port = 8000 ;

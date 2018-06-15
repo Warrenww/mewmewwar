@@ -53,7 +53,7 @@
   background-color: transparent;
 }
 #maylook{background-image: url("footage/stage/maylook_BG.png");}
-#baseball,#lazybird,#easter,#eva{
+#baseball,#lazybird,#easter,#eva,#pokopang,#egg{
   background-image: url("footage/stage/pawapuro_BG.jpg");
   background-size: cover;
   background-position: center;
@@ -71,6 +71,8 @@
 #castleMaterial{background-image: url("footage/stage/castleMaterial.png");}
 #lazybird{background-image: url("footage/stage/lazybird.png");}
 #easter{background-image: url("footage/stage/easter.png");}
+#pokopang{background-image: url("footage/stage/pokopang.jpg");}
+#egg{background-image: url("footage/stage/egg.png");}
 #cyclone,#evolution,#castleMaterial,#ticket
 {background-blend-mode: normal;}
 
