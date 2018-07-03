@@ -90,8 +90,8 @@ function ReloadAllData() {
           name:catdata[i].name,
           count:catdata[i].count,
           id:i,
-          hp:levelToValue(catdata[i].hp,catdata[i].rarity,30),
-          atk:levelToValue(catdata[i].atk,catdata[i].rarity,30),
+          hp:levelToValue(catdata[i].hp,catdata[i].rarity,30).toFixed(0),
+          atk:levelToValue(catdata[i].atk,catdata[i].rarity,30).toFixed(0),
         };
         exist = i.substring(0,3);
       }
@@ -1374,6 +1374,16 @@ io.on('connection', function(socket){
     catch(e){
       __handalError(e);
     }
+  });
+  socket.on("Game Picture",function () {
+    var buffer = [];
+    for(let i=0;i<18;i++){
+      let cat = Math.ceil(Math.random()*432);
+      cat = cat>100?cat:(cat>10?"0"+cat:"00"+cat);
+      let data = catdata[cat+"-3"]?catdata[cat+"-3"]:catdata[cat+"-2"];
+      buffer.push(data);
+    }
+    socket.emit("Game Picture",buffer);
   });
 });
 

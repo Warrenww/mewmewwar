@@ -345,6 +345,7 @@
   left:125%;
   text-align: left;
 }
+.editable{cursor: text;}
 @keyframes rotate {
   0%{transform:rotate(0deg);}
   50%{transform:rotate(720deg);}

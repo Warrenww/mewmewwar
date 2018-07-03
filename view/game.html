@@ -1,0 +1,202 @@
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>小遊戲</title>
+    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_event.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="../public/css/cat.css" />
+    <link rel="stylesheet" href="../public/css/navBar.css" />
+    <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/rwd.css" />
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <style>
+      body{
+        background-color: #f3f3f3;
+        font-family: Microsoft JhengHei;
+      }
+      .msg_box{
+        padding: 30px;
+        margin: 30px;
+        margin-top: 50;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 4px 4px 11px 1px grey;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+      }
+      .game_table td{
+        width: 90px;
+        height: 90px;
+        border: 1px solid black;
+        border-radius: 5px;
+        cursor: pointer;
+        background-image: url("../public/css/footage/icon.png");
+        background-size: cover;
+        background-color: rgba(0,0,0,.6);
+        background-blend-mode: multiply;
+      }
+      .game_result{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 16px;
+        font-weight: bold;
+        width: 100%;
+        position: relative;
+        transition: .4s ease-in-out;
+        background-color: white;
+        border-radius: 10px;
+        top: 0;
+        border: 1px solid;
+        padding: 10;
+        margin-top: 10;
+      }
+      .game_result div{
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+      }
+      .small_table{width: 360}
+      .big_table{width: 540}
+      @media screen and (max-width:425px) {
+        .game_table td{width: 50px;height: 50px;}
+        .small_table{width: 200}
+        .big_table{width: 300}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="msg_box">
+
+      <table class="game_table small_table">
+        <tr>
+          <td id="(0,0)"></td> <td id="(1,0)"></td>
+          <td id="(2,0)"></td> <td id="(3,0)"></td>
+        </tr>
+        <tr>
+          <td id="(0,1)"></td> <td id="(1,1)"></td>
+          <td id="(2,1)"></td> <td id="(3,1)"></td>
+        </tr>
+        <tr>
+          <td id="(0,2)"></td> <td id="(1,2)"></td>
+          <td id="(2,2)"></td> <td id="(3,2)"></td>
+        </tr>
+        <tr>
+          <td id="(0,3)"></td> <td id="(1,3)"></td>
+          <td id="(2,3)"></td> <td id="(3,3)"></td>
+        </tr>
+      </table>
+      <table class="game_table big_table" style="display:none">
+        <tr>
+          <td id="(0,0)"></td> <td id="(1,0)"></td> <td id="(2,0)"></td>
+          <td id="(3,0)"></td> <td id="(4,0)"></td> <td id="(5,0)"></td>
+        </tr>
+        <tr>
+          <td id="(0,1)"></td> <td id="(1,1)"></td> <td id="(2,1)"></td>
+          <td id="(3,1)"></td> <td id="(4,1)"></td> <td id="(5,1)"></td>
+        </tr>
+        <tr>
+          <td id="(0,2)"></td> <td id="(1,2)"></td> <td id="(2,2)"></td>
+          <td id="(3,2)"></td> <td id="(4,2)"></td> <td id="(5,2)"></td>
+        </tr>
+        <tr>
+          <td id="(0,3)"></td> <td id="(1,3)"></td> <td id="(2,3)"></td>
+          <td id="(3,3)"></td> <td id="(4,3)"></td> <td id="(5,3)"></td>
+        </tr>
+        <tr>
+          <td id="(0,4)"></td> <td id="(1,4)"></td> <td id="(2,4)"></td>
+          <td id="(3,4)"></td> <td id="(4,4)"></td> <td id="(5,4)"></td>
+        </tr>
+        <tr>
+          <td id="(0,5)"></td> <td id="(1,5)"></td> <td id="(2,5)"></td>
+          <td id="(3,5)"></td> <td id="(4,5)"></td> <td id="(5,5)"></td>
+        </tr>
+      </table>
+      <div class="game_result" >
+        <div>
+          <span>使用步數:<span id="step">0</span></span>
+          <span>經過時間:<span id="time">0:00</span></span>
+        </div>
+        <div style="display:none">
+          <button id="again">再來一局</button>
+          <button id="confirm">確定</button>
+          <button id="switch">切換大小</button>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="display" style="top:-100">
+        <table class="dataTable">
+          <tr class="non_mobile">
+            <th style='height:80px;padding:0' class="img"></th>
+            <th colspan=3 rarity='data.rarity' class='name'></th>
+            <th colspan=2 class="bro"></th>
+          </tr>
+          <tr class="mobile">
+            <th class="name" colspan="6"></th>
+          </tr>
+          <tr class="mobile">
+            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
+            </th>
+          </tr>
+          <tr class="mobile">
+            <th style="padding:0;background-color:transparent" colspan="6" class="bro"></th>
+          </tr>
+          <tr>
+            <th colspan='1'>等級</th>
+            <td colspan="5"><span id='level_num'>30</span></td>
+            <tr>
+              <th>體力</th><td id='hp'><span class='editable'></span></td>
+              <th>KB</th><td id='KB'></td>
+              <th>硬度</th><td id='hardness'><span class='editable'></span></td>
+            </tr>
+            <tr>
+              <th>攻擊力</th><td id='atk'><span class='editable'></span></td>
+              <th>DPS</th><td id='dps'><span class='editable'></span></td>
+              <th>射程</th><td id='range'></td>
+            </tr>
+            <tr>
+              <th>攻頻</th><td id='freq'></td>
+              <th>跑速</th><td id='speed'></td>
+              <td colspan='2' rowspan='3' id='aoe'></td>
+            </tr>
+            <tr>
+              <th>攻擊週期</th><td id='atk_period'></td>
+              <th>攻發時間</th><td id='atk_speed'></td>
+            </tr>
+            <tr>
+              <th>花費</th><td id='cost'></td>
+              <th>再生産</th><td id='cd'></td>
+            </tr>
+            <tr><th>取得方法</th><td colspan='5' id='condition'></td></tr>
+            <tr><td colspan = '6' id='char'></td></tr>
+          </table>
+        </div>
+    </div>
+
+    <div id="canvas_holder">
+      <div class="picture"></div>
+    </div>
+
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../public/js/html2canvas.min.js"></script>
+    <script src="../public/js/class.js"></script>
+    <script src="../public/js/overall.js"></script>
+    <script src="../public/js/game.js"></script>
+    <script src="../public/js/jquery.easing.1.3.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="../public/js/firebaseConfig.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </body>
+</html>
