@@ -49,6 +49,7 @@ $(document).ready(function () {
         hh = today.getHours();
     ww = ww?ww:7;
     console.log(ww,dd,hh);
+    if(hh>6)
     $("#dataTable tr").eq(hh-6).addClass("border")
     .siblings().removeClass("border");
     $("#month").text(AddZero(mm));
@@ -116,7 +117,7 @@ $(document).ready(function () {
     if(dd==2||dd==22)
     $("#alldayevent ul").append("<li id='openeye-s01148-1' style='color:#d53f3f'>開眼的花盆貓襲来！(14:22~14:24開放)</li>");
   }
-  $(document).on("click",'#alldayevent li,#ticket-s01078-1,#dataTable span',function () {
+  $(document).on("click",'#alldayevent li,#ticket-s01078-1,#dataTable span,#nightEvent .stage',function () {
     var arr = $(this).attr('id').split("-");
     socket.emit("required level data",{
       uid:current_user_id,

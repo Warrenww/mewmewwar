@@ -208,6 +208,9 @@ var config = {
           case "スニャイパー":
           obj.name = "狙擊手";
           break;
+          case "福引チケット":
+          obj.name = "招福轉蛋券";
+          break;
           default:
           obj.name = s.split(" ")[0];
         }

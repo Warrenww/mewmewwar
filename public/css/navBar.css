@@ -11,6 +11,9 @@ nav img{
    margin-left:20px;
    cursor: pointer;
 }
+.show_panel{
+  cursor: pointer;
+}
 .navLinkBox{
   flex:3;
   height: 100% ;

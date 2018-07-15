@@ -128,9 +128,6 @@ $(document).ready(function () {
     $(this).fadeOut().children(".picture").empty();
   });
 
-//compare tag for cat and enemy
-  $(document).on('click','#compareTarget_tag',showhidecomparetarget);
-
   //navigation bar append
   var nav_site_1 = ["cat","enemy","combo","stage"],
       nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
@@ -268,17 +265,6 @@ function levelToValue(origin,rarity,lv) {
     limit = 60 ;
   }
   return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
-}
-function showhidecomparetarget() {
-  $('.compare_panel').css('height',0);
-  if(showcomparetarget){
-    $('.compareTarget_holder').css('left',0);
-    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
-  } else {
-    $('.compareTarget_holder').css('left',-180);
-    $('#compareTarget_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
-  }
-  showcomparetarget = showcomparetarget ? 0 : 1 ;
 }
 function scroll_to_div(div_id){
   $('html,body').animate(

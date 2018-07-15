@@ -53,7 +53,7 @@
   background-color: transparent;
 }
 #maylook{background-image: url("footage/stage/maylook_BG.png");}
-#baseball,#lazybird,#easter,#eva{
+#baseball,#lazybird,#easter,#eva,#pokopang,#egg{
   background-image: url("footage/stage/pawapuro_BG.jpg");
   background-size: cover;
   background-position: center;
@@ -71,6 +71,8 @@
 #castleMaterial{background-image: url("footage/stage/castleMaterial.png");}
 #lazybird{background-image: url("footage/stage/lazybird.png");}
 #easter{background-image: url("footage/stage/easter.png");}
+#pokopang{background-image: url("footage/stage/pokopang.jpg");}
+#egg{background-image: url("footage/stage/egg.png");}
 #cyclone,#evolution,#castleMaterial,#ticket
 {background-blend-mode: normal;}
 
@@ -170,14 +172,14 @@
   top: 0;
   display: none;
 }
-#select_stage button[id~='s03000z'],
-#select_stage button[id~='s03001z'],
-#select_stage button[id~='s03002z']
+#select_stage button[id$='z']
 {background: linear-gradient(rgb(204, 99, 236),rgb(144, 12, 123))}
-#select_stage button[id~='s03000z'][value~='1'],
-#select_stage button[id~='s03001z'][value~='1'],
-#select_stage button[id~='s03002z'][value~='1']
+#select_stage button[id$='z'][value~='1']
 {background: linear-gradient(rgb(236, 99, 235),rgb(144, 12, 79))}
+#select_stage[chapter='trueStory'] button
+{background: linear-gradient(#b4d161,#91b02b)}
+#select_stage[chapter='trueStory'] button[value='1']
+{background: linear-gradient(#adc163,#768e1a)}
 #expend_sl_chap{
   width: 100%;
   background-color: rgba(255,255,255,.7);
@@ -304,3 +306,6 @@
 }
 .best{color:#f08d2b;font-weight: bold;}
 .list td{background-color: transparent}
+#enemy_head th:hover{
+  background-color: rgba(217, 189, 145, 0.93)
+}

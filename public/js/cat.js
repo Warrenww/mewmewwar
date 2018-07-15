@@ -1,3 +1,4 @@
+var current_user_id;
 $(document).ready(function () {
   var timer = new Date().getTime();
   var socket = io.connect();
@@ -19,7 +20,6 @@ $(document).ready(function () {
     }
   };
   var current_search = [];
-  var current_user_id = '';
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
@@ -65,18 +65,17 @@ $(document).ready(function () {
       }
       if(value_search) $("#value_search").click();
     }
-    if(!data.setting.show_ability_text ||screen.width<768){
+    if(data.setting.show_ability_text && screen.width > 768)
         $(".select_ability").children(".button").each(function () {
-          $(this).css({'padding':0,'border-radius':7,'overflow':'hidden'})
-            .children("span").fadeOut().siblings("i").css({width:40,height:40});
+          $(this).removeClass("smallicon");
         });
     if(!data.setting.show_cat_id)
       $('.display').find("#id").css({'background-color':'transparent','color':'transparent'})
-        .prev().css({'background-color':'transparent','color':'transparent'})
+        .prev().css({'background-color':'transparent','color':'transparent'});
     if(!data.setting.show_cat_count)
       $('.display').find("#count").css({'background-color':'transparent','color':'transparent'})
-        .prev().css({'background-color':'transparent','color':'transparent'})
-    }
+        .prev().css({'background-color':'transparent','color':'transparent'});
+
     setTimeout(function () { $("#loading").fadeOut(); },2500);
   });
   if(screen.width<=768) $("#level_num").parent().attr("colspan",5);
@@ -242,7 +241,8 @@ $(document).ready(function () {
     let html = '<span class="card-group" hidden>' ;
     for(let i in data){
       if(!data[i].id) continue
-      let name = data[i].name,id = data[i].id,current = id.substring(0,3) ;
+      let name = data[i].name?data[i].name:data[i].jp_name,
+          id = data[i].id,current = id.substring(0,3) ;
       if(current == now){
         html += '<span class="card" value="'+id+'" '+
         'style="background-image:url('+
@@ -281,7 +281,7 @@ $(document).ready(function () {
       else if(i == 'count')
         $(".dataTable").find("#"+i).text(count);
       else if(i == 'name')
-        $(".dataTable").find("."+i).text(data.Name);
+        $(".dataTable").find("."+i).text(data.Name+" ["+data.Rarity+"]");
       else if(i == 'aoe')
         $(".dataTable").find("#"+i).text(data.Aoe);
       else if(i == 'char')
@@ -435,10 +435,10 @@ $(document).ready(function () {
       setTimeout(function () { $("#batch_alert").css("left",-250); },2600);
     }
     else if(type == 'batch_compare'){
-      // console.log(current_search);
+      console.log(current_search);
       let r = confirm("確定覆蓋現有比較序列?!");
       if(!r) return
-      if(current_search.length<15*3){
+      if(current_search.length<15){
         $(".compareTarget").empty();
         let target = [];
         $("#selected").children('.card-group').each(function () {
@@ -553,92 +553,6 @@ $(document).ready(function () {
   $(".slider").slider();
 
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
-  $(document).on('click','.glyphicon-shopping-cart',function () {
-    var target = $(this).parent().children(".card:visible").attr('value'),
-        name = $(this).parent().children(".card:visible").text();
-    addToCompare(target,name);
-  });
-  $(document).on('click',"#addcart", function () {
-    let target = $(".dataTable").attr('id'),
-        name = current_cat_data.name;
-        name = name?name:current_cat_data.jp_name;
-    if(target) addToCompare(target,name);
-  });
-  $(document).on('click','.compareTarget .card',function (e) {
-    let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;
-    $("#compare_panel_BG").fadeIn();
-    console.log($(this).attr('value'));
-    $('.compare_panel').attr('id',$(this).attr('value'))
-      .css({top:pos_y,left:pos_x}).animate({height:60},400);
-    $('.compare_panel #show').click(function () {
-      socket.emit("display cat",{
-        uid : current_user_id,
-        cat : $(this).parent().attr('id'),
-        history:true
-      });
-      showhidecomparetarget();
-    });
-    $('.compare_panel #del').click(function () {
-      let target = $(".compareTarget .card[value='"+$(this).parent().attr('id')+"']");
-      let r = confirm("確定要將"+target.text()+"從比較列中移除?") ;
-      if(!r) return
-      target.remove();
-      compare = [];
-      $('.compareTarget').children(".card").each(function () {
-        compare.push($(this).attr("value"));
-      });
-      $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_id,target:compare});
-    });
-    $('compare_panel span').click(function () {
-      $("#compare_panel_BG").fadeOut();
-      $('.compare_panel').css('height',0);
-    });
-  });
-  $(document).on('click','#compare_panel_BG',function () {
-    $(this).fadeOut(); $('.compare_panel').css('height',0);
-  });
-  var compare ;
-  function addToCompare(target,name) {
-    if(showcomparetarget) showhidecomparetarget();
-    compare = [];
-    $('.compareTarget').children(".card").each(function () {
-      compare.push($(this).attr("value"));
-    });
-    if(compare.indexOf(target) != -1) {
-      let repeat = $('.compareTarget').find('[value='+target+']') ;
-      repeat.css('border-color','rgb(237, 179, 66)');
-      $(".compareTarget_holder").animate({ scrollTop : repeat[0].offsetTop-100 },800,'easeInOutCubic');
-      setTimeout(function () { repeat.css('border-color','white'); },1000);
-    } else {
-      compareTargetAddCard(target,name)
-      $('.compareTarget_holder').animate({
-        scrollTop : $('.compareTarget').height()
-      },500,'easeInOutCubic');
-      compare = [];
-      $('.compareTarget').children(".card").each(function () {
-        compare.push($(this).attr("value"));
-      });
-      $("#compare_number").text(compare.length);
-      socket.emit("compare cat",{id:current_user_id,target:compare});
-    }
-  }
-  function compareTargetAddCard(target,name) {
-    $(".compareTarget").append(
-        '<span class="card" value="'+target+
-        '" style="background-image:url('+
-        image_url_cat+target+'.png'+
-        '">'+name+'</span>');
-  }
-  $("#clear_compare").click(function () {
-    let r = confirm("確定要移除所有貓咪?!");
-    if(!r) return
-    showhidecomparetarget();
-    $(this).siblings().html("");
-    compare = [];
-    $("#compare_number").text(0);
-    socket.emit("compare cat",{id:current_user_id,target:compare});
-  });
   $(document).on("click","#addfight",function () {
     let id = $(this).parents("#more_option").siblings().attr("id");
     socket.emit("compare C2E",{

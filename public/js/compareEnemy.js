@@ -20,11 +20,17 @@ $(document).ready(function () {
         let id = data.compare_e2e[i].id ;
         buffer.push(id);
       }
-      socket.emit("start compare e2e",{id:data.uid,target:buffer});
+      // socket.emit("start compare e2e",{id:data.uid,target:buffer});
+      socket.emit("required data",{
+        type:"enemy",
+        target:buffer,
+        record:false,
+        uid:data.uid
+      });
     }
   });
 
-  socket.on("e2e compare", function (compare){
+  socket.on("required data",(compare)=>{
     console.log(compare);
     $(".comparedatabody").empty();
     for(let i in compare){

@@ -65,14 +65,14 @@ $(document).ready(function () {
   var emptyObj={};
   function createPredictionQueue(data) {
     $("#prediction").empty();
-    // console.log(data);
+    console.log(data);
     var start = data.start.substring(4,8),
         end = data.end.substring(4,8),
         month = start.substring(0,2),
         maxDay = TotalDay(Number(month),data.start.substring(0,4));
     var table_head='<tr>';
     start = Number(start);end = Number(end)
-    // console.log(start,end,maxDay,month);
+    console.log(start,end,maxDay,month);
 
     // console.log(emptyObj);
     var map = [];

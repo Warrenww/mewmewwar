@@ -104,7 +104,7 @@ $(document).ready(function () {
           },100000);
         }
       }
-      console.log(data);
+      // console.log(data);
       dataArr = ['name','hp','atk','count'];
       dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
       for(let i in data.legend){
@@ -157,41 +157,38 @@ $(document).ready(function () {
     });
 
     var nav_panel_timeout,close_nav_panel,panel_height;
-    $(".show_panel").hover(function () {
+    $(".show_panel").click(function () {
+      let nav_panel = Number($(this).attr('value'));
       let target = $(this).next('.nav_panel'),
           x = $(this).offset().left;
       panel_height = target[0].scrollHeight;
       if(screen.width>768) target.css('left',x-10);
-
+      if(nav_panel){
+        $(this).attr('value',0);
+        target.animate({"height":0},400);
+        return
+      }
       nav_panel_timeout = setTimeout(function () {
         target.prev('.show_panel').attr('value',1).siblings(".show_panel").attr("value",0);
-        target.animate({"height":panel_height},400)
-            .siblings('.nav_panel').animate({"height":0},400);
+        target.animate({"height":panel_height},200)
+            .siblings('.nav_panel').animate({"height":0},200);
         clearTimeout(close_nav_panel);
+        close_nav_panel = setTimeout(function () {
+          target.animate({"height":0},400);
+          target.prev('.show_panel').attr('value',0);
+        },2000);
       },200);
-    },function () {
-      let target = $(this).next('.nav_panel');
-      clearTimeout(nav_panel_timeout);
-      close_nav_panel = setTimeout(function () {
-        target.animate({"height":0},400);
-        target.prev('.show_panel').attr('value',0)
-      },3000);
     }) ;
-    $(".show_panel").click(function () {
-      let nav_panel = Number($(this).attr('value'));
-      if(screen.width>768) $(this).next('.nav_panel').css("left",$(this).offset().left-10);
-      if(nav_panel) $(this).next('.nav_panel').animate({"height":0},400);
-      else $(this).next('.nav_panel').animate({"height":panel_height},400);
-      $(this).attr('value',function () {
-        return nav_panel ? 0 : 1 ;
-      });
-    });
+
     $(".nav_panel").hover(function () {
       clearTimeout(close_nav_panel);
-    }
-    ,function () {
-      $(this).animate({"height":0},400);
-      $(this).prev('.show_panel').attr('value',0);
+    },
+    function () {
+      var target = $(this);
+      close_nav_panel = setTimeout(function () {
+        target.animate({"height":0},400);
+        target.prev('.show_panel').attr('value',0);
+      },800);
     }) ;
 
     var altTab_timeout;
@@ -241,9 +238,10 @@ $(document).ready(function () {
     });
     var iframeName = {
       "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
-      "gacha":"轉蛋資訊", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
+      "gacha":"轉蛋模擬器", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
       "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
-      "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表"
+      "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表",
+      "game":"釣魚小遊戲"
     }
     function parse_iframe_name(str) {
       return iframeName[str]

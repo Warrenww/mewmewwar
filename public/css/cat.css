@@ -345,6 +345,14 @@
   left:125%;
   text-align: left;
 }
+.editable{cursor: text;}
+.select_ability .smallicon{
+  padding:0;
+  border-radius:7;
+  overflow:hidden
+}
+.select_ability .smallicon span{display: none;}
+.select_ability .smallicon i{width: 40;height: 40}
 @keyframes rotate {
   0%{transform:rotate(0deg);}
   50%{transform:rotate(720deg);}

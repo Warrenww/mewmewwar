@@ -10,30 +10,52 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
-  var admin = require("firebase-admin");
+var admin = require("firebase-admin");
 
-  var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
+var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
 
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://BattleCat-Smart.firebaseio.com"
-  });
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://BattleCat-Smart.firebaseio.com"
+});
 
 
 var userdata;
 var catdata;
 firebase.initializeApp(config);
 var database = firebase.database();
+var db = admin.firestore();
 console.log('start');
-//
-// database.ref("/newCatData").once("value",function (snapshot) {
-//   let catdata = snapshot.val();
-//   console.log("cat data load complete");
-//   let statistic,exist = '000';
-//
-//   console.log("finish");
-//   // process.exit();
-// });
+
+// db.collection('users').doc('alovelace').collection('www').doc('wwww').set({w:true});;
+db.collection('users').get()
+    .then((snapshot) => {
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+      });
+    })
+    .catch((err) => {
+      console.log('Error getting documents', err);
+    });
+database.ref("/newCatData/001-1").once("value",function (snapshot) {
+  catdata = snapshot.val();
+  console.log("cat data load complete");
+  let statistic,
+      exist = '000';
+  // let data = catdata["001-1"];
+  console.log(catdata);
+  db.collection("catdata").doc('001').set({"001-1":catdata})
+
+
+
+
+
+  console.log("finish");
+  // process.exit();
+  // console.log("finish");
+  // process.exit();
+});
+
 
 // var gachadata = {};
 // database.ref("/gachadata").once("value",function (snapshot) {

@@ -21,6 +21,11 @@ $(document).ready(function () {
         buffer.push(id);
       }
       socket.emit("start compare c2c",{id:data.uid,target:buffer});
+      // socket.emit("required data",{
+      //   uid:dat.uid,
+      //   type:"cat",
+      //   target:buffer
+      // });
     } else {
     }
     if(!data.compare_c2c.length) $("#tutorial").show(300);

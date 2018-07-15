@@ -57,6 +57,7 @@
     box-shadow: 1px 1px 11px 0px black;
     margin: 10;
   }
+  #nightEvent img{width: 50;height: 50}
   @keyframes move-left {
     0% {right:0}
     50% {right:10}

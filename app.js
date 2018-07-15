@@ -56,9 +56,10 @@ var catdata,
     rankdata,
     catComment ;
 var __numberOfCat = 0,
-    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
+    __numberOfCatSearch = 0,
+    mostSearchCat,
+    secondMostSearchCat,
+    thirdMostSearchCat;
 ReloadAllData();
 function ReloadAllData() {
   database.ref("/").once("value",function (snapshot) {
@@ -73,8 +74,13 @@ function ReloadAllData() {
     catComment = snapshot.val().catComment ;
     console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
     var exist ;
+    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
     for(let i in catdata){
       __numberOfCat ++ ;
+      localCount = catdata[i].count;
+      __numberOfCatSearch += localCount;
       if(catdata[i].count>mostSearchCat.count && i.substring(0,3) != exist){
         if(mostSearchCat.count>secondMostSearchCat.count){
           if(secondMostSearchCat.count>thirdMostSearchCat.count){
@@ -86,23 +92,116 @@ function ReloadAllData() {
           name:catdata[i].name,
           count:catdata[i].count,
           id:i,
-          hp:levelToValue(catdata[i].hp,catdata[i].rarity,30),
-          atk:levelToValue(catdata[i].atk,catdata[i].rarity,30),
+          hp:levelToValue(catdata[i].hp,catdata[i].rarity,30).toFixed(0),
+          atk:levelToValue(catdata[i].atk,catdata[i].rarity,30).toFixed(0),
         };
+        exist = i.substring(0,3);
       }
-      exist = i.substring(0,3);
     }
     console.log("most Search Cat : ",mostSearchCat);
     console.log("second most Search Cat : ",secondMostSearchCat);
     console.log("third most Search Cat : ",thirdMostSearchCat);
+    console.log("Number of cat search : ",__numberOfCatSearch);
     arrangeUserData();
     geteventDay();
   });
   setTimeout(ReloadAllData,6*3600*1000);
 }
-
+class UserCatVariable {
+  constructor(obj) {
+    this.count = obj.count?obj.count:0,
+    this.lv = obj.lv?obj.lv:30,
+    this.own = obj.own?obj.own:false,
+    this.survey = obj.survey?obj.survey:null
+  }
+}
 
 io.on('connection', function(socket){
+  // Client require data with structure like
+  // {
+  //   type:type of need data(cat,enemy...etc),
+  //   target:string or array,
+  //   record:whether to record search history
+  //   [uid:user id]
+  //   [lv: assign lv]
+  // }
+  // return an array of data
+
+  // It can be independent from the user id,
+  // so anyone could access this.
+  socket.on("required data",function (data) {
+    console.log("required data");
+    console.log(data);
+    try {
+      var type = data.type,
+          target = data.target,
+          uid = data.uid,
+          load_data,buffer,
+          default_cat_lv=30,
+          user_variable = {},
+          user_history = {},
+          user_last_search,
+          buffer = [];
+      // Make sure the target's type is array
+      target = typeof(target) == 'object'?target:[target];
+      // Identify what kind of data is required
+      if (type == 'cat') load_data = catdata;
+      else if (type == 'enemy') load_data = enemydata;
+      else if (type == 'stage') load_data = stagedata;
+      // Load user data if uid exist
+      if(uid){
+        // Default cat level
+        default_cat_lv = userdata[uid].setting.default_cat_lv;
+        // Check if variable exist and load it
+        if(userdata[uid].variable[type] == "") userdata[uid].variable[type] = {};
+        user_variable = userdata[uid].variable[type];
+        // Check if history exist and load it
+        if(userdata[uid].history[type] == "" ) userdata[uid].history[type] = {};
+        user_history = userdata[uid].history[type];
+        user_last_search = userdata[uid].history["last_"+type]
+      }
+      // Extract data and record history
+      var default_lv = {cat:default_cat_lv,enemy:1};
+      for (let i in target) {
+        var id = target[i],
+        lv = data.lv,
+        bro = [],
+        combo = [];
+        // record history
+        if(uid){
+          user_variable[id] = user_variable[id] ?
+            user_variable[id]:{count:0,lv:default_lv[type]};
+          user_variable[id].count += 1;
+          if(data.record){
+            // Find same unit and clear it
+            for(let i in user_history){
+              if(user_history[i].id == id) delete user_history[i]
+            }
+            var key = database.ref().push().key; // Generate hash key
+            // Update history and write to firebase
+            user_history[key] = {type : type,id : id,time:new Date().getTime()};
+            database.ref("/user/"+uid+"/history/"+type).set(user_history);
+            userdata[uid].history["last_"+type] = id;
+            database.ref("/user/"+uid+"/history/last_"+type).set(id);
+            database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
+            .set(user_variable[id].count);
+            load_data[id].count ++ ;
+            database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
+          }
+        }
+        //Extract data
+        buffer.push({
+          data:load_data[id],
+          count:user_variable[id].count,
+          lv:data.lv?data.lv:(user_variable[id].lv?user_variable[id].lv:default_lv[type])
+        });
+      }
+      socket.emit("required data",buffer);
+    } catch (e) {
+      __handalError(e);
+    }
+  });
+
   socket.on("gacha search",function (data) {
     console.log(data);
     console.log("recording last search quene");
@@ -134,11 +233,7 @@ io.on('connection', function(socket){
       // console.log(buffer_1);
       socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("normal search",function (data) {
@@ -254,11 +349,7 @@ io.on('connection', function(socket){
         else  socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
         }
         catch(e){
-          console.log(e);
-          let time = new Date().getTime();
-          database.ref("/error_log").push({
-            time:time,error:e
-          })
+          __handalError(e);
         }
   });
   socket.on("text search",function (obj) {
@@ -309,11 +400,7 @@ io.on('connection', function(socket){
       socket.emit("search result",{result:buffer,query:data.query,type:data.query_type});
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on('text search stage',function (text) {
@@ -337,11 +424,7 @@ io.on('connection', function(socket){
       socket.emit('text search stage',buffer);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -405,63 +488,9 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
-  socket.on("display enemy",function (data) {
-    try{
-      let uid = data.uid,id = data.id,record = data.history;
-      console.log("client requir enemy "+id+"'s data");
-      console.log(data);
-      let buffer = enemydata[id];
-
-      if(uid&&id){
-        if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
-        let data = userdata[uid].variable.enemy[id];
-        data = data?data:{};
-        data.count = data.count?(data.count+1):1
-        buffer.count = data.count;
-        buffer.lv = data.lv?data.lv:1;
-        socket.emit('display enemy result',buffer);
-
-        let last = userdata[uid].history.last_enemy,
-        history = userdata[uid].history.enemy,
-        count = buffer.count;
-        if(id != last && record) {
-          console.log("recording user history");
-          for(let i in history){
-            if(history[i].id == id) delete history[i]
-          }
-          var key = database.ref().push().key;
-          if(history == "" ) userdata[uid].history.enemy = {};
-          history[key] = {type : "enemy",id : id,time:new Date().getTime()};
-          database.ref("/user/"+uid+"/history/enemy").set(history);
-          userdata[uid].history.last_enemy = id;
-          database.ref("/user/"+uid+"/history/last_enemy").set(id);
-          console.log("count enemy search time(user)");
-          if(!userdata[uid].variable.enemy[id]) userdata[uid].variable.enemy[id]={};
-          userdata[uid].variable.enemy[id].count = count;
-          database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
-          console.log("count enemy search time(global)");
-          enemydata[id].count ++ ;
-          database.ref("/enemydata/"+id+"/count").set(enemydata[id].count);
-        }
-        else console.log(record?"same as last enemy":"do not record");
-      } else socket.emit('display enemy result',buffer);
-    }
-    catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
-    }
-  });
-
   socket.on("user login",function (user) {
     console.log(user.uid+" user login");
     try{
@@ -513,11 +542,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("user connect",function (data){
@@ -656,11 +681,7 @@ io.on('connection', function(socket){
       socket.emit("current_user_data",CurrentUserData);
       console.log('user data send');
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("combo search",function (data) {
@@ -683,11 +704,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/last_combo").set(arr);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   }) ;
   socket.on("more combo",function (arr) {
@@ -709,11 +726,7 @@ io.on('connection', function(socket){
       socket.emit("more combo",buffer);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -725,11 +738,7 @@ io.on('connection', function(socket){
       database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("compare enemy",function (data) {
@@ -740,11 +749,7 @@ io.on('connection', function(socket){
       database.ref('/user/'+data.id+"/compare/enemy2enemy").set(data.target);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("start compare c2c",function (data) {
@@ -766,108 +771,77 @@ io.on('connection', function(socket){
       socket.emit("c2c compare",compare);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
-    });
-    socket.on("start compare e2e",function (data) {
-      console.log('start compare e2e');
-      let compare = [],
-      eneArr = userdata[data.id].variable.enemy;
-      for(let i in data.target) {
-        let id = data.target[i],
-        lv = eneArr[id] ? (!eneArr[id].lv ? 1 : eneArr[id].lv) : 1;
-        compare.push({data:enemydata[data.target[i]],lv:lv});
-      }
-      socket.emit("e2e compare",compare);
-    });
+  });
 
-    socket.on("rename",function (data) {
-      try{
-        userdata[data.uid].nickname = data.name;
-        database.ref("/user/"+data.uid+"/nickname").set(data.name);
-      }catch(e){
-        console.log(e);
-        let time = new Date().getTime();
-        database.ref("/error_log").push({
-          time:time,error:e
-        })
-      }
-    });
-    socket.on("history",function (uid) {
-      console.log(uid+"'s history");
-      try{
-        let data = userdata[uid].history;
-        if(!userdata[uid].folder)userdata[uid].folder = {};
-        let owned = userdata[uid].folder.owned;
-        owned = owned != "0" ? owned : [];
-        let buffer = {cat:[],enemy:[],owned:[]};
-        for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].name,id :data.cat[i].id});
-        for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].name,id :data.enemy[i].id});
-        for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
-        socket.emit("return history",buffer);
-      }catch(e){
-        console.log(e);
-        let time = new Date().getTime();
-        database.ref("/error_log").push({
-          time:time,error:e
-        })
-      }
-    });
-    socket.on("store level",function (data) {
-      try{
-        console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
-        if(!data.uid||!data.id) return
-        let id = data.id,
-        gross = data.type == 'cat'? id.substring(0,3):id;
-        var buffer = userdata[data.uid].variable[data.type][gross] ;
-        buffer = buffer?buffer:{};
-        buffer.lv = data.lv;
-        database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
-      }catch(e){
-        console.log(e);
-        let time = new Date().getTime();
-        database.ref("/error_log").push({
-          time:time,error:e
-        })
-      }
-    });
-    socket.on("mark own",function (data) {
-      try{
-        let folder = userdata[data.uid].folder,
-        arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
-        if(data.arr){
-          let brr = data.arr ;
-          console.log("batch add",brr.length);
-          for(let i in brr){
-            if (!userdata[data.uid].variable.cat[brr[i]]) userdata[data.uid].variable.cat[brr[i]] = {};
-            userdata[data.uid].variable.cat[brr[i]].own = true;
-            database.ref("/user/"+data.uid+"/variable/cat/"+brr[i]).update({own:true});
-            if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
-          }
-          userdata[data.uid].folder.owned = arr ;
-          database.ref("/user/"+data.uid+"/folder").update({owned:arr});
-          return
+  socket.on("rename",function (data) {
+    try{
+      userdata[data.uid].nickname = data.name;
+      database.ref("/user/"+data.uid+"/nickname").set(data.name);
+    }catch(e){
+      __handalError(e);
+    }
+  });
+  socket.on("history",function (uid) {
+    console.log(uid+"'s history");
+    try{
+      let data = userdata[uid].history;
+      if(!userdata[uid].folder)userdata[uid].folder = {};
+      let owned = userdata[uid].folder.owned;
+      owned = owned != "0" ? owned : [];
+      let buffer = {cat:[],enemy:[],owned:[]};
+      for (let i in data.cat) buffer.cat.push({name:catdata[data.cat[i].id].name,id :data.cat[i].id});
+      for (let i in data.enemy) buffer.enemy.push({name:enemydata[data.enemy[i].id].name,id :data.enemy[i].id});
+      for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
+      socket.emit("return history",buffer);
+    }catch(e){
+      __handalError(e);
+    }
+  });
+  socket.on("store level",function (data) {
+    try{
+      console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
+      if(!data.uid||!data.id) return
+      let id = data.id,
+      gross = data.type == 'cat'? id.substring(0,3):id;
+      var buffer = userdata[data.uid].variable[data.type][gross] ;
+      buffer = buffer?buffer:{};
+      buffer.lv = data.lv;
+      database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
+    }catch(e){
+      __handalError(e);
+    }
+  });
+  socket.on("mark own",function (data) {
+    try{
+      let folder = userdata[data.uid].folder,
+      arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
+      if(data.arr){
+        let brr = data.arr ;
+        console.log("batch add",brr.length);
+        for(let i in brr){
+          if (!userdata[data.uid].variable.cat[brr[i]]) userdata[data.uid].variable.cat[brr[i]] = {};
+          userdata[data.uid].variable.cat[brr[i]].own = true;
+          database.ref("/user/"+data.uid+"/variable/cat/"+brr[i]).update({own:true});
+          if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
         }
-        console.log(data.uid+" claim he/she "+
-        (data.mark?"does":"doesn't")+" own "+data.cat);
-        if(!userdata[data.uid].variable.cat[data.cat])userdata[data.uid].variable.cat[data.cat]={};
-        userdata[data.uid].variable.cat[data.cat].own = data.mark ? true : false;
-        database.ref("/user/"+data.uid+"/variable/cat/"+data.cat).update({own:data.mark ? true : false});
-        if(data.mark&&arr.indexOf(data.cat)==-1) arr.push(data.cat);
-        else if(!data.mark&&arr.indexOf(data.cat)!=-1) arr.splice(arr.indexOf(data.cat),1);
-        arr = arr.length ? arr : 0 ;
         userdata[data.uid].folder.owned = arr ;
         database.ref("/user/"+data.uid+"/folder").update({owned:arr});
-    } catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+        return
+      }
+      console.log(data.uid+" claim he/she "+
+      (data.mark?"does":"doesn't")+" own "+data.cat);
+      if(!userdata[data.uid].variable.cat[data.cat]) userdata[data.uid].variable.cat[data.cat]={};
+      userdata[data.uid].variable.cat[data.cat].own = data.mark ? true : false;
+      database.ref("/user/"+data.uid+"/variable/cat/"+data.cat).update({own:data.mark ? true : false});
+      if(data.mark&&arr.indexOf(data.cat)==-1) arr.push(data.cat);
+      else if(!data.mark&&arr.indexOf(data.cat)!=-1) arr.splice(arr.indexOf(data.cat),1);
+      arr = arr.length ? arr : 0 ;
+      userdata[data.uid].folder.owned = arr ;
+      database.ref("/user/"+data.uid+"/folder").update({owned:arr});
+    }catch(e){
+      __handalError(e);
     }
   });
 
@@ -887,11 +861,7 @@ io.on('connection', function(socket){
       });
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("set default cat level",function (data) {
@@ -901,11 +871,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/setting/default_cat_lv").set(data.lv);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("reset cat level",function (id) {
@@ -919,11 +885,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("reset owned cat",function (id) {
@@ -938,11 +900,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+id+"/folder/owned").set("0");
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("change setting",function (data) {
@@ -962,11 +920,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("user photo",function (data) {
@@ -992,11 +946,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("required users photo",function (arr) {
@@ -1081,11 +1031,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -1115,11 +1061,7 @@ io.on('connection', function(socket){
       socket.emit("gacha result",{ result:result});
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on("gacha history",function (data) {
@@ -1142,11 +1084,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/gacha/"+key).set(userdata[uid].history.gacha[key]);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -1158,11 +1096,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/compare/cat2enemy").update(data.target)
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -1183,11 +1117,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/setting/show_miner").set(true);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -1214,11 +1144,7 @@ io.on('connection', function(socket){
       socket.emit("owned data",arr);
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -1262,11 +1188,7 @@ io.on('connection', function(socket){
 
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on('comment cat',function (data) {
@@ -1296,11 +1218,7 @@ io.on('connection', function(socket){
 
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
   socket.on('required cat comment',function (cat) {
@@ -1329,11 +1247,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
   });
 
@@ -1365,11 +1279,7 @@ io.on('connection', function(socket){
       }
       socket.emit('cat to stage',{find,stage});
     }catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e
-      })
+      __handalError(e);
     }
     });
 
@@ -1446,12 +1356,18 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      console.log(e);
-      let time = new Date().getTime();
-      database.ref("/error_log").push({
-        time:time,error:e.toString()
-      })
+      __handalError(e);
     }
+  });
+  socket.on("Game Picture",function () {
+    var buffer = [];
+    for(let i=0;i<18;i++){
+      let cat = Math.ceil(Math.random()*432);
+      cat = cat>100?cat:(cat>10?"0"+cat:"00"+cat);
+      let data = catdata[cat+"-3"]?catdata[cat+"-3"]:catdata[cat+"-2"];
+      buffer.push(data);
+    }
+    socket.emit("Game Picture",buffer);
   });
 });
 
@@ -1558,6 +1474,7 @@ function geteventDay() {
           title.each(function () {
             let a = $(this).children(".b-list__main").find("a");
             if(a.text().indexOf("活動資訊")!=-1){
+              // console.log(a.text());
               let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
               for(let i in b){
                 b[i] = b[i].split("/");
@@ -1601,7 +1518,7 @@ function parsePrediction(obj,eventdate) {
     if(!e){
       $ = cheerio.load(b);
       var gachaP = $("section").eq(0).find(".c-article__content"),
-          eventP = $("section").eq(1).find(".c-article__content");
+          eventP = $("section").eq(2).find(".c-article__content");
       var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
       gachaP.children("div").each(function () {
         let content = $(this).text();
@@ -1660,6 +1577,16 @@ function levelToValue(origin,rarity,lv) {
 }
 function AddZero(n) {
   return n<10 ? "0"+n : n
+}
+function __handalError(e) {
+  console.log(e);
+  let time = new Date().getTime();
+  database.ref("/error_log").push({
+    time:time,
+    code:e.code,
+    message:e.message,
+    stack:e.stack
+  });
 }
 
 const port = 8000 ;

@@ -158,7 +158,6 @@ class Enemy{
     this.hp = obj.hp;
     this.jp_name = obj.jp_name;
     this.kb = obj.kb;
-    this.lv = obj.lv;
     this.range = obj.range;
     this.reward = obj.reward;
     this.speed = obj.speed;
