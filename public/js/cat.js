@@ -281,7 +281,11 @@ $(document).ready(function () {
       else if(i == 'count')
         $(".dataTable").find("#"+i).text(count);
       else if(i == 'name')
+<<<<<<< HEAD
         $(".dataTable").find("."+i).text(data.Name+" ["+data.Rarity+"]");
+=======
+        $(".dataTable").find("."+i).text("["+data.Rarity+"] "+data.Name);
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
       else if(i == 'aoe')
         $(".dataTable").find("#"+i).text(data.Aoe);
       else if(i == 'char')

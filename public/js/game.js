@@ -5,7 +5,11 @@ $(document).ready(function () {
   var socket = io.connect();
   socket.emit("Game Picture");
   socket.on("Game Picture",(data)=>{
+<<<<<<< HEAD
     // console.log(data);
+=======
+    console.log(data);
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
     for(let i in data){
       if(!data[i]){
         socket.emit("Game Picture");
@@ -143,7 +147,11 @@ function generateSequene(size) {
       set.splice(n,1);
     }
   }
+<<<<<<< HEAD
   // console.log(gamesequene);
+=======
+  console.log(gamesequene);
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
   return gamesequene
 }
 function checkEndState(clear) {

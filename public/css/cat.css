@@ -346,6 +346,7 @@
   text-align: left;
 }
 .editable{cursor: text;}
+<<<<<<< HEAD
 .select_ability .smallicon{
   padding:0;
   border-radius:7;
@@ -353,6 +354,8 @@
 }
 .select_ability .smallicon span{display: none;}
 .select_ability .smallicon i{width: 40;height: 40}
+=======
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
 @keyframes rotate {
   0%{transform:rotate(0deg);}
   50%{transform:rotate(720deg);}

@@ -56,7 +56,10 @@ var catdata,
     rankdata,
     catComment ;
 var __numberOfCat = 0,
+<<<<<<< HEAD
     __numberOfCatSearch = 0,
+=======
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
     mostSearchCat,
     secondMostSearchCat,
     thirdMostSearchCat;
@@ -80,7 +83,10 @@ function ReloadAllData() {
     for(let i in catdata){
       __numberOfCat ++ ;
       localCount = catdata[i].count;
+<<<<<<< HEAD
       __numberOfCatSearch += localCount;
+=======
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
       if(catdata[i].count>mostSearchCat.count && i.substring(0,3) != exist){
         if(mostSearchCat.count>secondMostSearchCat.count){
           if(secondMostSearchCat.count>thirdMostSearchCat.count){
@@ -120,10 +126,14 @@ io.on('connection', function(socket){
   // Client require data with structure like
   // {
   //   type:type of need data(cat,enemy...etc),
+<<<<<<< HEAD
   //   target:string or array,
   //   record:whether to record search history
   //   [uid:user id]
   //   [lv: assign lv]
+=======
+  //   target:string or array
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
   // }
   // return an array of data
 
@@ -136,12 +146,18 @@ io.on('connection', function(socket){
       var type = data.type,
           target = data.target,
           uid = data.uid,
+<<<<<<< HEAD
           load_data,buffer,
           default_cat_lv=30,
           user_variable = {},
           user_history = {},
           user_last_search,
           buffer = [];
+=======
+          load_data,buffer,combo
+          default_cat_lv=30,
+          user_variable;
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
       // Make sure the target's type is array
       target = typeof(target) == 'object'?target:[target];
       // Identify what kind of data is required
@@ -150,6 +166,7 @@ io.on('connection', function(socket){
       else if (type == 'stage') load_data = stagedata;
       // Load user data if uid exist
       if(uid){
+<<<<<<< HEAD
         // Default cat level
         default_cat_lv = userdata[uid].setting.default_cat_lv;
         // Check if variable exist and load it
@@ -195,6 +212,21 @@ io.on('connection', function(socket){
           count:user_variable[id].count,
           lv:data.lv?data.lv:(user_variable[id].lv?user_variable[id].lv:default_lv[type])
         });
+=======
+        default_cat_lv = userdata[uid].setting.default_cat_lv;
+        user_variable = userdata[uid].variable[type];
+      }
+      // Extract data
+      for (let i in target) {
+        var id = data.target[i].substring(0,3),
+        lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def,
+        bro = [];
+        for(let j=1;j<4;j++){
+          let a = id+"-"+j ;
+          if(a != data.target[i]) if(catdata[a]) bro.push(a) ;
+        }
+        buffer.push(load_data[i]);
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
       }
       socket.emit("required data",buffer);
     } catch (e) {
@@ -491,6 +523,55 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
+<<<<<<< HEAD
+=======
+  socket.on("display enemy",function (data) {
+    try{
+      let uid = data.uid,id = data.id,record = data.history;
+      console.log("client requir enemy "+id+"'s data");
+      console.log(data);
+      let buffer = enemydata[id];
+
+      if(uid&&id){
+        if(userdata[uid].variable.enemy=="") userdata[uid].variable.enemy={};
+        let data = userdata[uid].variable.enemy[id];
+        data = data?data:{};
+        data.count = data.count?(data.count+1):1
+        buffer.count = data.count;
+        buffer.lv = data.lv?data.lv:1;
+        socket.emit('display enemy result',buffer);
+
+        let last = userdata[uid].history.last_enemy,
+        history = userdata[uid].history.enemy,
+        count = buffer.count;
+        if(id != last && record) {
+          console.log("recording user history");
+          for(let i in history){
+            if(history[i].id == id) delete history[i]
+          }
+          var key = database.ref().push().key;
+          if(history == "" ) userdata[uid].history.enemy = {};
+          history[key] = {type : "enemy",id : id,time:new Date().getTime()};
+          database.ref("/user/"+uid+"/history/enemy").set(history);
+          userdata[uid].history.last_enemy = id;
+          database.ref("/user/"+uid+"/history/last_enemy").set(id);
+          console.log("count enemy search time(user)");
+          if(!userdata[uid].variable.enemy[id]) userdata[uid].variable.enemy[id]={};
+          userdata[uid].variable.enemy[id].count = count;
+          database.ref("/user/"+uid+"/variable/enemy/"+id+"/count").set(count);
+          console.log("count enemy search time(global)");
+          enemydata[id].count ++ ;
+          database.ref("/enemydata/"+id+"/count").set(enemydata[id].count);
+        }
+        else console.log(record?"same as last enemy":"do not record");
+      } else socket.emit('display enemy result',buffer);
+    }
+    catch(e){
+      __handalError(e);
+    }
+  });
+
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
   socket.on("user login",function (user) {
     console.log(user.uid+" user login");
     try{
@@ -774,6 +855,20 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
+<<<<<<< HEAD
+=======
+  socket.on("start compare e2e",function (data) {
+    console.log('start compare e2e');
+    let compare = [],
+    eneArr = userdata[data.id].variable.enemy;
+    for(let i in data.target) {
+      let id = data.target[i],
+      lv = eneArr[id] ? (!eneArr[id].lv ? 1 : eneArr[id].lv) : 1;
+      compare.push({data:enemydata[data.target[i]],lv:lv});
+    }
+    socket.emit("e2e compare",compare);
+  });
+>>>>>>> f30bcfa0f9be89a3b222e06b88f20f480b4b6682
 
   socket.on("rename",function (data) {
     try{
