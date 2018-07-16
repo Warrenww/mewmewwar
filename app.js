@@ -1545,9 +1545,9 @@ function __handalError(e) {
   let time = new Date().getTime();
   database.ref("/error_log").push({
     time:time,
-    code:e.code,
-    message:e.message,
-    stack:e.stack
+    code:e.code?e.code:"undefine",
+    message:e.message?e.message:"undefine",
+    stack:e.stack?e.stack:"undefine"
   });
 }
 
