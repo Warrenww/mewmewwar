@@ -394,11 +394,12 @@ $(document).ready(function () {
     let id = $(this).attr("id"),
         multiple = $(this).next().text().split("％")[0];
 
-    socket.emit("display enemy",{
-      uid : current_user_data.uid,
-      id : $(this).attr('id'),
-      history : true
-    });
+        socket.emit("required data",{
+          type:'enemy',
+          target:id,
+          record:true,
+          uid:current_user_data.uid
+        });
     socket.emit("store level",{
       uid : current_user_data.uid,
       id : $(this).attr('id'),

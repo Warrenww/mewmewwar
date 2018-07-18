@@ -201,17 +201,6 @@ io.on('connection', function(socket){
         default_cat_lv = userdata[uid].setting.default_cat_lv;
         user_variable = userdata[uid].variable[type];
       }
-      // Extract data
-      for (let i in target) {
-        var id = data.target[i].substring(0,3),
-        lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def,
-        bro = [];
-        for(let j=1;j<4;j++){
-          let a = id+"-"+j ;
-          if(a != data.target[i]) if(catdata[a]) bro.push(a) ;
-        }
-        buffer.push(load_data[i]);
-      }
       socket.emit("required data",buffer);
     } catch (e) {
       __handalError(e);
