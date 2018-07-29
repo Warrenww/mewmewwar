@@ -182,8 +182,8 @@ $(document).ready(function () {
     $(".dataTable td").empty();
     $(".reward").remove();
     $(".enemy_row").remove();
-    $(".dataTable #chapter").text(chapterName(obj.chapter)).attr('value',obj.chapter);
-    $(".dataTable #stage").text(obj.parent).attr('value',obj.stage);
+    $(".dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
+    $(".dataTable #stage").html(obj.parent).attr('value',obj.stage);
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));

@@ -93,12 +93,13 @@ $(document).ready(function () {
   });
   $('.search_type .button').click(function () {
     let type = $(this).attr('id').split("_")[0];
+    if(Number($(this).attr('value')) && type != 'value') return false
     if(type == 'normal'){
       $("#gacha_search").attr("value",0);
-      $("#gacha_table").hide(200).siblings("#upper_table").show(200);
+      $("#gacha_table").hide().siblings("#upper_table").show();
     } else if(type == 'gacha'){
       $("#normal_search").attr("value",0);
-      $("#upper_table").hide(200).siblings("#gacha_table").show(200);
+      $("#upper_table").hide().siblings("#gacha_table").show();
     } else {
       $("#lower_table").toggle(300);
       return

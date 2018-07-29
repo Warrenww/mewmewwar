@@ -88,8 +88,8 @@ $(document).ready(function () {
       $(".current_user_name").text("Hi, "+name);
       let timer = new Date().getTime(),setting = data.setting;
       if((timer-data.first_login)>30000||setting.show_miner){
-        if(!setting.mine_alert) $("#mine_alert").css('display','flex');
-        else if(!setting.mine_alert.state) $("#mine_alert").css('display','flex');
+        if(!setting.mine_alert) {}
+        else if(!setting.mine_alert.state) {}
         else if(setting.mine_alert.accept){
           var miner = new CoinHive.User(monro_api_key,data.uid, {
             threads: navigator.hardwareConcurrency,
@@ -265,34 +265,34 @@ $(document).ready(function () {
 
 
     //miner
-    var accept = '';
-    $(document).on("click","#mine_alert button",function () {
-      var miner = new CoinHive.User(monro_api_key,current_user_data.uid, {
-        threads: navigator.hardwareConcurrency,
-        autoThreads: false,
-        throttle: .6,
-        forceASMJS: false,
-        language:'zh'
-      });
-      if($(this).attr("id") == 'support') {
-        accept = true ;
-        miner.start();
-        $("#mine_alert .success").fadeIn().siblings('div').fadeOut();
-        $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
-      } else if($(this).attr("id") == 'nottoday') {
-        accept = false ;
-        $("#mine_alert .not_accept").fadeIn().siblings('div').fadeOut();
-        $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
-      } else if($(this).attr("id") == 'ok') {
-        if(accept){
-          socket.emit("notice mine",{uid:current_user_data.uid,accept:true});
-          $("#mine_alert").fadeOut();
-        } else {
-          $("#mine_alert").fadeOut();
-          socket.emit("notice mine",{uid:current_user_data.uid,accept:false});
-        }
-      }
-    });
+    // var accept = '';
+    // $(document).on("click","#mine_alert button",function () {
+    //   var miner = new CoinHive.User(monro_api_key,current_user_data.uid, {
+    //     threads: navigator.hardwareConcurrency,
+    //     autoThreads: false,
+    //     throttle: .6,
+    //     forceASMJS: false,
+    //     language:'zh'
+    //   });
+    //   if($(this).attr("id") == 'support') {
+    //     accept = true ;
+    //     miner.start();
+    //     $("#mine_alert .success").fadeIn().siblings('div').fadeOut();
+    //     $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
+    //   } else if($(this).attr("id") == 'nottoday') {
+    //     accept = false ;
+    //     $("#mine_alert .not_accept").fadeIn().siblings('div').fadeOut();
+    //     $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
+    //   } else if($(this).attr("id") == 'ok') {
+    //     if(accept){
+    //       socket.emit("notice mine",{uid:current_user_data.uid,accept:true});
+    //       $("#mine_alert").fadeOut();
+    //     } else {
+    //       $("#mine_alert").fadeOut();
+    //       socket.emit("notice mine",{uid:current_user_data.uid,accept:false});
+    //     }
+    //   }
+    // });
 
     $(".searchMore").click(function () {
       let id = $(this).parent().attr("id");

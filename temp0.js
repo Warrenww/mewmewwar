@@ -54,9 +54,18 @@ var stdin = process.openStdin();
 //   console.log('finish');
 // });
 var stagedata
-database.ref("/stagedata").once("value",function (snapshot){
+database.ref("/stagedata/universe").once("value",function (snapshot){
   stagedata = snapshot.val();
-  getthewww();
+  var ch1 = stagedata['s03006'];
+  for(let i in ch1){
+    if(i=='name') continue
+    console.log(ch1[i].name);
+    console.log(ch1[i].reward);
+    database.ref("/stagedata/universe/s03007/"+i).update({
+      name:ch1[i].name,
+      reward:ch1[i].reward
+    });
+  }
 });
 function stageID(s) {
   if(s == '超級游擊經驗值！') return 'XP-s01059'

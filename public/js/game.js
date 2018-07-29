@@ -15,12 +15,15 @@ $(document).ready(function () {
     catArr = data;
     initialGame(size);
   });
+  var pos_open_now;
   $(document).on('click',".game_table td",function () {
     var coord = $(this).attr("id"),
         x = Number(coord.substring(1,2)),
         y = Number(coord.substring(3,4)),
         pos = x*size+y,
         ans = gamesequene[pos];
+    if(pos == pos_open_now) return
+    else pos_open_now = pos;
     if(clear.indexOf(coord)!=-1) {
       let data = new Cat(catArr[Decode(ans)]);
       displayCatData(data);
