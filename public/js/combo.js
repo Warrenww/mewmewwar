@@ -46,13 +46,21 @@ $(document).ready(function () {
   });
   $(document).on("click",".dataTable i",function () {
     let catArr = [];
-    $(this).siblings('.card').each(function () {
-      catArr.push($(this).attr('value'));
-    });
-    // alert(catArr);
-    socket.emit("more combo",catArr);
+    let active = Number($(this).attr("value"));
     $("#more_combo").remove();
-    $("<tr id='more_combo'></tr>").insertAfter($(this).parents('tr').next())
+    if(!active){
+      $(this).siblings('.card').each(function () {
+        catArr.push($(this).attr('value'));
+      });
+      // alert(catArr);
+      socket.emit("more combo",catArr);
+      $("<tr id='more_combo'></tr>").insertAfter($(this).parents('tr').next())
+      $(this).attr("value",1).parents('tr').siblings().each(function () {
+        $(this).find("i").attr("value",0);
+      });
+    } else {
+      $(this).attr("value",0);
+    }
   });
   socket.on("more combo",function (data) {
     let target = data.pop();
@@ -89,7 +97,7 @@ $(document).ready(function () {
         +'"></span>' ;
       } else  pic_html += "<span class='seat'>-</span>";
     }
-    pic_html += "<i class='material-icons'>playlist_add</i></div>" ;
+    pic_html += "<i class='material-icons' value='0'>playlist_add</i></div>" ;
     html = screen.width > 768 ?
     ("</tr><tr>"+
     "<th class='searchCombo' val='"+item.id.substring(0,2)+"'>"+item.catagory+"</th>"+

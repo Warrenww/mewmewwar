@@ -79,7 +79,7 @@ function ReloadAllData() {
     thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
     for(let i in catdata){
       __numberOfCat ++ ;
-      localCount = catdata[i].count;
+      localCount = catdata[i].count?catdata[i].count:0;
       __numberOfCatSearch += localCount;
       if(catdata[i].count>mostSearchCat.count && i.substring(0,3) != exist){
         if(mostSearchCat.count>secondMostSearchCat.count){
@@ -362,7 +362,8 @@ io.on('connection', function(socket){
     try{
       let key = obj.key ,
       buffer = [],
-      data = {} ;
+      data = {},
+      load_data ;
       switch (obj.type) {
         case 'cat':
         load_data = catdata ;
@@ -384,6 +385,7 @@ io.on('connection', function(socket){
         }
       }
       for(let id in load_data){
+        console.log(id);
         let name = load_data[id].name?load_data[id].name:load_data[id].jp_name;
         if(name.indexOf(key) != -1) {
           let simple = id.substring(0,3);
@@ -496,6 +498,33 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
+  socket.on("user login",function (user) {
+     console.log(user.uid+" user login");
+     try{
+       let exist = false;
+       let timer = new Date().getTime();
+       console.log('login time : '+timer);
+       for(let uid in userdata){
+         if(uid == user.uid){
+           console.log("find same user");
+           exist = true;
+           socket.emit("login complete",userdata[uid].nickname);
+           break;
+         }
+       }
+       if(exist){
+         console.log('user exist');
+         database.ref('/user/'+user.uid).update({"last_login" : timer});
+       } else {
+         console.log('new user');
+         let data = GenerateUser(user);
+         socket.emit("login complete",data.nickname);
+       }
+     }
+     catch(e){
+       __handalError(e);
+     }
+   });
   socket.on("user connect",function (data){
     console.log(data);
     try{
@@ -1344,11 +1373,13 @@ function arrangeUserData() {
         }
       }
       if(userdata[i].first_login == undefined){
-        console.log("remove "+i+" since unknown first login");
-        database.ref('/user/'+i).remove();
-        admin.auth().deleteUser(i)
-        .then(function() { console.log("Successfully deleted user"); })
-        .catch(function(error) { console.log("Error deleting user:", error); });
+        console.log(i+" unknown first login");
+        // database.ref('/user/'+i).remove();
+        // admin.auth().deleteUser(i)
+        // .then(function() { console.log("Successfully deleted user"); })
+        // .catch(function(error) { console.log("Error deleting user:", error); });
+        let user = {uid:i,isAnonymous:true};
+        GenerateUser(user);
         continue
       }
       let arr=[],edit = ['cat','enemy','combo','stage','gacha'];
@@ -1539,6 +1570,38 @@ function __handalError(e) {
     stack:e.stack?e.stack:"undefine"
   });
 }
+function GenerateUser(user=null) {
+  let timer = new Date().getTime();
+  let data = {
+    name : user?user.displayName:"",
+    nickname :user?user.displayName:"",
+    first_login : timer,
+    last_login : timer,
+    history : {cat:"",enemy:"",combo:"",stage:""},
+    compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
+    setting : {default_cat_lv:30},
+    variable : {cat:"",enemy:"",stage:""},
+    folder : {owned:""},
+    Anonymous : user?user.isAnonymous:true
+  }
+  if(user.isAnonymous){
+    let anonymous = "";
+    var CatCount=0,Random = Math.floor((Math.random()*__numberOfCat));
+    for(let i in catdata){
+      if (CatCount == Random){
+        anonymous = catdata[i].name?catdata[i].name:catdata[i].jp_name;
+        break
+      }
+      CatCount++;
+    }
+    data.name = "匿名"+anonymous;
+    data.nickname = "匿名"+anonymous;
+  }
+  userdata[user.uid] = data;
+  database.ref('/user/'+user.uid).set(data) ;
+  return data
+}
+
 
 const port = 8000 ;
 http.listen(process.env.PORT || port, function(){

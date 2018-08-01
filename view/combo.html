@@ -22,11 +22,15 @@
         transition: .2s ease-in-out;
         cursor: pointer;
       }
-      .dataTable i:hover{
+      .dataTable i:hover,
+      .dataTable i[value='1']{
         background-color: gray;
         color:#e9ad3f;
       }
-      #more_combo td{background-color: rgba(255, 255, 255, 0.6)}
+      #more_combo > td{
+        background-color: rgba(255, 255, 255, 0.6);
+        border: 3px solid #feb12f;
+      }
       #more_combo i{display: none;}
       .seat{
         width: 90px;

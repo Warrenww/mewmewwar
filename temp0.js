@@ -53,75 +53,19 @@ var stdin = process.openStdin();
 // database.ref('/user').once("value",function (snapshot) {
 //   console.log('finish');
 // });
-var stagedata
-database.ref("/stagedata/universe").once("value",function (snapshot){
-  stagedata = snapshot.val();
-  var ch1 = stagedata['s03006'];
-  for(let i in ch1){
-    if(i=='name') continue
-    console.log(ch1[i].name);
-    console.log(ch1[i].reward);
-    database.ref("/stagedata/universe/s03007/"+i).update({
-      name:ch1[i].name,
-      reward:ch1[i].reward
-    });
-  }
-});
-function stageID(s) {
-  if(s == '超級游擊經驗值！') return 'XP-s01059'
-  if(s == '寶物嘉年華（世界篇）') return 'world-s03000'
-  if(s == '寶物嘉年華（未來篇）') return 'future-s03003'
-  for(let i in stagedata){
-    for(let j in stagedata[i]){
-      if(j == 'name') continue
-      if(stagedata[i][j].name == s) return [i,j].join("-")
-      for(let k in stagedata[i][j]){
-        if(k == 'name') continue
-        if(stagedata[i][j][k].name == s) return [i,j,k].join("-")
-      }
-    }
-  }
-}
+// var stagedata
+// database.ref("/stagedata/universe").once("value",function (snapshot){
+//   stagedata = snapshot.val();
+//   var ch1 = stagedata['s03006'];
+//   for(let i in ch1){
+//     if(i=='name') continue
+//     console.log(ch1[i].name);
+//     console.log(ch1[i].reward);
+//   }
+// });
 
-function getthewww() {
-  // console.log(AddZero(i));
 
-  request({
-    url: "https://ponos.s3.amazonaws.com/information/appli/battlecats/calendar/tw/index.html",
-    method: "GET"
-  },function (e,r,b) {
-    console.log("Get!!");
-    if(!e){
-      $ = cheerio.load(b);
-      var dailyEvent = {}
-      for(let i=0;i<8;i++){
-        var target = $(".cld_box01").eq(i);
-        dailyEvent[i+1] = { allday:[],hours:[] }
-        target.find('.red').each(function () {
-          let text = $(this).text().trim().split("・")[1].split("（")[0];
-          dailyEvent[i+1].allday.push({id:stageID(text),name:text});
-        });
-        let count = 0;
-        target.find(".hour").each(function () {
-          dailyEvent[i+1].hours[count] = []
-          $(this).next().find("span").each(function () {
-            let text = $(this).text().trim().split("・")[1].split("\n")[0];
-            dailyEvent[i+1].hours[count].push({id:stageID(text),name:text});
-          });
-          count ++;
-        });
-      }
-      // fs.writeFile('public/calendar.txt', JSON.stringify(dailyEvent), function (err) {
-      //   if (err) throw err;
-      //   console.log('Saved!');
-      //   process.exit()
-      // });
-    } else {
-      console.log(e);
-    }
-  });
 
-}
 function AddZero(n) {
   return n>99 ? n : (n>9 ? "0"+n : "00"+n)
 }
@@ -147,6 +91,6 @@ function AddZero(n) {
 //       amount : result[i].amount,
 //       cat : [result[i].cat_1,result[i].cat_2,result[i].cat_3,result[i].cat_4,result[i].cat_5]
 //     }
-//     // database.ref("/combodata/"+result[i].id).set(result[i]);
+//     // database.ref("/combodata/"+result[i].id).update(result[i]);
 //   }
 // });
