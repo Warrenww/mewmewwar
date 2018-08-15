@@ -125,6 +125,11 @@ td, th {
 }
 .dataTable th{width: 150px}
 .dataTable input{width: 75px}
+.dataTable .img{
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 #pre_sel_pg,#next_sel_pg{
   margin: 0 20px;
 }
@@ -226,19 +231,12 @@ table {
  {
     width: 0px;
 }
-
-#clear_compare{
-  cursor: pointer;
-  height: 80px;
-  width: 120px;
-  margin: 10px;
-  font-size: 16px;
-  align-items: center;
-  justify-content: center;
+.functionArea{
   display: flex;
-  background: rgba(0,0,0,.5);
-  color: white;
-  border: 4px solid white;
+  justify-content: space-around;
+  margin: 10 0;
+  position: absolute;
+  bottom: 10;
 }
 .compareTarget .card{
   height: 80px;
@@ -385,7 +383,10 @@ table {
 #more_option i,
 #edit_function i,
 .list_display_holder .option i,
-#analyze_area i{
+#analyze_area i,
+.functionArea i,
+.floatDisplay i,
+#function_tag i{
   margin: 10px;
   background-color: rgba(255, 255, 255, 0.71);
   padding: 5px;
@@ -403,7 +404,9 @@ table {
 #more_option i::before,
 #edit_function i::before,
 .list_display_holder .option i::before,
-#analyze_area div i::before{
+#analyze_area div i::before,
+.functionArea i::before,
+#function_tag i::before{
   content: attr(text);
   position: absolute;
   z-index: 3;
@@ -424,9 +427,13 @@ table {
 #more_option i:hover::before,
 #edit_function i:hover::before,
 .list_display_holder .option i:hover::before,
-#analyze_area div i:hover::before
+#analyze_area div i:hover::before,
+.functionArea i:hover::before,
+#function_tag i:hover::before
 {opacity: 1;width: 100;overflow: visible;}
-.compareSorce .title #option i{
+/* optional : To enable border */
+.compareSorce .title #option i,
+.functionArea i{
   border: 1px solid;
   margin: 0 20px;
 }
@@ -434,7 +441,10 @@ table {
 #more_option i:hover,
 #edit_function i:hover,
 .list_display_holder .option i:hover,
-#analyze_area div i:hover{
+#analyze_area div i:hover,
+.functionArea i:hover,
+.floatDisplay i:hover,
+#function_tag i:hover{
   background-color: rgba(150, 150, 150, 0.88);
   color: rgb(244, 214, 43);
 }

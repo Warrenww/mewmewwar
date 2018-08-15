@@ -126,11 +126,11 @@
           </tr>
           <tr id='enemy_head'>
             <th>敵人</th>
-            <th id='multiple'>倍率</th>
-            <th id='amount'>數量</th>
-            <th id='castle'>城連動</th>
-            <th id='first_show'>首次出現(s)</th>
-            <th id='next_time'>再次出現(s)</th>
+            <th id='multiple'>倍率<span></span><div></div></th>
+            <th id='amount'>數量<span></span><div></div></th>
+            <th id='castle'>城連動<span></span><div></div></th>
+            <th id='first_show'>首次出現(s)<span></span><div></div></th>
+            <th id='next_time'>再次出現(s)<span></span><div></div></th>
           </tr>
           <!-- <tr id="list_toggle">
             <th colspan=6>
@@ -139,6 +139,60 @@
             </th>
           </tr> -->
         </table>
+      </div>
+    </div>
+
+    <div class="floatDisplay_holder">
+      <div class="floatDisplay">
+        <i class="material-icons"> close </i>
+        <table class="dataTable">
+          <tr class="non_mobile">
+            <th style='height:80px;padding:0' class="img"></th>
+            <th colspan=5 rarity='data.rarity' class='name'></th>
+          </tr>
+          <tr class="mobile">
+            <th class="name" colspan="6"></th>
+          </tr>
+          <tr class="mobile">
+            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
+            </th>
+          </tr>
+          <tr>
+            <th colspan='1'><span>等級/倍率</span></th>
+            <td colspan=5 id='lv'>
+              <span style='margin:0 10px'></span>
+            </td>
+          </tr>
+          <tr>
+            <th>體力</th><td id='hp'></td>
+            <th>KB</th><td id='KB'></td>
+            <th>硬度</th><td id='hardness'></td>
+          </tr>
+          <tr>
+            <th>攻擊力</th><td id='atk'></td>
+            <th>DPS</th><td id='DPS'></td>
+            <th>射程</th><td id='range'></td>
+          </tr>
+          <tr>
+            <th>攻頻</th><td id='freq'></td>
+            <th>跑速</th><td id='speed'></td>
+            <td colspan='2' rowspan='2' id='aoe'></td>
+          </tr>
+          <tr class="ForCat">
+            <th>花費</th><td id='cost'></td>
+            <th>再生產</th><td id='cd'></td>
+          </tr>
+          <tr>
+            <th>獲得金錢</th><td id='reward'></td>
+            <th>屬性</th><td id='color'></td>
+          </tr>
+          <tr>
+            <td colspan='6' id='char'></td>
+          </tr>
+        </table>
+        <div style="display:flex;justify-content:flex-end">
+          <span>更多詳細資料 ></span>
+        </div>
       </div>
     </div>
 

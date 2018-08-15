@@ -54,10 +54,15 @@ $(document).ready(function () {
     let r = confirm("確定要全部移除?!");
     if(!r)return
     showhidecomparetarget();
-    $(this).siblings().html("");
+    $(this).parent().siblings().children().html("");
     compare = [];
     $("#compare_number").text(compare.length);
     socket.emit("compare "+type,{id:current_user_id,target:compare});
+  });
+  $("#start_compare").click(function () {
+    var windowName = type == 'cat'?'compareCat':'compareEnemy';
+    window.parent.reloadIframe(windowName);
+    window.parent.changeIframe(windowName);
   });
   $('body').append("<div id='compare_panel_BG'></div>");
   $(document).on('click','#compare_panel_BG',function () {

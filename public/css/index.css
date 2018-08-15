@@ -1,4 +1,4 @@
-#login,#mine_alert{
+#login,#version_alert{
   display: none;
   position: fixed;
   height: 100%;
@@ -72,6 +72,7 @@ html,body{overflow: hidden;}
   right: -100%;
   top: 0;
   position: absolute;
+  transition: .3s ease-in-out
 }
 iframe{
   transition: .4s ease-in-out;
@@ -79,8 +80,38 @@ iframe{
   top: 0;
   right: -100%;
 }
+iframe[active='true']{ right:0%; }
+#iframe_holder[active='true']{ right:0%; }
+#iframe_holder[active='alt-tab']{
+  background: rgba(0,0,0,.5);
+  display: flex;
+  flex-wrap: wrap;
+  right: 0;
+}
+#iframe_holder[active='alt-tab'] iframe{
+  transform: scale(.5);
+  position: relative;
+  right: 0;
+  pointer-events: none;
+}
+#iframe_holder[active='alt-tab'] iframe[active='true']{
+  border: 5px solid #fcbf2c;
+  transform: scale(.512);
+}
+#iframe_holder .nameHolder{
+  position: absolute;
+  width: 100%;
+  height: 50;
+  top: calc(50% - 40px);
+  background: rgba(0,0,0,.7);
+  display: flex;
+  font-size: 40;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
 nav a{cursor: pointer;}
-#mine_alert .content div{
+#version_alert .content div{
   margin: 2%;
   padding: 2%;
   font-size: 20px;
@@ -89,18 +120,20 @@ nav a{cursor: pointer;}
   font-weight: bold;
   border-radius: 10px;
 }
-#mine_alert span{
+#version_alert span{
+  margin: 0 5;
+  color: #f45f5f;
+}
+#version_alert #version_new{color:#37bf72}
+#countDown{
+  width: 100%;
   display: flex;
-  width: 50%;
   justify-content: center;
+  font-size: 30;
+  margin: 10;
 }
 #support{background: linear-gradient(rgb(156, 237, 109),rgb(22, 159, 68))}
 #nottoday{background: linear-gradient(rgb(164, 164, 164),rgb(108, 108, 108))}
-#mine_alert .content .success,
-#mine_alert .content .fail,
-#mine_alert .content .not_accept,
-#mine_alert .content #ok
-{display: none;}
 #bulletin .main{
   width: 60%;
   background-color: rgba(255,255,255,.9);
@@ -120,19 +153,7 @@ nav a{cursor: pointer;}
   overflow: scroll;
   background-color: rgba(0,0,0,.7)
 }
-#year_event::-webkit-scrollbar {
-    width: 0px;
-}
-#year_event th{background-color: rgba(242, 174, 103, 0.81);color:white}
-#year_event td{background-color: rgba(255, 255, 255, 0.81);font-size: 20px}
-#year_event::before{
-  content:"X";
-  position: absolute;
-  top: 40px;
-  right: 20px;
-  color: white;
-  font-size: 30px;
-}
+
 .new::after{
   content: "NEW";
   font-size: 10px;
@@ -200,3 +221,11 @@ nav a{cursor: pointer;}
 .catCard:first-of-type::after{border-color: #eec336;border-top: 10px solid transparent;}
 .catCard:last-of-type::before,
 .catCard:last-of-type::after{border-color: #c37c12;border-top: 10px solid transparent;}
+#goCat{
+  margin-top:10;
+  text-align:right;
+  color:#2a7fad;
+  font-weight: bold;
+  cursor: pointer;
+}
+#goCat:hover{color: #642c88}

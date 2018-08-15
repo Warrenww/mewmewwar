@@ -192,7 +192,7 @@ $(document).ready(function () {
   });
   socket.on("display cat result",function (result) {
     console.log("recive cat data,starting display") ;
-    console.log(result) ;
+    // console.log(result) ;
     let data = new Cat(result.this),
         arr = result.bro,
         brr = result.combo,

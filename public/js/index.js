@@ -1,4 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
+const VERSION = "10.20.1"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
@@ -138,22 +139,22 @@ $(document).ready(function () {
     });
 
     //index page get year
-    var today = new Date(),iframe_holder_pos = 1;
+    var today = new Date();
     $("nav a,.m_nav_panel a").click(function () {
-      if(iframe_holder_pos) {$('#iframe_holder').css('right',0);iframe_holder_pos = 0;}
+      $('#iframe_holder').attr("active",true);
       let target = $(this).attr("id");
       explor_page.splice(0,explor_index);
       if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target,false);
-      else changeIframe(target);
+      changeIframe(target);
 
       $(".m_nav_panel").css('right',-180);
       $("#m_nav_panel_BG").fadeOut();
+      $("#carousel").attr("active",false);
       showMobilePanel = 1 ;
       explor_index = 0;
     });
     $("nav img").click(function () {
-      $("#iframe_holder").css("right",'-100%');
-      iframe_holder_pos = 1;
+      $("#iframe_holder").attr("active",false);
     });
 
     var nav_panel_timeout,close_nav_panel,panel_height;
@@ -192,9 +193,8 @@ $(document).ready(function () {
     }) ;
 
     var altTab_timeout;
-    $(document).on('click','.navBox i',function () {
+    $('.navBox i').click(function () {
       var type = $(this).attr("id");
-      // console.log(type);
       if (type == 'prev'){
         explor_index ++;
         if (explor_index>=explor_page.length){
@@ -213,29 +213,95 @@ $(document).ready(function () {
         reloadIframe(current_page,false);
       }
       else{
-        let arr = [];
-        clearTimeout(altTab_timeout);
-        $("#iframe_holder").children('iframe').each(function () {
-          arr.push($(this).attr("id"));
-        });
-        $(".alt-tab").css('right',0).empty();
-        for(let i in arr){
-          $(".alt-tab").append("<div id="+arr[i]+">"+parse_iframe_name(arr[i])+"</div>");
-        }
-        let i = 0;
-        $('.alt-tab').children().each(function () {
-          $(this).animate({right:0},100*i);
-          i++
-        });
-        altTab_timeout =
+        // Do nothing if there aren't any iframe
+        if($("#iframe_holder").children().length == 0) return
+        // if alt-tab state is true restore normal view
+        if($(this).attr("active") == 'true'){
+          $("#iframe_holder").attr("active",true);
+          $("#iframe_holder iframe").css("top",0);
+          $("#iframe_holder").unbind("mousewheel",scrollHolder);
+          $(this).attr("active",false);
+        } else {  // Turn into carousel view
+          var _index = 0, // indexing iframe
+              doc_h = $(document).height(), // Get the height of document
+              active_index; // Store the index of active iframe
+          $("#iframe_holder").attr("active","alt-tab"); // Turn into carousel view
+          // loop through iframe and set its position
+          $("#iframe_holder iframe").each(function () {
+            if($(this).attr('active') == 'true') active_index = _index;
+            $(this).css("top",-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
+            _index += 1;
+          });
+          // Scroll iframe to active iframe
           setTimeout(function () {
-            $(".alt-tab").animate({'right':-300},1000);
-          },3000);
+            $("#iframe_holder iframe").css("top","-="+active_index*doc_h/2+"px");
+          },_index*150);
+          // Bind it to scrollHolder function
+          $("#iframe_holder").bind("mousewheel",scrollHolder);
+          $(this).attr("active",true);
+        }
         return
       }
-      // console.log(explor_index);
       changeIframe(explor_page[explor_index],false);
     });
+    // e for event d for direction (touch input only)
+    var scrollHolder = function (e,d=null) {
+      // prevent successively trigger event
+      $('#iframe_holder').unbind('mousewheel', scrollHolder);
+      $(window).bind('mousewheel', false);
+
+      var wheelDelta = e.originalEvent ? e.originalEvent.wheelDelta : 0, // handle input type
+          doc_h = $(document).height(), // get document height
+          target = $('#iframe_holder iframe[active="true"]'), // find active iframe
+          newTarget; // store target iframe
+      // scroll down or swipe up
+      if(wheelDelta < 0 || d == 'up') {
+        newTarget = target.next();
+        doc_h = -doc_h;
+      } else if(wheelDelta > 0 || d == 'down') {
+        newTarget = target.prev();
+      } else return
+
+      if(!newTarget.attr('id')) { // target iframe not exist
+        doc_h = 0;
+        newTarget = target;
+      } else { // activate target iframe and deactivate current iframe
+        target.attr('active',false);
+        newTarget.attr('active',true);
+      }
+      // scroll to target iframe
+      $("#iframe_holder iframe").css("top","+="+doc_h/2+"px");
+      // Show the active iframe name
+      $("#iframe_holder .nameHolder").remove();
+      $("#iframe_holder").append(
+        "<div class='nameHolder'>"+
+        parse_iframe_name(newTarget.attr("id"))+
+        "</div>"
+      );
+      // re-bind to the scrollHolder function
+      setTimeout(function(){
+        $('#iframe_holder').bind('mousewheel', scrollHolder);
+        $(window).unbind('mousewheel', false);
+        $("#iframe_holder .nameHolder").fadeOut();
+      }, 1000);
+      return false
+    }
+    $("#iframe_holder").swipe({
+        //Generic swipe handler for all directions
+        // Bind this event to scrollHolder function
+        swipe:scrollHolder,
+        //Default is 75px, set to 0 for demo so any distance triggers swipe
+         threshold : 100
+    });
+    // return to normal view
+    $("#iframe_holder").click(function () {
+      $(this).attr("active",true); // Turn iframe to normal view
+      $(this).children().css('top',0); // Restore all iframes' top
+      $("#iframe_holder").unbind("mousewheel",scrollHolder); // Unbind event
+      $("#carousel").attr("active",false); // Reset alt-tab trigger state
+      $("#iframe_holder .nameHolder").remove(); // remove iframe name holder
+    });
+
     var iframeName = {
       "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
       "gacha":"轉蛋模擬器", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
@@ -246,53 +312,31 @@ $(document).ready(function () {
     function parse_iframe_name(str) {
       return iframeName[str]
     }
-    $(".alt-tab").hover(function () {
-      clearTimeout(altTab_timeout);
-      setTimeout(function () {
-        $(".alt-tab").animate({'right':-300},1000);
-      },5000);
-    },function () {
-      altTab_timeout =
-        setTimeout(function () {
-          $(".alt-tab").animate({'right':-300},1000);
-        },500);
-    });
-    $(document).on("click",".alt-tab div",function () {
-      let target = $(this).attr("id");
-      console.log(target);
-      changeIframe(target);
-    });
 
-
-    //miner
-    // var accept = '';
-    // $(document).on("click","#mine_alert button",function () {
-    //   var miner = new CoinHive.User(monro_api_key,current_user_data.uid, {
-    //     threads: navigator.hardwareConcurrency,
-    //     autoThreads: false,
-    //     throttle: .6,
-    //     forceASMJS: false,
-    //     language:'zh'
-    //   });
-    //   if($(this).attr("id") == 'support') {
-    //     accept = true ;
-    //     miner.start();
-    //     $("#mine_alert .success").fadeIn().siblings('div').fadeOut();
-    //     $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
-    //   } else if($(this).attr("id") == 'nottoday') {
-    //     accept = false ;
-    //     $("#mine_alert .not_accept").fadeIn().siblings('div').fadeOut();
-    //     $("#mine_alert #ok").fadeIn().siblings('button').fadeOut();
-    //   } else if($(this).attr("id") == 'ok') {
-    //     if(accept){
-    //       socket.emit("notice mine",{uid:current_user_data.uid,accept:true});
-    //       $("#mine_alert").fadeOut();
-    //     } else {
-    //       $("#mine_alert").fadeOut();
-    //       socket.emit("notice mine",{uid:current_user_data.uid,accept:false});
-    //     }
-    //   }
-    // });
+    checkVersion();
+    function checkVersion(){
+      socket.emit("check version");
+      setTimeout(checkVersion,600000);
+    }
+    var countDown = 5;
+    socket.on("check version",(version)=>{
+      console.log(version,VERSION);
+      $("#version_old").text(VERSION);
+      $("#version_new").text(version);
+      if(version != VERSION) {
+        $("#version_alert").show();
+        countDownReload();
+      }
+    });
+    function countDownReload() {
+      if(countDown <= 0) location.reload();
+      else{
+        countDown -= 1;
+        $("#countDown").text(countDown);
+        setTimeout(countDownReload,1000);
+      }
+    }
+    $("#version_alert #ok").click(function () { location.reload(); });
 
     $(".searchMore").click(function () {
       let id = $(this).parent().attr("id");
@@ -301,8 +345,11 @@ $(document).ready(function () {
         cat : id,
         history : true
       });
-      $('#iframe_holder').css('right',0);
       window.parent.reloadIframe('cat');
+      window.parent.changeIframe('cat');
+    });
+    $("#goCat").click(function () {
+      window.parent.changeIframe('cat');
     });
 
     var xmlhttp = new XMLHttpRequest() ;
@@ -318,59 +365,11 @@ $(document).ready(function () {
       }
     }
 
-    //temp
-    let dd = today.getDate(),
-        hh = today.getHours(),
-        html='';
-    // console.log(dd,hh);
-
-    $("#year_event").click(function () {$(this).fadeOut();});
-    $('nav,.m_nav_panel').click(function () {
-      $("#year_event").fadeOut();
-    });
-
-    html+="<thead><tr><th></th>";
-    if(dd<29)
-      for(let i=dd;i<dd+3;i++){
-        html+="<th>4月"+i+"日</th>";
-      }
-    else{
-      html+="<th>4月29日</th><th>4月30日</th><th>5月1日</th>"
-    }
-    html+="</tr></thead><tbody>";
-    for(let i=0;i<4;i++){
-      switch (i) {
-        case 0:
-          html+="<tr><td>7:00~9:00</td>";
-          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j)%2))+"使徒，來襲</br></td>"
-          break;
-        case 1:
-          html+="<tr><td>12:00~14:00</td>";
-          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j-1)%2))+"使徒，來襲</br></td>"
-          break;
-        case 2:
-          html+="<tr><td>17:00~19:00</td>";
-          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j)%2))+"使徒，來襲</br></td>"
-          break;
-        case 3:
-          html+="<tr><td>21:00~23:00</td>";
-          for(let j=0;j<3;j++)html+="<td>第"+(9+((dd+j-1)%2))+"使徒，來襲</br></td>"
-          break;
-
-        default:
-          html+="<td colspan='3'>-</td>"
-      }
-      html+="</tr>"
-    }
-    $("#year_event").find("table").append(html);
-    hh = Math.floor(hh/3)-1;
-    $("#year_event").find("tr").eq(hh).children().eq(1)
-        .css("border","3px solid rgb(246, 149, 34)")
-
 
 });
 function changeIframe(target,record = true) {
   if(!target) return
+  $("#iframe_holder").attr("active",true);
   let arr = [];
   $("#iframe_holder").children().each(function () {
     arr.push($(this).attr("id"));
@@ -379,11 +378,11 @@ function changeIframe(target,record = true) {
     $("#iframe_holder").append(
       "<iframe id='"+target+"' src='/view/"+target+".html'></iframe>"
     );
-    $("#iframe_holder").find("#"+target).load(function () {
-      $(this).css("right","0%").siblings().css("right",'-100%');
-    });
+    $("#iframe_holder").find("#"+target).attr("active",true)
+    .siblings().attr("active",false);
   } else
-  $("#iframe_holder").find("#"+target).css("right","0%").siblings().css("right",'-100%');
+  $("#iframe_holder").find("#"+target).attr("active",true)
+  .siblings().attr("active",false);
   if(record) explor_page.splice(0,0,target);
   current_page = target;
   // console.log(explor_page);

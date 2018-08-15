@@ -148,6 +148,7 @@ $(document).ready(function () {
       history:true
     }) ;
     window.parent.reloadIframe('cat');
+    window.parent.changeIframe('cat');
   });
 
   var input_org ;
@@ -164,7 +165,7 @@ $(document).ready(function () {
 
       if (level && level < 101 && level > 0) {
         $(this).parent().html(level);
-        let change = ['hp','hardness','atk','DPS'] ;
+        let change = ['hp','hardness','atk','dps'] ;
         for(let i in change){
           let target = $('.compareTable #'+id).find('#'+change[i]) ;
           let original = target.attr('original');
@@ -377,7 +378,7 @@ $(document).ready(function () {
       "</tr><tr>"+
       "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
       "</tr><tr>"+
-      "<td id='DPS'>"+data.Tovalue('dps',lv)+"</td>"+
+      "<td id='dps'>"+data.Tovalue('dps',lv)+"</td>"+
       "</tr><tr>"+
       "<td id='range'>"+data.range+"</td>"+
       "</tr><tr>"+

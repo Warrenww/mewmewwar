@@ -290,6 +290,7 @@ $(document).ready(function () {
   });
   socket.on("required data",(data)=>{
     // console.log(data);
+    data = data.buffer;
     _data = new Enemy(data[0].data);
     current_enemy_data = _data;
     $(".dataTable").attr("id",_data.id);

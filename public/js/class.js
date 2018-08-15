@@ -203,7 +203,8 @@ class Enemy{
           "<span id='type'>"+char[k].type+"</span>"+
           (char[k].percent?char[k].percent+"%":"")+
           (char[k].times?char[k].times+"次":"")+
-          (char[k].dist?"至後方"+char[k].dist+"("+char[k].time+"F)":"")+
+          (char[k].dist?"至後方"+char[k].dist+"處 ":"")+
+          (char[k].time?"歷時"+(char[k].time/30).toFixed(1)+"秒":"")+
           (char[k].hard?"("+char[k].hard+")":"")+
           (char[k].range?" "+char[k].range.join("~"):"")+
           (char[k].period?+char[k].period.toFixed(1)+"秒":"");

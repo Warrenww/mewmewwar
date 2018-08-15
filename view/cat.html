@@ -433,8 +433,12 @@
       <span id="compare_number">0</span>
     </div>
     <div class="compareTarget_holder">
-      <span id='clear_compare'>Clear All</span>
-      <div class="compareTarget sortable">
+      <div class="compareTarget_holder" style="height:calc(100% - 100px);background:transparent">
+        <div class="compareTarget"></div>
+      </div>
+      <div class="functionArea">
+        <i class="material-icons" id="clear_compare" text='全部清除'> clear_all </i>
+        <i class="material-icons" id="start_compare" text='開始比較'> forward </i>
       </div>
     </div>
 
@@ -469,40 +473,6 @@
     <div id='compare_panel_BG'></div>
 
     <div id="zoomImg"> <img src="" /> </div>
-
-
-    <!-- <style>
-      #loading{
-        position:fixed;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        background-color:rgba(0,0,0,.9);
-        z-index:99
-      }
-      #loading img, #loading p{
-        position: absolute;
-        color: white;
-        top: 50%;
-        font-size: 30px;
-        font-weight: bold;
-        animation-name: load;
-        animation-duration: 5s;
-        animation-iteration-count: infinite;
-      }
-      #loading p{top:45%}
-      @keyframes load {
-        0%{left:-10%}
-        100%{left:110%}
-      }
-    </style>
-    <div id="loading">
-      <p>
-        loading....
-      </p>
-      <img src="../public/css/footage/tab_icon.png" />
-    </div> -->
 
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>

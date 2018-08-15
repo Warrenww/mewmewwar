@@ -11,17 +11,6 @@ $(document).ready(function () {
 
   $(document).on('click','#more_option #top',function () { scroll_to_class("content",1); });
 
-//coustomer service
-  $(document).on("click","#service",function () {
-    let url = "https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform";
-    let time = new Date().getTime();
-    // window.open(url,"_blank");
-    $("body").append(
-      "<div id='service_window_holder'>"+
-      "<iframe src='"+url+"' id='service_window'></iframe>"+
-      "</div>"
-    );
-  });
 
   var today = new Date();
 
@@ -398,4 +387,18 @@ function vary(list) {
 }
 function Range(list) {
   return [min(list),max(list)]
+}
+function quickSort(list) {
+  if (list.length <= 1) return list
+  var smaller = [],
+      bigger = [],
+      pivot_index = Math.ceil(list.length/2);
+  for(let i in list){
+    if (i == pivot_index) continue
+    else if (list[i] > list[pivot_index]) bigger.push(list[i]);
+    else if (list[i] < list[pivot_index]) smaller.push(list[i]);
+  }
+  smaller = quickSort(smaller);
+  bigger = quickSort(bigger);
+  return smaller.concat([list[pivot_index]]).concat(bigger)
 }

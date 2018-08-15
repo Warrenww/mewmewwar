@@ -179,19 +179,19 @@ $(document).ready(function () {
         data = obj.data,
         prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
         next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
-    $(".dataTable td").empty();
+    $(".display .dataTable td").empty();
     $(".reward").remove();
     $(".enemy_row").remove();
-    $(".dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
-    $(".dataTable #stage").html(obj.parent).attr('value',obj.stage);
+    $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
+    $(".display .dataTable #stage").html(obj.parent).attr('value',obj.stage);
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
     $("#enemy_head th").css("border",0);
     for(let i in data){
-      if (i == 'exp') $(".dataTable").find("#"+i).text(parseEXP(data[i]));
-      else if (i == 'continue') $(".dataTable").find("#"+i).text(data[i]?"可以":"不行");
-      else $(".dataTable").find("#"+i).text(data[i]?data[i]:'-');
+      if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
+      else if (i == 'continue') $(".display .dataTable").find("#"+i).text(data[i]?"可以":"不行");
+      else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
     $(Addreward(data.reward,data.integral)).insertAfter($("#reward_head"))
     $(Addenemy(data.enemy)).insertAfter($("#enemy_head"));
@@ -228,12 +228,13 @@ $(document).ready(function () {
     }
     socket.emit("compare enemy",{id:current_user_data.uid,target:arr});
     window.parent.reloadIframe('compareEnemy');
+    window.parent.changeIframe('compareEnemy');
   });
-  $(".dataTable #chapter").click(function () {
+  $(".display .dataTable #chapter").click(function () {
     scroll_to_div('selector');
     $(".select_chapter").find("button[id='"+$(this).attr('value')+"']").click();
   });
-  $(".dataTable #stage").click(function () {
+  $(".display .dataTable #stage").click(function () {
     let chapter = $(this).siblings("#chapter").attr("value"),
         stage = $(this).attr('value');
     socket.emit("required level name",{chapter:chapter,stage:stage});
@@ -254,6 +255,17 @@ $(document).ready(function () {
       return "rotate("+Number($(this).attr("value"))*180+"deg)"
     });
   });
+  $("#enemy_head th>span").click(function (e) {
+    e.stopPropagation();
+    if($(this).attr("active") == "true")
+      $(this).attr('active',false).next().css("height",0);
+    else
+      $(this).attr('active',true).next().css("height","auto");
+  });
+  $("#enemy_head th div").click(function () {
+    
+  });
+  $("#enemy_head th div").click((e)=>{e.stopPropagation();})
   function Addreward(arr,b) {
     // console.log(arr);
     let html ="";
@@ -276,7 +288,14 @@ $(document).ready(function () {
     return html
   }
   function Addenemy(arr) {
-    let html ="";
+    var html = "",
+        range = {
+          multiple:[],
+          amount:[],
+          castle:[],
+          first_show:[],
+          next_time:[]
+        };
     for(let i in arr){
       if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
@@ -290,22 +309,21 @@ $(document).ready(function () {
               "<td id='first_show'>"+arr[i].first_show+"</td>"+
               "<td id='next_time'>"+arr[i].next_time+"</td>"+
               "</tr>";
-      // html += screen.width > 768 ?(
-      //       "<td id='multiple'>"+arr[i].multiple+"</td>"+
-      //       "<td id='amount'>"+arr[i].amount+"</td>"+
-      //       "<td id='castle'>"+arr[i].castle+"</td>"+
-      //       "<td id='first_show'>"+arr[i].first_show+"</td>"+
-      //       "<td id='next_time'>"+arr[i].next_time+"</td>"+
-      //       "</tr>"):(
-      //         "<td>"+arr[i].multiple+"</td>"+
-      //         "<th>數量</th>"+"<td>"+arr[i].amount+"</td>"+
-      //         "</tr><tr>"+
-      //         "<th>出現條件</th>"+
-      //         "<td colspan='3'>城體力小於<b>"+arr[i].castle+
-      //         "</b></br>且開場已過<b>"+arr[i].first_show+"</b>秒後出現"+
-      //         "</br>間隔<b>"+arr[i].next_time+"</b>秒後再次出現</td><tr>"
-      //       )
+      for(let j in range) if(range[j].indexOf(arr[i][j]) == -1) range[j].push(arr[i][j]);
     }
+    for(let j in range){
+      for(let k in range[j])
+        range[j][k] = Number(range[j][k].split("％")[0].split("~")[0]);
+    }
+    for(let j in range){
+      range[j] = quickSort(range[j]);
+      $("#enemy_head").find("#"+j).children("div")
+      .append("<div>無篩選</div>");
+      for(let k in range[j])
+        $("#enemy_head").find("#"+j).children("div")
+        .append("<div>"+range[j][k]+"</div>");
+    }
+    console.log(range);
     return html
   }
   function Addlist(list) {
@@ -380,35 +398,61 @@ $(document).ready(function () {
     n = n.split(",").join("");
     return Math.ceil(Number(n)*4.2);
   }
-  $(document).on("click",".cat",function () {
-    socket.emit("display cat",{
-      uid : current_user_data.uid,
-      cat : $(this).attr('id'),
-      history : true
-    });
-    // location.assign("/view/cat.html");
-    // window.parent.changeIframe('cat');
-    window.parent.reloadIframe('cat');
-  });
-  $(document).on('click','.enemy',function () {
+
+  $(document).on('click','.cat,.enemy',function () {
     let id = $(this).attr("id"),
-        multiple = $(this).next().text().split("％")[0];
+        multiple = $(this).next().text().split("％")[0],
+        type = $(this).attr("class");
 
-        socket.emit("required data",{
-          type:'enemy',
-          target:id,
-          record:true,
-          uid:current_user_data.uid
-        });
-    socket.emit("store level",{
-      uid : current_user_data.uid,
-      id : $(this).attr('id'),
-      lv : Number(multiple)/100,
-      type : 'enemy'
+    console.log(id,multiple,type);
+    socket.emit("required data",{
+      type:type,
+      target:id,
+      record:false,
+      uid:current_user_data.uid,
+      lv:multiple
     });
-    // window.parent.changeIframe('enemy');
-    window.parent.reloadIframe('enemy');
+  });
+  socket.on("required data",(data)=>{
+    console.log(data);
+    var type = data.type,
+        buffer = data.buffer[0],
+        data = type == 'cat'?new Cat(buffer.data):new Enemy(buffer.data),
+        lv = buffer.lv;
+    $(".floatDisplay_holder").fadeIn();
+    $(".floatDisplay .dataTable #lv").text(lv);
+    $(".floatDisplay .dataTable .img").css('background-image','url("'+data.imgURL+'")');
+    for (let i in data){
+      if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
+        $(".floatDisplay .dataTable").find("#"+i).text(data.Tovalue(i,lv));
+      else if(i == 'name')
+        $(".floatDisplay .dataTable").find("."+i).text(data.Name);
+      else if(i == 'aoe')
+        $(".floatDisplay .dataTable").find("#"+i).text(data.Aoe);
+      else if(i == 'char')
+        $(".floatDisplay .dataTable").find("#"+i).html(data.CharHtml(lv));
+      else
+        $(".floatDisplay .dataTable").find("#"+i).text(data[i]);
+    }
+    if(type == 'cat') $(".ForCat").show().next().hide();
+    else $(".ForCat").hide().next().show();
 
+    $(".floatDisplay div span").attr({"type":type,id:data.id});
+
+  });
+  $(".floatDisplay_holder i").click(()=>{$(".floatDisplay_holder").fadeOut();})
+  $(".floatDisplay div span").click(()=>{
+    var type = $('.floatDisplay div span').attr('type'),
+        id = $('.floatDisplay div span').attr('id');
+    socket.emit("required data",{
+      type:type,
+      target:id,
+      record:true,
+      uid:current_user_data.uid
+    });
+    window.parent.reloadIframe(type);
+    window.parent.changeIframe(type);
+    $(".floatDisplay_holder").hide();
   });
 
 

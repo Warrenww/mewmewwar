@@ -108,14 +108,15 @@ $(document).ready(function () {
       });
     }
     else {
-      socket.emit("display "+type,{
-        uid : current_user_uid,
-        cat : id,
-        id : id,
-        history : true
+      socket.emit("required data",{
+        type:type,
+        target:id,
+        record:true,
+        uid:current_user_uid
       });
     }
     window.parent.reloadIframe(type);
+    window.parent.changeIframe(type);
   });
 
 });

@@ -4,6 +4,7 @@ $(document).ready(function () {
   var site ;
   var socket = io.connect();
   var colorSet=[ '#95CC85', '#EDDB8A', '#FF5959', '#FF9259', '#4ABABB' ];
+  var weekArr=['Sun.','Mon.','Tue.','Wed','Thu.','Fri','Sat'];
   var show_jp_cat;
   createCalendar();
   auth.onAuthStateChanged(function(user) {
@@ -65,14 +66,18 @@ $(document).ready(function () {
   var emptyObj={};
   function createPredictionQueue(data) {
     $("#prediction").empty();
-    console.log(data);
+    // console.log(data);
     var start = data.start.substring(4,8),
         end = data.end.substring(4,8),
         month = start.substring(0,2),
-        maxDay = TotalDay(Number(month),data.start.substring(0,4));
-    var table_head='<tr>';
+        maxDay = TotalDay(Number(month),data.start.substring(0,4)),
+        yy = new Date().getFullYear(),
+        mm = new Date().getMonth()+1,
+        dd = new Date().getDate();
+    var table_head='<tr>',
+        table_head_2='<tr>';
     start = Number(start);end = Number(end)
-    console.log(start,end,maxDay,month);
+    // console.log(start,end,maxDay,month);
 
     // console.log(emptyObj);
     var map = [];
@@ -110,6 +115,7 @@ $(document).ready(function () {
     for(i=start;i<=end;i++) {
       if(i>Number(month+maxDay)&&i<(Number(month)+1)*100+1) continue
       table_head+="<th id='"+i+"'>"+todate(i)+"</th>";
+      table_head_2+="<th>"+toweek(i,yy)+"</th>";
       for(let j in map){
         if(!map[j][i]) map[j][i] = null;
       }
@@ -117,6 +123,7 @@ $(document).ready(function () {
     // console.log(start,end);
     // console.log(map);
     $("#prediction").append(table_head);
+    $("#prediction").append(table_head_2);
     var table_body='';
     for(let i in map){
       let html = "<tr>",exist='';
@@ -134,10 +141,16 @@ $(document).ready(function () {
     }
     $("#prediction").append(table_body);
     $('.prediction_holder').find('a').attr('href',data.source);
+    $("#prediction").find("#"+mm.toString()+dd.toString()).addClass("today");
   }
   function todate(n) {
     a = n.toString();
     return n<1000?(a[0]+"/"+a[1]+a[2]):(a[0]+a[1]+"/"+a[2]+a[3])
+  }
+  function toweek(n,y) {
+    n = n>1000?n.toString():"0"+n.toString();
+    var w = new Date(Date.parse([n.substring(0,2),n.substring(2,4),y])).getDay();
+    return weekArr[w]
   }
   function updateMap(map,i,d0,day,n,maxDay,month) {
     var bb = Object.assign({},emptyObj);
@@ -168,18 +181,35 @@ $(document).ready(function () {
       $('.calendar_holder').fadeOut(400);
     }
   });
-  $(document).on("click",'#function_tag div',function () {
+  $('#function_tag i').click(function () {
     let type = $(this).attr('id');
     if(type == 'cal'){
       $('.calendar_holder').fadeIn(400).css("display",'flex');
     } else if(type == 'pre'){
       $('.prediction_holder').fadeIn(400).css("display",'flex');
+      setTimeout(function () {
+        var h = $("#prediction").height(),
+            w = $("#prediction td").innerWidth(),
+            x = $("#prediction").find(".today").offset().left,
+            y = $("#prediction").offset().top;
+        console.log(h,w);
+        $('.prediction_holder .hightlight').animate({
+          height:h,
+          width:w,
+          top:y,
+          left:x
+        });
+      },500);
     }
   });
-  $('#function_tag div').hover(function () {
-    $(this).children('.tag').show(400);
-  },function () {
-    $(this).children('.tag').hide(400);
+  var _size = 1;
+  $(".prediction_holder .functionArea i").click(function (e) {
+    e.stopPropagation();
+    var func = $(this).text().split("_")[1];
+    if(func == 'in') _size += .1;
+    else _size -=.1;
+    $("#prediction,.hightlight").css('transform',"scale("+_size+")");
+    $(".hightlight").css("left",$("#prediction").find(".today").offset().left);
   });
 
 

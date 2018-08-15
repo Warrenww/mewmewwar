@@ -52,43 +52,22 @@
   background-color: rgba(255, 255, 255, 0.5);
   font-weight: bold;
 }
+#prediction .today{background-color: rgba(255, 102, 102);}
+#prediction{transform-origin: left;}
+.prediction_holder .hightlight{
+  position: absolute;
+  background-color: rgba(0,0,0,.3);
+  border: 3px solid #e7b037;
+  transform-origin: left;
+}
 #function_tag{
   position: absolute;
   flex-direction: column;
   align-items: center;
-  height: auto;
+  display: flex;
   bottom: 10%;
   z-index: 3;
-  width: auto;
-  overflow: visible;
   left: 0;
   background-color: rgba(0, 0, 0, 0.35)
 }
-#function_tag .tag{
-  display: none;
-  top: 30px;
-  position: absolute;
-  left: -7px;
-  padding: 5px 10px;
-  width: 200px;
-  font-weight: bold;
-  color: white !important;
-}
-#function_tag div{
-  margin: 20px 10px;
-  background-color: rgba(255, 255, 255, 0.71);
-  padding: 5px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: .2s ease-in-out;
-  position: relative;
-  color: black;
-  width: auto;
-  height: auto;
-  top: 0;
-  left: 0;
-}
-#function_tag div:hover{
-  background-color: rgba(150, 150, 150, 0.88);
-  color: rgb(244, 214, 43);
-}
+#function_tag i::before{color: white}

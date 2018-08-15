@@ -54,12 +54,14 @@ var catdata,
     stagedata,
     gachadata,
     rankdata,
-    catComment ;
+    catComment,
+    VERSION ;
 var __numberOfCat = 0,
     __numberOfCatSearch = 0,
-    mostSearchCat,
-    secondMostSearchCat,
-    thirdMostSearchCat;
+    __numberOfStageSearch = 0,
+    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
+    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
 ReloadAllData();
 function ReloadAllData() {
   database.ref("/").once("value",function (snapshot) {
@@ -72,11 +74,10 @@ function ReloadAllData() {
     userdata = snapshot.val().user ;
     eventdata = snapshot.val().event_date ;
     catComment = snapshot.val().catComment ;
+    VERSION = snapshot.val().version;
+    console.log("VERSION : ",VERSION);
     console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
     var exist ;
-    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
     for(let i in catdata){
       __numberOfCat ++ ;
       localCount = catdata[i].count?catdata[i].count:0;
@@ -121,8 +122,8 @@ io.on('connection', function(socket){
   // {
   //   type:type of need data(cat,enemy...etc),
   //   target:string or array,
-  //   record:whether to record search history
-  //   [uid:user id]
+  //   record:whether to record search history,
+  //   [uid:user id],
   //   [lv: assign lv]
   // }
   // return an array of data
@@ -174,7 +175,7 @@ io.on('connection', function(socket){
         if(uid){
           user_variable[id] = user_variable[id] ?
             user_variable[id]:{count:0,lv:default_lv[type]};
-          user_variable[id].count += 1;
+          user_variable[id].count = user_variable[id].count? 1 : 0;
           if(data.record){
             // Find same unit and clear it
             for(let i in user_history){
@@ -201,8 +202,31 @@ io.on('connection', function(socket){
         default_cat_lv = userdata[uid].setting.default_cat_lv;
         user_variable = userdata[uid].variable[type];
       }
-      socket.emit("required data",buffer);
+      socket.emit("required data",{buffer,type});
     } catch (e) {
+      __handalError(e);
+    }
+  });
+  // Store cat level or enemy multiple
+  // {
+  //   uid:user id,
+  //   type:cat or enemy,
+  //   id:id of cat or enemy,
+  //   lv:target level
+  // }
+  socket.on("store level",function (data) {
+    try{
+      console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
+      if(!data.uid||!data.id) return // undefine user or id
+      let id = data.id,
+          gross = id.substring(0,3);
+      // target cat or enemy
+      var buffer = userdata[data.uid].variable[data.type][gross] ;
+      buffer = buffer?buffer:{lv:1,count:0}; // handal of not exist data
+      // set level and store to firebase
+      buffer.lv = data.lv;
+      database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
+    }catch(e){
       __handalError(e);
     }
   });
@@ -779,20 +803,6 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
-  socket.on("store level",function (data) {
-    try{
-      console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
-      if(!data.uid||!data.id) return
-      let id = data.id,
-      gross = data.type == 'cat'? id.substring(0,3):id;
-      var buffer = userdata[data.uid].variable[data.type][gross] ;
-      buffer = buffer?buffer:{};
-      buffer.lv = data.lv;
-      database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
-    }catch(e){
-      __handalError(e);
-    }
-  });
   socket.on("mark own",function (data) {
     try{
       let folder = userdata[data.uid].folder,
@@ -1017,6 +1027,7 @@ io.on('connection', function(socket){
 
   socket.on('get event date',function () { socket.emit('true event date',eventdata); });
   socket.on("rankdata",function () { socket.emit("recive rank data",rankdata); });
+  socket.on("check version",()=>{socket.emit("check version",VERSION);});
 
   socket.on("record gacha",function (data) {
     try{
@@ -1500,7 +1511,7 @@ function parsePrediction(obj,eventdate) {
     if(!e){
       $ = cheerio.load(b);
       var gachaP = $("section").eq(0).find(".c-article__content"),
-          eventP = $("section").eq(2).find(".c-article__content");
+          eventP = $("section").eq(1).find(".c-article__content");
       var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
       gachaP.children("div").each(function () {
         let content = $(this).text();

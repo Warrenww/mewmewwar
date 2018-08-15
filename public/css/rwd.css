@@ -1,7 +1,9 @@
 nav .mobile,
-.m_nav_panel{
+.m_nav_panel,
+.dataTable .mobile{
   display: none;
 }
+
 #m_nav_menu{
   font-size:32px;
   color:white;
@@ -117,6 +119,8 @@ nav .mobile,
     left: -110px;
     text-align: right;
   }
+  .dataTable .mobile{display: table-row;}
+  .dataTable .non_mobile{display: none;}
 
 }
 @media screen and (max-width: 1024px) {

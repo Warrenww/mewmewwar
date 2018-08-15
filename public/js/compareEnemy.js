@@ -31,7 +31,9 @@ $(document).ready(function () {
   });
 
   socket.on("required data",(compare)=>{
-    console.log(compare);
+    compare = compare.buffer;
+    // console.log(compare);
+    if(compare.length == 1) return
     $(".comparedatabody").empty();
     for(let i in compare){
       let data = new Enemy(compare[i].data),
@@ -44,12 +46,14 @@ $(document).ready(function () {
   });
   $(document).on('click','.comparedata img',function () {
     let id = $(this).parents('.comparedata').attr('id');
-    socket.emit("display enemy",{
-      uid : current_user_data.uid,
-      id : id,
-      history:true
+    socket.emit("required data",{
+      type:'enemy',
+      target : id,
+      record:true,
+      uid : current_user_data.uid
     }) ;
     window.parent.reloadIframe('enemy');
+    window.parent.changeIframe('enemy');
   });
 
   var input_org ;

@@ -55,7 +55,6 @@
   transition: .2s ease-in-out
 }
 .compareTarget_child:hover{color:rgb(232, 84, 84)}
-
 .compareTarget_holder{
   position: fixed;
   top: 0px;
@@ -64,7 +63,7 @@
   height: 100%;
   background-color: rgba(255, 255, 255, 0.64) ;
   padding: 10px;
-  z-index: 2;
+  z-index: 6;
   transition: .8s ease-in-out;
   overflow-y: scroll;
   padding-top: 60px
@@ -226,12 +225,6 @@
 .display{
   position: relative;top:-300px
 }
-.dataTable .img{
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-.dataTable .mobile{display: none;}
 #combo_head i,#survey_head i,#comment_head i{
   font-size: 16px;
   transform: rotate(-90deg);
@@ -359,18 +352,6 @@
   100%{transform:rotate(360deg);}
 }
 
-@media screen and (max-width:768px){
-  .bulletin span{
-    position: relative;
-    left: 0;
-    animation-name: scrolling;
-    animation-duration: 12s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-  }
-  .dataTable .mobile{display: table-row;}
-  .dataTable .non_mobile{display: none;}
-}
 @keyframes scrolling {
   0%{left:1000px}
   50%{left:0px}
