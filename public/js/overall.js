@@ -117,22 +117,6 @@ $(document).ready(function () {
     $(this).fadeOut().children(".picture").empty();
   });
 
-  //navigation bar append
-  var nav_site_1 = ["cat","enemy","combo","stage"],
-      nav_text_1 = ["貓咪資料","敵人資料","查詢聯組","關卡資訊"];
-  var nav_site_2 = ["compareCat","calender","event","gacha","intro"/*,"fight"*/],
-      nav_text_2 = ["比較貓咪","活動日程","最新消息","轉蛋模擬器","新手專區"/*,"對戰"*/];
-
-  var nav_html_panel = "" ,
-      nav_html = '';
-
-  var setting_html = '<a class="current_user_name"></a><div style="display:flex;justify-content:center">'+
-      '<i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>'+
-      '<a href="'+(location.pathname == "/"?"/view/":"")+
-      'setting.html"><i class="material-icons" id="setting">settings</i></a></div>' ;
-
-
-
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;

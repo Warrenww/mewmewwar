@@ -126,6 +126,7 @@ $(document).ready(function () {
       level:arr[2]
     });
     window.parent.reloadIframe('stage');
+    window.parent.changeIframe('stage');
   });
   $(".calendar").click(function () {
     updateEvent();

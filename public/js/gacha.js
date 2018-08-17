@@ -1,3 +1,4 @@
+var CurrentUserID;
 $(document).ready(function () {
   var socket = io.connect();
   var gacha_url = 'https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/'
@@ -14,25 +15,11 @@ $(document).ready(function () {
 
   socket.on("current_user_data",function (data) {
     // console.log(data);
-    current_user_data = data ;
+    CurrentUserID = data.uid ;
     if(data.last_gacha)
       $(".tag[id='"+data.last_gacha+"']").click();
   });
 
-  $(document).on("click",'.tag span',function (e) {
-    e.stopPropagation();
-    let id = $(this).parent().attr('id');
-    socket.emit("search",{
-      uid:current_user_data.uid,
-      rFilter:[],
-      cFilter:[],
-      aFilter:[],
-      gFilter:[id],
-      filterObj:[],
-      type:"cat"
-    });
-    window.parent.reloadIframe('cat');
-  });
   var nav_expand = 1 ;
   $(document).on('click','#nav_tag',showhideNav);
 
@@ -48,7 +35,7 @@ $(document).ready(function () {
       .parent().find("td").empty();
     ssr = sr = r = 0 ;
     socket.emit("record gacha",{
-      uid:current_user_data.uid,
+      uid:CurrentUserID,
       gacha:name
     });
   });
@@ -63,16 +50,14 @@ $(document).ready(function () {
     $(this).siblings('.title').next().hide(400);
   });
 
-  $(document).on('click','#info',function () {
+  $(document).on('click','#info,.monitor .content img',function () {
     let id = $(".monitor").attr("id");
     if(!id) {alert("尚未選擇轉蛋");showhideNav(null,0);}
     else $(".iframe_holder").fadeIn()
             .append("<iframe src='"+gacha_url+id+".html'>")
             .css("display",'flex');
   });
-  $(".iframe_holder").click(function () {
-    $(this).empty().fadeOut();
-  });
+  $(".iframe_holder").click(function () { $(this).empty().fadeOut(); });
 
   $(document).on('click','#once',function () {gacha(1);});
   $(document).on('click','#elevent',function () {gacha(11);});
@@ -98,7 +83,7 @@ $(document).ready(function () {
       let rarity = data[i],
           buffer = current_gacha_data[rarity],
           choose = buffer[Math.floor((Math.random()*buffer.length))];
-      $("#result").append('<span class="card" value="'+
+      $("#result").append('<span class="card cat" value="'+
       choose.id+'" rarity="'+rarity+'" '+
        'style="background-image:url('+
        image_url_cat+choose.id+'.png);'+
@@ -122,14 +107,14 @@ $(document).ready(function () {
       .text(ssr).next().text((ssr/total*100).toFixed(0)+"%");
     $("#scoreboard").find("#total").text(total).next().text("100%");
 
-    if(africa == 0) $("#www").text("非洲大酋長");
+    if(africa <= 0.01) $("#www").text("非洲大酋長");
     else if(africa<0.04) $("#www").text("非洲土著");
     else if(africa>0.09) $("#www").text("歐皇");
     else if(africa>0.06) $("#www").text("歐洲人");
     else $("#www").text("普通人");
 
     socket.emit("gacha history",{
-      uid:current_user_data.uid,
+      uid:CurrentUserID,
       gacha:current_gacha_data.key,
       ssr,sr,r
     });
@@ -151,7 +136,7 @@ $(document).ready(function () {
       else return 'rotate(-180deg)'
     });
   }
-  $(document).on("click","#scoreboard tbody tr",function () {
+  $("#scoreboard tbody tr").click(function () {
     let id = $(this).attr("id"),val = Number($(this).attr("val"));
     if(!id) return
     $("#result").children().each(function () {
@@ -166,19 +151,7 @@ $(document).ready(function () {
     }
     $(this).attr("val",val).siblings().attr("val",!val);
   });
-  $(document).on('click','.card',function () {
-    let id = $(this).attr('value');
-    socket.emit("display cat",{
-      uid : current_user_data.uid,
-      cat : id,
-      history:true
-    }) ;
-    // location.assign("/view/cat.html");
-    window.parent.parent.changeIframe('cat');
-    window.parent.parent.reloadIframe('cat');
 
-
-  });
   $(document).on('click','#nav_tag',showhideselectchap);
   function showhideselectchap() {
     let dist = screen.width>768?350:250;

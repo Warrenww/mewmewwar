@@ -1,3 +1,4 @@
+var CurrentUserID;
 $(document).ready(function () {
   var socket = io.connect();
   auth.onAuthStateChanged(function(user) {
@@ -9,7 +10,7 @@ $(document).ready(function () {
   });
   socket.on("current_user_data",function (data) {
     // console.log(data);
-    current_user_data = data ;
+    CurrentUserID = data.uid ;
     if(data.last_combo)  socket.emit("combo search",{uid:data.uid,id:data.last_combo}) ;
     for(let i in data.last_combo){
       $(".button[name~='"+data.last_combo[i]+"']").attr('value',1);
@@ -25,7 +26,7 @@ $(document).ready(function () {
     }) ;
     // console.log(A_search);
     socket.emit("combo search",{
-      uid:current_user_data.uid,
+      uid:CurrentUserID,
       id:A_search
     }) ;
   });
@@ -33,17 +34,6 @@ $(document).ready(function () {
     // console.log(arr);
     searchCombo(arr);
   }) ;
-
-  $(document).on('click','.card',function () {
-    socket.emit("display cat",{
-      uid : current_user_data.uid,
-      cat : $(this).attr('value'),
-      history:true
-    });
-    // location.assign("/view/cat.html");
-    // window.parent.changeIframe('cat');
-    window.parent.reloadIframe('cat');
-  });
   $(document).on("click",".dataTable i",function () {
     let catArr = [];
     let active = Number($(this).attr("value"));
@@ -80,8 +70,8 @@ $(document).ready(function () {
     return false
   }
   function searchCombo(arr) {
-    $(".dataTable").empty();
-    for(let i in arr) $(".dataTable").append(comboTR(arr[i]));
+    $(".display .dataTable").empty();
+    for(let i in arr) $(".display .dataTable").append(comboTR(arr[i]));
     scroll_to_class("display",0) ;
   }
   function comboTR(item) {
@@ -90,7 +80,7 @@ $(document).ready(function () {
     for(let j in item.cat){
       if(item.cat[j] != "-"){
         pic_html +=
-        '<span class="card" value="'+item.cat[j]+'" '+
+        '<span class="card cat" value="'+item.cat[j]+'" '+
         'style="background-image:url('+
         image_url_cat+item.cat[j]+'.png);'+
         (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")

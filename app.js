@@ -59,9 +59,8 @@ var catdata,
 var __numberOfCat = 0,
     __numberOfCatSearch = 0,
     __numberOfStageSearch = 0,
-    mostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    secondMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0},
-    thirdMostSearchCat = {name:"",count:-999,id:'',hp:0,atk:0};
+    mostSearchCat = [],
+    mostSearchStage = [];
 ReloadAllData();
 function ReloadAllData() {
   database.ref("/").once("value",function (snapshot) {
@@ -77,31 +76,52 @@ function ReloadAllData() {
     VERSION = snapshot.val().version;
     console.log("VERSION : ",VERSION);
     console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
-    var exist ;
+    var exist=null,buffer=[],localCount=0 ;
     for(let i in catdata){
       __numberOfCat ++ ;
-      localCount = catdata[i].count?catdata[i].count:0;
-      __numberOfCatSearch += localCount;
-      if(catdata[i].count>mostSearchCat.count && i.substring(0,3) != exist){
-        if(mostSearchCat.count>secondMostSearchCat.count){
-          if(secondMostSearchCat.count>thirdMostSearchCat.count){
-            thirdMostSearchCat = Object.assign({},secondMostSearchCat);
-          }
-          secondMostSearchCat = Object.assign({},mostSearchCat);
-        }
-        mostSearchCat = {
-          name:catdata[i].name,
-          count:catdata[i].count,
-          id:i,
-          hp:levelToValue(catdata[i].hp,catdata[i].rarity,30).toFixed(0),
-          atk:levelToValue(catdata[i].atk,catdata[i].rarity,30).toFixed(0),
-        };
-        exist = i.substring(0,3);
+      current = i.substring(0,3);
+      if (current == exist){
+        localCount += catdata[i].count;
+      } else {
+        __numberOfCatSearch += localCount;
+        if(catdata[exist+'-1'])
+          buffer.push({id:catdata[exist+'-1'].id,count:localCount});
+        exist = current;
+        localCount = catdata[i].count?catdata[i].count:0;
       }
     }
+    buffer = quickSort(buffer,'count');
+    for(let i=0; i<3; i++){
+      let id = buffer.pop().id;
+      mostSearchCat.push({
+        name:catdata[id].name,
+        count:catdata[id].count,
+        id:id,
+        hp:levelToValue(catdata[id].hp,catdata[id].rarity,30).toFixed(0),
+        atk:levelToValue(catdata[id].atk,catdata[id].rarity,30).toFixed(0),
+      });
+    }
+    buffer = [];
+    for(let i in stagedata){
+      for(let j in stagedata[i]){
+        for(let k in stagedata[i][j]){
+          if(k == 'name') continue
+          buffer.push({
+            id:stagedata[i][j][k].id,
+            count:stagedata[i][j][k].count,
+            energy:stagedata[i][j][k].energy,
+            name:stagedata[i][j][k].name
+          });
+        }
+      }
+    }
+    buffer = quickSort(buffer,'count');
+    for(let i=0; i<3; i++){
+      mostSearchStage.push(buffer.pop());
+    }
+    buffer = [];
     console.log("most Search Cat : ",mostSearchCat);
-    console.log("second most Search Cat : ",secondMostSearchCat);
-    console.log("third most Search Cat : ",thirdMostSearchCat);
+    console.log("most Search Stage : ",mostSearchStage);
     console.log("Number of cat search : ",__numberOfCatSearch);
     arrangeUserData();
     geteventDay();
@@ -174,24 +194,9 @@ io.on('connection', function(socket){
         // record history
         if(uid){
           user_variable[id] = user_variable[id] ?
-            user_variable[id]:{count:0,lv:default_lv[type]};
+          user_variable[id]:{count:0,lv:default_lv[type]};
           user_variable[id].count = user_variable[id].count? 1 : 0;
-          if(data.record){
-            // Find same unit and clear it
-            for(let i in user_history){
-              if(user_history[i].id == id) delete user_history[i]
-            }
-            var key = database.ref().push().key; // Generate hash key
-            // Update history and write to firebase
-            user_history[key] = {type : type,id : id,time:new Date().getTime()};
-            database.ref("/user/"+uid+"/history/"+type).set(user_history);
-            userdata[uid].history["last_"+type] = id;
-            database.ref("/user/"+uid+"/history/last_"+type).set(id);
-            database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
-            .set(user_variable[id].count);
-            load_data[id].count ++ ;
-            database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
-          }
+          if (data.record) SetHistory(uid,type,id);
         }
         //Extract data
         buffer.push({
@@ -230,6 +235,39 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
+  // Set the last cat/enemy/stage/gacha
+  // {
+  //   type: cat/enemy/stage,
+  //   target:id,
+  //   uid: user id
+  // }
+  socket.on("set history",function (data) {
+    try{
+      var uid = data.uid,
+          type = data.type,
+          id = data.target;
+      SetHistory(uid,type,id);
+    } catch (e){
+      __handalError(e);
+    }
+  });
+  function SetHistory(uid,type,id) {
+    var user_history = userdata[uid].history[type];
+    // Find same unit and clear it
+    for(let i in user_history){
+      if(user_history[i].id == id) delete user_history[i]
+    }
+    var key = database.ref().push().key; // Generate hash key
+    // Update history and write to firebase
+    user_history[key] = {type : type,id : id,time:new Date().getTime()};
+    database.ref("/user/"+uid+"/history/"+type).set(user_history);
+    userdata[uid].history["last_"+type] = id;
+    database.ref("/user/"+uid+"/history/last_"+type).set(id);
+    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
+    .set(user_variable[id].count);
+    load_data[id].count ++ ;
+    database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
+  }
 
   socket.on("gacha search",function (data) {
     console.log(data);
@@ -409,7 +447,6 @@ io.on('connection', function(socket){
         }
       }
       for(let id in load_data){
-        console.log(id);
         let name = load_data[id].name?load_data[id].name:load_data[id].jp_name;
         if(name.indexOf(key) != -1) {
           let simple = id.substring(0,3);
@@ -597,7 +634,7 @@ io.on('connection', function(socket){
         CurrentUserData.name = userdata[user.uid].nickname;
         CurrentUserData.first_login = userdata[user.uid].first_login;
         CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
-        CurrentUserData.legend = [mostSearchCat, secondMostSearchCat, thirdMostSearchCat];
+        CurrentUserData.legend = {mostSearchCat,mostSearchStage};
       }
       else if(page == 'book'){
         CurrentUserData.folder = {owned:userdata[user.uid].folder.owned};
@@ -1362,6 +1399,16 @@ io.on('connection', function(socket){
   });
 });
 
+const port = 8000 ;
+http.listen(process.env.PORT || port, function(){
+  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+});
+
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/view/index.html');
+});
+app.use(express.static(path.join(__dirname, '/')));// to import css and javascript
+
 function arrangeUserData() {
   console.log('arrange user data');
   let count = 0,
@@ -1568,9 +1615,6 @@ function levelToValue(origin,rarity,lv) {
   }
   return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
 }
-function AddZero(n) {
-  return n<10 ? "0"+n : n
-}
 function __handalError(e) {
   console.log(e);
   let time = new Date().getTime();
@@ -1612,17 +1656,28 @@ function GenerateUser(user=null) {
   database.ref('/user/'+user.uid).set(data) ;
   return data
 }
+function AddZero(n) {
+  return n<10 ? "0"+n : n
+}
+function quickSort(list,target=null) {
+  var length = list.length;
+  if (length <= 1) return list
 
+  var pivot_index = Math.ceil(length/2),
+      pivot = list[pivot_index],
+      pivot_value = target?pivot[target]:pivot,
+      smaller=[],
+      bigger=[];
 
-const port = 8000 ;
-http.listen(process.env.PORT || port, function(){
-  console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-});
+  for (let i = 0; i < length; i++){
+    if (i == pivot_index) continue
+    var compare_value = target?list[i][target]:list[i];
+    if (compare_value > pivot_value) bigger.push(list[i]);
+    else smaller.push(list[i]);
+  }
+  return quickSort(smaller,target).concat([list[pivot_index]]).concat(quickSort(bigger,target))
+}
 
-app.get('/', function(req, res){
-res.sendFile(__dirname + '/view/index.html');
-});
-app.use(express.static(path.join(__dirname, '/')));// to import css and javascript
 
 
 //

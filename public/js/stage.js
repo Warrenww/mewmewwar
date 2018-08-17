@@ -1,8 +1,8 @@
+var CurrentUserID;
 $(document).ready(function () {
   var timer = new Date().getTime();
   var filter_name = '' ;
   var socket = io.connect();
-  var current_user_data = {};
   var current_level_data = {};
 
   auth.onAuthStateChanged(function(user) {
@@ -15,7 +15,7 @@ $(document).ready(function () {
 
   socket.on("current_user_data",function (data) {
     // console.log(data);
-    current_user_data = data ;
+    CurrentUserID = data.uid ;
     if(data.last_stage){
       let last_stage = data.last_stage,
           arr = last_stage.split("-");
@@ -64,7 +64,7 @@ $(document).ready(function () {
     let id = $(this).attr("id").split("-");
     if(id.length == 3){
       socket.emit("required level data",{
-        uid: current_user_data.uid,
+        uid: CurrentUserID,
         chapter:id[0],
         stage:id[1],
         level:id[2]
@@ -166,7 +166,7 @@ $(document).ready(function () {
         chapter = $(this).parent().siblings().attr('chapter');
     // console.log(chapter+">"+stage+">"+level);
     socket.emit("required level data",{
-      uid: current_user_data.uid,
+      uid: CurrentUserID,
       chapter:chapter,
       stage:stage,
       level:level
@@ -203,7 +203,7 @@ $(document).ready(function () {
     // console.log(data.level);
     if(data.level)
       socket.emit("required level data",{
-        uid: current_user_data.uid,
+        uid: CurrentUserID,
         chapter:data.chapter,
         stage:data.stage,
         level:data.level
@@ -218,7 +218,7 @@ $(document).ready(function () {
       if(arr.indexOf(id) != -1) continue
       else {
         socket.emit("store level",{
-          uid : current_user_data.uid,
+          uid : CurrentUserID,
           id : id,
           lv : lv,
           type : 'enemy'
@@ -226,7 +226,7 @@ $(document).ready(function () {
         arr.push(id)
       }
     }
-    socket.emit("compare enemy",{id:current_user_data.uid,target:arr});
+    socket.emit("compare enemy",{id:CurrentUserID,target:arr});
     window.parent.reloadIframe('compareEnemy');
     window.parent.changeIframe('compareEnemy');
   });
@@ -263,7 +263,7 @@ $(document).ready(function () {
       $(this).attr('active',true).next().css("height","auto");
   });
   $("#enemy_head th div").click(function () {
-    
+
   });
   $("#enemy_head th div").click((e)=>{e.stopPropagation();})
   function Addreward(arr,b) {
@@ -272,13 +272,6 @@ $(document).ready(function () {
     for(let i in arr){
       html += "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
                 "<td>"+arr[i].prize.amount+"</td>";
-      // html += screen.width > 768 ?
-      //         ( "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
-      //           "<td>"+arr[i].prize.amount+"</td>"
-      //         ):(
-      //           "<tr class='reward'><th colspan=2>"+prize(arr[i].prize.name)+"</th>"+
-      //           "<td colspan=2>"+arr[i].prize.amount+"</td></tr>"
-      //         );
       html += "<th>"+(b?(arr[i].chance.indexOf("%")!=-1?"取得機率":"累計積分"):"取得機率")+
               "</th>"+"<td>"+arr[i].chance+"</td>"+
               "<th>取得上限</th>"+"<td>"+arr[i].limit+"</td>"+
@@ -329,7 +322,7 @@ $(document).ready(function () {
   function Addlist(list) {
     let html = '';
     for(let i in list){
-      if(list[i].public||list[i].owner == current_user_data.uid){
+      if(list[i].public||list[i].owner == CurrentUserID){
         html+="<tr class='list'><td colspan=6>"+
         "<div id='"+list[i].key+"' class='list_display_holder' public='"+list[i].public+"'>"+
         "<div class='list_display'>"+appendCat(list[i].list.upper)+appendCat(list[i].list.lower)+"</div>"+
@@ -398,63 +391,6 @@ $(document).ready(function () {
     n = n.split(",").join("");
     return Math.ceil(Number(n)*4.2);
   }
-
-  $(document).on('click','.cat,.enemy',function () {
-    let id = $(this).attr("id"),
-        multiple = $(this).next().text().split("％")[0],
-        type = $(this).attr("class");
-
-    console.log(id,multiple,type);
-    socket.emit("required data",{
-      type:type,
-      target:id,
-      record:false,
-      uid:current_user_data.uid,
-      lv:multiple
-    });
-  });
-  socket.on("required data",(data)=>{
-    console.log(data);
-    var type = data.type,
-        buffer = data.buffer[0],
-        data = type == 'cat'?new Cat(buffer.data):new Enemy(buffer.data),
-        lv = buffer.lv;
-    $(".floatDisplay_holder").fadeIn();
-    $(".floatDisplay .dataTable #lv").text(lv);
-    $(".floatDisplay .dataTable .img").css('background-image','url("'+data.imgURL+'")');
-    for (let i in data){
-      if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
-        $(".floatDisplay .dataTable").find("#"+i).text(data.Tovalue(i,lv));
-      else if(i == 'name')
-        $(".floatDisplay .dataTable").find("."+i).text(data.Name);
-      else if(i == 'aoe')
-        $(".floatDisplay .dataTable").find("#"+i).text(data.Aoe);
-      else if(i == 'char')
-        $(".floatDisplay .dataTable").find("#"+i).html(data.CharHtml(lv));
-      else
-        $(".floatDisplay .dataTable").find("#"+i).text(data[i]);
-    }
-    if(type == 'cat') $(".ForCat").show().next().hide();
-    else $(".ForCat").hide().next().show();
-
-    $(".floatDisplay div span").attr({"type":type,id:data.id});
-
-  });
-  $(".floatDisplay_holder i").click(()=>{$(".floatDisplay_holder").fadeOut();})
-  $(".floatDisplay div span").click(()=>{
-    var type = $('.floatDisplay div span').attr('type'),
-        id = $('.floatDisplay div span').attr('id');
-    socket.emit("required data",{
-      type:type,
-      target:id,
-      record:true,
-      uid:current_user_data.uid
-    });
-    window.parent.reloadIframe(type);
-    window.parent.changeIframe(type);
-    $(".floatDisplay_holder").hide();
-  });
-
 
   $(document).on('click','#enemy_head th',sortStageEnemy);
   function sortStageEnemy() {

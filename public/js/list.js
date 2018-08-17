@@ -991,3 +991,13 @@ function dontload(e) {return true }
 function test() {
   return {list,current_editing_list}
 }
+function hashCode() {
+  var s = 0;
+  for(let i in list){
+    for(let j in list[i]){
+      s += Number(list[i][j].split("-")[0]);
+      s += Number(list[i][j].split("-")[0])**0.5;
+    }
+  }
+  return s
+}

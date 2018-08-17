@@ -1,7 +1,6 @@
 body,html{
   position: relative;
   margin: 0;
-  /*height: 100%;*/
   font-family: Microsoft JhengHei;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -45,7 +44,6 @@ iframe{
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  /* width: 100%; */
   flex: 3;
   padding: 10px
 }
@@ -71,13 +69,9 @@ button,.button,.selected_cat{
   padding: 2px 20px ;
   transition: .1s ease-in-out;
   text-align: center;
-  /* width: 120px; */
-  /* -webkit-text-stroke: 1px black; */
 }
 button:active{
   background: linear-gradient( rgb(204, 124, 10),rgb(242, 205, 24));
-  /* font-size: 16px; */
-  /* padding: 3px 24px; */
 }
 .button,.selected_cat{
   display: inline-flex;
@@ -259,7 +253,6 @@ table {
   display: none;
   background-color: rgba(60, 44, 6, 0.9);
   padding: 5px;
-  /*border-radius: 6px;*/
   justify-content: center;
   z-index: 99 ;
   color: white
@@ -555,3 +548,56 @@ animation-iteration-count: infinite;
   50%{color: rgb(250, 204, 86)}
   100%{color: rgb(255, 72, 40)}
 }
+
+#world,#future{
+  background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
+  background-blend-mode: color-burn;
+  background-color: rgb(235, 160, 61);
+  background-size: 450%;
+  background-position: 90% 30%;
+}
+#future{
+  background-size: 300%;
+  background-position: 50% 20%;
+}
+#universe{
+  background-image: url("http://cdn.akamai.steamstatic.com/steam/apps/230290/extras/Universe-Sandbox-Saturn-Neptune-Earth.jpg?t=1512675913");
+  background-blend-mode: hard-light;
+  background-color: rgb(235, 160, 61);
+  background-size: 150%;
+  background-position: 80% 10%;
+}
+#tower{
+  background-image: url("https://i.imgur.com/9oC4NLj.jpg");
+  background-blend-mode: color-burn;
+  background-color: rgb(235, 160, 61);
+  background-size: 150%;
+  background-position: 50% 10%;
+}
+#story,#trueStory{
+  background-image: url("footage/stage/story_BG.png");
+  background-color: transparent;
+}
+#maylook{background-image: url("footage/stage/maylook_BG.png");}
+#baseball,#lazybird,#easter,#eva,#pokopang,#egg{
+  background-image: url("footage/stage/pawapuro_BG.jpg");
+  background-size: cover;
+  background-position: center;
+}
+#eva{background-image: url("footage/stage/eva_BG.jpg");}
+#crazy,#hard,#smallCat,#XP,#castleMaterial{
+  background-image: url("footage/stage/crazy_BG.png");
+  background-color: rgba(0,0,0,.1);
+  font-size: 0;
+}
+#hard{background-image: url("footage/stage/hard_BG.png");}
+#smallCat{background-image: url("footage/stage/smallCat_BG.png");}
+#smallCat:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
+#XP{background-image: url("footage/stage/XP_BG.png");}
+#castleMaterial{background-image: url("footage/stage/castleMaterial.png");}
+#lazybird{background-image: url("footage/stage/lazybird.png");}
+#easter{background-image: url("footage/stage/easter.png");}
+#pokopang{background-image: url("footage/stage/pokopang.jpg");}
+#egg{background-image: url("footage/stage/egg.png");}
+#cyclone,#evolution,#castleMaterial,#ticket
+{background-blend-mode: normal;}

@@ -52,6 +52,7 @@ $(document).ready(function () {
             name = data.compare_e2e[i].name;
         compareTargetAddCard(id,name)
       }
+      compare = data.compare_e2e;
     }
     if(!data.setting.show_enemy_id)
       $('.display').find("#id").css({'background-color':'transparent','color':'transparent'})

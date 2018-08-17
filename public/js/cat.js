@@ -38,8 +38,9 @@ $(document).ready(function () {
       $("#compare_number").text(data.compare_c2c.length)
       for(let i in data.compare_c2c){
         let id = data.compare_c2c[i].id, name = data.compare_c2c[i].name;
-        compareTargetAddCard(id,name)
+        compareTargetAddCard(id,name);
       }
+      compare = data.compare_c2c;
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;

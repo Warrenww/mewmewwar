@@ -1,6 +1,6 @@
-var type = location.pathname.split("/")[2].split(".")[0];
+var type = location.pathname.split("/")[2].split(".")[0],
+    compare = [];
 $(document).ready(function () {
-  var compare = [];
   var socket = io.connect();
   $(document).on('click','.glyphicon-shopping-cart',function () {
     var target = $(this).parent().children(".card:visible").attr('value'),
@@ -61,6 +61,10 @@ $(document).ready(function () {
   });
   $("#start_compare").click(function () {
     var windowName = type == 'cat'?'compareCat':'compareEnemy';
+    if(compare.length == 0){
+      alert("購物車中沒有東西!!!!");
+      return
+    }
     window.parent.reloadIframe(windowName);
     window.parent.changeIframe(windowName);
   });

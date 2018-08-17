@@ -1,7 +1,7 @@
+var CurrentUserID;
 $(document).ready(function () {
   var socket = io.connect();
-  var current_user_data = {},
-      own_data = [];
+  var own_data = [];
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -12,13 +12,11 @@ $(document).ready(function () {
   });
 
   socket.on("current_user_data",function (data) {
-    console.log(data);
-    current_user_data = data ;
+    CurrentUserID = data.uid ;
     if(data.folder.owned)
       socket.emit("required owned",{uid:data.uid,owned:data.folder.owned});
   });
   socket.on("owned data",function (data) {
-    console.log(data);
     own_data = data ;
     let arrange = {};
     for(let i in data){
@@ -178,20 +176,11 @@ $(document).ready(function () {
       if(r){
         $(this).remove();
         socket.emit("mark own",{
-          uid:current_user_data.uid,
+          uid:CurrentUserID,
           cat:cat,
           mark:false
         });
       }
-    }else{
-      socket.emit("display cat",{
-        uid : current_user_data.uid,
-        cat : $(this).attr('value'),
-        history:true
-      });
-      // location.assign("/view/cat.html");
-      window.parent.changeIframe('cat');
-      window.parent.reloadIframe('cat');
     }
   });
 
@@ -204,13 +193,13 @@ function appendArrange(obj) {
       "<span class='section_snapshot'><i class='material-icons'>&#xe439;</i></span>"+
       "<span class='item'>";
     for(let j in obj[i].arr){
-      html += '<span class="card" type="cat" value="'+obj[i].arr[j].id+'" '+
+      html += '<span class="card cat" type="cat" value="'+obj[i].arr[j].id+'" '+
       'style="background-image:url('+
       image_url_cat+obj[i].arr[j].id+'.png);" name>'+
       obj[i].arr[j].name+'</span>'
     }
     html += "</span></div>"
   }
-  $(".dataTable").empty();
-  $(".dataTable").append(html);
+  $(".display .dataTable").empty();
+  $(".display .dataTable").append(html);
 }

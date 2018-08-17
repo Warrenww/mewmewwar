@@ -16,4 +16,7 @@ var config = {
       // with toString() and then trim()
       let version = d.toString().trim();
       database.ref("/version").set(version);
+      setTimeout(function () {
+        process.exit();
+      },1000);
     });

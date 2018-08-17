@@ -1,16 +1,15 @@
+var CurrentUserID;
 $(document).ready(function () {
   var timer = new Date().getTime();
   var socket = io.connect();
   var cat_history,enemy_history,combo_history,stage_history,last_gacha;
-  var current_user_uid;
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
     else  console.log('did not sign in');
   });
   socket.on("current_user_data",function (data) {
-    console.log(data);
-    current_user_uid = data.uid;
+    CurrentUserID = data.uid;
     cat_history = data.history.cat;
     enemy_history = data.history.enemy;
     stage_history = data.history.stage;
@@ -92,29 +91,13 @@ $(document).ready(function () {
   $(document).on('click',".main_board div",function () {
     let type = $(this).attr("class"),
         id = $(this).attr("id");
-        console.log(type,id);
-    if(type == 'stage'){
-      socket.emit("required level data",{
-        uid: current_user_uid,
-        chapter:id.split("-")[0],
-        stage:id.split("-")[1],
-        level:id.split("-")[2]
-      });
-    }
-    else if(type == 'gacha'){
-      socket.emit("record gacha",{
-        uid:current_user_uid,
-        gacha:id
-      });
-    }
-    else {
-      socket.emit("required data",{
-        type:type,
-        target:id,
-        record:true,
-        uid:current_user_uid
-      });
-    }
+
+    if(type == 'cat'||type == 'enemy') return
+    socket.emit("set history",{
+      type:type,
+      uid:CurrentUserID,
+      target:id
+    });
     window.parent.reloadIframe(type);
     window.parent.changeIframe(type);
   });
