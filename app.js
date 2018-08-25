@@ -81,7 +81,7 @@ function ReloadAllData() {
       __numberOfCat ++ ;
       current = i.substring(0,3);
       if (current == exist){
-        localCount += catdata[i].count;
+        localCount += catdata[i].count?catdata[i].count:0;
       } else {
         __numberOfCatSearch += localCount;
         if(catdata[exist+'-1'])
@@ -92,7 +92,7 @@ function ReloadAllData() {
     }
     buffer = quickSort(buffer,'count');
     for(let i=0; i<3; i++){
-      let id = buffer.pop().id;
+      let id = buffer[i].id;
       mostSearchCat.push({
         name:catdata[id].name,
         count:catdata[id].count,
@@ -117,7 +117,7 @@ function ReloadAllData() {
     }
     buffer = quickSort(buffer,'count');
     for(let i=0; i<3; i++){
-      mostSearchStage.push(buffer.pop());
+      mostSearchStage.push(buffer[i]);
     }
     buffer = [];
     console.log("most Search Cat : ",mostSearchCat);
@@ -252,7 +252,10 @@ io.on('connection', function(socket){
     }
   });
   function SetHistory(uid,type,id) {
-    var user_history = userdata[uid].history[type];
+    var user_history = userdata[uid].history[type],
+        user_variable = userdata[uid].variable[type],
+        load_data;
+
     // Find same unit and clear it
     for(let i in user_history){
       if(user_history[i].id == id) delete user_history[i]
@@ -263,10 +266,15 @@ io.on('connection', function(socket){
     database.ref("/user/"+uid+"/history/"+type).set(user_history);
     userdata[uid].history["last_"+type] = id;
     database.ref("/user/"+uid+"/history/last_"+type).set(id);
-    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
-    .set(user_variable[id].count);
-    load_data[id].count ++ ;
-    database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
+    if(type=='cat'||type=='enemy'||type=='stage'){
+      if (type == 'cat') load_data = catdata;
+      else if (type == 'enemy') load_data = enemydata;
+      else if (type == 'stage') load_data = stagedata;
+      database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
+      .set(user_variable[id].count);
+      load_data[id].count = load_data[id].count?load_data[id].count+1:1;
+      database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
+    }
   }
 
   socket.on("gacha search",function (data) {
@@ -1675,8 +1683,12 @@ function quickSort(list,target=null) {
     if (compare_value > pivot_value) bigger.push(list[i]);
     else smaller.push(list[i]);
   }
-  return quickSort(smaller,target).concat([list[pivot_index]]).concat(quickSort(bigger,target))
+  smaller = quickSort(smaller,target);
+  bigger = quickSort(bigger,target);
+
+  return bigger.concat([list[pivot_index]]).concat(smaller)
 }
+
 
 
 

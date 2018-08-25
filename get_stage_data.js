@@ -211,6 +211,9 @@ var config = {
           case "福引チケット":
           obj.name = "招福轉蛋券";
           break;
+          case "福引チケットG":
+          obj.name = "招福轉蛋G券";
+          break;
           default:
           obj.name = s.split(" ")[0];
         }

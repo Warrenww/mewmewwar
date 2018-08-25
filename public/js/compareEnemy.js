@@ -1,8 +1,8 @@
+var CurrentUserID;
 $(document).ready(function () {
   var compare = [] ;
   var socket = io.connect();
-  var current_user_data = {},
-      current_compare_enemy = {};
+  var current_compare_enemy = {};
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -13,7 +13,7 @@ $(document).ready(function () {
   });
   socket.on("current_user_data",function (data) {
     // console.log(data);
-    current_user_data = data;
+    CurrentUserID = data.uid;
     if(data.compare_e2e) {
       let buffer = [] ;
       for(let i in data.compare_e2e){
@@ -46,12 +46,11 @@ $(document).ready(function () {
   });
   $(document).on('click','.comparedata img',function () {
     let id = $(this).parents('.comparedata').attr('id');
-    socket.emit("required data",{
+    socket.emit("set history",{
       type:'enemy',
-      target : id,
-      record:true,
-      uid : current_user_data.uid
-    }) ;
+      target:id,
+      uid:CurrentUserID
+    });
     window.parent.reloadIframe('enemy');
     window.parent.changeIframe('enemy');
   });
@@ -88,7 +87,7 @@ $(document).ready(function () {
         highlightTheBest();
         $('.comparedatahead').find('th').css('border-left','0px solid');
         socket.emit("store level",{
-          uid : current_user_data.uid,
+          uid : CurrentUserID,
           id : id,
           lv : level,
           type : 'enemy'
@@ -165,26 +164,7 @@ $(document).ready(function () {
       return
     }
     if(name == 'Picture' || name == 'name' || name =='multi' || name == 'KB') return ;
-    $(this).css('border-left','5px solid rgb(246, 132, 59)')
-            .parent().siblings().children().css('border-left','0px solid');
 
-    $(".comparedata").each(function () {
-      let obj = {};
-      obj = {
-        id:$(this).attr('id'),
-        item:Number($(this).find("#"+name).text())
-      }
-      arr.push(obj);
-    });
-    // console.log(name);
-    // console.log(arr);
-    for(let i=0;i<arr.length;i++){
-      for(let j=i+1;j<arr.length;j++){
-        if(arr[j].item>arr[i].item){
-          $(".comparedatabody").children('#'+arr[i].id).before( $(".comparedatabody").children('#'+arr[j].id));
-          flag = false ;
-        }
-        arr = [] ;
         $(".comparedata").each(function () {
           let obj = {};
           obj = {
@@ -193,29 +173,15 @@ $(document).ready(function () {
           }
           arr.push(obj);
         });
-      }
-    }
-    if(flag){
-      $(this).css('border-left','5px solid rgb(59, 184, 246)')
-              .parent().siblings().children().css('border-left','0px solid');
-
-      for(let i=0;i<arr.length;i++){
-        for(let j=i+1;j<arr.length;j++){
-          if(arr[j].item<arr[i].item){
-            $(".comparedatabody").children('#'+arr[i].id).before( $(".comparedatabody").children('#'+arr[j].id));
-          }
-          arr = [] ;
-          $(".comparedata").each(function () {
-            let obj = {};
-            obj = {
-              id:$(this).attr('id'),
-              item:Number($(this).find("#"+name).text())
-            }
-            arr.push(obj);
-          });
+        arr = quickSort(arr,'item');
+        // console.log(arr);
+        if(flag != 'increase'){
+          for(let i=arr.length-1;i>=0;i--) $(".comparedatabody").append($(".comparedata[id='"+arr[i].id+"']"));
+          $(this).parent().attr('reverse','increase').siblings().attr('reverse','');
+        } else {
+          for(let i=0;i<arr.length;i++) $(".comparedatabody").append($(".comparedata[id='"+arr[i].id+"']"));
+          $(this).parent().attr('reverse','decrease').siblings().attr('reverse','');
         }
-      }
-    }
   }
 
   $(document).on("click","#snapshot",function () {

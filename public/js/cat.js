@@ -49,7 +49,7 @@ $(document).ready(function () {
       if(last.query_type=='gacha'){
         $("#gacha_search").click();
         for(let i in last.query)
-          $("#gacha_table").find(".button[id='"+last.query[i]+"']").click();
+          $("#gacha_table").find(".button[name='"+last.query[i]+"']").click();
       } else {
         for(let i in last.query)
          for(let j in last.query[i])
@@ -389,7 +389,7 @@ $(document).ready(function () {
     for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
     for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
     for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
-    for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
+    for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('name')) ;
     socket.emit(type+" search",{
       uid:current_user_id,
       query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,

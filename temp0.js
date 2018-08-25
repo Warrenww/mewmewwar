@@ -64,21 +64,21 @@ var stdin = process.openStdin();
 //   }
 // });
 
-database.ref("/enemydata").once("value",(snapshot)=>{
-  var enemydata = snapshot.val();
-  for(let i in enemydata){
-    if(enemydata[i].tag){
-      if(enemydata[i].tag.indexOf("傳送")!=-1){
-        console.log(enemydata[i].id);
-        console.log(enemydata[i].char);
-      }
-    }
-  }
-});
+// database.ref("/enemydata").once("value",(snapshot)=>{
+//   var enemydata = snapshot.val();
+//   for(let i in enemydata){
+//     if(enemydata[i].tag){
+//       if(enemydata[i].tag.indexOf("傳送")!=-1){
+//         console.log(enemydata[i].id);
+//         console.log(enemydata[i].char);
+//       }
+//     }
+//   }
+// });
 
 
 function AddZero(n) {
-  return n>99 ? n : (n>9 ? "0"+n : "00"+n)
+  return n>9 ? "0"+n : n
 }
 //
 //

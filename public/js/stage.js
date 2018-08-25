@@ -187,7 +187,6 @@ $(document).ready(function () {
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
-    $("#enemy_head th").css("border",0);
     for(let i in data){
       if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
       else if (i == 'continue') $(".display .dataTable").find("#"+i).text(data[i]?"可以":"不行");
@@ -289,6 +288,8 @@ $(document).ready(function () {
           first_show:[],
           next_time:[]
         };
+    if(arr[0].point) $("#enemy_head #point,#bufferZone").show();
+    else $("#enemy_head #point,#bufferZone").hide();
     for(let i in arr){
       if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
@@ -301,6 +302,7 @@ $(document).ready(function () {
               "<td id='castle'>"+arr[i].castle+"</td>"+
               "<td id='first_show'>"+arr[i].first_show+"</td>"+
               "<td id='next_time'>"+arr[i].next_time+"</td>"+
+              (arr[0].point?"<td id='point'>"+arr[i].point+"</td>":"")+
               "</tr>";
       for(let j in range) if(range[j].indexOf(arr[i][j]) == -1) range[j].push(arr[i][j]);
     }
@@ -394,62 +396,27 @@ $(document).ready(function () {
 
   $(document).on('click','#enemy_head th',sortStageEnemy);
   function sortStageEnemy() {
-    let name = $(this).attr('id');
-    var arr = [] ;
-    let flag = true ;
-    $(this).css('border-top','5px solid rgb(59, 184, 246)')
-            .siblings().css('border-top','0px solid');
+    var name = $(this).attr('id'),
+        arr = [],
+        flag = $(this).attr('reverse') ;
 
     $(".enemy_row").each(function () {
       let obj = {},
           val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
       obj = {
         id:$(this).attr('id'),
-        item: !val ? (val==0?0:99999) : val
+        item: !val ? (val==0?0:1e20) : val
       }
       arr.push(obj);
     });
-    // console.log(name);
+    arr = quickSort(arr,'item');
     // console.log(arr);
-    for(let i=0;i<arr.length;i++){
-      for(let j=i+1;j<arr.length;j++){
-        if(arr[j].item<arr[i].item){
-          $(".enemy_row[id='"+arr[i].id+"']").before( $(".enemy_row[id='"+arr[j].id+"']"));
-          flag = false ;
-        }
-        arr = [] ;
-        $(".enemy_row").each(function () {
-          let obj = {},
-              val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
-          obj = {
-            id:$(this).attr('id'),
-            item: !val ? (val==0?0:99999) : val
-          }
-          arr.push(obj);
-        });
-      }
-    }
-    if(flag){
-      $(this).css('border-top','5px solid rgb(246, 132, 59)')
-              .siblings().css('border-top','0px solid');
-
-      for(let i=0;i<arr.length;i++){
-        for(let j=i+1;j<arr.length;j++){
-          if(arr[j].item>arr[i].item){
-            $(".enemy_row[id='"+arr[i].id+"']").before( $(".enemy_row[id='"+arr[j].id+"']"));
-          }
-          arr = [] ;
-          $(".enemy_row").each(function () {
-            let obj = {},
-            val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
-            obj = {
-              id:$(this).attr('id'),
-              item: !val ? (val==0?0:99999) : val
-            }
-            arr.push(obj);
-          });
-        }
-      }
+    if(flag != 'increase'){
+      for(let i=arr.length-1;i>=0;i--) $("#enemy_head").after($(".enemy_row[id='"+arr[i].id+"']"));
+      $(this).attr('reverse','increase').siblings().attr('reverse','');
+    } else {
+      for(let i=0;i<arr.length;i++) $("#enemy_head").after($(".enemy_row[id='"+arr[i].id+"']"));
+      $(this).attr('reverse','decrease').siblings().attr('reverse','');
     }
   }
 

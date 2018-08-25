@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>經驗計算機</title>
+    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_event.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="../public/css/navBar.css" />
+    <link rel="stylesheet" href="../public/css/overall.css" />
+    <link rel="stylesheet" href="../public/css/blank.css" />
+    <link rel="stylesheet" href="../public/css/rwd.css" />
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <style>
+      .dataTable tr:nth-child(10n) td{ background-color: rgba(225,225,225,.9); }
+      .dataTable tr:nth-child(10n) th{ background-color: rgba(204, 180, 141, 0.93); }
+      input{
+        border: 0;
+        background: transparent;
+        border-bottom: 1px solid gray;
+        margin: 0 10;
+        text-align: center;
+      }
+      #result,#result_2,#xp2lv{display: none;}
+      #result img,#result_2 img{ width: 50;height: 50;margin: 0 10;}
+      #result span,#result_2 span{font-weight: bold;border-bottom: 1px solid ;padding: 0 10;color:#f25745}
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <table>
+        <tr>
+          <th>選擇稀有度</th>
+          <td id="select_rarity">
+            <span class="button" value='1' id="R" onclick='changeDataTable("R")'>稀有</span>
+            <span class="button" value='0' id="SR" onclick='changeDataTable("SR")'>激稀有</span>
+            <span class="button" value='0' id="SSR" onclick='changeDataTable("SSR")'>超激稀有</span>
+          </td>
+        </tr>
+        <tr>
+          <th onclick="switchCalc()">計算器</th>
+          <td id="interval">從<input type="number"  />等升級到<input type="number" />等</td>
+          <td id="xp2lv">花費<input type="number"  />經驗 從<input type="number"  />等開始升級</td>
+        </tr>
+        <tr id="result">
+          <th>結果</th>
+          <td>
+            需經驗值<img src="../public/css/footage/gameIcon/xp_5000.png" /><span>0</span>
+            與貓眼石<img src="../public/css/footage/gameIcon/eye_EX.png" /><span>0</span>顆
+          </td>
+        </tr>
+        <tr id="result_2">
+          <th>結果</th>
+          <td>
+            可升級至<span>0</span>等，剩餘經驗<span>0</span>並
+            需貓眼石<img src="../public/css/footage/gameIcon/eye_EX.png" /><span>0</span>顆
+          </td>
+        </tr>
+      </table>
+      <button id="start" onclick="Calculate()" type='0'>計算</button>
+    </div>
+    <div class="content">
+      <table class="dataTable">
+        <thead>
+          <tr>
+            <th>等級</th><th>所需經驗</th><th>所需貓眼石</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="tutorial">
+      <div class="article">
+        <p>
+          本頁面除了基本的檢視各類貓咪升級所需經驗值與貓眼石外，提供兩種計算器:
+        </p>
+        <ul>
+          <li>輸入等級區間，以計算該區間內所需經驗值與貓眼石總和</li>
+          <li>輸入欲花費經驗與起始等級，以計算最多可升級之等級、所需貓眼石量與剩餘經驗值</li>
+        </ul>
+        <p>
+          要切換不同計算器請點選
+          <span style="background:#f2d5a7;padding:3 15;font-weight:bold;margin:0 5;">計算器</span>
+          來切換
+        </p>
+      </div>
+      <button>我知道了</button>
+    </div>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../public/js/html2canvas.min.js"></script>
+    <script src="../public/js/class.js"></script>
+    <script src="../public/js/overall.js"></script>
+    <script src="../public/js/expCalc.js"></script>
+    <script src="../public/js/jquery.easing.1.3.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="../public/js/firebaseConfig.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </body>
+</html>

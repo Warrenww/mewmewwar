@@ -3,7 +3,7 @@ $(document).ready(function () {
       page = location.pathname.split('/')[2].split('.')[0];
   $(document).on('click','.cat,.enemy',function () {
     let id, multiple, type;
-    console.log(CurrentUserID);
+    // console.log(CurrentUserID);
     if (page == 'stage' || page == 'history'){
       id = $(this).attr("id"),
       multiple = $(this).next().text().split("％")[0],
@@ -51,7 +51,15 @@ $(document).ready(function () {
   $(".floatDisplay_holder i").click(()=>{$(".floatDisplay_holder").fadeOut();})
   $(".floatDisplay div span").click(()=>{
     var type = $('.floatDisplay div span').attr('type'),
-        id = $('.floatDisplay div span').attr('id');
+        id = $('.floatDisplay div span').attr('id'),
+        lv = Number($(".floatDisplay .dataTable #lv").text());
+    if(type == 'enemy') lv /= 100;
+    socket.emit("store level",{
+      uid : CurrentUserID,
+      id : id,
+      lv : lv,
+      type : type
+    });
     socket.emit("set history",{
       type:type,
       target:id,

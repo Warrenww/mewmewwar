@@ -117,11 +117,24 @@ $(document).ready(function () {
     $(this).fadeOut().children(".picture").empty();
   });
 
+  if(typeof(Storage)){
+    var page = location.pathname!="/"?location.pathname.split("/")[2].split(".")[0]:"";
+    if(!localStorage["tutorial_"+page]){
+      $(".tutorial").attr("show","true");
+    }
+  } else {
+    console.log("browser don't support local storage");
+  }
+
+  $(".tutorial button").click(function (e) {
+    $(".tutorial").fadeOut();
+    var page = location.pathname.split("/")[2].split(".")[0];
+    localStorage["tutorial_"+page] = true;
+  });
+
   socket.on("connet",function (data) {
     console.log("server ready")
   }) ;
-
-
 });
 
 $(window).load(function () {
@@ -372,17 +385,41 @@ function vary(list) {
 function Range(list) {
   return [min(list),max(list)]
 }
-function quickSort(list) {
-  if (list.length <= 1) return list
-  var smaller = [],
-      bigger = [],
-      pivot_index = Math.ceil(list.length/2);
-  for(let i in list){
+function quickSort(list,target=null) {
+  var length = list.length;
+  if (length <= 1) return list
+
+  var pivot_index = Math.ceil(length/2),
+      pivot = list[pivot_index],
+      pivot_value = target?pivot[target]:pivot,
+      smaller=[],
+      bigger=[];
+
+  for (let i = 0; i < length; i++){
     if (i == pivot_index) continue
-    else if (list[i] > list[pivot_index]) bigger.push(list[i]);
-    else if (list[i] < list[pivot_index]) smaller.push(list[i]);
+    var compare_value = target?list[i][target]:list[i];
+    if (compare_value > pivot_value) bigger.push(list[i]);
+    else smaller.push(list[i]);
   }
-  smaller = quickSort(smaller);
-  bigger = quickSort(bigger);
+  smaller = quickSort(smaller,target);
+  bigger = quickSort(bigger,target);
+
   return smaller.concat([list[pivot_index]]).concat(bigger)
+}
+const ChineseNumber = ["一","二","三","四","五","六","七","八","九"];
+const ChineseNumber_10 = ["十","百","千"];
+const ChineseNumber_10_alt = ["萬","億","兆"];
+function ToChineseNumber(n,m=0) {
+  if(n == 0) return ""
+  if(n < 10) return ChineseNumber[n-1]
+  var org = n;
+  if(n<1e4){
+    n = Math.floor(n/10);
+    m ++;
+    return ToChineseNumber(n,m)+ChineseNumber_10[m-1]+ToChineseNumber(org%10)
+  } else {
+    n = Math.floor(n/1e4);
+    m ++;
+    return ToChineseNumber(n,m)+ChineseNumber_10_alt[m-1]+ToChineseNumber(org%1e4)
+  }
 }

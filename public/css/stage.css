@@ -284,3 +284,6 @@
 }
 #enemy_head th div div{ border-bottom: 1px solid lightgray }
 #enemy_head th div div:hover{ background-color:rgba(225,225,225,.9) }
+#enemy_head th[reverse='increase']{border-top:5px solid #3bb8f6;}
+#enemy_head th[reverse='decrease']{border-top:5px solid #f6843b;}
+#enemy_head #point,#bufferZone{display: none;}

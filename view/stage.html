@@ -53,7 +53,10 @@
           <button id='easter' value='0'>復活節關卡</button>
         </div>
         <span>特殊關卡</span>
-        <div style="display:none"> <button id='memory' value='0'>紀念關</button> </div>
+        <div style="display:none">
+          <button id='memory' value='0'>紀念關</button>
+          <button id='ranking' value='0'>排行賽關卡</button>
+        </div>
         <span>合作關卡</span>
         <div style="display:none">
           <button id='egg' value='0'>蛋黃哥<br />合作關卡</button>
@@ -102,6 +105,7 @@
             <th rowspan=2 colspan=1 id='stage' value=''></th>
             <th rowspan=2 colspan=2 id="name"></th>
             <th>接關</th><td id="continue"></td>
+            <td id="bufferZone" rowspan="6"></td>
           </tr>
           <tr><th>統帥力</th><td id="energy"></td></tr>
           <tr>
@@ -132,6 +136,7 @@
             <th id='castle'>城連動<span></span><div></div></th>
             <th id='first_show'>首次出現(s)<span></span><div></div></th>
             <th id='next_time'>再次出現(s)<span></span><div></div></th>
+            <th id='point'>積分<span></span><div></div></th>
           </tr>
           <!-- <tr id="list_toggle">
             <th colspan=6>

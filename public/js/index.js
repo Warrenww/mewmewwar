@@ -1,5 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.21.1"
+const VERSION = "10.22.1"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
@@ -314,7 +314,7 @@ $(document).ready(function () {
     "gacha":"轉蛋模擬器", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
     "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
     "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表",
-    "game":"釣魚小遊戲"
+    "game":"釣魚小遊戲","expCalculator":"經驗計算機"
   }
   function parse_iframe_name(str) {
     return iframeName[str]

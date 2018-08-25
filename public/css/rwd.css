@@ -124,7 +124,7 @@ nav .mobile,
   .floatDisplay{margin: 100 0}
   .floatDisplay div span{margin: 10}
   #enemy_head th span{display: none;}
-  
+  .tutorial .article{margin: 1%}
 }
 
 @media screen and (max-width: 1024px) {
