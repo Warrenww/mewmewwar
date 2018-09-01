@@ -1,4 +1,4 @@
-var type = location.pathname.split("/")[2].split(".")[0],
+var type = location.pathname.split("/")[1],
     compare = [];
 $(document).ready(function () {
 

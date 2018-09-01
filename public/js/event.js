@@ -107,7 +107,7 @@ function appendIframe(day) {
 var emptyObj={};
 function createPredictionQueue(data) {
   $("#prediction").empty();
-  console.log(data);
+  // console.log(data);
   var start = data.start.substring(4,8),
       end = data.end.substring(4,8),
       month = start.substring(0,2),
@@ -185,7 +185,7 @@ function createPredictionQueue(data) {
   }
   $("#prediction").append(table_body);
   $('.prediction_holder').find('a').attr('href',data.source);
-  $("#prediction").find("#"+mm.toString()+dd.toString()).addClass("today");
+  $("#prediction").find("#"+mm+AddZero(dd)).addClass("today");
 }
 function todate(n) {
   a = n.toString();

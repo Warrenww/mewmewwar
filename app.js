@@ -615,7 +615,7 @@ io.on('connection', function(socket){
       last_stage = '',
       user = data.user,
       CurrentUserData = {uid : user.uid},
-      page = data.page=='/'?'index':data.page.split("/")[2].split(".")[0];
+      page = data.page.split("/")[1];
       console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
       database.ref('/user/'+user.uid).update({"last_login" : timer});
       let history = userdata[user.uid].history,
@@ -649,14 +649,8 @@ io.on('connection', function(socket){
         obj = {id:compareEnemy[i],name:enemydata[compareEnemy[i]].name};
         brr.push(obj);
       }
-      if(page == 'index'){
-        CurrentUserData.name = userdata[user.uid].nickname;
-        CurrentUserData.first_login = userdata[user.uid].first_login;
-        CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
-        CurrentUserData.legend = {mostSearchCat,mostSearchStage};
-        countOnlineUser(socket.id,user.uid,true);
-      }
-      else if(page == 'book'){
+
+      if(page == 'book'){
         CurrentUserData.folder = {owned:userdata[user.uid].folder.owned};
         CurrentUserData.setting = {show_more_option:setting.show_more_option}
       }
@@ -735,9 +729,16 @@ io.on('connection', function(socket){
       }
       else if(page == 'event'){ CurrentUserData.setting = {show_jp_cat:setting.show_jp_cat} }
       else if(page == 'gacha'){ CurrentUserData.last_gacha = last_gacha }
-      else if (page == 'list') {
+      else if (page == 'list'){
         CurrentUserData.last_cat_search = last_cat_search;
         CurrentUserData.list = userdata[user.uid].list;
+      }
+      else {
+        CurrentUserData.name = userdata[user.uid].nickname;
+        CurrentUserData.first_login = userdata[user.uid].first_login;
+        CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
+        CurrentUserData.legend = {mostSearchCat,mostSearchStage};
+        countOnlineUser(socket.id,user.uid,true);
       }
       socket.emit("current_user_data",CurrentUserData);
       console.log('user data send');
@@ -1139,14 +1140,14 @@ io.on('connection', function(socket){
       if(!uid||!gacha) return
       let key = database.ref().push().key;
       if(!userdata[uid].history.gacha) userdata[uid].history.gacha = {}
-      var last={key:"",name:""}
+      var last={key:"",id:""}
       for(let i in userdata[uid].history.gacha){
         last.key = i ;
-        last.name = userdata[uid].history.gacha[i].name;
+        last.id = userdata[uid].history.gacha[i].id;
       }
-      if(last.name == gacha) key = last.key;
+      if(last.id == gacha) key = last.key;
       userdata[uid].history.gacha[key] = {
-        name:gacha,ssr:data.ssr,sr:data.sr,r:data.r,
+        id:gacha,ssr:data.ssr,sr:data.sr,r:data.r,
         time:new Date().getTime()
       }
       database.ref("/user/"+uid+"/history/gacha/"+key).set(userdata[uid].history.gacha[key]);
@@ -1447,6 +1448,13 @@ http.listen(process.env.PORT || port, function(){
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/view/index.html');
+});
+app.get('/:page',function (req,res) {
+  if(fs.existsSync(__dirname + "/view/"+req.params.page+".html")){
+    res.sendFile(__dirname + "/view/"+req.params.page+".html");
+  } else {
+    res.sendFile(__dirname + '/view/index.html');
+  }
 });
 app.use(express.static(path.join(__dirname, '/')));// to import css and javascript
 

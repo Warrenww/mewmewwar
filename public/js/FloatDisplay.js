@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var page = location.pathname.split('/')[2].split('.')[0];
+  var page = location.pathname.split('/')[1];
   $(document).on('click','.cat,.enemy',function () {
     let id, multiple, type;
     // console.log(CurrentUserID);

@@ -1,5 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.23.1"
+const VERSION = "10.23.2"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
@@ -268,22 +268,19 @@ $(document).ready(function () {
         target = $('#iframe_holder iframe[active="true"]'), // find active iframe
         newTarget; // store target iframe
     // scroll down or swipe up
-    if(wheelDelta < 0 || d == 'up') {
-      newTarget = target.next();
-      doc_h = -doc_h;
-    } else if(wheelDelta > 0 || d == 'down') {
-      newTarget = target.prev();
-    } else return
+    if(wheelDelta < 0 || d == 'up') newTarget = target.next();
+    else if(wheelDelta > 0 || d == 'down') newTarget = target.prev(); 
+    else return
 
     if(!newTarget.attr('id')) { // target iframe not exist
-      doc_h = 0;
       newTarget = target;
     } else { // activate target iframe and deactivate current iframe
       target.attr('active',false);
       newTarget.attr('active',true);
     }
+    var scrollDistance = doc_h/4 - newTarget.offset().top;
     // scroll to target iframe
-    $("#iframe_holder iframe").css("top","+="+(doc_h/2)+"px");
+    $("#iframe_holder iframe").css("top","+="+scrollDistance+"px");
     // Show the active iframe name
     $("#iframe_holder .nameHolder").remove();
     $("#iframe_holder").append(
@@ -304,7 +301,7 @@ $(document).ready(function () {
       // Bind this event to scrollHolder function
       swipe:scrollHolder,
       //Default is 75px, set to 0 for demo so any distance triggers swipe
-       threshold : 100
+      threshold : 100
   });
   // return to normal view
   $("#iframe_holder").click(iframeNormalize);
@@ -400,7 +397,7 @@ function changeIframe(target,record = true) {
   });
   if(arr.indexOf(target)==-1&&target){
     $("#iframe_holder").append(
-      "<iframe id='"+target+"' src='/view/"+target+".html'></iframe>"
+      "<iframe id='"+target+"' src='"+target+"'></iframe>"
     );
     $("#iframe_holder").find("#"+target).attr("active",true)
     .siblings().attr("active",false);

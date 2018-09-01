@@ -121,7 +121,7 @@ $(document).ready(function () {
   });
 
   if(typeof(Storage)){
-    var page = location.pathname!="/"?location.pathname.split("/")[2].split(".")[0]:"";
+    var page = location.pathname.split("/")[1];
     if(!localStorage["tutorial_"+page]){
       $(".tutorial").attr("show","true");
     }

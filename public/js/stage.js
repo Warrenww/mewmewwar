@@ -431,6 +431,6 @@ function scrollSelectArea(area,target) {
       Target = This.find("#"+target);
   if(!Target) return
   This.animate({
-    scrollTop:This.scrollTop() + Target.offset().top - This.offset().top - This.outerHeight()/2
+    scrollTop:This.scrollTop() + Target.offset().top - This.offset().top - This.outerHeight()/2 + Target.outerHeight()/2
   },400);
 }
