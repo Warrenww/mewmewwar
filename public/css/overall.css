@@ -157,9 +157,10 @@ button:active{
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 5% 10% ;
+  padding: 3% 10% ;
   width: 100%
 }
+.content:first-of-type{padding-top: 5%}
 .display{padding: 5% }
 td, th {
   font-size: 16px;

@@ -1,7 +1,7 @@
 var current_user_id;
 $(document).ready(function () {
   var timer = new Date().getTime();
-  var socket = io.connect();
+
   var current_cat_data = {};
   var current_cat_survey = {};
   var current_cat_statistic = {

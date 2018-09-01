@@ -1,6 +1,6 @@
 var CurrentUserID;
 $(document).ready(function () {
-  var socket = io.connect();
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});

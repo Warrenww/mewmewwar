@@ -1,12 +1,11 @@
 $(document).ready(function () {
-  var socket = io.connect(),
-      page = location.pathname.split('/')[2].split('.')[0];
+  var page = location.pathname.split('/')[2].split('.')[0];
   $(document).on('click','.cat,.enemy',function () {
     let id, multiple, type;
     // console.log(CurrentUserID);
     if (page == 'stage' || page == 'history'){
       id = $(this).attr("id"),
-      multiple = $(this).next().text().split("％")[0],
+      multiple = (is_mobile?$(this).parent().next().children().first():$(this).next()).text().split("％")[0],
       type = $(this).attr("class");
     } else {
       id = $(this).attr('value');
@@ -26,7 +25,7 @@ $(document).ready(function () {
     var type = data.type,
         buffer = data.buffer[0],
         data = type == 'cat'?new Cat(buffer.data):new Enemy(buffer.data),
-        lv = buffer.lv;
+        lv = buffer.lv/(type == "enemy"?100:1);
     $(".floatDisplay_holder").fadeIn();
     $(".floatDisplay .dataTable #lv").text(lv);
     $(".floatDisplay .dataTable .img").css('background-image','url("'+data.imgURL+'")');

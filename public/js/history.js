@@ -1,7 +1,7 @@
 var CurrentUserID;
 $(document).ready(function () {
   var timer = new Date().getTime();
-  var socket = io.connect();
+
   var cat_history,enemy_history,combo_history,stage_history,last_gacha;
 
   auth.onAuthStateChanged(function(user) {

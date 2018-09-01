@@ -1,7 +1,7 @@
 var CurrentUserID;
 $(document).ready(function () {
   var compare = [] ;
-  var socket = io.connect();
+
   var current_compare_enemy = {};
 
   auth.onAuthStateChanged(function(user) {

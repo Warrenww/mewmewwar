@@ -1,7 +1,7 @@
 var type = location.pathname.split("/")[2].split(".")[0],
     compare = [];
 $(document).ready(function () {
-  var socket = io.connect();
+
   $(document).on('click','.glyphicon-shopping-cart',function () {
     var target = $(this).parent().children(".card:visible").attr('value'),
         name = $(this).parent().children(".card:visible").text();

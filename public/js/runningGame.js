@@ -7,7 +7,7 @@ var startTime,
     dropTimeOut,
     enemyTimeOut;
 $(document).ready(function () {
-  var socket = io.connect();
+
   $(document).keydown(function (event) {
     // console.log(event);
     if(event.keyCode == 32){

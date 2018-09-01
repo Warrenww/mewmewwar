@@ -24,10 +24,10 @@ xmlhttp.onreadystatechange = function(){
       console.log("browser don't support local storage");
       active = "R";
     }
-    $("#select_rarity span[id='"+active+"']").attr('value',1);
-    changeDataTable(active);
+    $("#select_rarity span[id='"+active+"']").click();
   }
 }
+var RarityName = {'R':'稀有','SR':'激稀有','SSR':'超激稀有'}
 function changeDataTable(active) {
   $("#select_rarity span[id='"+active+"']").siblings().attr("value",0);
   $(".dataTable tbody").empty();
@@ -40,6 +40,7 @@ function changeDataTable(active) {
     }
     return html
   });
+  $("h3 span").text(RarityName[active]);
   localStorage.active = active;
 }
 function Calculate() {

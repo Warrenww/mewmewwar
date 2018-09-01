@@ -91,7 +91,9 @@ class Cat{
       default:
       limit = 60 ;
     }
-    result = lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
+    result = (0.8+0.2*lv)*origin;
+    if(lv>limit) result = result - 0.1*(lv-limit)*origin;
+    if(lv>limit+20) result = result - 0.05*(lv-limit-20)*origin;
     return result.toFixed(0)
   }
   serialATK(lv){

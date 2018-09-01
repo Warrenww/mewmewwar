@@ -86,7 +86,7 @@
   flex-wrap: wrap;
   padding: 30px 10px;
 }
-#select_stage{background-image: url("footage/stage/select_stage_BG.png")}
+#select_stage{background-image: url("footage/stage/select_stage_BG.png");flex:1}
 #select_level{background-image: url("footage/stage/select_level_BG.png")}
 #select_stage button{padding: 0}
 #select_stage button[value~='1']{
@@ -253,11 +253,11 @@
 }
 .best{color:#f08d2b;font-weight: bold;}
 .list td{background-color: transparent}
-#enemy_head th:hover{
+.enemy_head th:hover{
   background-color: rgba(217, 189, 145, 0.93)
 }
-#enemy_head th{position: relative;}
-#enemy_head th>span{
+.enemy_head th{position: relative;}
+.enemy_head th>span{
   width: 12;
   height: 12;
   position: absolute;
@@ -269,7 +269,7 @@
   right: 20px;
   display: none;
 }
-#enemy_head th>div{
+.enemy_head th>div{
   background: rgba(0,0,0,.7);
   position: absolute;
   top: 100%;
@@ -282,8 +282,8 @@
   height: 0;
   color: orange;
 }
-#enemy_head th div div{ border-bottom: 1px solid lightgray }
-#enemy_head th div div:hover{ background-color:rgba(225,225,225,.9) }
-#enemy_head th[reverse='increase']{border-top:5px solid #3bb8f6;}
-#enemy_head th[reverse='decrease']{border-top:5px solid #f6843b;}
-#enemy_head #point,#bufferZone{display: none;}
+.enemy_head th div div{ border-bottom: 1px solid lightgray }
+.enemy_head th div div:hover{ background-color:rgba(225,225,225,.9) }
+.enemy_head th[reverse='increase']{border-top:5px solid #3bb8f6;}
+.enemy_head th[reverse='decrease']{border-top:5px solid #f6843b;}
+.enemy_head #point,#bufferZone{display: none;}

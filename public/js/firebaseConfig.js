@@ -23,7 +23,7 @@ auth.onAuthStateChanged(user => {
 
 //
 // $(document).ready(function () {
-//   var socket = io.connect();
+//
 //   // log in status
 //   if(window.location.pathname == '/'){
 //     auth.onAuthStateChanged(user => {

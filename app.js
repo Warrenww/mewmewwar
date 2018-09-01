@@ -55,6 +55,7 @@ var catdata,
     gachadata,
     rankdata,
     catComment,
+    legenddata,
     VERSION ;
 var __numberOfCat = 0,
     __numberOfCatSearch = 0,
@@ -73,6 +74,7 @@ function ReloadAllData() {
     userdata = snapshot.val().user ;
     eventdata = snapshot.val().event_date ;
     catComment = snapshot.val().catComment ;
+    legenddata = snapshot.val().legend;
     VERSION = snapshot.val().version;
     console.log("VERSION : ",VERSION);
     console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
@@ -123,6 +125,14 @@ function ReloadAllData() {
     console.log("most Search Cat : ",mostSearchCat);
     console.log("most Search Stage : ",mostSearchStage);
     console.log("Number of cat search : ",__numberOfCatSearch);
+    for(let i in legenddata){
+      var This = legenddata[i];
+      if(!new Date().getDay()){
+        This.lastWeek = This.thisWeek;
+        This.thisWeek = {date:new Date().getTime()};
+        database.ref("/legend/"+i).update({lastWeek:This.lastWeek,thisWeek:This.thisWeek});
+      }
+    }
     arrangeUserData();
     geteventDay();
   });
@@ -137,6 +147,7 @@ class UserCatVariable {
   }
 }
 
+var onLineUser = {};
 io.on('connection', function(socket){
   // Client require data with structure like
   // {
@@ -643,6 +654,7 @@ io.on('connection', function(socket){
         CurrentUserData.first_login = userdata[user.uid].first_login;
         CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
         CurrentUserData.legend = {mostSearchCat,mostSearchStage};
+        countOnlineUser(socket.id,user.uid,true);
       }
       else if(page == 'book'){
         CurrentUserData.folder = {owned:userdata[user.uid].folder.owned};
@@ -699,7 +711,7 @@ io.on('connection', function(socket){
           }
         }
         for(i in history.gacha){
-          let id = history.gacha[i].name,
+          let id = history.gacha[i].id,
           name = gachadata[id].name;
           obj.gacha[i] = {
             id:id,
@@ -733,6 +745,21 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
+  socket.on('disconnect', function () {
+    countOnlineUser(socket.id,null,false);
+  });
+  function countOnlineUser(sid,uid,connect) {
+    onLineUser[uid] = sid;
+    var count = 0;
+    for(let i in onLineUser) {
+      if(!connect && onLineUser[i] == sid){
+        delete onLineUser[i];
+        continue
+      }
+      count ++;
+    }
+    io.emit("online user change",count);
+  }
   socket.on("combo search",function (data) {
     console.log("searching combo......") ;
     try{
@@ -1029,6 +1056,11 @@ io.on('connection', function(socket){
         if(i != level) prev = i ;
         else flag = true ;
       }
+      console.log(legenddata.stage.thisWeek[id]);
+      if(legenddata.stage.thisWeek[id]) legenddata.stage.thisWeek[id] ++;
+      else legenddata.stage.thisWeek[id] = 1;
+      console.log(legenddata.stage.thisWeek);
+      database.ref("/legend/stage/thisWeek").set(legenddata.stage.thisWeek);
       socket.emit("level data",{
         data:stagedata[chapter][stage][level],
         parent:parent.name,
@@ -1405,6 +1437,7 @@ io.on('connection', function(socket){
     }
     socket.emit("Game Picture",buffer);
   });
+
 });
 
 const port = 8000 ;

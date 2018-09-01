@@ -1,6 +1,5 @@
 var CurrentUserID;
 $(document).ready(function () {
-  var socket = io.connect();
   var gacha_url = 'https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/'
   var r = sr = ssr = 0 ;
   var current_gacha_data;

@@ -1,6 +1,6 @@
 var CurrentUserID;
 $(document).ready(function () {
-  var socket = io.connect();
+
   var own_data = [];
 
   auth.onAuthStateChanged(function(user) {

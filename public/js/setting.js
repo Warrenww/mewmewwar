@@ -1,5 +1,5 @@
 $(document).ready(function () {
-  var socket = io.connect();
+
   var current_user_data = {};
   var user_photo_url = false;
 

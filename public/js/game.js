@@ -2,7 +2,7 @@ var gamesequene,open,clear,start,startTime,size=4,step;
 const iconPic = "../public/css/footage/icon.png";
 var catArr ;
 $(document).ready(function () {
-  var socket = io.connect();
+
   socket.emit("Game Picture");
   socket.on("Game Picture",(data)=>{
     // console.log(data);

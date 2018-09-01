@@ -2,7 +2,7 @@ var CurrentUserID;
 $(document).ready(function () {
   var timer = new Date().getTime();
   var filter_name = '' ;
-  var socket = io.connect();
+
   var current_level_data = {};
 
   auth.onAuthStateChanged(function(user) {
@@ -108,9 +108,6 @@ $(document).ready(function () {
     scroll_to_div('selector');
   });
 
-  $(document).on("click","#select_stage,#select_level",function () {
-    $(this).css("flex",'3').siblings().css("flex",'1');
-  });
   socket.on("stage name",function (data) {
     // console.log(data);
     $("#select_stage").empty();
@@ -119,7 +116,7 @@ $(document).ready(function () {
         "<button value='0' style='width:180px;height:"+
         (data[i].name.length>9?80:40)+"px;margin:5px' id='"+
         data[i].id+"'>"+data[i].name+"</button>"
-      ).css("flex","3").siblings().css("flex","1");
+      );
   });
   $(document).on("click","#select_stage button",function (e) {
     e.stopPropagation();
@@ -132,12 +129,7 @@ $(document).ready(function () {
     // console.log(chapter+">"+stage);
     socket.emit("required level name",{chapter:chapter,stage:stage});
     let timeout = 0;
-    if($(this).parent().css("flex") == '3 1 0%') timeout = 800;
-    setTimeout(function () {
-      $('#select_stage').animate({
-        scrollTop : $('#select_stage button[value="1"]')[0].offsetTop-$("#select_stage").height()
-      },800,'easeInOutCubic');
-    },timeout);
+    scrollSelectArea('stage',stage);
   });
   socket.on("level name",function (data) {
     // console.log(data);
@@ -148,16 +140,10 @@ $(document).ready(function () {
         "background-image:url(\"../public/css/footage/stage/fight_BG_0"+
         (Math.ceil(Math.random()*5))+".png\")"+
         "' id='"+data.name[i].id+"'>"+data.name[i].name+"</span>"
-      ).css("flex","3").siblings().css("flex","1");
+      );
       $("#select_stage").find("button[id='"+data.stage+"']")
-        .attr('value',1).siblings().each(function () {
-          $(this).attr('value',0)
-        });
-      setTimeout(function () {
-        $('#select_stage').animate({
-          scrollTop : $('#select_stage button[value="1"]')[0].offsetTop-$("#select_stage").height()
-        },800,'easeInOutCubic');
-      },800);
+        .attr('value',1).siblings().attr('value',0);
+        scrollSelectArea('stage',data.stage);
   });
   $(document).on("click","#select_level .card",function (e) {
     e.stopPropagation();
@@ -173,7 +159,7 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    console.log(obj);
+    // console.log(obj);
     current_level_data = obj;
     let html = "",
         data = obj.data,
@@ -187,14 +173,19 @@ $(document).ready(function () {
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
+    $(".enemy_head th").attr("reverse","");
     for(let i in data){
       if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
       else if (i == 'continue') $(".display .dataTable").find("#"+i).text(data[i]?"可以":"不行");
       else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
     $(Addreward(data.reward,data.integral)).insertAfter($("#reward_head"))
-    $(Addenemy(data.enemy)).insertAfter($("#enemy_head"));
+    $(Addenemy(data.enemy)).insertAfter($(".enemy_head:last"));
     // $(Addlist(data.list)).insertAfter($("#list_toggle"));
+    setTimeout(function () {
+      scrollSelectArea('stage',obj.stage);
+      scrollSelectArea('level',data.id.split("-")[2]);
+    },300);
     scroll_to_class('display',0);
   });
   $('#prev,#next').click(function () {
@@ -247,24 +238,24 @@ $(document).ready(function () {
     });
   });
   $("#enemy_toggle").click(function () {
-    $(".enemy_row,#enemy_head").toggle();
+    $(".enemy_row,.enemy_head").toggle();
     $(this).find('i').attr("value",function () {
       return Number($(this).attr("value"))+1
     }).css("transform",function () {
       return "rotate("+Number($(this).attr("value"))*180+"deg)"
     });
   });
-  $("#enemy_head th>span").click(function (e) {
+  $(".enemy_head th>span").click(function (e) {
     e.stopPropagation();
     if($(this).attr("active") == "true")
       $(this).attr('active',false).next().css("height",0);
     else
       $(this).attr('active',true).next().css("height","auto");
   });
-  $("#enemy_head th div").click(function () {
+  $(".enemy_head th div").click(function () {
 
   });
-  $("#enemy_head th div").click((e)=>{e.stopPropagation();})
+  $(".enemy_head th div").click((e)=>{e.stopPropagation();})
   function Addreward(arr,b) {
     // console.log(arr);
     let html ="";
@@ -288,22 +279,34 @@ $(document).ready(function () {
           first_show:[],
           next_time:[]
         };
-    if(arr[0].point) $("#enemy_head #point,#bufferZone").show();
-    else $("#enemy_head #point,#bufferZone").hide();
+    if(arr[0].point) $(".enemy_head #point,#bufferZone").show();
+    else $(".enemy_head #point,#bufferZone").hide();
     for(let i in arr){
       if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
-              "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
-              (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
-              "'><img src='"+image_url_enemy+arr[i].id+
-              ".png' style='width:100%'/></td>" ;
-      html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
-              "<td id='amount'>"+arr[i].amount+"</td>"+
-              "<td id='castle'>"+arr[i].castle+"</td>"+
-              "<td id='first_show'>"+arr[i].first_show+"</td>"+
-              "<td id='next_time'>"+arr[i].next_time+"</td>"+
-              (arr[0].point?"<td id='point'>"+arr[i].point+"</td>":"")+
-              "</tr>";
+      "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
+      (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
+      "'  colspan='"+(is_mobile?2:1)+"'><img src='"+image_url_enemy+arr[i].id+
+      ".png' style='width:100%'/></td>" ;
+      if(is_mobile){
+        html +=
+        "<td id='amount' colspan='2'>"+arr[i].amount+"</td>"+
+        "<td id='first_show' colspan='2'>"+arr[i].first_show+"</td>"+
+        "</tr><tr class='enemy_row' id='"+i+"'>"+
+        "<td id='multiple' colspan='2'>"+arr[i].multiple+"</td>"+
+        "<td id='castle' colspan='2'>"+arr[i].castle+"</td>"+
+        "<td id='next_time' colspan='2'>"+arr[i].next_time+"</td>"+
+        (arr[0].point?"<td id='point'>"+arr[i].point+"</td>":"")+
+        "</tr>";
+      } else {
+        html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
+        "<td id='amount'>"+arr[i].amount+"</td>"+
+        "<td id='castle'>"+arr[i].castle+"</td>"+
+        "<td id='first_show'>"+arr[i].first_show+"</td>"+
+        "<td id='next_time'>"+arr[i].next_time+"</td>"+
+        (arr[0].point?"<td id='point'>"+arr[i].point+"</td>":"")+
+        "</tr>";
+      }
       for(let j in range) if(range[j].indexOf(arr[i][j]) == -1) range[j].push(arr[i][j]);
     }
     for(let j in range){
@@ -312,10 +315,10 @@ $(document).ready(function () {
     }
     for(let j in range){
       range[j] = quickSort(range[j]);
-      $("#enemy_head").find("#"+j).children("div")
+      $(".enemy_head").find("#"+j).children("div")
       .append("<div>無篩選</div>");
       for(let k in range[j])
-        $("#enemy_head").find("#"+j).children("div")
+        $(".enemy_head").find("#"+j).children("div")
         .append("<div>"+range[j][k]+"</div>");
     }
     console.log(range);
@@ -394,12 +397,12 @@ $(document).ready(function () {
     return Math.ceil(Number(n)*4.2);
   }
 
-  $(document).on('click','#enemy_head th',sortStageEnemy);
+  $(document).on('click','.enemy_head th',sortStageEnemy);
   function sortStageEnemy() {
     var name = $(this).attr('id'),
         arr = [],
         flag = $(this).attr('reverse') ;
-
+    if(is_mobile) return
     $(".enemy_row").each(function () {
       let obj = {},
           val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
@@ -412,12 +415,22 @@ $(document).ready(function () {
     arr = quickSort(arr,'item');
     // console.log(arr);
     if(flag != 'increase'){
-      for(let i=arr.length-1;i>=0;i--) $("#enemy_head").after($(".enemy_row[id='"+arr[i].id+"']"));
+      for(let i=arr.length-1;i>=0;i--) $(".enemy_head:visible:last").after($(".enemy_row[id='"+arr[i].id+"']"));
       $(this).attr('reverse','increase').siblings().attr('reverse','');
     } else {
-      for(let i=0;i<arr.length;i++) $("#enemy_head").after($(".enemy_row[id='"+arr[i].id+"']"));
+      for(let i=0;i<arr.length;i++) $(".enemy_head:visible:last").after($(".enemy_row[id='"+arr[i].id+"']"));
       $(this).attr('reverse','decrease').siblings().attr('reverse','');
     }
   }
 
 });
+
+function scrollSelectArea(area,target) {
+  // console.log(area,target);
+  var This = $("#select_"+area),
+      Target = This.find("#"+target);
+  if(!Target) return
+  This.animate({
+    scrollTop:This.scrollTop() + Target.offset().top - This.offset().top - This.outerHeight()/2
+  },400);
+}

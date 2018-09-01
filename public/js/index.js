@@ -1,9 +1,8 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.22.1"
+const VERSION = "10.23.1"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
-  var socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
   var current_user_data = {};
@@ -81,12 +80,20 @@ $(document).ready(function () {
     $(".current_user_name").text("Hi, "+name);
     socket.emit("user connect",{user:user,page:location.pathname});
   });
-
+  if(Storage){
+    if(localStorage.userDisplayName){
+      $(".current_user_name").text("Hi, "+localStorage.userDisplayName);
+    }
+  }
+  else {
+    console.log("Browser don't support local storage!!");
+  }
   socket.on("current_user_data",function (data) {
     current_user_data = data ;
     console.log('get user data');
     let name = data.name ;
     $(".current_user_name").text("Hi, "+name);
+    if(Storage) localStorage.userDisplayName = name;
     let timer = new Date().getTime(),setting = data.setting;
     if((timer-data.first_login)>30000||setting.show_miner){
       if(!setting.mine_alert) {}
@@ -333,7 +340,11 @@ $(document).ready(function () {
     if(invalidVersion(version)) {
       $("#version_alert").show();
       countDownReload();
-    }
+  }
+  socket.on("online user change",(onLineUser)=>{
+    $("#onLineUser span").text(onLineUser);
+  });
+
   });
   function invalidVersion(version) {
     var newVer = version.split("."),

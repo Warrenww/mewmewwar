@@ -2,10 +2,13 @@ const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
 const image_url_icon =  "../public/css/footage/gameIcon/" ;
 const image_url_gacha =  "../public/css/footage/gacha/" ;
+var is_mobile = screen.width < 768;
+console.log("mobile : ",is_mobile);
 var showcomparetarget = 1 ;
 var filterObj = {};
+var socket;
 $(document).ready(function () {
-  var socket = io.connect();
+  socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
 
@@ -132,9 +135,6 @@ $(document).ready(function () {
     localStorage["tutorial_"+page] = true;
   });
 
-  socket.on("connet",function (data) {
-    console.log("server ready")
-  }) ;
 });
 
 $(window).load(function () {
@@ -262,8 +262,17 @@ function scroll_to_class(class_name,n) {
     {scrollTop: $("."+class_name).eq(n).offset().top-100},
     600,'easeInOutCubic');
 }
-function AddZero(n) {
-  return n<10 ? "0"+n : n
+function AddZero(n,e=1) {
+  var s = Number(n).toString();
+  if(s == "NaN") return s
+  if(n == 0){
+    for(let i = e; i>0; i--) s = "0"+s;
+    return s
+  }
+  for(let i = e; i >= 0; i--){
+    if (n < 10**(i)) s = "0"+s;
+    else return s
+  }
 }
 
 //temp

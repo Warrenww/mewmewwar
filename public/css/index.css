@@ -72,7 +72,8 @@ html,body{overflow: hidden;}
   right: -100%;
   top: 0;
   position: absolute;
-  transition: .3s ease-in-out
+  transition: .3s ease-in-out;
+  z-index: 10;
 }
 iframe{
   transition: .4s ease-in-out;
@@ -229,3 +230,13 @@ nav a{cursor: pointer;}
   cursor: pointer;
 }
 #LegendRedirect:hover{color: #642c88}
+#onLineUser{
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  color: white;
+  padding: 10;
+  font-weight: bold;
+  font-size: 20px;
+  z-index: 0;
+}

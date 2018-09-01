@@ -1,7 +1,7 @@
 var list = { upper:[],lower:[] };
 var current_editing_list = null;
 $(document).ready(function () {
-  var socket = io.connect();
+
   var tip_fadeOut;
   var changeFunctions_v = 0;
   var removeStageBind = [];

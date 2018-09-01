@@ -108,7 +108,7 @@ nav .mobile,
     height: 30px;
   }
   #year_event{padding: 5% 0;font-size: 16px}
-  #bulletin .main{width: 95%}
+  #bulletin .main,#version_alert .content .main{width: 95%}
   #more_option{
     top: 50%;
     background-color: rgba(0, 0, 0, 0.35);
@@ -125,6 +125,11 @@ nav .mobile,
   .floatDisplay div span{margin: 10}
   #enemy_head th span{display: none;}
   .tutorial .article{margin: 1%}
+  #onLineUser{
+    width: 100%;
+    background-color: black;
+    text-align: center;
+  }
 }
 
 @media screen and (max-width: 1024px) {
@@ -149,7 +154,7 @@ nav .mobile,
   {padding-top: 15%}
   .navigation_m{display: flex}
   .iframe_box iframe{width: 100%;}
-  .search_type{flex-wrap: wrap;justify-content: center;}
+  .search_type{flex-wrap: wrap;justify-content: center;margin-top: 30}
   .search_type .search{justify-content: center;}
   body::-webkit-scrollbar {width: 0px;}
   #mine_alert .content div,#mine_alert span{width: 90%}

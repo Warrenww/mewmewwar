@@ -1,7 +1,7 @@
 $(document).ready(function () {
   var today = new Date();
   var dailyEvent ;
-  var socket = io.connect();
+
   var current_user_id;
   var catArr = ['貓','坦克貓','戰鬥貓','噁心貓','牛貓','鳥貓','魚貓','蜥蜴貓','巨人貓'];
   var Excat = [ {id:49,name:'女王貓'},{id:51,name:'三角褲貓'},{id:46,name:'功夫貓'},

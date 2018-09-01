@@ -1,6 +1,6 @@
 var current_user_id;
 $(document).ready(function () {
-  var socket = io.connect();
+
   var timer = new Date().getTime();
   var current_enemy_data = {};
   var current_search = [];

@@ -51,7 +51,18 @@ var stdin = process.openStdin();
 // });
 
 // database.ref('/user').once("value",function (snapshot) {
-//   console.log('finish');
+//   var data = snapshot.val();
+//   var count = 0;
+//   for(let i in data){
+//     var history = data[i].history.gacha;
+//     console.log(i,count,"-----",count/2221*100,"%");
+//     count ++;
+//     for(let j in history){
+//       var id = history[j].name?history[j].name:history[j].id;
+//       database.ref("/user/"+i+"/history/gacha/"+j).update({id:id,name:null});
+//     }
+//   }
+//
 // });
 // var stagedata
 // database.ref("/stagedata/universe").once("value",function (snapshot){
