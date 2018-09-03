@@ -127,7 +127,7 @@ function ReloadAllData() {
     console.log("Number of cat search : ",__numberOfCatSearch);
     for(let i in legenddata){
       var This = legenddata[i];
-      if(!new Date().getDay()){
+      if(This.thisWeek.date - This.lastWeek.date > 7*86400000){
         This.lastWeek = This.thisWeek;
         This.thisWeek = {date:new Date().getTime()};
         database.ref("/legend/"+i).update({lastWeek:This.lastWeek,thisWeek:This.thisWeek});
@@ -431,8 +431,7 @@ io.on('connection', function(socket){
           }
         }
         console.log("Result length:",buffer_1.length);
-        if(type == 'enemy') socket.emit("search result enemy",{result:buffer_1,query:data.query,type:data.query_type});
-        else  socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
+        socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
         }
         catch(e){
           __handalError(e);
@@ -478,8 +477,8 @@ io.on('connection', function(socket){
                 cost : load_data[x].cost?load_data[x].cost:0
               };
               buffer.push(obj) ;
-              if(obj.type == 'enemy') break
             }
+            if(obj.type == 'enemy') break
           }
         }
       }
@@ -761,6 +760,7 @@ io.on('connection', function(socket){
     }
     io.emit("online user change",count);
   }
+
   socket.on("combo search",function (data) {
     console.log("searching combo......") ;
     try{
@@ -1157,18 +1157,6 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on("compare C2E",function (data) {
-    console.log("compare C2E");
-    console.log(data);
-    try{
-      userdata[data.uid].compare.cat2enemy = data.target
-      database.ref("/user/"+data.uid+"/compare/cat2enemy").update(data.target)
-    }
-    catch(e){
-      __handalError(e);
-    }
-  });
-
   socket.on("notice mine",function (data) {
     let timer = new Date().getTime();
     try{
@@ -1342,10 +1330,7 @@ io.on('connection', function(socket){
           }
         }
       }
-      if(find) {
-        userdata[uid].history.last_stage = location;
-        database.ref("/user/"+uid+"/history/last_stage").set(location);
-      }
+      if(find) SetHistory(uid, 'stage', location);
       socket.emit('cat to stage',{find,stage});
     }catch(e){
       __handalError(e);

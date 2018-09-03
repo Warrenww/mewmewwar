@@ -32,7 +32,10 @@ $(document).ready(function () {
 
   });
 
-  $('.calendar_holder,.prediction_holder').click(function () { $(this).fadeOut(400); });
+  $('.calendar_holder,.prediction_holder').click(function () {
+    $(this).fadeOut(400);
+    $(document).unbind('keydown',controlLR);
+  });
   $('#calendar td').click(function (e) {
     e.stopPropagation();
     var date = $('#calendar').attr('value')+AddZero($(this).attr("id"));
@@ -48,6 +51,7 @@ $(document).ready(function () {
       $('.calendar_holder').fadeIn(400).css("display",'flex');
     } else if(type == 'pre'){
       $('.prediction_holder').fadeIn(400).css("display",'flex');
+      $(document).bind('keydown',controlLR);
       setTimeout(function () {
         var h = $("#prediction").height(),
             w = $("#prediction td").innerWidth(),
@@ -222,4 +226,21 @@ function TotalDay(m,y) {
     y = y%400?(y%100?(y%4?0:1):0):1;
     return y?29:28
   }
+}
+var controlLR = function (e) {
+  // console.log(e);
+  var holder = $(".prediction_holder");
+  if(e.keyCode == 39){ // right
+    holder.animate({
+      scrollLeft: holder.scrollLeft()+50
+    });
+  } else if(e.keyCode ==37){ // left
+    holder.animate({
+      scrollLeft: holder.scrollLeft()-50
+    });
+  }
+  $(document).unbind('keydown',controlLR);
+  setTimeout(function () {
+    $(document).bind('keydown',controlLR);
+  },300);
 }

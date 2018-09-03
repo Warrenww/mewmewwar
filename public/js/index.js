@@ -1,5 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.23.2"
+const VERSION = "10.23.3"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
@@ -269,7 +269,7 @@ $(document).ready(function () {
         newTarget; // store target iframe
     // scroll down or swipe up
     if(wheelDelta < 0 || d == 'up') newTarget = target.next();
-    else if(wheelDelta > 0 || d == 'down') newTarget = target.prev(); 
+    else if(wheelDelta > 0 || d == 'down') newTarget = target.prev();
     else return
 
     if(!newTarget.attr('id')) { // target iframe not exist

@@ -114,6 +114,6 @@ function AddZero(n) {
 //       amount : result[i].amount,
 //       cat : [result[i].cat_1,result[i].cat_2,result[i].cat_3,result[i].cat_4,result[i].cat_5]
 //     }
-//     // database.ref("/combodata/"+result[i].id).update(result[i]);
+//     database.ref("/combodata/"+result[i].id).update(result[i]);
 //   }
 // });

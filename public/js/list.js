@@ -1,11 +1,11 @@
 var list = { upper:[],lower:[] };
 var current_editing_list = null;
+var current_user_id, current_search = [] ;
 $(document).ready(function () {
 
   var tip_fadeOut;
   var changeFunctions_v = 0;
   var removeStageBind = [];
-  var current_user_id = '';
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
@@ -25,58 +25,6 @@ $(document).ready(function () {
   $(".slider").slider();
 
 //-----------------------------------------------------------------------------
-  $(".select_ability .button").click(function () {
-    let text = $(this).children("span").text(),
-        val = $(this).attr('value')=='1'?true:false;
-    if(!val){
-      clearTimeout(tip_fadeOut);
-      $(".ability_tip").remove();
-      $("body").append("<div class='ability_tip'>"+text+"<div>");
-      setTimeout(function () { $(".ability_tip").css("left",-10); },100)
-      tip_fadeOut = setTimeout(function () { $(".ability_tip").css("left",-250) },2000);
-    }
-  });
-  $('.search_type .button').click(function () {
-    let type = $(this).attr('id').split("_")[0];
-    if(type == 'normal'){
-      $("#gacha_search,#combo_search").attr("value",0);
-      $("#gacha_table,#combo_table").hide(200).siblings("#upper_table").show(200);
-    } else if(type == 'gacha'){
-      $("#normal_search,#combo_search").attr("value",0);
-      $("#upper_table,#combo_table").hide(200).siblings("#gacha_table").show(200);
-    } else if(type == 'combo'){
-      $("#normal_search,#gacha_search").attr("value",0);
-      $("#upper_table,#gacha_table").hide(200).siblings("#combo_table").show(200);
-    } else {
-      $("#lower_table").toggle(300);
-      return
-    }
-    $("#search_ability").attr("value",type);
-  });
-  $('#search_ability').click(search) ;
-  $('#searchBut').click(function () {
-    let keyword = $(this).siblings().val();
-    socket.emit("text search",{key:keyword,type:'cat'});
-  });
-  $(document).on('keypress','#searchBox',function (e) {
-    let code = (e.keyCode ? e.keyCode : e.which);
-    if (code == 13) {
-      let keyword = $(this).val();
-      socket.emit("text search",{key:keyword,type:'cat'});
-    }
-  });
-  $(".search_table .button").click(function () {
-    $("body").bind('keypress',quickSearch);
-    setTimeout(function () {
-      $("body").unbind('keypress',quickSearch);
-    },5000);
-  });
-  function quickSearch(e) {
-    let code = (e.keyCode ? e.keyCode : e.which);
-    if (code == 13) search();
-    $("body").unbind('keypress',quickSearch);
-    ga('send', 'event', 'search', 'quick search','cat');
-  }
   $('.filter_option').click(function () {
     $("#slider_holder").show();
     $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0');
@@ -93,132 +41,8 @@ $(document).ready(function () {
     let name = $(this).attr("id");
     $(this).css("background-image","url('"+image_url_icon+name+".png')");
   });
-  var number_page,page_factor,sortable_item ;
-  socket.on("search result",function (data) {
-    console.log("recive search result");
-    // console.log(data);
-    number_page = 0 ;
-    page_factor = 1 ;
-    $("#selected,#page_dot").empty();
-    $("#selected").css('display','flex').scrollTop(0).append(condenseCatName(data.result));
-    let select_width = $("#selected").innerWidth(),
-        card_width = screen.width > 1024 ? 216 :140,
-        per_page = Math.floor(select_width/card_width)*2;
+  var sortable_item ;
 
-    number_page = Math.ceil(number_page/per_page) ;
-    if(number_page>25) page_factor = 2;
-    for (let i = 0;i<Math.ceil(number_page)/page_factor;i++)
-      $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
-    $("#page_dot span").eq(0).css("background-color",'rgb(254, 168, 74)');
-    if (data.type == "gacha"&&data.query.length == 1)
-      $(".compareSorce .title #option #Gogacha").attr('value',data.query[0]).show();
-    else $(".compareSorce .title #option #Gogacha").hide();
-    let query = '';
-    for(let i in data.query){
-      if(data.type == 'gacha') query+=parseGachaName(data.query[i])+" ";
-      else for(let j in data.query[i]) query+=(parseRarity(data.query[i][j])?parseRarity(data.query[i][j]):data.query[i][j])+" ";
-    }
-    // console.log(query);
-    $(".compareSorce").find("#query").text("篩選條件:"+query);
-    $("#selected .card-group").sortable({
-      items:'.card:visible',
-      scroll:true,
-      containment:"#edit_pannel",
-      opacity:0.5,
-      connectWith:"#list_p1,#list_p2",
-      helper:'clone',
-      change:function (e,ui) {
-        sortable_item = ui.item.clone();
-      }
-    });
-    function parseGachaName(name) {
-       $("#gacha_table").find(".button").each(function () {
-        if($(this).attr('id') == name) name = $(this).text();
-      });
-      return name
-    }
-  });
-  function condenseCatName(data) {
-    let now = '000' ;
-    let html = '<span class="card-group" hidden>' ;
-    for(let i in data){
-      // console.log(data[i].id);
-      if(!data[i].id) continue
-      let name = data[i].name,id = data[i].id,current = id.substring(0,3) ;
-      if(current == now){
-        html += '<span class="card" value="'+id+'" '+
-        'style="background-image:url('+image_url_cat+id+
-        '.png);display:none"cost="'+data[i].cost+'"detail="cost">'+
-        name+'</span>' ;
-      }
-      else{
-        html += '</span>' ;
-        html += '<span class="card-group" value="'+current+'">'+
-        '<span class="glyphicon glyphicon-refresh"></span>'+
-        '<span class="card" value="'+id+'" '+
-        'style="background-image:url('+image_url_cat+id+
-        '.png)"cost="'+data[i].cost+'"detail="cost">'+
-        name+'</span>' ;
-        now = current ;
-        number_page ++ ;
-      }
-    }
-    $(".compareSorce #result_count").find("span").text(number_page);
-    return html ;
-  }
-  function search() {
-    let rarity = $(".select_rarity [value=1]"),
-        color = $(".select_color [value=1]"),
-        ability = $(".select_ability [value=1]"),
-        gacha = $(".gacha_search td .button[value=1]"),
-        combo = $(".select_effect .button[value=1]"),
-        type = $("#search_ability").attr("value"),
-        value_search = Number($("#value_search").attr("value"));
-    let rFilter = [], cFilter = [], aFilter = [],gFilter = [],A_search = [] ;
-
-    for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
-    for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
-    for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
-    for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('id')) ;
-    for(let i = 0;i<combo.length;i++) A_search.push(combo.eq(i).attr('name')) ;
-    socket.emit(type+" search",{
-      uid:current_user_id,
-      query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
-      query_type:type,
-      filterObj,
-      type:"cat",
-      id:A_search
-    });
-  }
-  var result_expand = 0,originHeight;
-  $(document).on('click','.compareSorce .title #option i',function () {
-    let type = $(this).attr("id");
-    if(type == 'result_snapshot'){
-      let target = $("#selected")[0];
-      if(!result_expand) {
-        $("#result_expand").click();
-        setTimeout(function () { snapshot(target); },500)
-        setTimeout(function () { $("#result_expand").click(); },500)
-      } else snapshot(target);
-    }
-    else if(type == 'result_expand'){
-      let trueHeight = $("#selected")[0].scrollHeight;
-      if(!result_expand){
-        originHeight = $("#selected")[0].offsetHeight;
-      }
-      $("#selected").css("height",function () {
-        return result_expand?originHeight:trueHeight
-      });
-      result_expand = result_expand?0:1;
-    }
-    else if (type == 'Gogacha') {
-      socket.emit("record gacha",{
-        uid:current_user_id,
-        gacha:$(this).attr('value')
-      });
-      window.parent.reloadIframe("gacha");
-    }
-  });
   $(document).on('click','.glyphicon-refresh',toggleCatStage);
   function toggleCatStage() {
     somethingChange();
