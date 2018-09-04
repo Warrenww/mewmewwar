@@ -1,5 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.24.1"
+const VERSION = "10.24.2"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
@@ -368,10 +368,10 @@ $(document).ready(function () {
   function invalidVersion(version) {
     var newVer = version.split("."),
         oldVer = VERSION.split(".");
-    if(Number(oldVer[0]) > Number(newVer[0])) return false
-    else if(Number(oldVer[1]) > Number(newVer[1])) return false
-    else if(Number(oldVer[2]) > Number(newVer[2])) return false
-    return true
+    if(Number(oldVer[0]) < Number(newVer[0])) return true
+    else if(Number(oldVer[1]) < Number(newVer[1])) return true
+    else if(Number(oldVer[2]) < Number(newVer[2])) return true
+    return false
   }
   function countDownReload() {
     if(countDown <= 0) location.reload();
