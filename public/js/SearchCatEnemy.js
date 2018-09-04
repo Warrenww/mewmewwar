@@ -228,6 +228,7 @@ $(document).on('click','.compareSorce .title #option i',function () {
       });
       // console.log(target);
       socket.emit("compare "+page,{id:current_user_id,target:target});
+      compare = target;
       if(showcomparetarget) showhidecomparetarget();
       $("#compare_number").text(target.length);
     }

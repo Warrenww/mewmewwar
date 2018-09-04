@@ -162,8 +162,9 @@ input:checked + .slider_but:before {
   margin: 5px;
   color: white;
   padding: 5PX;
-  background-color: rgb(221, 89, 44);
+  background-color: #ffc33e;
   cursor: pointer;
+  font-weight: bold;
 }
-#photo_chooser div #fb{ background-color: #2f5dde; }
+#photo_chooser div #account{ background-color: #e46353; }
 #history:hover{color: rgb(117, 19, 133);}

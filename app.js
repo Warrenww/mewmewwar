@@ -168,15 +168,12 @@ io.on('connection', function(socket){
       var type = data.type,
           target = data.target,
           uid = data.uid,
-          load_data,buffer,
+          load_data,
           default_cat_lv=30,
           user_variable = {},
           user_history = {},
           user_last_search,
           buffer = [];
-          load_data,buffer,combo
-          default_cat_lv=30,
-          user_variable;
       // Make sure the target's type is array
       target = typeof(target) == 'object'?target:[target];
       // Identify what kind of data is required
@@ -199,21 +196,25 @@ io.on('connection', function(socket){
       var default_lv = {cat:default_cat_lv,enemy:1};
       for (let i in target) {
         var id = target[i],
-        lv = data.lv,
-        bro = [],
-        combo = [];
+            grossID = id.substring(0,3),
+            lv = data.lv;
         // record history
         if(uid){
-          user_variable[id] = user_variable[id] ?
-          user_variable[id]:{count:0,lv:default_lv[type]};
-          user_variable[id].count = user_variable[id].count? 1 : 0;
+          user_variable[grossID] = user_variable[grossID] ?
+          user_variable[grossID]:{count:0,lv:default_lv[type]};
+          user_variable[grossID].count = user_variable[grossID].count? 1 : 0;
           if (data.record) SetHistory(uid,type,id);
         }
         //Extract data
+        var CatOnlyData = {bro:[],combo:[],own:null};
+        if (type == 'cat') _catOnlyData(CatOnlyData,id,uid);
         buffer.push({
           data:load_data[id],
-          count:user_variable[id].count,
-          lv:data.lv?data.lv:(user_variable[id].lv?user_variable[id].lv:default_lv[type])
+          count:user_variable[type=='cat'?grossID:id].count,
+          lv:data.lv?data.lv:(user_variable[type=='cat'?grossID:id].lv?user_variable[type=='cat'?grossID:id].lv:default_lv[type]),
+          bro:CatOnlyData.bro,
+          combo:CatOnlyData.combo,
+          own:CatOnlyData.own
         });
         default_cat_lv = userdata[uid].setting.default_cat_lv;
         user_variable = userdata[uid].variable[type];
@@ -222,6 +223,36 @@ io.on('connection', function(socket){
     } catch (e) {
       __handalError(e);
     }
+  });
+  function _catOnlyData(data,id,uid) {
+    var grossID = id.substring(0,3); // Turn cat id xxx-x to xxx
+    for(let i=1;i<4;i++){
+      let a = grossID+"-"+i ;
+      if(a == id) continue
+      else if(catdata[a]) data.bro.push(a) ;
+      // retrieved combo data
+      for(let j in combodata)
+        if(combodata[j].cat.indexOf(a) != -1) data.combo.push(combodata[j]);
+    }
+    if(uid){
+      var own = userdata[uid].variable.cat[grossID].own;
+      own = own?own:false;
+      data.own = own;
+    }
+  }
+  // Get the user survey, cat statistic, and cat comment
+  socket.on('required cat comment',function (data) {
+    console.log('required cat comment',data);
+    var id = data.id,
+        grossID = id.substring(0,3),
+        uid = data.uid,
+        buffer = {survey:{},comment:{}};
+    if(uid){
+        var variable = userdata[uid].variable.cat[grossID];
+        buffer.survey = variable.survey?variable.survey:false;
+    }
+    buffer.comment = catComment[grossID];
+    socket.emit("comment",buffer);
   });
   // Store cat level or enemy multiple
   // {
@@ -281,10 +312,11 @@ io.on('connection', function(socket){
       if (type == 'cat') load_data = catdata;
       else if (type == 'enemy') load_data = enemydata;
       else if (type == 'stage') load_data = stagedata;
-      database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
-      .set(user_variable[id].count);
       load_data[id].count = load_data[id].count?load_data[id].count+1:1;
       database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
+      if(type == 'cat') id = id.substring(0,3);
+      database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
+      .set(user_variable[id].count);
     }
   }
 
@@ -514,80 +546,18 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on("display cat",function (data) {
-    console.log("display cat");
-    console.log(data);
-    try{
-      let uid = data.uid,
-      id = data.cat;
-      if(!id) return
-      let record = data.history,
-      grossID = id.substring(0,3),
-      result = {"this":"","bro":[],"combo":[]},
-      level ;
-      console.log("client requir cat "+grossID+"'s data'");
-      let combo = [] ;
-      for(let i=1;i<4;i++){
-        let a = grossID+"-"+i ;
-        if(a == id) result.this = catdata[a] ;
-        else if(catdata[a]) result.bro.push(catdata[a].id) ;
-        for(let j in combodata) if(combodata[j].cat.indexOf(a) != -1) combo.push(combodata[j]);
-      }
-      result.combo = combo ;
-      if(!uid) return
-      else {
-        let default_lv = userdata[uid].setting.default_cat_lv,
-        variable = userdata[uid].variable.cat[grossID],
-        storge_lv = variable ? variable.lv : default_lv,
-        storge_count = variable?(variable.count?variable.count+1:1):1,
-        own = variable ? variable.own : false;
-        if(userdata[uid].variable.cat == "") userdata[uid].variable.cat = {};
-        if(!userdata[uid].variable.cat[grossID]) userdata[uid].variable.cat[grossID] = {};
-        result.lv = storge_lv?storge_lv:default_lv;
-        result.count = storge_count;
-        result.own = own;
-        result.survey = variable ? (variable.survey?variable.survey:false):false;
-        result.this.statistic = catComment[grossID]?catComment[grossID].statistic:{};
-        socket.emit("display cat result",result);
-        let history = userdata[uid].history.cat,
-        last = userdata[uid].history.last_cat;
-        if(id != last && record) {
-          console.log("recording user history");
-          for(let i in history){
-            if(history[i].id == id) delete history[i]
-          }
-          var key = database.ref().push().key;
-          if(history == "") userdata[uid].history.cat = {};
-          history[key] = {type : "cat",id : id,time:new Date().getTime()};
-          database.ref("/user/"+uid+"/history/cat").set(history);
-          userdata[uid].history.last_cat = id;
-          database.ref("/user/"+uid+"/history/last_cat").set(id);
-          console.log("count cat search time(user)");
-          userdata[uid].variable.cat[grossID].count = storge_count;
-          database.ref("/user/"+uid+"/variable/cat/"+grossID+"/count").set(storge_count);
-          console.log("count cat search time(global)");
-          if(!catdata[id].count) catdata[id].count = 0;
-          catdata[id].count ++;
-          database.ref("/newCatData/"+id+"/count").set(catdata[id].count);
-        }
-        else console.log(record?"same as last cat":"do not record");
-      }
-    }
-    catch(e){
-      __handalError(e);
-    }
-  });
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
      try{
-       let exist = false;
-       let timer = new Date().getTime();
+       var exist = false;
+       var timer = new Date().getTime();
+       var data;
        console.log('login time : '+timer);
        for(let uid in userdata){
          if(uid == user.uid){
            console.log("find same user");
            exist = true;
-           socket.emit("login complete",userdata[uid].nickname);
+           data = userdata[uid];
            break;
          }
        }
@@ -596,9 +566,9 @@ io.on('connection', function(socket){
          database.ref('/user/'+user.uid).update({"last_login" : timer});
        } else {
          console.log('new user');
-         let data = GenerateUser(user);
-         socket.emit("login complete",data.nickname);
+         data = GenerateUser(user);
        }
+       socket.emit("login complete",{user:user,name:data.nickname});
      }
      catch(e){
        __handalError(e);
@@ -1277,10 +1247,6 @@ io.on('connection', function(socket){
     catch(e){
       __handalError(e);
     }
-  });
-  socket.on('required cat comment',function (cat) {
-    console.log('required cat comment',cat);
-    socket.emit("comment",catComment[cat]?catComment[cat].comment:undefined);
   });
   socket.on('comment function',function (data) {
     try{

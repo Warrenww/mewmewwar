@@ -44,6 +44,7 @@ $(document).ready(function () {
     if(!confirm("確定要登出嗎")) return
     firebase.auth().signOut().then(function() {
       // Sign-out successful.
+      window.open("/");
     }, function(error) {
       // An error happened.
     });
@@ -67,41 +68,13 @@ $(document).ready(function () {
     },1000);
   });
 
-  $(document).on('click','.card',function () {
-    let id = $(this).attr('value'),
-        type = $(this).attr('type');
-    if(type == 'cat'){
-      socket.emit("display cat",{
-        uid : current_user_data.uid,
-        cat : id,
-        history:true
-      });
-      // location.assign("/view/cat.html");
-      // window.parent.changeIframe('cat');
-      window.parent.reloadIframe('cat');
-
-    } else if(type == 'enemy'){
-      socket.emit("display enemy",{
-        uid:current_user_data.uid,
-        id:id,
-        history:true
-      });
-      location.assign("/view/enemy.html");
-      // window.parent.changeIframe('enemy');
-      window.parent.reloadIframe('enemy');
-    }
-  });
-
-
-
   socket.on("current_user_data",function (data) {
     // console.log(data);
     current_user_data = data ;
-    socket.emit("history",data.uid);
     $("#userName").attr('value',data.name);
   });
   socket.on("user setting",function (data) {
-    // console.log(data);
+    console.log(data);
     let exp = 0 ;
     for(let i in data){
       if(i == "default_cat_lv"){
@@ -116,15 +89,11 @@ $(document).ready(function () {
         $("#total_survey").text(data[i]);
         exp += 1000*Number(data[i]);
       }else if(i == 'photo'){
-        $('#photo').css("background-image",'url("'+data[i]+'")')
-          .css('background-position',function () {
-            return data[i].indexOf("http")!=-1?'0':'-4px 6px'
-          });
+        $('#photo').css("background-image",'url("'+data[i]+'")');;
       } else {
         $("#"+i).prop('checked',data[i]);
       }
     }
-    console.log(Math.log(exp));
   });
 
   $("#photo").hover(function () {
@@ -137,8 +106,8 @@ $(document).ready(function () {
   $("#photo_chooser div div span").click(function (e) {
     e.stopPropagation();
     var type = $(this).attr("id");
-    if(type == 'fb'){
-      if(!user_photo_url){ alert("無法取得fb照片"); return }
+    if(type == 'account'){
+      if(!user_photo_url){ alert("無法取得照片"); return }
       $('#photo').css({
         "background-image":'url("'+user_photo_url+'")',
         "background-position":'0'

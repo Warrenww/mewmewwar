@@ -50,7 +50,7 @@ $(document).ready(function () {
       $("#compare_number").text(data.compare_e2e.length)
       for(let i in data.compare_e2e){
         let id = data.compare_e2e[i].id,
-            name = data.compare_e2e[i].name;
+            name = new Enemy(data.compare_e2e[i]).Name;
         compareTargetAddCard(id,name)
       }
       compare = data.compare_e2e;
@@ -94,7 +94,12 @@ $(document).ready(function () {
         type:"cat",
         value:0
       });
-      window.parent.reloadIframe('cat');
+      if(window.parent){
+        window.parent.reloadIframe('cat');
+        window.parent.changeIframe('cat');
+      } else {
+        window.open("/cat","_blank");
+      }
     }
   });
   function ReverseType(c) {
@@ -128,7 +133,12 @@ $(document).ready(function () {
       type:"cat",
       value:0
     });
-    window.parent.reloadIframe('cat');
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe('cat');
+      window.parent.changeIframe('cat');
+    } else {
+      window.open("/cat","_blank");
+    }
 
   })
   var original_lv ;
@@ -150,7 +160,7 @@ $(document).ready(function () {
   });
 
   socket.on("required data",(data)=>{
-    // console.log(data);
+    console.log(data);
     data = data.buffer;
     _data = new Enemy(data[0].data);
     current_enemy_data = _data;

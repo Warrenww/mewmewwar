@@ -64,8 +64,12 @@ $(document).ready(function () {
       target:id,
       uid:CurrentUserID
     });
-    window.parent.reloadIframe(type);
-    window.parent.changeIframe(type);
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe(type);
+      window.parent.changeIframe(type);
+    } else {
+      window.open("/"+type,"_blank");
+    }
     $(".floatDisplay_holder").hide();
   });
 });

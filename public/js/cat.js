@@ -1,6 +1,9 @@
 var current_user_id;
 var current_search = [];
-
+$(".select_ability").find(".ability_icon").each(function () {
+  var name = $(this).attr("id");
+  $(this).css("background-image","url('"+image_url_icon+name+".png')");
+});
 $(document).ready(function () {
   var timer = new Date().getTime();
 
@@ -29,11 +32,12 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     current_user_id = data.uid;
     if(data.last_cat && location.pathname.indexOf('once') == -1)
-      socket.emit("display cat",{
-        uid : data.uid,
-        cat : data.last_cat,
-        history:true
-      }) ;
+      socket.emit("required data",{
+        type:'cat',
+        target:data.last_cat,
+        record:true,
+        uid:data.uid
+      });
     if(data.compare_c2c) {
       $(".compareTarget").empty();
       $("#compare_number").text(data.compare_c2c.length)
@@ -85,11 +89,12 @@ $(document).ready(function () {
   $(document).on('click','.card',function (e) {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
     else
-      socket.emit("display cat",{
-        uid : current_user_id,
-        cat : $(this).attr('value'),
-        history:true
-      });
+    socket.emit("required data",{
+      type:'cat',
+      target:$(this).attr('value'),
+      record:true,
+      uid:current_user_id
+    });
   });
 
   var input_org ;
@@ -120,7 +125,12 @@ $(document).ready(function () {
       uid:current_user_id,
       id:[$(this).attr('val')]
     }) ;
-    window.parent.reloadIframe('combo');
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe('combo');
+      window.parent.changeIframe('combo');
+    } else {
+      window.open("/combo","_blank");
+    }
   }) ;
   $(document).on("click",".dataTable .name",function () {
     let name = $(this).text();
@@ -135,24 +145,26 @@ $(document).ready(function () {
       $("#copy_alert").css("left",-250);
     },2600);
   });
-  $(".select_ability").find(".ability_icon").each(function () {
-    let name = $(this).attr("id");
-    $(this).css("background-image","url('"+image_url_icon+name+".png')");
-  });
-  socket.on("display cat result",function (result) {
-    console.log("recive cat data,starting display") ;
-    // console.log(result) ;
-    let data = new Cat(result.this),
-        arr = result.bro,
-        brr = result.combo,
-        own = result.own,
-        survey = result.survey;
-    displayCatData(data,arr,brr,result.lv,result.count,own,survey) ;
-    socket.emit('required cat comment',data.id.substring(0,3));
-    current_cat_data = data;
-  });
 
-  function displayCatData(data,arr,brr,lv,count,own,survey) {
+  socket.on("required data",(data)=>{
+    console.log(data);
+    var data = data.buffer[0],
+        _data = new Cat(data.data);
+    current_cat_data = _data;
+    displayCatData(_data,data.bro,data.combo,data.lv,data.count,data.own) ;
+    socket.emit('required cat comment',{
+      uid:current_user_id,
+      id:_data.id.substring(0,3)
+    });
+  });
+  socket.on("comment",function (data) {
+    console.log(data);
+    var survey = data.survey?data.survey:{};
+    initial_survey();
+    addSurvey(data.comment.statistic,data.survey);
+    append_comment(data.comment.comment);
+  });
+  function displayCatData(data,arr,brr,lv,count,own) {
     let html = "",
         id = data.id,
         grossID = id.substring(0,3);
@@ -177,12 +189,9 @@ $(document).ready(function () {
       else
         $(".dataTable").find("#"+i).text(data[i]);
     }
-    survey = survey?survey:{};
-    initial_survey();
-    addSurvey(data.statistic,survey);
+
     $(".dataTable").attr('id',data.id).find('.bro').html(Thisbro(arr));
     $(".dataTable").find('.img').css('background-image','url("'+data.imgURL+'")');
-    // $(".dataTable").find('.img').children().attr('src',data.imgURL);
 
     $(".dataTable").find(".combo").remove();
     $(AddCombo(brr)).insertAfter('.dataTable #combo_head');
@@ -342,8 +351,12 @@ $(document).ready(function () {
   socket.on("cat to stage",function (data) {
     // console.log(data);
     if(data.find) {
-      window.parent.reloadIframe('stage');
-      window.parent.changeIframe('stage');
+      if(window.parent.reloadIframe){
+        window.parent.reloadIframe('stage');
+        window.parent.changeIframe('stage');
+      } else {
+        window.open("/stage","_blank");
+      }
     }
     else
       window.open('https://battlecats-db.com/stage/'+data.stage+'.html',"_blank");
@@ -660,7 +673,6 @@ $(document).ready(function () {
     $('.survey .application[type="'+maxapp[i]+'"]').prev(".num")
     .css({"color":"#f79942","font-weight":'bold'})
   }
-  socket.on("comment",function (comment) { append_comment(comment); });
   var commentMap = {};
   function append_comment(comment) {
     // console.log(comment);

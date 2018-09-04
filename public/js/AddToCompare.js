@@ -65,8 +65,12 @@ $(document).ready(function () {
       alert("購物車中沒有東西!!!!");
       return
     }
-    window.parent.reloadIframe(windowName);
-    window.parent.changeIframe(windowName);
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe(windowName);
+      window.parent.changeIframe(windowName);
+    } else {
+      window.open("/"+windowName,"_blank");
+    }
   });
   $('body').append("<div id='compare_panel_BG'></div>");
   $(document).on('click','#compare_panel_BG',function () {

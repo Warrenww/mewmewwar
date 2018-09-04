@@ -41,7 +41,7 @@
   top: 0;
 }
 #snapshot{position: relative;right: -100}
-.comparedatahead{padding-top: 2px}
+.comparedatahead{padding-top: 2px;position: sticky;left: 0}
 #level{
   display: flex;
   justify-content: space-between;

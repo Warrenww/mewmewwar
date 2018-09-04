@@ -1,22 +1,24 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.23.3"
+const VERSION = "10.24.1"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
+  var google_provider = new firebase.auth.GoogleAuthProvider();
   var filter_name = '';
   var current_user_data = {};
   var newUser = false;
   //user login
-  $(document).on("click","#fb_login",facebookLog)
-  $(document).on("click","#guest_login",function () {
+  $("#fb_login").click(facebookLogin);
+  $("#google_login").click(googleLogin);
+  $("#guest_login").click(function () {
     let r = confirm("資料庫容量有限，"+
     "匿名登入使用者如果連續五天沒有使用將被刪除，"+
     "是否仍要繼續匿名登入?");
     if(r) guestLog();
     else return
   })
-  function facebookLog() {
+  function facebookLogin() {
     $(".login_box").children('span').hide().siblings('i').show();
     auth.signInWithPopup(facebook_provider).then(function(result) {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
@@ -27,6 +29,26 @@ $(document).ready(function () {
       socket.emit("user login",result.user) ;
     }).catch(function(error) {
       console.log(error);
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+  }
+  function googleLogin() {
+    $(".login_box").children('span').hide().siblings('i').show();
+    auth.signInWithPopup(google_provider).then(function(result) {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+      var user = result.user;
+      // console.log(user);
+      socket.emit("user login",result.user) ;
+    }).catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -75,10 +97,10 @@ $(document).ready(function () {
       console.log('did not sign in');
     }
   });
-  socket.on("login complete",function (name) {
+  socket.on("login complete",function (data) {
     $("#login").fadeOut();
     $(".current_user_name").text("Hi, "+name);
-    socket.emit("user connect",{user:user,page:location.pathname});
+    socket.emit("user connect",{user:data.user,page:location.pathname});
   });
   if(Storage){
     if(localStorage.userDisplayName){
@@ -346,10 +368,10 @@ $(document).ready(function () {
   function invalidVersion(version) {
     var newVer = version.split("."),
         oldVer = VERSION.split(".");
-    if(Number(oldVer[0]) < Number(newVer[0])) return true
-    if(Number(oldVer[1]) < Number(newVer[1])) return true
-    if(Number(oldVer[2]) < Number(newVer[2])) return true
-    return false
+    if(Number(oldVer[0]) > Number(newVer[0])) return false
+    else if(Number(oldVer[1]) > Number(newVer[1])) return false
+    else if(Number(oldVer[2]) > Number(newVer[2])) return false
+    return true
   }
   function countDownReload() {
     if(countDown <= 0) location.reload();

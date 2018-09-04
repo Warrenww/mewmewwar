@@ -19,7 +19,7 @@ html,body{overflow: hidden;}
   align-items: center;
   border-radius: 30px;
 }
-#fb_login,#guest_login{
+.login_box span{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -31,10 +31,10 @@ html,body{overflow: hidden;}
   margin: 30px 10px;
   cursor: pointer;
   color: white;
-  border: 3px solid white;
+  border: 2px solid white;
+  background-color: rgba(77, 74, 62, 0.7)
 }
-#fb_login{background-color: rgb(81, 122, 237)}
-#guest_login{background-color: rgb(189, 189, 189)}
+.login_box span:hover{background-color: rgba(79, 98, 101, 0.7)}
 #login h4{
     color: white;
     text-align: center;

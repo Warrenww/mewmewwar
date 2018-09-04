@@ -115,11 +115,32 @@ $(document).ready(function () {
     let target = $(".dataTable")[0];
     if(!target) return
     snapshot(target);
+    $(document).bind("keydown",controlByKey);
   });
   $("#canvas_holder").click(function () {
     $(this).fadeOut().children(".picture").empty();
+    $(document).unbind("keydown",controlByKey);
   });
-
+  var controlByKey = function (e) {
+    var pic = $("#canvas_holder .picture");
+    // console.log(pic.css("transform"));
+    if(e.keyCode == 38){
+      $("#canvas_holder canvas").css("transform",function () {
+        var matrix = $("#canvas_holder canvas").css('transform');
+        matrix = matrix.split("(")[1].split(")")[0].split(",");
+        matrix[5] = Number(matrix[5])+100;
+        return "matrix("+matrix.toString()+")"
+      });
+    } else if(e.keyCode == 40){
+      $("#canvas_holder canvas").css("transform",function () {
+        var matrix = $("#canvas_holder canvas").css('transform');
+        matrix = matrix.split("(")[1].split(")")[0].split(",");
+        matrix[5] = Number(matrix[5])-100;
+        return "matrix("+matrix.toString()+")"
+      });
+    }
+    return false
+  }
   if(typeof(Storage)){
     var page = location.pathname.split("/")[1];
     if(!localStorage["tutorial_"+page]){
@@ -131,7 +152,7 @@ $(document).ready(function () {
 
   $(".tutorial button").click(function (e) {
     $(".tutorial").fadeOut();
-    var page = location.pathname.split("/")[2].split(".")[0];
+    var page = location.pathname.split("/")[1];
     localStorage["tutorial_"+page] = true;
   });
 
@@ -190,7 +211,7 @@ function snapshot(target) {
     $('#canvas_holder .picture').append(canvas);
     $("#canvas_holder .picture canvas").css("transform",'scale(0,0)');
     setTimeout(function () {
-      $("#canvas_holder canvas").css("transform",'scale(0.75,0.75)');
+      $("#canvas_holder canvas").css("transform",'matrix(0.75,0,0,0.75,0,0)');
     },100);
     $('#canvas_holder .picture').append("<a><i class='material-icons'>&#xe2c0;</i></a>")
     $('#canvas_holder .picture').append("<span id='zoom_in'><i class='material-icons'>&#xe145;</i></span>")
@@ -208,7 +229,12 @@ function snapshot(target) {
       e.stopPropagation();
       if($(this).attr("id")=='zoom_in') scale = scale<.25?.25:(scale>2?scale:scale+.25);
       else scale = scale<.26?(scale<.1?scale:scale-.05):scale-.25;
-      $("#canvas_holder canvas").css("transform",'scale('+scale+','+scale+')');
+      $("#canvas_holder canvas").css("transform",function () {
+        var matrix = $("#canvas_holder canvas").css('transform');
+        matrix = matrix.split("(")[1].split(")")[0].split(",");
+        matrix[0] = matrix[3] = scale;
+        return "matrix("+matrix.toString()+")"
+      });
     });
     $('#canvas_holder canvas').bind("click",function (e) {e.stopPropagation();});
   });

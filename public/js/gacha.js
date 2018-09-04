@@ -16,7 +16,7 @@ $(document).ready(function () {
     // console.log(data);
     CurrentUserID = data.uid ;
     if(data.last_gacha)
-      $(".tag[id='"+data.last_gacha+"']").click();
+      $(".tag[name='"+data.last_gacha+"']").click();
   });
 
   var nav_expand = 1 ;
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
   var expand = 0 ;
   $(document).on("click",'.tag',function () {
-    let name = $(this).attr("id"),
+    let name = $(this).attr("name"),
         target = name;
     $(".monitor .content img").attr('src','/public/css/footage/gacha/'+name+".png");
     $(this).attr("value",1).siblings(".tag").attr("value",0)

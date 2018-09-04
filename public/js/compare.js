@@ -1,9 +1,8 @@
 var CurrentUserID;
+var current_compare = {};
+var page = location.pathname.split("/compare")[1].toLowerCase();
 $(document).ready(function () {
   var compare = [] ;
-
-  var current_compare_cat = {};
-
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
@@ -14,34 +13,52 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     CurrentUserID = data.uid;
-    if(data.compare_c2c) {
+    var _compare = page == 'cat'?data.compare_c2c:data.compare_e2e;
+    if(_compare) {
       let buffer = [] ;
-      for(let i in data.compare_c2c){
-        let id = data.compare_c2c[i].id ;
+      for(let i in _compare){
+        let id = _compare[i].id ;
         buffer.push(id);
       }
-      socket.emit("start compare c2c",{id:data.uid,target:buffer});
-      // socket.emit("required data",{
-      //   uid:dat.uid,
-      //   type:"cat",
-      //   target:buffer
-      // });
-    } else {
+      socket.emit("required data",{
+        uid:data.uid,
+        type:page,
+        target:buffer,
+        record:false
+      });
     }
-    if(!data.compare_c2c.length) $("#tutorial").show(300);
 
   });
-
-  socket.on("c2c compare", function (compare){
-    $(".comparedatabody").empty();
-    for(let i in compare){
-      let data = new Cat(compare[i].data),
-          lv = compare[i].lv,
-          bro = compare[i].bro;
-      // console.log(data);
-      current_compare_cat[data.id] = data;
-      $(".comparedatabody").append(AddCompareData(data,lv,bro));
-    }
+  socket.on("required data",(data)=>{
+    console.log(data);
+    if(data.buffer.length > 1){
+      $(".comparedatabody").empty();
+      for(let i in data.buffer){
+        var _data = page == 'cat'?new Cat(data.buffer[i].data):new Enemy(data.buffer[i].data),
+            lv = data.buffer[i].lv,
+            bro = data.buffer[i].bro;
+        current_compare[_data.id] = _data;
+        $(".comparedatabody").append(AddCompareData(_data,lv,bro));
+      }
+    } else if(page =='cat'){
+      var _data = new Cat(data.buffer[0].data),
+          arr = data.buffer[0].bro,
+          lv = data.buffer[0].lv,
+          id = _data.id.substring(0,3),
+          brr=[];
+      current_compare[_data.id] = _data;
+      $(".comparedata").each(function () {
+        let a = $(this).attr("id").substring(0,3),
+            _this = $(this);
+        if(a == id) {
+          $(AddCompareData(_data,lv,arr)).insertBefore(this);
+          $(this).remove();
+        }
+      });
+      $(".comparedata").each(function () {brr.push($(this).attr("id"))});
+      socket.emit("compare cat",{id:CurrentUserID,target:brr});
+      closePanel();
+    } else return
     highlightTheBest();
   });
   $(document).on('click',"#level i",function () {
@@ -76,7 +93,7 @@ $(document).ready(function () {
         let a = $(this).attr("id");
         if(a != id) arr.push(a);
       });
-      socket.emit("compare cat",{id:CurrentUserID,target:arr});
+      socket.emit("compare "+page,{id:CurrentUserID,target:arr});
       closePanel();
     }
     else if(action == 'hide'){
@@ -90,10 +107,10 @@ $(document).ready(function () {
         for(let i in bro) html+='<span id="'+bro[i]+'">'+bro[i].split("-")[1]+'階</span>';
         $(this).html(html);
       } else {
-        socket.emit("display cat",{
-          uid : CurrentUserID,
-          cat : bro[0],
-          history:false
+        socket.emit("required data",{
+          uid:CurrentUserID,
+          type:"cat",
+          target:bro[0]
         });
       }
     }
@@ -107,33 +124,13 @@ $(document).ready(function () {
     }
   });
   $(document).on('click','.panel #switch span',function () {
-    socket.emit("display cat",{
-      uid : CurrentUserID,
-      cat : $(this).attr('id'),
-      history:false
+    socket.emit("required data",{
+      uid:CurrentUserID,
+      type:"cat",
+      target:$(this).attr('id')
     });
-  })
-  socket.on("display cat result",function (result) {
-    // console.log(result) ;
-    let data = new Cat(result.this),
-        arr = result.bro,
-        lv = result.lv,
-        id = data.id.substring(0,3),
-        brr=[];
-    current_compare_cat[data.id] = data;
-    $(".comparedata").each(function () {
-      let a = $(this).attr("id").substring(0,3),
-          _this = $(this);
-      if(a == id) {
-        $(AddCompareData(data,lv,arr)).insertBefore(this);
-        $(this).remove();
-      }
-    });
-    highlightTheBest();
-    $(".comparedata").each(function () {brr.push($(this).attr("id"))});
-    socket.emit("compare cat",{id:CurrentUserID,target:brr});
-    closePanel();
   });
+
   $('.compareDisplay').on("scroll",closePanel);
   function closePanel() {
     $('.panel').css("height",0).attr('value',0);
@@ -143,12 +140,16 @@ $(document).ready(function () {
   $(document).on('click','.comparedata img',function () {
     let id = $(this).parents('.comparedata').attr('id');
     socket.emit("set history",{
-      type:'cat',
+      type:page,
       target:id,
       uid:CurrentUserID
     });
-    window.parent.reloadIframe('cat');
-    window.parent.changeIframe('cat');
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe(page);
+      window.parent.changeIframe(page);
+    } else {
+      window.open("/"+page,"_blank");
+    }
   });
 
   var input_org ;
@@ -161,11 +162,12 @@ $(document).ready(function () {
   function changeCompareLevel() {
       let level = Number($(this).val()),
           id = $(this).parents('.comparedata').attr('id'),
-          data = current_compare_cat[id];
+          data = current_compare[id];
 
-      if (level && level < 101 && level > 0) {
-        $(this).parent().html(level);
-        let change = ['hp','hardness','atk','dps'] ;
+      if (validationLevel(level)) {
+        $(this).parent().html(level+(page=='cat'?"":"%"));
+        if (page == 'enemy') level /= 100;
+        var change = ['hp','hardness','atk','dps'] ;
         for(let i in change){
           let target = $('.compareTable #'+id).find('#'+change[i]) ;
           let original = target.attr('original');
@@ -180,12 +182,12 @@ $(document).ready(function () {
             atk = target.attr('atk');
         if(original && original.indexOf("連續攻擊") != -1) target.html(serialATK(original,levelToValue(atk,rarity,level)))
         highlightTheBest();
-        $('.comparedatahead').find('th').css('border-left','0px solid');
+        $('.comparedatahead tr').attr("reverse","");
         socket.emit("store level",{
           uid : CurrentUserID,
           id : id,
           lv : level,
-          type : 'cat'
+          type : page
         });
       }
       else $(this).parent().html(input_org);
@@ -202,55 +204,37 @@ $(document).ready(function () {
         });
         return ;
       }
-      let arr = [];
-      let max = [],
-          min = [];
-      let max_val = -1,
-          min_val = 1e10 ;
-
-      $(".comparedata").each(function () {
-        let obj = {};
-        obj = {
-          id:$(this).attr('id'),
-          item:Number($(this).find("#"+name).text())
-        }
-        arr.push(obj);
-      });
-      // console.log(arr);
-      for(let i in arr) {
-        if(arr[i].item > max_val) {
-          max_val = arr[i].item ;
-          max = [arr[i]];
-        }
-        if(arr[i].item < min_val) {
-          min_val = arr[i].item ;
-          min = [arr[i]];
-        }
-        if(arr[i].item == max_val) max.push(arr[i]) ;
-        if(arr[i].item == min_val) min.push(arr[i]) ;
-      }
-      // console.log(name);
-      // console.log(max);
-      // console.log(min);
+      var arr = [];
+      for(let i in current_compare)
+        arr.push({id:i,item:Number(current_compare[i][name])});
+      arr = quickSort(arr,'item');
+      // console.log(name,arr);
       if(name == 'cd' || name == 'freq' || name == 'cost') {
-        for(let i in min) $("#"+min[i].id).find("#"+name).attr('class','best');
+        for(let i in arr) {
+          if(arr[i].item != arr[0].item) break
+          $("#"+arr[i].id).find("#"+name).attr('class','best');
+        }
       }
-      else for(let i in max) $("#"+max[i].id).find("#"+name).attr('class','best');
-      // $(".compareTable").children("#"+min.id).find("#"+name).css('color','rgb(82, 174, 219)');
+      else {
+        for(let i=arr.length-1;i>=0;i--) {
+          if(arr[i].item != arr[arr.length-1].item) break
+          $("#"+arr[i].id).find("#"+name).attr('class','best');
+        }
+      }
     });
   }
-  $(document).on('click','.compareTable .comparedatahead th',sortCompareCat);
+  $(document).on('click','.compareTable .comparedatahead th',sortCompare);
   var char_detail = 0 ;
-  function sortCompareCat() {
+  function sortCompare() {
     let name = $(this).attr("id"),
         arr = [],
         flag = $(this).parent().attr("reverse") ;
     if(name == 'char'){
-      // console.log(current_compare_cat);
+      // console.log(current_compare);
       $(".comparedata").each(function () {
         // console.log(char_detail);
         let id = $(this).attr('id'),
-        data = current_compare_cat[id],
+        data = current_compare[id],
         lv = Number($(this).find("#level").children('span').text()),
         char = data.CharHtml(lv),
         tag = data.tag?data.tag.join("/"):"無";
@@ -329,13 +313,14 @@ $(document).ready(function () {
       "<div style='flex:1' class='comparedata' id='"+data.id+"' bro='"+bro+"'>"+
       "<table>"+
       "<tr>"+
-      "<th id='level'><span>"+lv+"</span><i class='material-icons'>&#xe5c5;</i></th>"+
+      "<th id='level'><span>"+(page == 'cat'?lv:lv*100+"%")+"</span><i class='material-icons'>&#xe5c5;</i></th>"+
       "</tr><tr>"+
       "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
       "</tr><tr>"+
       "<th id='name'>"+data.Name+"</th>"+
       "</tr><tr>"+
-      "<th id='rarity'>"+parseRarity(data.rarity)+"</th>"+
+      "<th id='"+(page == 'cat'?"rarity":"color")+"'>"+
+      (page == 'cat'?parseRarity(data.rarity):data.color)+"</th>"+
       "</tr><tr>"+
       "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
       "</tr><tr>"+
@@ -355,10 +340,10 @@ $(document).ready(function () {
       "</tr><tr>"+
       "<td id='multi'>"+data.Aoe+"</td>"+
       "</tr><tr>"+
-      "<td id='cost'>"+data.cost+"</td>"+
-      "</tr><tr>"+
-      "<td id='cd'>"+data.cd+"</td>"+
-      "</tr><tr>"+
+      "<td id='cost'>"+(page == 'cat'?data.cost:data.reward)+"</td>"+
+      "</tr>"+(page == 'cat'?
+      "<tr><td id='cd'>"+data.cd+"</td></tr>":""
+      )+"<tr>"+
       "<td id='char'>"+
       (char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"))+
       "</td>"+
@@ -367,7 +352,24 @@ $(document).ready(function () {
       "</div>";
       return html
   }
-  $("#tutorial").click(function () {
-    $(this).hide(300);
-  });
+
 });
+$(document).on("keydown",function (e) {
+  // console.log(e.keyCode);
+  var holder = $(".compareDisplay");
+  if(e.keyCode == 39){ // right
+    holder.animate({
+      scrollLeft: holder.scrollLeft()+180
+    });
+  } else if(e.keyCode ==37){ // left
+    holder.animate({
+      scrollLeft: holder.scrollLeft()-180
+    });
+  }
+});
+function validationLevel(lv) {
+  lv = Number(lv)
+  if (!lv || lv <0) return false
+  if (page == 'cat' && lv > 100) return false
+  return true
+}

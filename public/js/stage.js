@@ -217,8 +217,12 @@ $(document).ready(function () {
       }
     }
     socket.emit("compare enemy",{id:CurrentUserID,target:arr});
-    window.parent.reloadIframe('compareEnemy');
-    window.parent.changeIframe('compareEnemy');
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe('compareEnemy');
+      window.parent.changeIframe('compareEnemy');
+    } else {
+      window.open("/compareEnemy","_blank");
+    }
   });
   $(".display .dataTable #chapter").click(function () {
     scroll_to_div('selector');
