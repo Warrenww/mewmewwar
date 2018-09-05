@@ -112,7 +112,8 @@ function ReloadAllData() {
             id:stagedata[i][j][k].id,
             count:stagedata[i][j][k].count,
             energy:stagedata[i][j][k].energy,
-            name:stagedata[i][j][k].name
+            name:stagedata[i][j][k].name,
+            enemy:stagedata[i][j][k].enemy
           });
         }
       }

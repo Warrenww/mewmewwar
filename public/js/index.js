@@ -1,5 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.24.2"
+const VERSION = "10.24.3"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 $(document).ready(function () {
@@ -36,7 +36,6 @@ $(document).ready(function () {
       var email = error.email;
       // The firebase.auth.AuthCredential type that was used.
       var credential = error.credential;
-      // ...
     });
   }
   function googleLogin() {
@@ -49,6 +48,7 @@ $(document).ready(function () {
       // console.log(user);
       socket.emit("user login",result.user) ;
     }).catch(function(error) {
+      console.log(error);
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -143,37 +143,30 @@ $(document).ready(function () {
       for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchCat[i][dataArr[j]]);
       target.attr({"id":data.legend.mostSearchCat[i].id,type:'cat'});
     }
-    dataArr = ['name','energy','count'];
-    dataBrr = ['','消耗統帥力 : ','查詢次數 : '];
+    dataCrr = ['name','energy','count'];
+    dataDrr = ['','消耗統帥力 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchStage){
-      let target = $(".LegendCard").eq(Number(i)+3);
+      let target = $(".LegendCard").eq(Number(i)+3),enemy=[];
       target.children("div").attr("id",data.legend.mostSearchStage[i].id.split("-")[0]);
-      for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchStage[i][dataArr[j]]);
+      for(let j in dataCrr) target.children("span").eq(j).text(dataDrr[j]+data.legend.mostSearchStage[i][dataCrr[j]]);
+      for(let j in data.legend.mostSearchStage[i].enemy) enemy.push(data.legend.mostSearchStage[i].enemy[j].id)
+      target.children("span").eq(3).attr("enemy",JSON.stringify(enemy));
       target.attr({"id":data.legend.mostSearchStage[i].id,type:'stage'});
     }
   });
-
+  $(".LegendCard span").click(function () {
+    if(!$(this).attr("enemy")) return
+    var arr = JSON.parse($(this).attr("enemy"));
+    $('body').append("<div id='enemyBoard'><div></div></div>");
+    for(let i in arr) $("#enemyBoard div").append("<img src='"+image_url_enemy+arr[i]+".png'/>");
+  });
+  $(document).on('click',"#enemyBoard",function () { $(this).remove() });
   //mobile navigation reaction
-  var showMobilePanel = 1 ;
-  $(document).on('click','#m_nav_menu',function () {
-    if(showMobilePanel){
-      $(".m_nav_panel").css('right',0);
-      $("#m_nav_panel_BG").fadeIn();
-      showMobilePanel = 0 ;
-    }
-    else{
-      $(".m_nav_panel").css('right',-180);
-      $("#m_nav_panel_BG").fadeOut();
-      showMobilePanel = 1 ;
-    }
-  });
-  $(document).on('click','#m_nav_panel_BG',function () {
-    if(!showMobilePanel){
-      $(".m_nav_panel").css('right',-180);
-      $("#m_nav_panel_BG").fadeOut();
-      showMobilePanel = 1 ;
-    }
-  });
+  $('#m_nav_menu,#m_nav_panel_BG').click(showhideNav);
+  function showhideNav() {
+    var active = Number($('#m_nav_menu').attr("active"))%2;
+    $("#m_nav_menu,#m_nav_panel_BG,.m_nav_panel").attr("active",active+1);
+  }
 
   //index page get year
   var today = new Date();
