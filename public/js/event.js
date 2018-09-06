@@ -7,7 +7,10 @@ $(document).ready(function () {
   createCalendar();
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
-    else  console.log('did not sign in');
+    else {
+      window.parent.location.assign("/");
+      console.log('did not sign in');
+    }
   });
   socket.on("current_user_data",function (data) {
     show_jp_cat = data.setting.show_jp_cat;

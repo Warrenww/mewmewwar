@@ -201,10 +201,8 @@ io.on('connection', function(socket){
             lv = data.lv;
         // record history
         if(uid){
-          user_variable[grossID] = user_variable[grossID] ?
-          user_variable[grossID]:{count:0,lv:default_lv[type]};
-          user_variable[grossID].count = user_variable[grossID].count? 1 : 0;
-          if (data.record) SetHistory(uid,type,id);
+          if (data.record)
+            if(user_last_search.substring(0,3) != grossID) SetHistory(uid,type,id);
         }
         //Extract data
         var CatOnlyData = {bro:[],combo:[],own:null};
@@ -295,6 +293,8 @@ io.on('connection', function(socket){
     }
   });
   function SetHistory(uid,type,id) {
+    console.log("record data");
+    console.log(uid,type,id);
     var user_history = userdata[uid].history[type],
         user_variable = userdata[uid].variable[type],
         load_data;
@@ -313,9 +313,19 @@ io.on('connection', function(socket){
       if (type == 'cat') load_data = catdata;
       else if (type == 'enemy') load_data = enemydata;
       else if (type == 'stage') load_data = stagedata;
-      load_data[id].count = load_data[id].count?load_data[id].count+1:1;
-      database.ref("/"+type+"data/"+id+"/count").set(load_data[id].count);
+      if(type == 'stage'){
+        id = id.split("-");
+        load_data[id[0]][id[1]][id[2]].count =
+          load_data[id[0]][id[1]][id[2]].count?load_data[id[0]][id[1]][id[2]].count+1:1;
+        database.ref("/"+type+"data/"+id.join("/")+"/count")
+          .set(load_data[id[0]][id[1]][id[2]].count);
+        id = id.join("-");
+      } else {
+        load_data[id].count = load_data[id].count?load_data[id].count+1:1;
+        database.ref("/"+(type=='cat'?'newCat':type)+"data/"+id+"/count").set(load_data[id].count);
+      }
       if(type == 'cat') id = id.substring(0,3);
+      user_variable[id].count = user_variable[id].count?user_variable[id].count+1:1;
       database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
       .set(user_variable[id].count);
     }
@@ -800,28 +810,6 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
-  socket.on("start compare c2c",function (data) {
-    console.log('start compare c2c');
-    try{
-      let compare = [],
-      def = userdata[data.id].setting.default_cat_lv,
-      catArr = userdata[data.id].variable.cat;
-      for(let i in data.target) {
-        let id = data.target[i].substring(0,3),
-        lv = catArr[id] ? (catArr[id].lv == 'default' || !catArr[id].lv ? def : catArr[id].lv) : def,
-        bro = [];
-        for(let j=1;j<4;j++){
-          let a = id+"-"+j ;
-          if(a != data.target[i]) if(catdata[a]) bro.push(a) ;
-        }
-        compare.push({data:catdata[data.target[i]],lv:lv,bro:bro});
-      }
-      socket.emit("c2c compare",compare);
-    }
-    catch(e){
-      __handalError(e);
-    }
-  });
 
   socket.on("rename",function (data) {
     try{
@@ -1028,10 +1016,8 @@ io.on('connection', function(socket){
         if(i != level) prev = i ;
         else flag = true ;
       }
-      console.log(legenddata.stage.thisWeek[id]);
       if(legenddata.stage.thisWeek[id]) legenddata.stage.thisWeek[id] ++;
       else legenddata.stage.thisWeek[id] = 1;
-      console.log(legenddata.stage.thisWeek);
       database.ref("/legend/stage/thisWeek").set(legenddata.stage.thisWeek);
       socket.emit("level data",{
         data:stagedata[chapter][stage][level],
@@ -1042,31 +1028,7 @@ io.on('connection', function(socket){
         next:next
       });
       if(uid){
-        let last = userdata[uid].history.last_stage,
-        history = userdata[uid].history.stage,
-        Stage = userdata[uid].variable.stage[id],
-        count = (Stage?(Stage.count?Stage.count:0):0) + 1;
-        if(id != last) {
-          console.log("recording user history");
-          for(let i in history){
-            if(history[i].id == id) delete history[i]
-          }
-          var key = database.ref().push().key;
-          history = history != "" ? history : {};
-          history[key] = { type : "stage", id : id, time:new Date().getTime() };
-          database.ref("/user/"+uid+"/history/stage").set(history);
-          userdata[uid].history.last_stage = id ;
-          database.ref("/user/"+uid+"/history/last_stage").set(id);
-          console.log("count stage search time(user)");
-          Stage = Stage?Stage:{};
-          Stage.count = count ;
-          database.ref("/user/"+uid+"/variable/stage/"+id+"/count").set(count);
-          console.log("count stage search time(global)");
-          globalCount = stagedata[chapter][stage][level].count;
-          stagedata[chapter][stage][level].count = globalCount?(globalCount+1):1 ;
-          database.ref("/stagedata/"+chapter+"/"+stage+"/"+level+"/count").set(globalCount);
-        }
-        else console.log("same as last stage");
+        SetHistory(uid,'stage',id);
       }
     }
     catch(e){

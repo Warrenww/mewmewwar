@@ -15,6 +15,7 @@ $(document).ready(function () {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
     } else {
+      window.parent.location.assign("/");
       console.log('did not sign in');
     }
   });
@@ -125,8 +126,12 @@ $(document).ready(function () {
       stage:arr[1],
       level:arr[2]
     });
-    window.parent.reloadIframe('stage');
-    window.parent.changeIframe('stage');
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe('stage');
+      window.parent.changeIframe('stage');
+    } else {
+      window.open("/stage","_blank");
+    }
   });
   $(".calendar").click(function () {
     updateEvent();

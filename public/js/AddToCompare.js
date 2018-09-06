@@ -30,7 +30,7 @@ $(document).ready(function () {
         type:type,
         target : $(this).parent().attr('id'),
         record:true,
-        uid:current_user_id
+        uid:CurrentUserID
       });
       showhidecomparetarget();
       $("#compare_panel_BG").fadeOut();
@@ -45,7 +45,7 @@ $(document).ready(function () {
         compare.push($(this).attr("value"));
       });
       $("#compare_number").text(compare.length);
-      socket.emit("compare "+type,{id:current_user_id,target:compare});
+      socket.emit("compare "+type,{id:CurrentUserID,target:compare});
       $("#compare_panel_BG").fadeOut();
       $('.compare_panel').css('height',0);
     });
@@ -57,7 +57,7 @@ $(document).ready(function () {
     $(this).parent().siblings().children().html("");
     compare = [];
     $("#compare_number").text(compare.length);
-    socket.emit("compare "+type,{id:current_user_id,target:compare});
+    socket.emit("compare "+type,{id:CurrentUserID,target:compare});
   });
   $("#start_compare").click(function () {
     var windowName = type == 'cat'?'compareCat':'compareEnemy';
@@ -112,7 +112,7 @@ function addToCompare(target,name='') {
       compare.push($(this).attr("value"));
     });
     $("#compare_number").text(compare.length);
-    io.connect().emit("compare "+type,{id:current_user_id,target:compare});
+    io.connect().emit("compare "+type,{id:CurrentUserID,target:compare});
   }
 }
 function showhidecomparetarget() {

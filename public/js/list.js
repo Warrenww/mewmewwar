@@ -1,6 +1,6 @@
 var list = { upper:[],lower:[] };
 var current_editing_list = null;
-var current_user_id, current_search = [] ;
+var CurrentUserID, current_search = [] ;
 $(document).ready(function () {
 
   var tip_fadeOut;
@@ -9,11 +9,14 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
-    else  console.log('did not sign in');
+    else  {
+      window.parent.location.assign("/");
+      console.log('did not sign in');
+    }
   });
   socket.on("current_user_data",function (data) {
     // console.log(data);
-    current_user_id = data.uid;
+    CurrentUserID = data.uid;
       if(data.list){
         $("#display_pannel").find('h1').hide();
         $(".list_display_holder").remove();
@@ -301,7 +304,7 @@ $(document).ready(function () {
     });
     // console.log(stageBind);
     socket.emit("save list",{
-      uid:current_user_id,removeStageBind,
+      uid:CurrentUserID,removeStageBind,
       name, list, note, stageBind,
       'public':$("#public").prop('checked'),
       key : current_editing_list
@@ -489,7 +492,7 @@ $(document).ready(function () {
   $(document).on("click",".stageselectholder i[function='open']",function () {
     let stage = $(this).attr("stage").split("-");
     socket.emit("required level data",{
-      uid: current_user_id,
+      uid: CurrentUserID,
       chapter:stage[0],
       stage:stage[1],
       level:stage[2]
@@ -594,7 +597,7 @@ $(document).ready(function () {
     if(!confirm("確定要刪除這個列表?!")) return
     target.find(".stage span").each(function () { stageBind.push({id:$(this).attr('id')}) });
     target.remove();
-    socket.emit('delete list',{uid:current_user_id,key:target.attr('id'),stageBind});
+    socket.emit('delete list',{uid:CurrentUserID,key:target.attr('id'),stageBind});
   });
   $(document).on('click',".list_display_holder .option #analyze",function () {
     let target = $(this).parents('.list_display_holder'),
@@ -602,7 +605,7 @@ $(document).ready(function () {
     target.find('.list_display .card').each(function () {
       buffer.push($(this).attr('value'));
     });
-    socket.emit("start compare c2c",{id:current_user_id,target:buffer});
+    socket.emit("start compare c2c",{id:CurrentUserID,target:buffer});
     $("#analyze_area").remove();
     $("<div id='analyze_area'>"+
     "<i class='material-icons' id='close_analyze' style='position:absolute'>"+

@@ -74,7 +74,7 @@ function search() {
   for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('name')) ;
   // Send query require
   socket.emit(type+" search",{
-    uid:current_user_id,
+    uid:CurrentUserID,
     query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
     query_type:type,
     filterObj,
@@ -202,7 +202,7 @@ $(document).on('click','.compareSorce .title #option i',function () {
     let r = confirm("確定批次加入「我擁有的貓咪」?!");
     if(!r) return
     socket.emit("mark own",{
-      uid:current_user_id,
+      uid:CurrentUserID,
       arr:current_search,
       mark:true
     });
@@ -227,7 +227,7 @@ $(document).on('click','.compareSorce .title #option i',function () {
         }
       });
       // console.log(target);
-      socket.emit("compare "+page,{id:current_user_id,target:target});
+      socket.emit("compare "+page,{id:CurrentUserID,target:target});
       compare = target;
       if(showcomparetarget) showhidecomparetarget();
       $("#compare_number").text(target.length);
@@ -236,10 +236,14 @@ $(document).on('click','.compareSorce .title #option i',function () {
   }
   else if (type == 'Gogacha') {
     socket.emit("record gacha",{
-      uid:current_user_id,
+      uid:CurrentUserID,
       gacha:$(this).attr('value')
     });
-    window.parent.reloadIframe("gacha");
-    window.parent.changeIframe("gacha");
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe("gacha");
+      window.parent.changeIframe("gacha");
+    } else {
+      window.open("/gacha","_blank");
+    }
   }
 });

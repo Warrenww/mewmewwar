@@ -2,7 +2,11 @@ $(document).ready(function () {
 
   var current_user_data = {};
   var user_photo_url = false;
-
+  if(Storage){
+    if(localStorage.openInNewWindow == "true"){
+      $("#openInNewWindow").click();
+    }
+  }
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
@@ -10,6 +14,7 @@ $(document).ready(function () {
       if (!user.isAnonymous) user_photo_url = user.providerData[0].photoURL;
       console.log(user_photo_url);
     } else {
+      window.parent.location.assign("/");
       console.log('did not sign in');
     }
   });
@@ -44,13 +49,25 @@ $(document).ready(function () {
     if(!confirm("確定要登出嗎")) return
     firebase.auth().signOut().then(function() {
       // Sign-out successful.
-      window.open("/");
+      window.parent.location.assign("/");
     }, function(error) {
       // An error happened.
     });
   });
   $(document).on("click","input[type='checkbox']",function () {
-    let type = $(this).attr("id").split("show_")[1];
+    var type = $(this).attr("id");
+    if(type == "openInNewWindow"){
+      if(Storage){
+        var temp = localStorage.openInNewWindow;
+        temp = temp == "true"?false:true;
+        localStorage.openInNewWindow = temp;
+      } else {
+        alert("您的瀏覽器不支援此功能");
+      }
+      window.parent.location.assign("/");
+      return
+    }
+    type = type.split("show_")[1];
     socket.emit("change setting",{
       type:type,
       uid:current_user_data.uid,
@@ -74,7 +91,7 @@ $(document).ready(function () {
     $("#userName").attr('value',data.name);
   });
   socket.on("user setting",function (data) {
-    console.log(data);
+    // console.log(data);
     let exp = 0 ;
     for(let i in data){
       if(i == "default_cat_lv"){

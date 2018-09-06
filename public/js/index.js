@@ -1,7 +1,8 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.24.3"
+const VERSION = "10.25.1"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
+
 $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var google_provider = new firebase.auth.GoogleAuthProvider();
@@ -171,7 +172,7 @@ $(document).ready(function () {
   //index page get year
   var today = new Date();
   $("nav a,.m_nav_panel a").click(function () {
-    $('#iframe_holder').attr("active",true);
+    if(!openInNew&&!is_ios)  $('#iframe_holder').attr("active",true);
     let target = $(this).attr("id");
     explor_page.splice(0,explor_index);
     if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target,false);
@@ -321,6 +322,7 @@ $(document).ready(function () {
   // return to normal view
   $("#iframe_holder").click(iframeNormalize);
   function iframeNormalize () {
+    if(openInNew||is_ios) return
     $("#iframe_holder").attr("active",true); // Turn iframe to normal view
     $("#iframe_holder").children().css('top',0); // Restore all iframes' top
     $("#iframe_holder").unbind("mousewheel",scrollHolder); // Unbind event
@@ -361,9 +363,10 @@ $(document).ready(function () {
   function invalidVersion(version) {
     var newVer = version.split("."),
         oldVer = VERSION.split(".");
-    if(Number(oldVer[0]) < Number(newVer[0])) return true
-    else if(Number(oldVer[1]) < Number(newVer[1])) return true
-    else if(Number(oldVer[2]) < Number(newVer[2])) return true
+    for(let i in oldVer){
+      if(Number(oldVer[i]) > Number(newVer[i])) return false
+      else if(Number(oldVer[i]) < Number(newVer[i])) return true
+    }
     return false
   }
   function countDownReload() {
@@ -405,6 +408,10 @@ $(document).ready(function () {
 
 function changeIframe(target,record = true) {
   if(!target) return
+  if(is_ios||openInNew){
+    window.open("/"+target,"_blank");
+    return
+  }
   $("#iframe_holder").attr("active",true);
   let arr = [];
   $("#iframe_holder").children().each(function () {

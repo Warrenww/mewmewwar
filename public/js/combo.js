@@ -5,6 +5,7 @@ $(document).ready(function () {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
     } else {
+      window.parent.location.assign("/");
       console.log('did not sign in');
     }
   });

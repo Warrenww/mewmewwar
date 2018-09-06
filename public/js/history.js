@@ -6,7 +6,10 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
-    else  console.log('did not sign in');
+    else  {
+      window.parent.location.assign("/");
+      console.log('did not sign in');
+    }
   });
   socket.on("current_user_data",function (data) {
     CurrentUserID = data.uid;
@@ -98,8 +101,12 @@ $(document).ready(function () {
       uid:CurrentUserID,
       target:id
     });
-    window.parent.reloadIframe(type);
-    window.parent.changeIframe(type);
+    if(window.parent.reloadIframe){
+      window.parent.reloadIframe(type);
+      window.parent.changeIframe(type);
+    } else {
+      window.open("/"+type,"_blank");
+    }
   });
 
 });

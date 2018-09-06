@@ -1,4 +1,4 @@
-var current_user_id;
+var CurrentUserID;
 var current_search = [];
 $(".select_ability").find(".ability_icon").each(function () {
   var name = $(this).attr("id");
@@ -27,10 +27,13 @@ $(document).ready(function () {
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
-    else  console.log('did not sign in');
+    else  {
+      window.parent.location.assign("/");
+      console.log('did not sign in');
+    }
   });
   socket.on("current_user_data",function (data) {
-    current_user_id = data.uid;
+    CurrentUserID = data.uid;
     if(data.last_cat && location.pathname.indexOf('once') == -1)
       socket.emit("required data",{
         type:'cat',
@@ -93,7 +96,7 @@ $(document).ready(function () {
       type:'cat',
       target:$(this).attr('value'),
       record:true,
-      uid:current_user_id
+      uid:CurrentUserID
     });
   });
 
@@ -122,7 +125,7 @@ $(document).ready(function () {
   });
   $(document).on('click','.searchCombo',function () {
     socket.emit("search combo",{
-      uid:current_user_id,
+      uid:CurrentUserID,
       id:[$(this).attr('val')]
     }) ;
     if(window.parent.reloadIframe){
@@ -153,12 +156,12 @@ $(document).ready(function () {
     current_cat_data = _data;
     displayCatData(_data,data.bro,data.combo,data.lv,data.count,data.own) ;
     socket.emit('required cat comment',{
-      uid:current_user_id,
+      uid:CurrentUserID,
       id:_data.id.substring(0,3)
     });
   });
   socket.on("comment",function (data) {
-    console.log(data);
+    // console.log(data);
     var survey = data.survey?data.survey:{};
     initial_survey();
     addSurvey(data.comment.statistic,data.survey);
@@ -212,7 +215,7 @@ $(document).ready(function () {
       updateState(ui.value);
       store_lv_timeOut = setTimeout(function () {
         socket.emit("store level",{
-          uid : current_user_id,
+          uid : CurrentUserID,
           id : current_cat_data.id,
           lv : ui.value,
           type : 'cat'
@@ -280,7 +283,7 @@ $(document).ready(function () {
     }).html(icon);
     if(cat)
       socket.emit("mark own",{
-        uid:current_user_id,
+        uid:CurrentUserID,
         cat:cat,
         mark:val
       });
@@ -320,7 +323,7 @@ $(document).ready(function () {
       });
     }
     socket.emit("normal search",{
-      uid:current_user_id,
+      uid:CurrentUserID,
       query:{rFilter,cFilter,aFilter},
       query_type:type,
       filterObj:[],
@@ -334,7 +337,7 @@ $(document).ready(function () {
         id = $(this).attr("id");
     if(type == "gacha"){
       socket.emit("gacha search",{
-        uid:current_user_id,
+        uid:CurrentUserID,
         query:[id],
         query_type:"gacha",
         filterObj,
@@ -343,7 +346,7 @@ $(document).ready(function () {
     }
     else if(type == 'stage'){
       socket.emit("cat to stage",{
-        uid : current_user_id,
+        uid : CurrentUserID,
         stage : id
       });
     }
@@ -522,7 +525,7 @@ $(document).ready(function () {
     update_respect_rank(current_cat_statistic.rank);
     ga('send', 'event', 'survey_cat', 'rank',current_cat_data.id);
     socket.emit("cat survey",{
-      uid : current_user_id,
+      uid : CurrentUserID,
       cat : current_cat_data.id.substring(0,3),
       type : 'rank',
       add : current_cat_survey.rank,
@@ -550,7 +553,7 @@ $(document).ready(function () {
     update_application(current_cat_statistic.application);
     ga('send', 'event', 'survey_cat', 'application',current_cat_data.id);
     socket.emit("cat survey",{
-      uid : current_user_id,
+      uid : CurrentUserID,
       cat : current_cat_data.id.substring(0,3),
       type : 'application',
       add : current_cat_survey.application,
@@ -582,13 +585,13 @@ $(document).ready(function () {
       }
     ga('send', 'event', 'survey_cat', 'nickname',current_cat_data.id);
     let obj = {
-      owner:current_user_id,
+      owner:CurrentUserID,
       nickname:val
     }
     quene.push(obj);
     org.push(val);
     socket.emit("cat survey",{
-      uid : current_user_id,
+      uid : CurrentUserID,
       cat : current_cat_data.id.substring(0,3),
       type : 'nickname',
       add : obj,
@@ -702,7 +705,7 @@ $(document).ready(function () {
     if(!comment) return
     socket.emit('comment cat',{
       cat:current_cat_data.id.substring(0,3),
-      owner:current_user_id,
+      owner:CurrentUserID,
       comment:comment,
       time:new Date().getTime()
     });
@@ -715,7 +718,7 @@ $(document).ready(function () {
     // $(".content").eq(1).animate({scrollTop:$('.comment').last()[0].offsetTop},800);
   });
   function commentHtml(id,comment,photo=null,name=null) {
-    let html,uid = current_user_id;
+    let html,uid = CurrentUserID;
     html = '<tr class="comment" style="display:'+(toggle_comment?'none':'')+'">'+
     '<td colspan="6" style="border-left:'+
     (comment.owner == uid?"5px solid rgb(235, 138, 38)":"0")+
@@ -742,7 +745,7 @@ $(document).ready(function () {
     else return b.getFullYear()+"/"+(b.getMonth()+1)+"/"+b.getDate()
   }
   function likeOrEdit(uid,like) {
-    var html = '',me = current_user_id,count = 0;
+    var html = '',me = CurrentUserID,count = 0;
     for(let i in like) count++;
     html+='<i class="material-icons" id="like" value='+
           (like?(like[me]?1:0):0) +'>&#xe8dc;</i>'+
@@ -797,7 +800,7 @@ $(document).ready(function () {
       return
     }
     socket.emit('comment function',{
-      uid:current_user_id,
+      uid:CurrentUserID,
       key:key,
       cat:current_cat_data.id.substring(0,3),
       type:type,
@@ -817,7 +820,7 @@ $(document).ready(function () {
         b = val.split("\n").join("<br>");
     $(this).parent().html(b);
     socket.emit('comment function',{
-      uid:current_user_id,
+      uid:CurrentUserID,
       key:key,
       cat:current_cat_data.id.substring(0,3),
       type:'edit',

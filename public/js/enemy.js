@@ -1,4 +1,4 @@
-var current_user_id;
+var CurrentUserID;
 var current_search = [];
 
 $(document).ready(function () {
@@ -10,12 +10,13 @@ $(document).ready(function () {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
     } else {
+      window.parent.location.assign("/");
       console.log('did not sign in');
     }
   });
   socket.on("current_user_data",function (data) {
     // console.log(data);
-    current_user_id = data.uid ;
+    CurrentUserID = data.uid ;
     if(data.last_enemy && location.pathname.indexOf("once") == -1)
       socket.emit("required data",{
         type:'enemy',
@@ -76,7 +77,7 @@ $(document).ready(function () {
         type:'enemy',
         target:$(this).attr('value'),
         record:true,
-        uid:current_user_id
+        uid:CurrentUserID
       });
   });
 
@@ -87,14 +88,14 @@ $(document).ready(function () {
 
     if(type.indexOf('連續攻擊')==-1&&type.indexOf('免疫')==-1&&norev.indexOf(type)==-1){
       socket.emit("normal search",{
-        uid:current_user_id,
+        uid:CurrentUserID,
         query:{rFilter:[],cFilter:[],aFilter:[reverse]},
         query_type:'normal',
         filterObj:{},
         type:"cat",
         value:0
       });
-      if(window.parent){
+      if(window.parent.reloadIframe){
         window.parent.reloadIframe('cat');
         window.parent.changeIframe('cat');
       } else {
@@ -126,7 +127,7 @@ $(document).ready(function () {
       else type[i] = '對'+type[i].substring(0,2);
     }
     socket.emit("normal search",{
-      uid:current_user_id,
+      uid:CurrentUserID,
       query:{rFilter:[],cFilter:type,aFilter:[]},
       query_type:'normal',
       filterObj:[],
@@ -207,7 +208,7 @@ $(document).ready(function () {
       target.html(current_enemy_data.CharHtml(level));
     }
     socket.emit("store level",{
-      uid : current_user_id,
+      uid : CurrentUserID,
       id : current_enemy_data.id,
       lv : level,
       type : 'enemy'
