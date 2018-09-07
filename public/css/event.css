@@ -3,6 +3,8 @@
   height: 100%;
   position: relative;
   left: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling:touch;
 }
 .iframe_holder iframe{
   width: 100%;

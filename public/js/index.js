@@ -1,5 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.25.1"
+const VERSION = "10.25.2"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 
