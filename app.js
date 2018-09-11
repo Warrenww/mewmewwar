@@ -201,6 +201,8 @@ io.on('connection', function(socket){
             lv = data.lv;
         // record history
         if(uid){
+          user_variable[type=='cat'?grossID:id] =
+            user_variable[type=='cat'?grossID:id]?user_variable[type=='cat'?grossID:id]:{count:0};
           if (data.record)
             if(user_last_search.substring(0,3) != grossID) SetHistory(uid,type,id);
         }
@@ -325,6 +327,7 @@ io.on('connection', function(socket){
         database.ref("/"+(type=='cat'?'newCat':type)+"data/"+id+"/count").set(load_data[id].count);
       }
       if(type == 'cat') id = id.substring(0,3);
+      if(!user_variable[id]) user_variable[id] = {count:0};
       user_variable[id].count = user_variable[id].count?user_variable[id].count+1:1;
       database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
       .set(user_variable[id].count);
@@ -556,6 +559,41 @@ io.on('connection', function(socket){
       __handalError(e);
     }
   });
+  socket.on("search stage",(list)=>{
+    try{
+      console.log("stage search :",list);
+      var buffer = {};
+      // Go through all stage data to find reward
+      for(let i in stagedata){
+        for(let j in stagedata[i]){
+          for(let k in stagedata[i][j]){
+            if('name' == k) continue  // Bypass it's name
+            var reward = stagedata[i][j][k].reward,
+                id = stagedata[i][j][k].id,
+                name = stagedata[i][j].name+"-"+stagedata[i][j][k].name;
+            for(let l in reward){
+              // Get the reward position in target list, if not exist return -1
+              var pos = list.indexOf(reward[l].prize.name);
+              // If this reward is contained in target reward list
+              if( pos != -1){
+                // If this stage does not exist in buffer, create it
+                if(!buffer[id]) buffer[id] = {name:name};
+                // Store chance into it, if reward exist and chance is bigger pass this
+                if(buffer[id][list[pos]])
+                  if(Number(reward[l].chance.split("％")[0]) < Number(buffer[id][list[pos]].split("％")[0]))
+                      continue
+                buffer[id][list[pos]] = reward[l].chance;
+              }
+            }
+          }
+        }
+      }
+      socket.emit("search stage",buffer);
+    } catch(e){
+      __handalError(e);
+    }
+  });
+
 
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
@@ -598,7 +636,7 @@ io.on('connection', function(socket){
       page = data.page.split("/")[1];
       console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
       database.ref('/user/'+user.uid).update({"last_login" : timer});
-      let history = userdata[user.uid].history,
+      var history = userdata[user.uid].history,
       setting = userdata[user.uid].setting,
       variable = userdata[user.uid].variable;
       last_cat = history.last_cat;
@@ -608,14 +646,8 @@ io.on('connection', function(socket){
       last_gacha = history.last_gacha;
       last_cat_search = history.last_cat_search;
       last_enemy_search = history.last_enemy_search;
-      let compareCat = userdata[user.uid].compare.cat2cat,
-      fight_cat = userdata[user.uid].compare.cat2enemy.cat?userdata[user.uid].compare.cat2enemy.cat:null,
-      fight_ene = userdata[user.uid].compare.cat2enemy.enemy?userdata[user.uid].compare.cat2enemy.enemy:null,
-      fight = {
-        cat : fight_cat?{id:fight_cat.id,name:catdata[fight_cat.id].name}:null,
-        enemy : fight_ene?{id:fight_ene.id,name:enemydata[fight_ene.id].name,lv:fight_ene.lv}:null
-      },
-      compareEnemy = userdata[user.uid].compare.enemy2enemy;
+      var compareCat = userdata[user.uid].compare.cat2cat,
+          compareEnemy = userdata[user.uid].compare.enemy2enemy;
       let obj , arr = [] , brr = [];
       for(let i in compareCat){
         obj = {};
@@ -671,7 +703,7 @@ io.on('connection', function(socket){
         for(i in history.enemy){
           let id = history.enemy[i].id,
           name = enemydata[id].name?enemydata[id].name:enemydata[id].jp_name,
-          lv = variable.enemy[id].lv;
+          lv = variable.enemy[id]?variable.enemy[id].lv:null;
           obj.enemy[i] = {id:id,time:history.enemy[i].time,name:name,lv:lv?lv:1}
         }
         for(i in history.stage){
@@ -718,8 +750,8 @@ io.on('connection', function(socket){
         CurrentUserData.first_login = userdata[user.uid].first_login;
         CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
         CurrentUserData.legend = {mostSearchCat,mostSearchStage};
-        countOnlineUser(socket.id,user.uid,true);
       }
+      countOnlineUser(socket.id,user.uid,true);
       socket.emit("current_user_data",CurrentUserData);
       console.log('user data send');
     }catch(e){
@@ -730,12 +762,18 @@ io.on('connection', function(socket){
     countOnlineUser(socket.id,null,false);
   });
   function countOnlineUser(sid,uid,connect) {
-    onLineUser[uid] = sid;
     var count = 0;
+    if(connect){
+      if(onLineUser[uid]) onLineUser[uid].push(sid);
+      else onLineUser[uid] = [sid];
+    }
     for(let i in onLineUser) {
-      if(!connect && onLineUser[i] == sid){
-        delete onLineUser[i];
-        continue
+      if(!connect && onLineUser[i].indexOf(sid)!=-1){
+        onLineUser[i].splice(onLineUser[i].indexOf(sid),1);
+        if(onLineUser[i].length == 0){
+          delete onLineUser[i];
+          continue
+        }
       }
       count ++;
     }

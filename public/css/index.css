@@ -1,12 +1,4 @@
-#login,#version_alert{
-  display: none;
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.5);
-  top: 0;
-}
+
 html,body{overflow: hidden;}
 .login_box{
   position: relative;
@@ -112,27 +104,6 @@ iframe[active='true']{ right:0%; }
   color: white;
 }
 nav a{cursor: pointer;}
-#version_alert .content div{
-  margin: 2%;
-  padding: 2%;
-  font-size: 20px;
-  width: 50%;
-  background-color: rgba(255,255,255,.8);
-  font-weight: bold;
-  border-radius: 10px;
-}
-#version_alert span{
-  margin: 0 5;
-  color: #f45f5f;
-}
-#version_alert #version_new{color:#37bf72}
-#countDown{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  font-size: 30;
-  margin: 10;
-}
 #support{background: linear-gradient(rgb(156, 237, 109),rgb(22, 159, 68))}
 #nottoday{background: linear-gradient(rgb(164, 164, 164),rgb(108, 108, 108))}
 #bulletin .main{

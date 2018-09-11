@@ -163,4 +163,5 @@ nav .mobile,
   body::-webkit-scrollbar {width: 0px;}
   #mine_alert .content div,#mine_alert span{width: 90%}
   #zoomImg img{ width: 90% }
+  .tutorial .article{font-size: 16}
 }

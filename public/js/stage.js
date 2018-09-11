@@ -1,4 +1,13 @@
 var CurrentUserID;
+if(Storage){
+  if(localStorage.stageSelector == "true"){
+    $("#rewardSelector").attr("show",1);
+    $("#toggleSearch").attr("value",1);
+  } else {
+    $("#rewardSelector").attr("show",0);
+    $("#toggleSearch").attr("value",0);
+  }
+}
 $(document).ready(function () {
   var timer = new Date().getTime();
   var filter_name = '' ;
@@ -33,6 +42,54 @@ $(document).ready(function () {
       $(".select_chapter").find("#"+arr[0]).parent().prev().click();
     }
   });
+
+  $("#toggleSearch").click(function () {
+    var temp = Number($("#rewardSelector").attr("show"));
+    temp = (temp+1)%2;
+    $("#rewardSelector").attr("show",temp);
+    if(Storage){
+      if(temp == 1) localStorage.stageSelector = true;
+      else localStorage.stageSelector = false;
+    }
+  });
+  $("#rewardSelector button").click(search);
+  function search() {
+    var list = [];
+    $("#rewardSelector .button[value='1']").each(function () {
+      list.push($(this).attr("name"));
+    });
+    // console.log(list);
+    socket.emit("search stage",list);
+  }
+  socket.on("search stage",(buffer)=>{
+    console.log(buffer);
+    var count = 0;
+    $("#searchResult .result").empty();
+
+    for(let i in buffer){
+      count ++;
+      $("#searchResult .result").append(
+        "<span id='"+i+"'>"+
+        content(i,buffer[i])+
+        "</span>"
+      );
+    }
+    function content(id,data) {
+      var id = id.split("-"),
+          name = chapterName(id[0])+" "+data.name.split("-").join(" "),
+          reward = "";
+      for(let i in data){
+        if (i == 'name') continue
+        reward += rewardPicture(i)+" "+data[i];
+      }
+      return "<span>"+name+"</span><span style='float:right'>"+reward+"</span>"
+    }
+    $("#searchResult").find("#num").text(count);
+    $("#searchResult").show(300);
+    $("#toggleSearch").attr("value",0);
+    $("#rewardSelector").attr("show",0);
+  });
+
 
   $("#searchBox").blur(textSearch);
   $("#searchBut").click(textSearch);
@@ -326,7 +383,7 @@ $(document).ready(function () {
         $(".enemy_head").find("#"+j).children("div")
         .append("<div>"+range[j][k]+"</div>");
     }
-    console.log(range);
+    // console.log(range);
     return html
   }
   function Addlist(list) {
@@ -401,7 +458,13 @@ $(document).ready(function () {
     n = n.split(",").join("");
     return Math.ceil(Number(n)*4.2);
   }
-
+  function rewardPicture(s) {
+    var html;
+    $("#rewardSelector .button").each(function () {
+      if($(this).attr("name") == s) html = $(this).html();
+    });
+    return html
+  }
   $(document).on('click','.enemy_head th',sortStageEnemy);
   function sortStageEnemy() {
     var name = $(this).attr('id'),
@@ -427,6 +490,19 @@ $(document).ready(function () {
       $(this).attr('reverse','decrease').siblings().attr('reverse','');
     }
   }
+
+  var tip_fadeOut;
+  $("#rewardSelector .button").click(function () {
+    let text = $(this).attr("name"),
+    val = $(this).attr('value')=='1'?true:false;
+    if(!val){
+      clearTimeout(tip_fadeOut);
+      $(".ability_tip").remove();
+      $("body").append("<div class='ability_tip'>"+text+"<div>");
+      setTimeout(function () { $(".ability_tip").css("left",-10); },100)
+      tip_fadeOut = setTimeout(function () { $(".ability_tip").css("left",-250) },2000);
+    }
+  });
 
 });
 

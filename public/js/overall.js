@@ -2,6 +2,7 @@ const image_url_cat =  "../public/css/footage/cat/u" ;
 const image_url_enemy =  "../public/css/footage/enemy/e" ;
 const image_url_icon =  "../public/css/footage/gameIcon/" ;
 const image_url_gacha =  "../public/css/footage/gacha/" ;
+const VERSION = "10.26.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -10,6 +11,12 @@ console.log("mobile : ",is_mobile);
 console.log("ios : ",is_ios);
 var showcomparetarget = 1 ;
 var filterObj = {};
+const tutorial_version = {
+  expCalculator: 1,
+  compareCat: 1,
+  compareEnemy: 1,
+  stage: 1
+}
 var socket;
 $(document).ready(function () {
   socket = io.connect();
@@ -146,19 +153,68 @@ $(document).ready(function () {
     return false
   }
   if(typeof(Storage)){
-    var page = location.pathname.split("/")[1];
-    if(!localStorage["tutorial_"+page]){
+    var page = location.pathname.split("/")[1],
+        ver = localStorage["tutorial_"+page];
+    if(ver != tutorial_version[page]){
       $(".tutorial").attr("show","true");
     }
   } else {
     console.log("browser don't support local storage");
   }
 
-  $(".tutorial button").click(function (e) {
+  $(".tutorial button[action='known']").click(function (e) {
     $(".tutorial").fadeOut();
     var page = location.pathname.split("/")[1];
-    localStorage["tutorial_"+page] = true;
+    localStorage["tutorial_"+page] = tutorial_version[page];
   });
+  checkVersion();
+  function checkVersion(){
+    socket.emit("check version");
+    setTimeout(checkVersion,600000);
+  }
+  var countDown = 5;
+  socket.on("check version",(version)=>{
+    console.log(version,VERSION);
+    if(invalidVersion(version)) {
+      $("body").append(
+      '<div id="version_alert">'+
+        '<div class="content">'+
+          '<div class="main">'+
+            '資料庫已更新至<span id="version_new">'+version+'</span>版,'+
+            '但本頁面還停留在<span id="version_old">'+VERSION+'</span>版,'+
+            '為避免非預期錯誤，請重新整理網頁。<br />'+
+            '(5秒後將自動重新整理)'+
+            '<span id="countDown">5<span>'+
+          '</div>'+
+          '<span>'+
+            '<button id="ok">立即重新整理</button>'+
+          '</span>'+
+        '</div>'+
+      '</div>'
+      );
+      $("#version_alert").show();
+      countDownReload();
+    }
+  });
+  function invalidVersion(version) {
+    var newVer = version.split("."),
+        oldVer = VERSION.split(".");
+    for(let i in oldVer){
+      if(Number(oldVer[i]) > Number(newVer[i])) return false
+      else if(Number(oldVer[i]) < Number(newVer[i])) return true
+    }
+    return false
+  }
+  function countDownReload() {
+    if(countDown <= 0) location.reload();
+    else{
+      countDown -= 1;
+      $("#countDown").text(countDown);
+      setTimeout(countDownReload,1000);
+    }
+  }
+  $("#version_alert #ok").click(function () { location.reload(); });
+
 
 });
 

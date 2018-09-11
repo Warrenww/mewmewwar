@@ -1,5 +1,4 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-const VERSION = "10.25.2"
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
 
@@ -341,43 +340,10 @@ $(document).ready(function () {
     return iframeName[str]
   }
 
-  checkVersion();
-  function checkVersion(){
-    socket.emit("check version");
-    setTimeout(checkVersion,600000);
-  }
-  var countDown = 5;
-  socket.on("check version",(version)=>{
-    console.log(version,VERSION);
-    $("#version_old").text(VERSION);
-    $("#version_new").text(version);
-    if(invalidVersion(version)) {
-      $("#version_alert").show();
-      countDownReload();
-  }
+
   socket.on("online user change",(onLineUser)=>{
     $("#onLineUser span").text(onLineUser);
   });
-
-  });
-  function invalidVersion(version) {
-    var newVer = version.split("."),
-        oldVer = VERSION.split(".");
-    for(let i in oldVer){
-      if(Number(oldVer[i]) > Number(newVer[i])) return false
-      else if(Number(oldVer[i]) < Number(newVer[i])) return true
-    }
-    return false
-  }
-  function countDownReload() {
-    if(countDown <= 0) location.reload();
-    else{
-      countDown -= 1;
-      $("#countDown").text(countDown);
-      setTimeout(countDownReload,1000);
-    }
-  }
-  $("#version_alert #ok").click(function () { location.reload(); });
 
   $(".searchMore").click(function () {
     let id = $(this).parent().attr("id"),

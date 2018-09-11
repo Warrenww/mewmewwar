@@ -1,8 +1,18 @@
 var CurrentUserID;
+if(Storage){
+  if(localStorage.gachaScoreBoard == "true"){
+    $("#toggleScore").attr('value',1);
+    $("#scoreboard").show();
+  } else {
+    $("#toggleScore").attr('value',0);
+    $("#scoreboard").hide();
+  }
+}
 $(document).ready(function () {
   var gacha_url = 'https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/'
   var r = sr = ssr = 0 ;
   var current_gacha_data;
+
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -62,7 +72,14 @@ $(document).ready(function () {
   $(document).on('click','#once',function () {gacha(1);});
   $(document).on('click','#elevent',function () {gacha(11);});
 
-  $(document).on('click','#toggleScore',function () { $("#scoreboard").toggle(400); });
+  $("#toggleScore").click(function () {
+    $("#scoreboard").toggle(400);
+    if(Storage){
+      var temp = localStorage.gachaScoreBoard;
+      temp = temp == "true"?false:true;
+      localStorage.gachaScoreBoard = temp;
+    } else {console.log("Browser don't support localStorage");}
+  });
 
   function gacha(n) {
     let data=[],

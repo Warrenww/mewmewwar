@@ -50,39 +50,51 @@ var stdin = process.openStdin();
 //   });
 // });
 
-database.ref('/user').once("value",function (snapshot) {
-  var data = snapshot.val();
-  var count = 0;
-  for(let i in data){
-    var history = data[i].history.gacha,
-        variable = data[i].variable.cat;
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.write(i,count,"-----",count/2248*100,"%");
-    count ++;
-    for(let j in history){
-      var id = history[j].name?history[j].name:history[j].id;
-      database.ref("/user/"+i+"/history/gacha/"+j).update({id:id,name:null});
-    }
-    for(let j in variable){
-      if(j == 'undefine'||j.indexOf("-")!=-1){
-        database.ref("/user/"+i+"/variable/cat/"+j).set(null);
+// database.ref('/user').once("value",function (snapshot) {
+//   var data = snapshot.val();
+//   var count = 0;
+//   for(let i in data){
+//     var history = data[i].history.gacha,
+//         variable = data[i].variable.cat;
+//     process.stdout.clearLine();
+//     process.stdout.cursorTo(0);
+//     process.stdout.write(i,count,"-----",count/2248*100,"%");
+//     count ++;
+//     for(let j in history){
+//       var id = history[j].name?history[j].name:history[j].id;
+//       database.ref("/user/"+i+"/history/gacha/"+j).update({id:id,name:null});
+//     }
+//     for(let j in variable){
+//       if(j == 'undefine'||j.indexOf("-")!=-1){
+//         database.ref("/user/"+i+"/variable/cat/"+j).set(null);
+//       }
+//     }
+//   }
+//
+// });
+
+var stagedata
+database.ref("/stagedata").once("value",function (snapshot){
+  console.log('finish');
+  stagedata = snapshot.val();
+  var exist = [];
+  for(let i in stagedata){
+    for(let j in stagedata[i]){
+      if(j == 'name') continue
+      for(let k in stagedata[i][j]){
+        if(k == 'name') continue
+        var reward = stagedata[i][j][k].reward;
+        for(let l in reward){
+          var name = reward[l].prize.name;
+          if(exist.indexOf(name) == -1){
+            console.log(name);
+            exist.push(name);
+          }
+        }
       }
     }
   }
-
 });
-
-// var stagedata
-// database.ref("/stagedata/universe").once("value",function (snapshot){
-//   stagedata = snapshot.val();
-//   var ch1 = stagedata['s03006'];
-//   for(let i in ch1){
-//     if(i=='name') continue
-//     console.log(ch1[i].name);
-//     console.log(ch1[i].reward);
-//   }
-// });
 
 // database.ref("/enemydata").once("value",(snapshot)=>{
 //   var enemydata = snapshot.val();

@@ -136,6 +136,7 @@
   width: 30%;
   color: white;
   padding: 1%;
+  display: none;
 }
 #scoreboard table{color: white}
 #scoreboard h2{text-align: center;margin: 0;}

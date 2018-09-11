@@ -9,7 +9,6 @@ body,html{
   -o-user-select:none;
   cursor: default;
   background-image: url("footage/search_BG.png");
-
 }
 body::-webkit-scrollbar {
     width: 8px;
@@ -24,7 +23,36 @@ body::-webkit-scrollbar-thumb {
   border-radius: 4px;
 
 }
-
+#login,#version_alert{
+  display: none;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+  top: 0;
+}
+#version_alert .content div{
+  margin: 2%;
+  padding: 2%;
+  font-size: 20px;
+  width: 50%;
+  background-color: rgba(255,255,255,.8);
+  font-weight: bold;
+  border-radius: 10px;
+}
+#version_alert span{
+  margin: 0 5;
+  color: #f45f5f;
+}
+#version_alert #version_new{color:#37bf72}
+#countDown{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  font-size: 30;
+  margin: 10;
+}
 
 #world,#future{
   background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
@@ -574,16 +602,29 @@ animation-iteration-count: infinite;
   background: rgba(0,0,0,.5);
   align-items: center;
   flex-direction: column;
-  overflow-y: scroll;
+  z-index: 10;
 }
-.tutorial::-webkit-scrollbar{width: 0}
+.tutorial .article::-webkit-scrollbar{width: 4}
 .tutorial[show='true']{display: flex;}
 .tutorial .article{
   background: white;
-  padding: 20;
+  padding: 20 30;
   border-radius: 20px;
   font-size: 20;
   max-width: 90%;
+  max-height: calc(100% - 40px);
   font-weight: bold;
-  margin-top: 50px
+  margin-top: 50px;
+  overflow-y: scroll;
 }
+.tutorial .article span{ color: #ed5252 }
+.tutorial .article span[color]{ color: attr(color); }
+.tutorial .article h2{font-weight: bold;text-decoration: underline;}
+.tutorial .article .material-icons{
+  cursor:pointer;
+  background:#d6d6d6;
+  border-radius:50%;
+  box-shadow: 1px 1px 11px 1px ;
+  padding: 3;
+}
+.tutorial .article .material-icons:hover{background:#8e8e8e;}
