@@ -38,7 +38,7 @@ function arrangeUserData(userdata) {
     if(userdata[i].first_login == undefined){
       console.log(i+" unknown first login");
       var user = {uid:i,isAnonymous:true};
-      Util.GenerateUser(user);
+      Util.GenerateUser(user,userdata);
       continue
     }
     count ++ ;

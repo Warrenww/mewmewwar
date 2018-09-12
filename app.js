@@ -546,7 +546,7 @@ io.on('connection', function(socket){
          database.ref('/user/'+user.uid).update({"last_login" : timer});
        } else {
          console.log('new user');
-         data = Util.GenerateUser(user);
+         data = Util.GenerateUser(user,userdata);
        }
        socket.emit("login complete",{user:user,name:data.nickname});
      }

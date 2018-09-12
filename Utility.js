@@ -1,4 +1,5 @@
 var Unitdata = require("./Unitdata");
+var database = require("firebase").database();
 
 exports.Sort = function (list,target=null,reverse=false) {
   return quickSort(list,target,reverse)
@@ -33,7 +34,7 @@ exports.levelToValue = function (origin,rarity,lv) {
   return result
 }
 
-exports.GenerateUser = function (user=null) {
+exports.GenerateUser = function (user,userdata) {
   let timer = new Date().getTime();
   let data = {
     name : user?user.displayName:"",
