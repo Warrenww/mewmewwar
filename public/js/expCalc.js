@@ -5,7 +5,6 @@ $(document).ready(function () {
 });
 var xmlhttp = new XMLHttpRequest() ;
 var url = "../public/exp.json";
-var update_dialog ;
 
 xmlhttp.open("GET", url, true);
 xmlhttp.send();

@@ -18,6 +18,7 @@ var database = firebase.database();
 console.log('start');
 var stdin = process.openStdin();
 
+database.ref("/error_log").set(null);
 
 // database.ref("/newCatData").once("value",function (snapshot) {
 //   console.log('load complete');
@@ -73,28 +74,28 @@ var stdin = process.openStdin();
 //
 // });
 
-var stagedata
-database.ref("/stagedata").once("value",function (snapshot){
-  console.log('finish');
-  stagedata = snapshot.val();
-  var exist = [];
-  for(let i in stagedata){
-    for(let j in stagedata[i]){
-      if(j == 'name') continue
-      for(let k in stagedata[i][j]){
-        if(k == 'name') continue
-        var reward = stagedata[i][j][k].reward;
-        for(let l in reward){
-          var name = reward[l].prize.name;
-          if(exist.indexOf(name) == -1){
-            console.log(name);
-            exist.push(name);
-          }
-        }
-      }
-    }
-  }
-});
+// var stagedata
+// database.ref("/stagedata").once("value",function (snapshot){
+//   console.log('finish');
+//   stagedata = snapshot.val();
+//   var exist = [];
+//   for(let i in stagedata){
+//     for(let j in stagedata[i]){
+//       if(j == 'name') continue
+//       for(let k in stagedata[i][j]){
+//         if(k == 'name') continue
+//         var reward = stagedata[i][j][k].reward;
+//         for(let l in reward){
+//           var name = reward[l].prize.name;
+//           if(exist.indexOf(name) == -1){
+//             console.log(name);
+//             exist.push(name);
+//           }
+//         }
+//       }
+//     }
+//   }
+// });
 
 // database.ref("/enemydata").once("value",(snapshot)=>{
 //   var enemydata = snapshot.val();

@@ -628,3 +628,20 @@ animation-iteration-count: infinite;
   padding: 3;
 }
 .tutorial .article .material-icons:hover{background:#8e8e8e;}
+
+#PageGoToTop{
+  font-size: 40px;
+  position: fixed;
+  bottom: 10;
+  right: 10;
+  margin: 10;
+  padding: 10;
+  border-radius: 50%;
+  color: white;
+  background-color: #2ea69d;
+  box-shadow: 3px 3px 11px 1px black;
+  transition: .3s ease;
+  cursor: pointer;
+  z-index: 3;
+}
+#PageGoToTop:hover{background-color:#d9ac0c;}

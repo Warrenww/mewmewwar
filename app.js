@@ -1,24 +1,31 @@
 var fs = require('fs');
 var app = require('express')();
-var request = require("request");
-var cheerio = require("cheerio");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var express = require('express');
 var path = require('path');
-var sheet_ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
-var gsjson = require('google-spreadsheet-to-json');
 var firebase = require("firebase");
 var config = {
-    apiKey: "AIzaSyC-SA6CeULoTRTN10EXqXdgYaoG1pqWhzM",
-    authDomain: "battlecat-smart.firebaseapp.com",
-    databaseURL: "https://battlecat-smart.firebaseio.com",
-    projectId: "battlecat-smart",
-    storageBucket: "battlecat-smart.appspot.com",
-    messagingSenderId: "268279710428"
-  };
-var d_31 = [1,3,5,7,8,10,12];
+  apiKey: "AIzaSyC-SA6CeULoTRTN10EXqXdgYaoG1pqWhzM",
+  authDomain: "battlecat-smart.firebaseapp.com",
+  databaseURL: "https://battlecat-smart.firebaseio.com",
+  projectId: "battlecat-smart",
+  storageBucket: "battlecat-smart.appspot.com",
+  messagingSenderId: "268279710428"
+};
+firebase.initializeApp(config);
 var admin = require("firebase-admin");
+var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://BattleCat-Smart.firebaseio.com"
+});
+var Util = require("./Utility");
+var Unitdata = require("./Unitdata");
+var Stagedata = require("./Stagedata");
+var Activity = require("./UpdateEvent");
+var Users = require("./Userdata");
+
 var CoinhiveAPI = require('coinhiveapi');
 var coinhive = new CoinhiveAPI('kyoXowX7ige3k8BcMVZcnhOwaZi3lEIv');
 var Apiai = require("apiai");
@@ -37,115 +44,37 @@ function aibot(text) {
   request.end();
 }
 
-var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://BattleCat-Smart.firebaseio.com"
-});
-
-firebase.initializeApp(config);
 var database = firebase.database();
+var quickSort = Util.Sort;
+var levelToValue = Util.levelToValue;
 
-var catdata,
-    combodata,
-    enemydata,
-    userdata,
-    stagedata,
-    gachadata,
-    rankdata,
-    catComment,
+var catdata = {},
+    combodata = {},
+    enemydata = {},
+    userdata = {},
+    stagedata = {},
+    gachadata = {},
+    catComment = {},
+    eventdata = {},
     legenddata,
     VERSION ;
-var __numberOfCat = 0,
-    __numberOfCatSearch = 0,
-    __numberOfStageSearch = 0,
-    mostSearchCat = [],
+var mostSearchCat = [],
     mostSearchStage = [];
 ReloadAllData();
 function ReloadAllData() {
-  database.ref("/").once("value",function (snapshot) {
-    catdata = snapshot.val().newCatData ;
-    combodata = snapshot.val().combodata ;
-    enemydata = snapshot.val().enemydata ;
-    stagedata = snapshot.val().stagedata ;
-    gachadata = snapshot.val().gachadata ;
-    rankdata = snapshot.val().rankdata ;
-    userdata = snapshot.val().user ;
-    eventdata = snapshot.val().event_date ;
-    catComment = snapshot.val().catComment ;
-    legenddata = snapshot.val().legend;
-    VERSION = snapshot.val().version;
+  Unitdata.load(catdata,catComment,enemydata,mostSearchCat);
+  Activity.UpdateEvent(eventdata);
+  Stagedata.load(stagedata,mostSearchStage);
+  Users.load(userdata);
+  database.ref("/version").once("value",(snapshot)=>{
+    VERSION = snapshot.val();
     console.log("VERSION : ",VERSION);
-    console.log('\x1b[33m','All data load complete!!',"\x1b[37m") ;
-    var exist=null,buffer=[],localCount=0 ;
-    for(let i in catdata){
-      __numberOfCat ++ ;
-      current = i.substring(0,3);
-      if (current == exist){
-        localCount += catdata[i].count?catdata[i].count:0;
-      } else {
-        __numberOfCatSearch += localCount;
-        if(catdata[exist+'-1'])
-          buffer.push({id:catdata[exist+'-1'].id,count:localCount});
-        exist = current;
-        localCount = catdata[i].count?catdata[i].count:0;
-      }
-    }
-    buffer = quickSort(buffer,'count');
-    for(let i=0; i<3; i++){
-      let id = buffer[i].id;
-      mostSearchCat.push({
-        name:catdata[id].name,
-        count:catdata[id].count,
-        id:id,
-        hp:levelToValue(catdata[id].hp,catdata[id].rarity,30).toFixed(0),
-        atk:levelToValue(catdata[id].atk,catdata[id].rarity,30).toFixed(0),
-      });
-    }
-    buffer = [];
-    for(let i in stagedata){
-      for(let j in stagedata[i]){
-        for(let k in stagedata[i][j]){
-          if(k == 'name') continue
-          buffer.push({
-            id:stagedata[i][j][k].id,
-            count:stagedata[i][j][k].count,
-            energy:stagedata[i][j][k].energy,
-            name:stagedata[i][j][k].name,
-            enemy:stagedata[i][j][k].enemy
-          });
-        }
-      }
-    }
-    buffer = quickSort(buffer,'count');
-    for(let i=0; i<3; i++){
-      mostSearchStage.push(buffer[i]);
-    }
-    buffer = [];
-    console.log("most Search Cat : ",mostSearchCat);
-    console.log("most Search Stage : ",mostSearchStage);
-    console.log("Number of cat search : ",__numberOfCatSearch);
-    for(let i in legenddata){
-      var This = legenddata[i];
-      if(This.thisWeek.date - This.lastWeek.date > 7*86400000){
-        This.lastWeek = This.thisWeek;
-        This.thisWeek = {date:new Date().getTime()};
-        database.ref("/legend/"+i).update({lastWeek:This.lastWeek,thisWeek:This.thisWeek});
-      }
-    }
-    arrangeUserData();
-    geteventDay();
   });
+  database.ref("/combodata").once("value",(snapshot)=>{combodata = snapshot.val();});
+  database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
+  database.ref("/legend").once("value",(snapshot)=>{legenddata = snapshot.val()});
+
   setTimeout(ReloadAllData,6*3600*1000);
-}
-class UserCatVariable {
-  constructor(obj) {
-    this.count = obj.count?obj.count:0,
-    this.lv = obj.lv?obj.lv:30,
-    this.own = obj.own?obj.own:false,
-    this.survey = obj.survey?obj.survey:null
-  }
 }
 
 var onLineUser = {};
@@ -204,7 +133,9 @@ io.on('connection', function(socket){
           user_variable[type=='cat'?grossID:id] =
             user_variable[type=='cat'?grossID:id]?user_variable[type=='cat'?grossID:id]:{count:0};
           if (data.record)
-            if(user_last_search.substring(0,3) != grossID) SetHistory(uid,type,id);
+            if(user_last_search)
+              if(user_last_search.substring(0,3) != grossID) SetHistory(uid,type,id);
+            else SetHistory(uid,type,id);
         }
         //Extract data
         var CatOnlyData = {bro:[],combo:[],own:null};
@@ -615,7 +546,7 @@ io.on('connection', function(socket){
          database.ref('/user/'+user.uid).update({"last_login" : timer});
        } else {
          console.log('new user');
-         data = GenerateUser(user);
+         data = Util.GenerateUser(user);
        }
        socket.emit("login complete",{user:user,name:data.nickname});
      }
@@ -691,7 +622,6 @@ io.on('connection', function(socket){
       else if(page == 'combo'){CurrentUserData.last_combo = last_combo;}
       else if(page == 'compareCat'){CurrentUserData.compare_c2c = arr;}
       else if(page == 'compareEnemy'){CurrentUserData.compare_e2e = brr;}
-      else if(page == 'fight'){CurrentUserData.fight = fight;}
       else if(page == 'history'){
         obj = {cat:{},enemy:{},stage:{},gacha:{}};
         for(i in history.cat){
@@ -988,7 +918,7 @@ io.on('connection', function(socket){
     try{
       if(data.type !='fb'){
         let CatCount = 0,
-        Random = Math.floor((Math.random()*__numberOfCat)),
+        Random = Math.floor((Math.random()*Unitdata.__numberOfCat())),
         photo ;
         for(let i in catdata){
           if (CatCount == Random){
@@ -1075,7 +1005,6 @@ io.on('connection', function(socket){
   });
 
   socket.on('get event date',function () { socket.emit('true event date',eventdata); });
-  socket.on("rankdata",function () { socket.emit("recive rank data",rankdata); });
   socket.on("check version",()=>{socket.emit("check version",VERSION);});
 
   socket.on("record gacha",function (data) {
@@ -1410,212 +1339,6 @@ app.get('/:page',function (req,res) {
 });
 app.use(express.static(path.join(__dirname, '/')));// to import css and javascript
 
-function arrangeUserData() {
-  console.log('arrange user data');
-  let count = 0,
-      timer = new Date().getTime();
-  for(let i in userdata){
-    // console.log(i);
-    if(i == undefined|| i == "undefined"){
-      console.log("remove "+i);
-      database.ref('/user/'+i).remove();
-      continue
-    } else {
-      if(userdata[i].Anonymous){
-        if((timer - userdata[i].last_login)>5*86400000) {
-          console.log("remove "+i+" since didn't login for 5 days");
-          database.ref('/user/'+i).remove();
-          admin.auth().deleteUser(i)
-          .then(function() { console.log("Successfully deleted user"); })
-          .catch(function(error) { console.log("Error deleting user:", error); });
-          continue
-        }
-      }
-      if(userdata[i].first_login == undefined){
-        console.log(i+" unknown first login");
-        // database.ref('/user/'+i).remove();
-        // admin.auth().deleteUser(i)
-        // .then(function() { console.log("Successfully deleted user"); })
-        // .catch(function(error) { console.log("Error deleting user:", error); });
-        let user = {uid:i,isAnonymous:true};
-        GenerateUser(user);
-        continue
-      }
-      let arr=[],edit = ['cat','enemy','combo','stage','gacha'];
-      count ++ ;
-      for(let j in edit){
-        for(let k in userdata[i].history[edit[j]]) arr.push(userdata[i].history[edit[j]][k]);
-        if (arr.length > 40){
-          console.log(i+" too many "+edit[j]);
-          let l=0 ;
-          for(let k in userdata[i].history[edit[j]]){
-            l++;
-            if(l < (arr.length-39)) database.ref('/user/'+i+"/history/"+edit[j]+"/"+k).remove();
-          }
-        }
-        arr = [];
-      }
-      if(!userdata[i].variable) {
-        console.log("user "+i+" no variable");
-        database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
-      }
-      if(userdata[i].setting.mine_alert){
-        let mine = userdata[i].setting.mine_alert;
-        if(!mine.accept&&((timer - mine.time)>4*86400000)&&Math.random()>0.2){
-          database.ref('/user/'+i+"/setting/mine_alert/state").set(false);
-        }
-      }
-    }
-  }
-  console.log("there are "+count+" users!!");
-}
-function geteventDay() {
-  var t = new Date(),
-      y = t.getFullYear(),
-      m = t.getMonth()+1,
-      d = t.getDate(),
-      predic_url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7',
-      root = 'https://forum.gamer.com.tw/',
-      event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
-  var start,end;
-      console.log("get event day ",y+AddZero(m)+AddZero(d));
-
-      //update new event
-      if(eventdata[(y+AddZero(m)+AddZero(d))]==undefined){
-        request({
-          url: event_url+y+AddZero(m)+AddZero(d)+".html",
-          method: "GET"
-        },function (e,r,b) {
-          if(!e){
-            $ = cheerio.load(b);
-            let body = $("body").html(),
-            cc = body.indexOf("<error>") == -1;
-            console.log("event page load complete,update = ",cc);
-            eventdata[(y+AddZero(m)+AddZero(d))] = cc;
-            database.ref("/event_date/"+(y+AddZero(m)+AddZero(d))).set(cc);
-            if(cc){
-              for(let i in eventdata){
-                if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete eventdata[i]
-              }
-              database.ref("/event_date").set(eventdata);
-            }
-          } else {console.log(e);}
-        });
-      } else console.log(y+AddZero(m)+AddZero(d),"exist");
-      //update prediction
-      request({
-        url: predic_url,
-        method: "GET"
-      },function (e,r,b) {
-        if(!e){
-          $ = cheerio.load(b);
-          let title = $(".b-list__row");
-          let today = y+AddZero(m)+AddZero(d);
-          let arr = [];
-          title.each(function () {
-            let a = $(this).children(".b-list__main").find("a");
-            if(a.text().indexOf("活動資訊")!=-1){
-              // console.log(a.text());
-              let b = a.text().split("資訊")[1].split("(")[0].trim().split("~");
-              for(let i in b){
-                b[i] = b[i].split("/");
-                for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
-                b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
-              }
-              if(b[1]>today){
-                // console.log(a.text());
-                start = b[0];end=b[1];
-                // console.log(start,end);
-                arr.push({url:root+a.attr("href"),start:start,end:end,name:a.text()});
-              }
-            }
-          });
-          // console.log(arr);
-          for(i in arr){
-            if (arr[i].url == eventdata.prediction.source||
-              arr[i].url == eventdata.prediction_jp.source) continue
-              console.log('update prediction');
-              parsePrediction(arr[i],eventdata);
-          }
-        }
-      });
-}
-function parsePrediction(obj,eventdate) {
-  console.log(obj.name);
-  let path = "/event_date/prediction";
-  if(obj.name.indexOf('日版')!=-1){
-    // console.log(/snA=[0-9]+/.exec(eventdate.prediction_jp.source)[0].split('=')[1]);
-    if (Number(/snA=[0-9]+/.exec(eventdate.prediction_jp.source)[0].split('=')[1])>
-        Number(/snA=[0-9]+/.exec(obj.url)[0].split('=')[1])) {console.log("don't update");return}
-    path += '_jp';
-  } else {
-    if (Number(/snA=[0-9]+/.exec(eventdate.prediction.source)[0].split('=')[1])>
-        Number(/snA=[0-9]+/.exec(obj.url)[0].split('=')[1])) {console.log("don't update");return}
-  }
-  request({
-    url:obj.url,
-    method:"GET"
-  },function (e,r,b) {
-    if(!e){
-      $ = cheerio.load(b);
-      var gachaP = $("section").eq(0).find(".c-article__content"),
-          eventP = $("section").eq(1).find(".c-article__content");
-      var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
-      gachaP.children("div").each(function () {
-        let content = $(this).text();
-        if(content&&content.length<30){
-          let arr = content.split(' ');
-          let brr = arr[0].split("~");
-          let cc = dateRe.test(arr[0]);
-          if(cc&&arr[1]){
-            gachaObj.push({
-              date:brr,name:arr[1],
-              sure:arr[2]?arr[2].indexOf('必中')!=-1:false
-            });
-          }
-        }
-      });
-      eventP.children("div").each(function () {
-        let content = $(this).text();
-        if( content.indexOf('課金')!=-1||
-            content.indexOf('出售')!=-1||
-            content.indexOf('來源')!=-1||!content) return
-        arr = content.trim().split(' ');
-        let brr = arr[0].split("~");
-        let cc = dateRe.test(arr[0]);
-        if(cc){
-          eventObj.push({
-            date:brr,
-            name:arr[1]+(arr[2]?(" "+arr[2]):"")
-          });
-        }
-      });
-    }
-    // console.log(gachaObj);
-    // console.log(eventObj);
-    database.ref(path).set({
-      start:obj.start,
-      end:obj.end,
-      source:obj.url,
-      eventP:eventObj,
-      gachaP:gachaObj
-    });
-  });
-}
-function levelToValue(origin,rarity,lv) {
-  let limit ;
-  switch (rarity) {
-    case 'R':
-    limit = 70 ;
-    break;
-    case 'SR_alt':
-    limit = 20 ;
-    break;
-    default:
-    limit = 60 ;
-  }
-  return lv<limit ? (0.8+0.2*lv)*origin : origin*(0.8+0.2*limit)+origin*0.1*(lv-limit) ;
-}
 function __handalError(e) {
   console.log(e);
   let time = new Date().getTime();
@@ -1626,63 +1349,6 @@ function __handalError(e) {
     stack:e.stack?e.stack:"undefine"
   });
 }
-function GenerateUser(user=null) {
-  let timer = new Date().getTime();
-  let data = {
-    name : user?user.displayName:"",
-    nickname :user?user.displayName:"",
-    first_login : timer,
-    last_login : timer,
-    history : {cat:"",enemy:"",combo:"",stage:""},
-    compare : {cat2cat:"",cat2enemy:"",enemy2enemy:""},
-    setting : {default_cat_lv:30},
-    variable : {cat:"",enemy:"",stage:""},
-    folder : {owned:""},
-    Anonymous : user?user.isAnonymous:true
-  }
-  if(user.isAnonymous){
-    let anonymous = "";
-    var CatCount=0,Random = Math.floor((Math.random()*__numberOfCat));
-    for(let i in catdata){
-      if (CatCount == Random){
-        anonymous = catdata[i].name?catdata[i].name:catdata[i].jp_name;
-        break
-      }
-      CatCount++;
-    }
-    data.name = "匿名"+anonymous;
-    data.nickname = "匿名"+anonymous;
-  }
-  userdata[user.uid] = data;
-  database.ref('/user/'+user.uid).set(data) ;
-  return data
-}
-function AddZero(n) {
-  return n<10 ? "0"+n : n
-}
-function quickSort(list,target=null) {
-  var length = list.length;
-  if (length <= 1) return list
-
-  var pivot_index = Math.ceil(length/2),
-      pivot = list[pivot_index],
-      pivot_value = target?pivot[target]:pivot,
-      smaller=[],
-      bigger=[];
-
-  for (let i = 0; i < length; i++){
-    if (i == pivot_index) continue
-    var compare_value = target?list[i][target]:list[i];
-    if (compare_value > pivot_value) bigger.push(list[i]);
-    else smaller.push(list[i]);
-  }
-  smaller = quickSort(smaller,target);
-  bigger = quickSort(bigger,target);
-
-  return bigger.concat([list[pivot_index]]).concat(smaller)
-}
-
-
 
 
 //
