@@ -4,14 +4,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>聯組資料庫</title>
-    <link rel="Shortcut Icon" type="image" href="../public/css/footage/tab_icon_combo.png">
+    <link rel="Shortcut Icon" type="image" href="./css/footage/tab_icon_combo.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="../public/css/navBar.css" />
-    <link rel="stylesheet" href="../public/css/overall.css" />
-    <link rel="stylesheet" href="../public/css/FloatDisplay.css" />
-    <link rel="stylesheet" href="../public/css/rwd.css" />
+    <link rel="stylesheet" href="./css/navBar.css" />
+    <link rel="stylesheet" href="./css/overall.css" />
+    <link rel="stylesheet" href="./css/FloatDisplay.css" />
+    <link rel="stylesheet" href="./css/rwd.css" />
     <style>
       .dataTable i{
         position: absolute;
@@ -28,11 +28,13 @@
         background-color: gray;
         color:#e9ad3f;
       }
+      .dataTable tr[dark='true'] td {background-color: rgba(75, 75, 75, 0.85)}
+      .dataTable tr[dark='true'] th {background-color: rgba(148, 128, 97, 0.89)}
       #more_combo > td{
         background-color: rgba(255, 255, 255, 0.6);
         border: 3px solid #feb12f;
       }
-      #more_combo i{display: none;}
+      /* #more_combo i{display: none;} */
       .seat{
         width: 90px;
         height: 60px;
@@ -47,6 +49,9 @@
       @media screen and (max-width:768px) {
         .seat{width: 75;height: 50}
         .comboPic div{justify-content: center;}
+      }
+      @media screen and (max-width:425px) {
+        .dataTable i{display: none;}
       }
     </style>
   </head>
@@ -169,21 +174,59 @@
     </div>
 
 
-    <div class="modal fade" id="helpModal" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" data-dismiss="modal">&times;</button>
-            <div class='title'></div>
-          </div>
-          <div class="modal-body">
-          </div>
-          <div class="modal-footer">
-            <!-- <button id="setting-submit" class="btn btn-default" >Confirm</button> -->
-            <button id="setting-cancel" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
+    <div class="tutorial">
+      <div class="article">
+        <h1 style="text-align:center">聯組資料庫用法</h1>
+        <h2>開始使用</h2>
+        <ol>
+          <li>從頁面上方的聯組分類選擇欲查詢的聯組種類(可多選)</li>
+          <li>
+            點擊<button>GO</button>系統即會載入所選聯組
+          </li>
+        </ol>
+        <h2>進階查詢</h2>
+        <p>
+          點擊聯組中的貓咪圖片即可在漂浮顯示中顯示貓咪資料，
+          如欲察看詳細資料，請點選右下角之<span>更多詳細資料></span>
+        </p>
+        <h2>聯組延伸</h2>
+        <p>
+          所有聯組結果之右方皆有一聯組延伸按鈕
+          <i class="material-icons">playlist_add</i>
+          ，點擊即可啟用聯組延伸功能，功能如下:
+        </p>
+        <ul>
+          <li>
+            <b style="text-decoration:underline">自動更新包含聯組: </b><br />
+            <span>包含聯組</span>之定義為該聯組中的貓咪全部出現在
+            本聯組中。系統會自動計算出所有包含聯組並將其類別、名稱、效果，
+            附加於本聯組之類別、名稱、效果後方。
+          </li>
+          <li>
+            <b style="text-decoration:underline">可疊加聯組列表: </b><br />
+            <span>可疊加聯組</span>之定義為該聯組中至少包含一隻以上
+            本聯組中存在的貓咪(不限階級)。可疊加聯組列表會從交集最多
+            的聯組開始列出。若該聯組同時也是包含聯組，則不顯示。
+          </li>
+          <li>
+            <b style="text-decoration:underline">其他可容納聯組: </b><br />
+            其他聯組中貓咪數量與本聯組相加後，不超過出陣列表第一排上限(5隻)者，
+            因結果量龐大，故不會全部列出，請在聯組延伸區塊之最底下，
+            <span>查看其他聯組</span>處，選擇類別與效果，來顯示該類別中
+            符合上述條件的聯組。
+          </li>
+          <li>
+            <span style="text-decoration:underline">聯組合併: </span><br />
+            點選聯組延伸結果中的各聯組右方之
+            <i class="material-icons">merge_type</i>
+            按鈕，即可將該聯組與本聯組以類似「包含聯組」
+            的方式將類別、名稱、效果和內容合併，並取代原本聯組。
+            合併完成後，聯組延伸結果區將關閉。此延伸聯組同樣也可以執行
+            <span>聯組延伸</span>的功能，再繼續合併更多的聯組。
+          </li>
+        </ul>
       </div>
+      <button action='known'>我知道了</button>
     </div>
 
 
@@ -192,14 +235,14 @@
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="../public/js/html2canvas.min.js"></script>
-    <script src="../public/js/class.js"></script>
-    <script src="../public/js/overall.js"></script>
-    <script src="../public/js/combo.js"></script>
-    <script src="../public/js/FloatDisplay.js"></script>
+    <script src="./js/html2canvas.min.js"></script>
+    <script src="./js/class.js"></script>
+    <script src="./js/overall.js"></script>
+    <script src="./js/combo.js"></script>
+    <script src="./js/FloatDisplay.js"></script>
     <script src="../js/jquery.easing.1.3.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
-    <script src="../public/js/firebaseConfig.js"></script>
+    <script src="./js/firebaseConfig.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

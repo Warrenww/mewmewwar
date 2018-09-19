@@ -37,7 +37,7 @@ $(document).ready(function () {
   $(document).on("click",'.tag',function () {
     let name = $(this).attr("name"),
         target = name;
-    $(".monitor .content img").attr('src','/public/css/footage/gacha/'+name+".png");
+    $(".monitor .content img").attr('src','./css/footage/gacha/'+name+".png");
     $(this).attr("value",1).siblings(".tag").attr("value",0)
       .parent().siblings().find(".tag").attr("value",0);
     $("#result").empty();

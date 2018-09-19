@@ -9,21 +9,21 @@
     </script>
     <meta charset='utf-8' />
     <title>貓咪大戰中文資料站</title>
-    <link rel="Shortcut Icon" type="image" href="../public/css/footage/logo.svg">
+    <link rel="Shortcut Icon" type="image" href="./css/footage/logo.svg">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="../public/css/overall.css" />
-    <link rel="stylesheet" href="../public/css/index.css" />
-    <link rel="stylesheet" href="../public/css/navBar.css" />
-    <link rel="stylesheet" href="../public/css/rwd.css" />
+    <link rel="stylesheet" href="./css/overall.css" />
+    <link rel="stylesheet" href="./css/index.css" />
+    <link rel="stylesheet" href="./css/navBar.css" />
+    <link rel="stylesheet" href="./css/rwd.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
     <nav>
-      <img src="../public/css/footage/logo_text.png"/>
+      <img src="./css/footage/logo_text.png"/>
       <div class="navLinkBox">
         <span class="show_panel" value='0'>資料查詢</span>
         <div class="nav_panel">
@@ -49,16 +49,20 @@
         <a  id="event">最新消息</a>
       </div>
       <div class="navBox">
-        <i class="material-icons" id="prev">&#xe5c4;</i>
-        <i class="material-icons" id="carousel">&#xe8eb;</i>
-        <i class="material-icons" id="reload">&#xE863;</i>
-        <i class="material-icons" id="next">&#xe5c8;</i>
+        <i class="material-icons" id="prev">navigate_before</i>
+        <i class="material-icons" id="carousel">view_carousel</i>
+        <i class="material-icons" id="reload">refresh</i>
+        <i class="material-icons" id="next">navigate_next</i>
       </div>
       <div class="settingBox">
-        <a class="current_user_name"></a>
-        <div style="display:flex;justify-content:center">
-          <i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>
-          <a id="setting"><i class="material-icons">settings</i></a>
+        <i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>
+        <div class="show_panel" style="display:flex;">
+          <span id="userPhoto" class=""></span>
+          <span class="current_user_name"></span>
+        </div>
+        <div class="nav_panel">
+          <a id="setting"><i class="material-icons" style="font-size:20">settings</i>設定</a>
+          <a id="history"><i class="material-icons" style="font-size:20">history</i>歷程記錄</a>
         </div>
       </div>
       <div class="mobile">
@@ -91,7 +95,6 @@
         </div>
         <a  id="calendar">活動日程</a>
         <a  id="event">最新消息</a>
-        <!-- <a  id="intro">新手專區</a> -->
       </div>
       <div class="m_settingBox">
         <a class="current_user_name"></a>
@@ -110,7 +113,7 @@
             <h2>貓咪查詢排行榜</h2>
             <div class="LegendCardholder">
               <div class="LegendCard">
-                <img src="../public/css/footage/cat/u001-1.png">
+                <img src="./css/footage/cat/u001-1.png">
                 <span>貓咪</span>
                 <span>血量 : 9999</span>
                 <span>攻擊 : 9999</span>
@@ -118,7 +121,7 @@
                 <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
               </div>
               <div class="LegendCard">
-                <img src="../public/css/footage/cat/u001-1.png">
+                <img src="./css/footage/cat/u001-1.png">
                 <span>貓咪</span>
                 <span>血量 : 9999</span>
                 <span>攻擊 : 9999</span>
@@ -126,7 +129,7 @@
                 <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
               </div>
               <div class="LegendCard">
-                <img src="../public/css/footage/cat/u001-1.png">
+                <img src="./css/footage/cat/u001-1.png">
                 <span>貓咪</span>
                 <span>血量 : 9999</span>
                 <span>攻擊 : 9999</span>
@@ -260,16 +263,82 @@
     <div id="onLineUser">
       目前線上人數 : <span>0</span> 人
     </div>
-    <!-- <div id='year_event'>
-      <div class="content">
-        <table>
 
-        </table>
+    <style>
+      .answer{display: flex;justify-content: center;}
+      .tutorial .article .answer i{
+        font-size: 40;
+        color:#e9b94d;
+        padding: 0;
+        background:transparent;
+        margin: 20 16;
+        box-shadow: none;
+        position: relative;
+      }
+      .tutorial .article .answer i:first-child{color:#8cc264;}
+      .tutorial .article .answer i:last-child{color:#c14141}
+      .tutorial .article .answer i::after{
+        content:attr(text);
+        position: absolute;
+        top: -20;
+        left: -8;
+        font-size: 14;
+        font-weight: bold;
+      }
+      .tutorial .article .answer i[active="false"]{color: #acacac}
+      textarea{
+        resize: none;
+        margin: 10;
+        width: 75%;
+        border: 3px solid;
+        border-radius: 10px;
+        font-size: 18px;
+        background-color: rgba(200,200,200,0.5);
+        padding: 10
+      }
+    </style>
+
+    <div class="tutorial">
+      <div class="article">
+        <h1>問卷調查</h1>
+        <p>
+          Hi~~首先感謝大家的使用，為了讓網站可以更好，
+          煩請大家抽空回答一下以下問題:
+        </p>
+        <ol>
+          <li>
+            更多功能中的<span>我的貓咪圖鑑</span>，
+            或是貓咪資料庫中的<span>我有這隻貓</span>
+            的功能，使用率僅18%。<br />你是否覺得應該移除這項功能呢?
+            <div class="answer" no='1'>
+              <i class="material-icons" text="移除功能" active="true">check_circle</i>
+              <i class="material-icons" text="留下功能" active="true">remove_circle</i>
+            </div>
+          </li>
+          <li>
+            你是否覺得應該移除<span>顯示/隱藏日版貓咪</span>這項功能呢?
+            <div class="answer" no='1'>
+              <i class="material-icons" text="移除功能" active="true">check_circle</i>
+              <i class="material-icons" text="留下功能" active="true">remove_circle</i>
+            </div>
+          </li>
+          <li>
+            現行網站瀏覽方式分為:<span>同一視窗用iframe載入</span>與
+            <span>在新分頁開啟</span>，你是否希望改變瀏覽方式呢?
+            <div class="answer" no='1'>
+              <i class="material-icons" text="不要改變">check_circle</i>
+              <i class="material-icons" text="純嵌入式">remove_circle</i>
+              <i class="material-icons" text="純新視窗">remove_circle</i>
+            </div>
+          </li>
+          <li>
+            其他想說的話或建議:<br />
+            <textarea maxlength='100'rows="10"placeholder="說點甚麼 拜託"></textarea>
+          </li>
+        </ol>
       </div>
-    </div> -->
-
-
-
+      <button action='submit'>填答完畢</button>
+    </div>
 
     <script src="https://authedmine.com/lib/authedmine.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
@@ -278,13 +347,13 @@
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="../public/js/html2canvas.min.js"></script>
-    <script src="../public/js/firebaseConfig.js"></script>
-    <script src="../public/js/class.js"></script>
-    <script src="../public/js/overall.js"></script>
-    <script src="../public/js/index.js"></script>
-    <script src="../public/js/jquery.touchSwipe.min.js"></script>
-    <script src="../public/js/jquery.easing.1.3.js"></script>
+    <script src="./js/html2canvas.min.js"></script>
+    <script src="./js/firebaseConfig.js"></script>
+    <script src="./js/class.js"></script>
+    <script src="./js/overall.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/jquery.touchSwipe.min.js"></script>
+    <script src="./js/jquery.easing.1.3.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

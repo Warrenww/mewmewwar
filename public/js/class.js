@@ -33,7 +33,7 @@ class Cat{
     return this.aoe?"範圍":"單體"
   }
   get imgURL(){
-    return "../public/css/footage/cat/u"+this.id+".png"
+    return "./css/footage/cat/u"+this.id+".png"
   }
   get Period(){
     if(this.atk_period) return this.atk_period.toFixed(2)
@@ -136,7 +136,7 @@ class Cat{
     var html='';
     for(let i in fruit){
       if(!fruit[i]) continue
-      html += "<img src='/public/css/footage/fruit/"+(fruit[i].seed?"seed":"fruit")
+      html += "<img src='./css/footage/fruit/"+(fruit[i].seed?"seed":"fruit")
       +"_icon0"+(Number(i)+1)+".png'/>x"+fruit[i].number
     }
     return html
@@ -177,7 +177,7 @@ class Enemy{
     return this.aoe?"範圍":"單體"
   }
   get imgURL(){
-    return "../public/css/footage/enemy/e"+this.id+".png"
+    return "./css/footage/enemy/e"+this.id+".png"
   }
   get serial(){
     for(let i in this.char){

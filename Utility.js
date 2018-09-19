@@ -58,6 +58,16 @@ exports.GenerateUser = function (user,userdata) {
   return data
 }
 
+exports.__handalError = function (e) {
+  console.log(e);
+  var time = new Date().getTime();
+  database.ref("/error_log").push({
+    time:time,
+    message:e.message?e.message:"undefine",
+    stack:e.stack?e.stack:"undefine"
+  });
+}
+
 function quickSort(list,target=null,reverse=false) {
     var length = list.length;
     if (length <= 1) return list

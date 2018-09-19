@@ -51,28 +51,17 @@ database.ref("/error_log").set(null);
 //   });
 // });
 
-// database.ref('/user').once("value",function (snapshot) {
-//   var data = snapshot.val();
-//   var count = 0;
-//   for(let i in data){
-//     var history = data[i].history.gacha,
-//         variable = data[i].variable.cat;
-//     process.stdout.clearLine();
-//     process.stdout.cursorTo(0);
-//     process.stdout.write(i,count,"-----",count/2248*100,"%");
-//     count ++;
-//     for(let j in history){
-//       var id = history[j].name?history[j].name:history[j].id;
-//       database.ref("/user/"+i+"/history/gacha/"+j).update({id:id,name:null});
-//     }
-//     for(let j in variable){
-//       if(j == 'undefine'||j.indexOf("-")!=-1){
-//         database.ref("/user/"+i+"/variable/cat/"+j).set(null);
-//       }
-//     }
-//   }
-//
-// });
+database.ref('/user').once("value",function (snapshot) {
+  var data = snapshot.val();
+  var Usercount = 0,
+      folderCount = 0;
+  for(let i in data){
+    if(data[i].setting.photo!=undefined)
+      console.log(data[i].setting.photo);
+  }
+  // console.log('finish');
+  process.exit();
+});
 
 // var stagedata
 // database.ref("/stagedata").once("value",function (snapshot){

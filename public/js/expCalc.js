@@ -4,7 +4,7 @@ $(document).ready(function () {
 
 });
 var xmlhttp = new XMLHttpRequest() ;
-var url = "../public/exp.json";
+var url = "./data/exp.json";
 
 xmlhttp.open("GET", url, true);
 xmlhttp.send();
@@ -79,7 +79,7 @@ function Calculate() {
     console.log(startLv,totalexp,eyeSum);
     $("#result_2").show().find("td").children().eq(0).text(startLv).next().text(totalexp)
     .next().attr("src",function () {
-      return "../public/css/footage/gameIcon/eye_"+active+".png"
+      return "./css/footage/gameIcon/eye_"+active+".png"
     }).next().text(eyeSum);
     $("#result").hide();
   } else {
@@ -94,14 +94,14 @@ function Calculate() {
     }
     console.log(eyeSum,expSum);
     $("#result").show().find("td").children().eq(0).attr("src",function () {
-      var src = "../public/css/footage/gameIcon/xp_";
+      var src = "./css/footage/gameIcon/xp_";
       if (expSum < 5001) src += 5000;
       else if (expSum < 10001) src += 10000;
       else if (expSum < 30001) src += 30000;
       else src += 100000;
       return src+".png"
     }).next().text(expSum).next().attr("src",function () {
-      return "../public/css/footage/gameIcon/eye_"+active+".png"
+      return "./css/footage/gameIcon/eye_"+active+".png"
     }).next().text(eyeSum);
     $("#result_2").hide();
   }

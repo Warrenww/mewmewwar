@@ -254,18 +254,6 @@ input:checked + .slider_but:before {
   font-weight: bold;
 }
 #close_alert button{font-size: 16}
-select{
-  font-size: 16;
-  border: 0;
-  border-radius: 20px;
-  font-weight: bold;
-  padding: 3 10;
-  background-color: rgba(255,255,255,.7);
-  -webkit-appearance: none;
-  position: relative;
-  margin: 0 8
-}
-select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94)}
 .stageselectholder{
   display: flex;
   margin: 10;

@@ -21,6 +21,7 @@ nav img{
   align-items: center;
   padding-left: 20px
 }
+nav a,
 .navLinkBox a,
 .navLinkBox span{
   font-size: 20px;
@@ -41,16 +42,6 @@ nav img{
   margin-right:10px ;
   cursor: pointer;
   transition: .4s ease-in-out
-}
-.settingBox #setting:hover i,
-.m_settingBox #setting:hover i{
-  color:rgb(226, 152, 41) ;
-  animation-name: test ;
-  animation-duration: 2s
-}
-.settingBox #info:hover,
-.m_settingBox #info:hover{
-  color:rgb(73, 215, 8) ;
 }
 .nav_panel {
     display: flex;
@@ -102,12 +93,18 @@ nav img{
   cursor: pointer;
 }
 .alt-tab div:hover{background-color: rgba(249, 194, 2, 0.76)}
+#userPhoto{
+  display: block;
+  width: 36;
+  height: 36;
+  background-image:url('/css/footage/cat/u001-1.png');
+  background-size: cover;
+  background-position: left;
+  border-radius: 50%;
+  cursor: pointer;
+}
 @media screen and (max-width:1024px) {
   .navLinkBox{flex:6}
   .settingBox{flex:2}
   .navBox i{margin: 0 5px}
-}
-@keyframes test {
-  from{transform: rotate(0deg);}
-  to{transform: rotate(180deg);}
 }

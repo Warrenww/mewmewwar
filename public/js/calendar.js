@@ -24,7 +24,7 @@ $(document).ready(function () {
     current_user_id = data.uid;
   });
 
-  xmlhttp.open("GET", "../public/calendar.json", true);
+  xmlhttp.open("GET", "./data/calendar.json", true);
   xmlhttp.send();
   xmlhttp.onreadystatechange = function(){
     if (this.readyState == 4 && this.status == 200){

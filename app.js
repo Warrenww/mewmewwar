@@ -25,6 +25,7 @@ var Unitdata = require("./Unitdata");
 var Stagedata = require("./Stagedata");
 var Activity = require("./UpdateEvent");
 var Users = require("./Userdata");
+var Combodata = require("./Combodata");
 
 var CoinhiveAPI = require('coinhiveapi');
 var coinhive = new CoinhiveAPI('kyoXowX7ige3k8BcMVZcnhOwaZi3lEIv');
@@ -62,15 +63,15 @@ var mostSearchCat = [],
     mostSearchStage = [];
 ReloadAllData();
 function ReloadAllData() {
-  Unitdata.load(catdata,catComment,enemydata,mostSearchCat);
   Activity.UpdateEvent(eventdata);
+  Unitdata.load(catdata,catComment,enemydata,mostSearchCat);
   Stagedata.load(stagedata,mostSearchStage);
   Users.load(userdata);
+  Combodata.load(combodata);
   database.ref("/version").once("value",(snapshot)=>{
     VERSION = snapshot.val();
     console.log("VERSION : ",VERSION);
   });
-  database.ref("/combodata").once("value",(snapshot)=>{combodata = snapshot.val();});
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
   database.ref("/legend").once("value",(snapshot)=>{legenddata = snapshot.val()});
 
@@ -153,7 +154,7 @@ io.on('connection', function(socket){
       }
       socket.emit("required data",{buffer,type});
     } catch (e) {
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   function _catOnlyData(data,id,uid) {
@@ -162,10 +163,10 @@ io.on('connection', function(socket){
       let a = grossID+"-"+i ;
       if(a == id) continue
       else if(catdata[a]) data.bro.push(a) ;
-      // retrieved combo data
-      for(let j in combodata)
-        if(combodata[j].cat.indexOf(a) != -1) data.combo.push(combodata[j]);
     }
+    // retrieved combo data
+    data.combo = Combodata.FindCat(id);
+
     if(uid){
       var own = userdata[uid].variable.cat[grossID].own;
       own = own?own:false;
@@ -206,7 +207,7 @@ io.on('connection', function(socket){
       buffer.lv = data.lv;
       database.ref("/user/"+data.uid+"/variable/"+data.type+"/"+gross).update({lv:data.lv});
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   // Set the last cat/enemy/stage/gacha
@@ -222,7 +223,7 @@ io.on('connection', function(socket){
           id = data.target;
       SetHistory(uid,type,id);
     } catch (e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   function SetHistory(uid,type,id) {
@@ -258,7 +259,7 @@ io.on('connection', function(socket){
         database.ref("/"+(type=='cat'?'newCat':type)+"data/"+id+"/count").set(load_data[id].count);
       }
       if(type == 'cat') id = id.substring(0,3);
-      if(!user_variable[id]) user_variable[id] = {count:0};
+      if(!user_variable[id]) user_variable[id] = {};
       user_variable[id].count = user_variable[id].count?user_variable[id].count+1:1;
       database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
       .set(user_variable[id].count);
@@ -296,7 +297,7 @@ io.on('connection', function(socket){
       // console.log(buffer_1);
       socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("normal search",function (data) {
@@ -411,7 +412,7 @@ io.on('connection', function(socket){
         socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
         }
         catch(e){
-          __handalError(e);
+          Util.__handalError(e);
         }
   });
   socket.on("text search",function (obj) {
@@ -463,7 +464,7 @@ io.on('connection', function(socket){
       socket.emit("search result",{result:buffer,query:data.query,type:data.query_type});
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on('text search stage',function (text) {
@@ -487,7 +488,7 @@ io.on('connection', function(socket){
       socket.emit('text search stage',buffer);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("search stage",(list)=>{
@@ -521,7 +522,7 @@ io.on('connection', function(socket){
       }
       socket.emit("search stage",buffer);
     } catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -551,7 +552,7 @@ io.on('connection', function(socket){
        socket.emit("login complete",{user:user,name:data.nickname});
      }
      catch(e){
-       __handalError(e);
+       Util.__handalError(e);
      }
    });
   socket.on("user connect",function (data){
@@ -678,14 +679,14 @@ io.on('connection', function(socket){
       else {
         CurrentUserData.name = userdata[user.uid].nickname;
         CurrentUserData.first_login = userdata[user.uid].first_login;
-        CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert};
+        CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert,user_photo:setting.photo};
         CurrentUserData.legend = {mostSearchCat,mostSearchStage};
       }
       countOnlineUser(socket.id,user.uid,true);
       socket.emit("current_user_data",CurrentUserData);
       console.log('user data send');
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on('disconnect', function () {
@@ -712,6 +713,7 @@ io.on('connection', function(socket){
 
   socket.on("combo search",function (data) {
     console.log("searching combo......") ;
+    console.log(data);
     try{
       let buffer = [] ;
       let arr = data.id,uid = data.uid;
@@ -730,29 +732,29 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/last_combo").set(arr);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   }) ;
   socket.on("more combo",function (arr) {
     try{
-      let length = arr.length, buffer = [];
-      if(length == 5) {}
-      else
-      for(let i in combodata){
-        let cat = combodata[i].cat,flag = 0;
-        for(let j in arr) if(checkList(cat,arr[j])) flag ++;
-        if(!flag) continue
-        else if (flag == length&&combodata[i].amount==length) continue
-        if(combodata[i].amount+length-flag<6) {
-          if(flag>1) buffer.splice(0,0,combodata[i]);
-          else buffer.push(combodata[i]);
+      let length = arr.length, buffer = [[],[],[],[],[]];
+      if(length != 5) {
+        for(let i in combodata){
+          var cat = combodata[i].cat,
+              com_length = combodata[i].amount,
+              flag = 0;
+          for(let j in arr) if(checkList(cat,arr[j])) flag ++;
+          if (flag == length&&com_length==length) continue
+          if(com_length+length-flag<6) {
+            buffer[flag].push(combodata[i]);
+          }
         }
       }
       buffer.push(arr);
       socket.emit("more combo",buffer);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -764,7 +766,7 @@ io.on('connection', function(socket){
       database.ref('/user/'+data.id+"/compare/cat2cat").set(data.target);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("compare enemy",function (data) {
@@ -775,7 +777,7 @@ io.on('connection', function(socket){
       database.ref('/user/'+data.id+"/compare/enemy2enemy").set(data.target);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -784,7 +786,7 @@ io.on('connection', function(socket){
       userdata[data.uid].nickname = data.name;
       database.ref("/user/"+data.uid+"/nickname").set(data.name);
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("history",function (uid) {
@@ -800,7 +802,7 @@ io.on('connection', function(socket){
       for (let i in owned) buffer.owned.push({name:catdata[owned[i]+"-1"].name,id :owned[i]+"-1"})
       socket.emit("return history",buffer);
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("mark own",function (data) {
@@ -831,7 +833,7 @@ io.on('connection', function(socket){
       userdata[data.uid].folder.owned = arr ;
       database.ref("/user/"+data.uid+"/folder").update({owned:arr});
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -851,7 +853,7 @@ io.on('connection', function(socket){
       });
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("set default cat level",function (data) {
@@ -861,7 +863,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/setting/default_cat_lv").set(data.lv);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("reset cat level",function (id) {
@@ -875,7 +877,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("reset owned cat",function (id) {
@@ -890,7 +892,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+id+"/folder/owned").set("0");
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("change setting",function (data) {
@@ -910,19 +912,19 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("user photo",function (data) {
     console.log('user',data.uid,"change it's photo");
     try{
-      if(data.type !='fb'){
+      if(data.type !='account'){
         let CatCount = 0,
         Random = Math.floor((Math.random()*Unitdata.__numberOfCat())),
         photo ;
         for(let i in catdata){
           if (CatCount == Random){
-            photo = "/public/css/footage/cat/u"+i+".png";
+            photo = "./css/footage/cat/u"+i+".png";
             break
           }
           CatCount ++;
@@ -936,7 +938,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("required users photo",function (arr) {
@@ -948,26 +950,8 @@ io.on('connection', function(socket){
     socket.emit('return users photo',obj);
   });
 
-  socket.on("required stage name",function (chapter) {
-    console.log("load stage name");
-    let buffer = [],
-        data = stagedata[chapter];
-    for(let i in data) buffer.push({id:i,name:data[i].name})
-    // console.log(buffer);
-    socket.emit("stage name",buffer);
-  });
-  socket.on("required level name",function (pos) {
-    console.log("load level name");
-    console.log(pos);
-    let data = stagedata[pos.chapter][pos.stage],
-        buffer = [];
-        for(let i in data) {
-          if (i == 'name') continue
-          buffer.push({id:i,name:data[i].name});
-        }
-        // console.log(buffer);
-        socket.emit("level name",{name:buffer,stage:pos.stage});
-  });
+  socket.on("required stage name",function (chapter) {socket.emit("stage name",Stagedata.GetNameArr(chapter));});
+  socket.on("required level name",function (pos) {socket.emit("level name",Stagedata.GetNameArr(pos.chapter,pos.stage));});
   socket.on("required level data",function (data) {
     console.log("load level data");
     console.log(data);
@@ -1000,7 +984,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -1030,7 +1014,7 @@ io.on('connection', function(socket){
       socket.emit("gacha result",{ result:result});
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("gacha history",function (data) {
@@ -1053,7 +1037,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/gacha/"+key).set(userdata[uid].history.gacha[key]);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -1074,7 +1058,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+data.uid+"/setting/show_miner").set(true);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -1101,7 +1085,7 @@ io.on('connection', function(socket){
       socket.emit("owned data",arr);
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -1145,7 +1129,7 @@ io.on('connection', function(socket){
 
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on('comment cat',function (data) {
@@ -1175,7 +1159,7 @@ io.on('connection', function(socket){
 
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on('comment function',function (data) {
@@ -1200,7 +1184,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
 
@@ -1229,7 +1213,7 @@ io.on('connection', function(socket){
       if(find) SetHistory(uid, 'stage', location);
       socket.emit('cat to stage',{find,stage});
     }catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
     });
 
@@ -1306,18 +1290,22 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      __handalError(e);
+      Util.__handalError(e);
     }
   });
   socket.on("Game Picture",function () {
     var buffer = [];
     for(let i=0;i<18;i++){
-      let cat = Math.ceil(Math.random()*432);
-      cat = cat>100?cat:(cat>10?"0"+cat:"00"+cat);
+      let cat = Math.ceil(Math.random()*Unitdata.cat.__numberOfCat());
+      cat = Util.AddZero(cat,2);
       let data = catdata[cat+"-3"]?catdata[cat+"-3"]:catdata[cat+"-2"];
       buffer.push(data);
     }
     socket.emit("Game Picture",buffer);
+  });
+
+  socket.on("index survey",function (data) {
+    database.ref("/vote/"+data.uid).update(data.answer);
   });
 
 });
@@ -1337,19 +1325,7 @@ app.get('/:page',function (req,res) {
     res.sendFile(__dirname + '/view/index.html');
   }
 });
-app.use(express.static(path.join(__dirname, '/')));// to import css and javascript
-
-function __handalError(e) {
-  console.log(e);
-  let time = new Date().getTime();
-  database.ref("/error_log").push({
-    time:time,
-    code:e.code?e.code:"undefine",
-    message:e.message?e.message:"undefine",
-    stack:e.stack?e.stack:"undefine"
-  });
-}
-
+app.use(express.static(path.join(__dirname, '/public')));// to import css and javascript
 
 //
 //

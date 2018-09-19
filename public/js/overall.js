@@ -1,8 +1,8 @@
-const image_url_cat =  "../public/css/footage/cat/u" ;
-const image_url_enemy =  "../public/css/footage/enemy/e" ;
-const image_url_icon =  "../public/css/footage/gameIcon/" ;
-const image_url_gacha =  "../public/css/footage/gacha/" ;
-const VERSION = "10.26.2"
+const image_url_cat =  "./css/footage/cat/u" ;
+const image_url_enemy =  "./css/footage/enemy/e" ;
+const image_url_icon =  "./css/footage/gameIcon/" ;
+const image_url_gacha =  "./css/footage/gacha/" ;
+const VERSION = "10.27.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -15,7 +15,8 @@ const tutorial_version = {
   expCalculator: 1,
   compareCat: 1,
   compareEnemy: 1,
-  stage: 1
+  stage: 1,
+  combo: 1
 }
 var socket;
 $(document).ready(function () {

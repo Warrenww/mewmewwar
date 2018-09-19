@@ -122,13 +122,14 @@ $(document).ready(function () {
   $("#photo_chooser").click(function () { $('#photo_chooser').fadeOut(400); });
   $("#photo_chooser div div span").click(function (e) {
     e.stopPropagation();
-    var type = $(this).attr("id");
+    var type = $(this).attr("type");
     if(type == 'account'){
       if(!user_photo_url){ alert("無法取得照片"); return }
       $('#photo').css({
         "background-image":'url("'+user_photo_url+'")',
         "background-position":'0'
       });
+      window.parent.changePhoto(user_photo_url);
     }
     socket.emit("user photo",{
       uid:current_user_data.uid,
@@ -142,9 +143,6 @@ $(document).ready(function () {
       "background-image":'url("'+photo+'")',
       "background-position":'-4px 6px'
     });
+    window.parent.changePhoto(photo);
   });
-
-  $("#history").click(function(){window.parent.reloadIframe('history')});
-
-
 });

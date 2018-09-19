@@ -1,14 +1,14 @@
 var database = require("firebase").database();
 var Util = require("./Utility");
-
+var StageData;
 exports.load = function (stagedata,mostSearchStage) {
   console.log("Module start loading stage data.");
 
   database.ref("/stagedata").once("value",(snapshot)=>{
-    var temp = snapshot.val();
+    StageData = snapshot.val();
     var buffer = [];
-    for(let i in temp){
-      stagedata[i] = temp[i];
+    for(let i in StageData){
+      stagedata[i] = StageData[i];
       for(let j in stagedata[i]){
         for(let k in stagedata[i][j]){
           if(k == 'name') continue
@@ -27,9 +27,18 @@ exports.load = function (stagedata,mostSearchStage) {
       mostSearchStage.push(buffer[i]);
     }
     buffer = [];
-    temp = [];
     console.log("Module load stage data complete!");
-    console.log("most Search Stage : ",mostSearchStage);
+    // console.log("most Search Stage : ",mostSearchStage);
   });
+}
 
+exports.GetNameArr = function (chapter,level=null) {
+  var target = StageData[chapter],
+      response = [];
+  if(level) target = target[level];
+  for(let i in target) {
+    if (i == 'name') continue
+    response.push({id:i,name:target[i].name});
+  }
+  return response
 }

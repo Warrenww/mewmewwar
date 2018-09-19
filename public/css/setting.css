@@ -166,5 +166,5 @@ input:checked + .slider_but:before {
   cursor: pointer;
   font-weight: bold;
 }
-#photo_chooser div #account{ background-color: #e46353; }
+#photo_chooser div span[type=account]{ background-color: #e46353; }
 #history:hover{color: rgb(117, 19, 133);}

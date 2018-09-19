@@ -192,16 +192,16 @@ $(document).ready(function () {
   socket.on("level name",function (data) {
     // console.log(data);
     $("#select_level").empty();
-    for( let i in data.name )
+    for( let i in data )
       $("#select_level").append(
         "<span class='card'style='"+
-        "background-image:url(\"../public/css/footage/stage/fight_BG_0"+
+        "background-image:url(\"./css/footage/stage/fight_BG_0"+
         (Math.ceil(Math.random()*5))+".png\")"+
-        "' id='"+data.name[i].id+"'>"+data.name[i].name+"</span>"
+        "' id='"+data[i].id+"'>"+data[i].name+"</span>"
       );
-      $("#select_stage").find("button[id='"+data.stage+"']")
+      $("#select_stage").find("button[id='"+data[0].id.split("-")[1]+"']")
         .attr('value',1).siblings().attr('value',0);
-        scrollSelectArea('stage',data.stage);
+        scrollSelectArea('stage',data[0].id.split("-")[1]);
   });
   $(document).on("click","#select_level .card",function (e) {
     e.stopPropagation();

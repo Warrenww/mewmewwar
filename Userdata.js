@@ -1,19 +1,19 @@
 var database = require("firebase").database();
 var admin = require("firebase-admin");
 var Util = require("./Utility");
+var UserData;
 
 exports.load = function (userdata) {
-  console.log("Module start user data.");
+  console.log("Module start load user data.");
 
   database.ref("/user").once("value",(snapshot)=>{
-    var temp = snapshot.val();
-    for(let i in temp){
-      userdata[i] = temp[i];
-    }
-    console.log("Module load cat data complete!");
+    UserData = snapshot.val();
+    for(let i in UserData) userdata[i] = UserData[i];
+    console.log("Module load user data complete!");
     arrangeUserData(userdata);
   });
 }
+
 
 function arrangeUserData(userdata) {
   console.log('arrange user data');

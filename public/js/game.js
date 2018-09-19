@@ -1,5 +1,5 @@
 var gamesequene,open,clear,start,startTime,size=4,step;
-const iconPic = "../public/css/footage/icon.png";
+const iconPic = "./css/footage/icon.png";
 var catArr ;
 $(document).ready(function () {
 
@@ -33,7 +33,7 @@ $(document).ready(function () {
     if(!start) startTime = new Date().getTime();
     start = true;
     $(this).css({
-      "background-image":"url(../public/css/footage/cat/u"+catArr[Decode(ans)].id+".png)",
+      "background-image":"url(./css/footage/cat/u"+catArr[Decode(ans)].id+".png)",
       "background-blend-mode":"normal"
     });
     open.push({coord,ans});

@@ -3,7 +3,7 @@ $(document).ready(function () {
 });
 
 var xmlhttp = new XMLHttpRequest() ;
-var url = "../public/rank.json";
+var url = "./data/rank.json";
 
 xmlhttp.open("GET", url, true);
 xmlhttp.send();

@@ -1,12 +1,44 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
 var miner_count = 0 ;
 var explor_page = [],explor_index = 0,current_page = '';
+var userPhoto;
 
+if(Storage){
+  if(localStorage.userDisplayName){
+    $(".current_user_name").text("Hi, "+localStorage.userDisplayName);
+  }
+  if(localStorage.userPhoto){
+    $("#userPhoto").css("background-image","url("+localStorage.userPhoto+")");
+  } else if(localStorage.userPhoto == "undefined"){
+    $("#userPhoto").css("background-image","url("+image_url_cat+"001-1.png)");
+  }
+  if(localStorage.tutorial_ != 1) $(".tutorial").attr("show",true);
+  else $(".tutorial").remove();
+}
+else {
+  console.log("Browser don't support local storage!!");
+}
+$(".tutorial i").click(function () {
+  $(this).attr('active',true).siblings().attr('active',false);
+});
+$(".tutorial button[action=submit]").click(function () {
+  var answer = [];
+  var r = confirm("感謝你的填答，是否確認送出問卷?");
+  if(!r) return
+  $(".tutorial .answer i[active='true']").each(function () {
+    answer.push($(this).attr("text"));
+  });
+  answer.push($(".tutorial textarea").val());
+  $(".tutorial").fadeOut();
+  if(Storage) localStorage.tutorial_ = 1;
+  socket.emit("index survey",{uid:CurrentUserId,answer});
+});
+
+var CurrentUserId;
 $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var google_provider = new firebase.auth.GoogleAuthProvider();
   var filter_name = '';
-  var current_user_data = {};
   var newUser = false;
   //user login
   $("#fb_login").click(facebookLogin);
@@ -102,20 +134,17 @@ $(document).ready(function () {
     $(".current_user_name").text("Hi, "+name);
     socket.emit("user connect",{user:data.user,page:location.pathname});
   });
-  if(Storage){
-    if(localStorage.userDisplayName){
-      $(".current_user_name").text("Hi, "+localStorage.userDisplayName);
-    }
-  }
-  else {
-    console.log("Browser don't support local storage!!");
-  }
   socket.on("current_user_data",function (data) {
-    current_user_data = data ;
+    CurrentUserId = data.uid ;
     console.log('get user data');
     let name = data.name ;
     $(".current_user_name").text("Hi, "+name);
-    if(Storage) localStorage.userDisplayName = name;
+    if(Storage) {
+      localStorage.userDisplayName = name;
+      $(".current_user_name").text("Hi, "+localStorage.userDisplayName);
+      localStorage.userPhoto = data.setting.userPhoto;
+      $("#userPhoto").css("background-image","url("+data.setting.user_photo+")");
+    }
     let timer = new Date().getTime(),setting = data.setting;
     if((timer-data.first_login)>30000||setting.show_miner){
       if(!setting.mine_alert) {}
@@ -351,14 +380,14 @@ $(document).ready(function () {
     socket.emit("set history",{
       type:type,
       target:id,
-      uid:current_user_data.uid
+      uid:CurrentUserId
     });
     window.parent.reloadIframe(type);
     window.parent.changeIframe(type);
   });
 
   var xmlhttp = new XMLHttpRequest() ;
-  var url = "../public/update_dialog.html";
+  var url = "./data/update_dialog.html";
   var update_dialog ;
 
   xmlhttp.open("GET", url, true);
@@ -405,4 +434,8 @@ function reloadIframe(target,record = true) {
     $("#iframe_holder").find("#"+target).attr('src',src);
     explor_page.splice(0,0,target);
   }
+}
+
+function changePhoto(photo) {
+  $("#userPhoto").css('background-image',"url("+photo+")");
 }

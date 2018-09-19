@@ -361,6 +361,9 @@ var config = {
       case "バリアブレイカー":
         s = "破盾";
         break;
+      case "バリアブレイク":
+        s = "破盾";
+        break;
       default:
         s = s ;
     }

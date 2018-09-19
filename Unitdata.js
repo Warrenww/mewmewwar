@@ -40,7 +40,7 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
     buffer = [];
     temp = [];
     console.log("Module load cat data complete!");
-    console.log("most Search Cat : ",mostSearchCat);
+    // console.log("most Search Cat : ",mostSearchCat);
     console.log("Number of cat search : ",__numberOfCatSearch);
   });
 

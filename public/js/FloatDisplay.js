@@ -1,7 +1,8 @@
 $(document).ready(function () {
   var page = location.pathname.split('/')[1];
-  $(document).on('click','.cat,.enemy',function () {
-    let id, multiple, type;
+  $(document).on('click','.cat,.enemy',function (e) {
+    e.stopPropagation();
+    var id, multiple, type;
     // console.log(CurrentUserID);
     if (page == 'stage' || page == 'history'){
       id = $(this).attr("id"),
