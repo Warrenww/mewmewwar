@@ -18,8 +18,6 @@ var database = firebase.database();
 console.log('start');
 var stdin = process.openStdin();
 
-database.ref("/error_log").set(null);
-
 // database.ref("/newCatData").once("value",function (snapshot) {
 //   console.log('load complete');
 //   catdata = snapshot.val();
@@ -51,14 +49,32 @@ database.ref("/error_log").set(null);
 //   });
 // });
 
-database.ref('/user').once("value",function (snapshot) {
+database.ref('/vote').once("value",function (snapshot) {
   var data = snapshot.val();
-  var Usercount = 0,
-      folderCount = 0;
+  var result = {
+    0:{
+      "移除功能":0,
+      "留下功能":0
+    },
+    1:{
+      "移除功能":0,
+      "留下功能":0
+    },
+    2:{
+      "不要改變":0,
+      "純嵌入式":0,
+      "純新視窗":0
+    }},count = 0;
   for(let i in data){
-    if(data[i].setting.photo!=undefined)
-      console.log(data[i].setting.photo);
+    if(data[i].length!=4)continue
+    count ++;
+    if(data[i][3]&&data[i][3]!=""&&data[i][3]!=" ") console.log(data[i][3]);
+    for(let j in data[i]) {
+      if(j==3)continue
+      result[j][data[i][j]] ++;
+    }
   }
+  console.log(result);
   // console.log('finish');
   process.exit();
 });

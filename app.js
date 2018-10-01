@@ -73,7 +73,19 @@ function ReloadAllData() {
     console.log("VERSION : ",VERSION);
   });
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
-  database.ref("/legend").once("value",(snapshot)=>{legenddata = snapshot.val()});
+  database.ref("/legend").once("value",(snapshot)=>{
+    legenddata = snapshot.val();
+    var today = new Date();
+    if(!today.getDay()){
+      for(let i in legenddata){
+        if(legenddata[i].lastWeek.date!=(today.getMonth()+"/"+today.getDate())){
+          database.ref("/legend/"+i+"/lastWeek").set(legenddata[i].thisWeek);
+          legenddata[i].thisWeek = {date:(today.getMonth()+"/"+today.getDate())};
+          database.ref("/legend/"+i+"/thisWeek").set(legenddata[i].thisWeek);
+        }
+      }
+    }
+  });
 
   setTimeout(ReloadAllData,6*3600*1000);
 }
@@ -176,16 +188,20 @@ io.on('connection', function(socket){
   // Get the user survey, cat statistic, and cat comment
   socket.on('required cat comment',function (data) {
     console.log('required cat comment',data);
-    var id = data.id,
-        grossID = id.substring(0,3),
-        uid = data.uid,
-        buffer = {survey:{},comment:{}};
-    if(uid){
+    try{
+      var id = data.id,
+      grossID = id.substring(0,3),
+      uid = data.uid,
+      buffer = {survey:{},comment:{}};
+      if(uid){
         var variable = userdata[uid].variable.cat[grossID];
         buffer.survey = variable.survey?variable.survey:false;
+      }
+      buffer.comment = catComment[grossID];
+      socket.emit("comment",buffer);
+    } catch(e){
+      Util.__handalError(e);
     }
-    buffer.comment = catComment[grossID];
-    socket.emit("comment",buffer);
   });
   // Store cat level or enemy multiple
   // {
@@ -195,8 +211,8 @@ io.on('connection', function(socket){
   //   lv:target level
   // }
   socket.on("store level",function (data) {
+    console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
     try{
-      console.log(data.uid+" change his/her "+data.type,data.id+"'s level to "+data.lv);
       if(!data.uid||!data.id) return // undefine user or id
       let id = data.id,
           gross = id.substring(0,3);
@@ -294,7 +310,6 @@ io.on('connection', function(socket){
           }
         }
       }
-      // console.log(buffer_1);
       socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
     }catch(e){
       Util.__handalError(e);
@@ -312,8 +327,7 @@ io.on('connection', function(socket){
           buffer_1 = [],
           buffer_2 = [],
           load_data = {},
-          user = data.uid,
-          flag = true;
+          user = data.uid;
           console.log("recording last search quene");
           if(user)
           database.ref("/user/"+user+"/history/last_"+type+"_search").set(data)
@@ -328,88 +342,86 @@ io.on('connection', function(socket){
             default:
           } ;
 
-          let level = user?userdata[user].setting.default_cat_lv:30,
+          var level = user?userdata[user].setting.default_cat_lv:30,
           showJP = user?userdata[user].setting.show_jp_cat:false;
+
+          for(let i in load_data) buffer_1.push(i);
+
           if(cFilter.length != 0){
-            for(let i in load_data){
-              for(let j in cFilter){
-                if(type == 'cat' && !load_data[i].tag) break;
-                if(type == 'enemy' && !load_data[i].color) break;
+            for(let i in cFilter){
+              var temp = Unitdata.GetAbilityList(type,cFilter[i]);
+              buffer_2 = Util.MergeArray(buffer_2,temp);
+              console.log(cFilter[i],temp.length,buffer_2.length);
+              if(type == "cat"){
+                if(cFilter[i] != "對白色" && cFilter[i] != "對鋼鐵"){
+                  temp = Unitdata.GetAbilityList(type,"對全部");
+                  buffer_2 = Util.MergeArray(buffer_2,temp);
+                }
+              }
+              console.log(buffer_2.length);
+            }
+            buffer_1 = Util.MergeArray(buffer_1,buffer_2,"and");
+          }
 
-                if( type == 'cat' &&
-                (load_data[i].tag.indexOf(cFilter[j]) != -1 ||
-                ((cFilter[j] != "對白色" && cFilter[j] != "對鋼鐵") &&
-                load_data[i].tag.indexOf("對全部") != -1))
-              ) {
-                buffer_1.push(load_data[i]);
-                break;
-              }
-              if(type == 'enemy' && load_data[i].color.indexOf(cFilter[j]) != -1 ) {
-                buffer_1.push(load_data[i]);
-                break;
-              }
+          if(aFilter.length != 0){
+            buffer_2 = [];
+            for(let i in aFilter){
+              var temp = Unitdata.GetAbilityList(type,aFilter[i]);
+              buffer_2 = Util.MergeArray(temp,buffer_2);
             }
+            buffer_1 = Util.MergeArray(buffer_1,buffer_2,"and");
           }
-        }
-        else buffer_1 = load_data ;
-        if(aFilter.length != 0){
-          for(let i in buffer_1){
-            for(let j in aFilter){
-              if(buffer_1[i].tag == '[無]' || !buffer_1[i].tag) break;
-              else if(buffer_1[i].tag.indexOf(aFilter[j]) != -1) {
-                buffer_2.push(buffer_1[i]);
-                break;
-              }
-            }
-          }
-        }
-        else buffer_2 = buffer_1 ;
-        buffer_1 = [] ;
-        if(rFilter.length != 0) {
-          for(let i in buffer_2) if(rFilter.indexOf(buffer_2[i].rarity) != -1) buffer_1.push(buffer_2[i]) ;
-        }
-        else buffer_1 = buffer_2 ;
-        buffer_2 = [] ;
-        for(let i in filterObj){
-          if (!filterObj[i].active) continue
-          flag = false;
-          let name = i,
-          type = filterObj[i].type ,
-          limit = filterObj[i].value ,
-          level_bind = filterObj[i].lv_bind;
 
-          for(let j in buffer_1){
-            let value = level_bind ? levelToValue(buffer_1[j][name],buffer_1[j].rarity,level) : buffer_1[j][name];
-            if(type == 0  && value>limit) buffer_2.push(buffer_1[j]);
-            else if (type == 1 && value<limit) buffer_2.push(buffer_1[j]);
-            else if (type == 2 && value>limit[0] && value<limit[1]) buffer_2.push(buffer_1[j]);
-          }
-        }
-        if(flag) buffer_2 = buffer_1 ;
-        buffer_1 = [] ;
-        if(type == 'cat' && !showJP){
-          for(let i in buffer_2) {
-            let obj = {
-              id : buffer_2[i].id,
-              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name,
-              cost : buffer_2[i].cost?buffer_2[i].cost:0
+          if(rFilter.length != 0) {
+            buffer_2 = [];
+            for(let i in buffer_1) {
+              var temp = rFilter.indexOf(load_data[buffer_1[i]].rarity);
+              if(temp != -1) buffer_2.push(buffer_1[i]) ;
             }
-            if(buffer_2[i].region.indexOf("[TW]")==-1) continue
-            else buffer_1.push(obj) ;
+            buffer_1 = buffer_2;
           }
-        }
-        else {
-          for(let i in buffer_2) {
-            let obj = {
-              id : buffer_2[i].id,
-              name : buffer_2[i].name?buffer_2[i].name:buffer_2[i].jp_name,
-              cost : buffer_2[i].cost?buffer_2[i].cost:0
+
+          var flag = true;
+          buffer_2 = [];
+          for(let i in filterObj){
+            if (!filterObj[i].active) continue
+            flag = false;
+            let name = i,
+            type = filterObj[i].type ,
+            limit = filterObj[i].value ,
+            level_bind = filterObj[i].lv_bind;
+
+            for(let j in buffer_1){
+              var value = level_bind ? levelToValue(load_data[buffer_1[j]][name],load_data[buffer_1[j]].rarity,level) : load_data[buffer_1[j]][name];
+              if(type == 0  && value>limit) buffer_2.push(buffer_1[j]);
+              else if (type == 1 && value<limit) buffer_2.push(buffer_1[j]);
+              else if (type == 2 && value>limit[0] && value<limit[1]) buffer_2.push(buffer_1[j]);
             }
-            buffer_1.push(obj);
           }
-        }
-        console.log("Result length:",buffer_1.length);
-        socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
+          if(flag) buffer_2 = buffer_1 ;
+          buffer_1 = [] ;
+          if(type == 'cat' && !showJP){
+            for(let i in buffer_2) {
+              if(load_data[buffer_2[i]].region.indexOf("[TW]")==-1) continue
+              else buffer_1.push({
+                id : load_data[buffer_2[i]].id,
+                name : load_data[buffer_2[i]].name?load_data[buffer_2[i]].name:load_data[buffer_2[i]].jp_name,
+                cost : load_data[buffer_2[i]].cost?load_data[buffer_2[i]].cost:0
+              }) ;
+            }
+          }
+          else {
+            for(let i in buffer_2) {
+              let obj = {
+                id : load_data[buffer_2[i]].id,
+                name : load_data[buffer_2[i]].name?load_data[buffer_2[i]].name:load_data[buffer_2[i]].jp_name,
+                cost : load_data[buffer_2[i]].cost?load_data[buffer_2[i]].cost:0
+              }
+              buffer_1.push(obj);
+            }
+          }
+          console.log("Result length:",buffer_1.length);
+          socket.emit("search result",{result:buffer_1,query:data.query,type:data.query_type});
         }
         catch(e){
           Util.__handalError(e);
@@ -970,7 +982,7 @@ io.on('connection', function(socket){
       }
       if(legenddata.stage.thisWeek[id]) legenddata.stage.thisWeek[id] ++;
       else legenddata.stage.thisWeek[id] = 1;
-      database.ref("/legend/stage/thisWeek").set(legenddata.stage.thisWeek);
+      database.ref("/legend/stage/thisWeek/"+id).set(legenddata.stage.thisWeek[id]);
       socket.emit("level data",{
         data:stagedata[chapter][stage][level],
         parent:parent.name,

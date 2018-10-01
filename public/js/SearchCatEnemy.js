@@ -86,7 +86,7 @@ $(document).ready(function () {
   // Recive query response
   socket.on("search result",function (data) {
     console.log("recive search result");
-    // console.log(data);
+    console.log(data);
     current_search = [];
     number_page = 0 ; // # of page of search result
     page_factor = 1 ; // 1 dot represent how many pages

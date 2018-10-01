@@ -757,16 +757,16 @@ $(document).ready(function () {
     return html
   }
   function commentPhoto(obj) {
-    // console.log(obj);
+    console.log(obj);
     var buffer = [];
     for(let i in obj) buffer.push(i);
     socket.emit("required users photo",buffer);
   }
   socket.on('return users photo',function (obj) {
-    // console.log(obj);
+    console.log(obj);
     var default_photo = image_url_cat+"001-1.png";
     for(let i in obj){
-      if(!obj[i]) continue
+      if(!obj[i]) obj[i] = {photo:default_photo,name:"使用者"};
       for(let j in commentMap[i]){
         let id = commentMap[i][j];
         $('.dataTable').find("#"+id).siblings('.photo')

@@ -67,7 +67,7 @@ $(document).ready(function () {
       else if(type == 'stage'){
         for(i in stage_history){
           $(".main_board").prepend("<div id='"+stage_history[i].id+"' class='stage'>"+
-            "<button id='"+stage_history[i].chapter+"' value='0'></button>"+
+            "<button class='stageBG' bg='"+stage_history[i].chapter+"' value='0'></button>"+
             "<span class='name'><b>"+stage_history[i].stage+" </b>"+
             stage_history[i].level+"</span>"+
             "<span class='time'>"+parseTime(stage_history[i].time)+"</span>"+

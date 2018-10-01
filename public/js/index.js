@@ -176,7 +176,7 @@ $(document).ready(function () {
     dataDrr = ['','消耗統帥力 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchStage){
       let target = $(".LegendCard").eq(Number(i)+3),enemy=[];
-      target.children("div").attr("id",data.legend.mostSearchStage[i].id.split("-")[0]);
+      target.children("div").attr("bg",data.legend.mostSearchStage[i].id.split("-")[0]);
       for(let j in dataCrr) target.children("span").eq(j).text(dataDrr[j]+data.legend.mostSearchStage[i][dataCrr[j]]);
       for(let j in data.legend.mostSearchStage[i].enemy) enemy.push(data.legend.mostSearchStage[i].enemy[j].id)
       target.children("span").eq(3).attr("enemy",JSON.stringify(enemy));

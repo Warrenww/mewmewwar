@@ -3,6 +3,8 @@ var Util = require("./Utility");
 var __numberOfCat = 0;
 var __numberOfCatSearch = 0;
 var catNameMap = {};
+var catAbilityMap = {};
+var enemyAbilityMap = {};
 
 // Get cat data,comment and enemy data from firebase.
 exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
@@ -15,6 +17,13 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
       catdata[i] = temp[i];
       __numberOfCat ++ ;
       catNameMap[i] = temp[i].name?temp[i].name:temp[i].jp_name;
+
+      var tag = temp[i].tag, rarity = temp[i].rarity;
+      for(let j in tag){
+        if(catAbilityMap[tag[j]]) catAbilityMap[tag[j]].push(i);
+        else catAbilityMap[tag[j]] = [i];
+      }
+
       current = i.substring(0,3);
       if (current == exist){
         localCount += catdata[i].count?catdata[i].count:0;
@@ -26,6 +35,7 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
         localCount = catdata[i].count?catdata[i].count:0;
       }
     }
+    
     buffer = Util.Sort(buffer,'count',true);
     for(let i=0; i<3; i++){
       let id = buffer[i].id;
@@ -43,7 +53,6 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
     // console.log("most Search Cat : ",mostSearchCat);
     console.log("Number of cat search : ",__numberOfCatSearch);
   });
-
   database.ref("/catComment").once("value",(snapshot)=>{
     var temp = snapshot.val();
     for(let i in temp){
@@ -56,6 +65,16 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
     var temp = snapshot.val();
     for(let i in temp){
       enemydata[i] = temp[i];
+
+      var tag = temp[i].tag,color = temp[i].color;
+      for(let j in tag){
+        if(enemyAbilityMap[tag[j]]) enemyAbilityMap[tag[j]].push(i);
+        else enemyAbilityMap[tag[j]] = [i];
+      }
+      for(let j in color){
+        if(enemyAbilityMap[color[j]]) enemyAbilityMap[color[j]].push(i);
+        else enemyAbilityMap[color[j]] = [i];
+      }
     }
     console.log("Module load enemy data complete!");
   });
@@ -77,4 +96,13 @@ exports.catName = function (id = null) {
       CatCount++;
     }
   }
+}
+
+exports.GetAbilityList = function (type,ability) {
+  var Obj;
+  if(!type||!ability) return
+  if(type == 'cat') Obj = catAbilityMap;
+  else Obj = enemyAbilityMap;
+
+  return Obj[ability]
 }

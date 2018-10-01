@@ -68,6 +68,21 @@ exports.__handalError = function (e) {
   });
 }
 
+exports.MergeArray = function (Arr1,Arr2,type = 'or') {
+  if(typeof(Arr1)!='object') Arr1 = [Arr1];
+  if(typeof(Arr2)!='object') Arr2 = [Arr2];
+  var response = [];
+  for(let i in Arr2)
+    if(Arr1.indexOf(Arr2[i]) != -1) response.push(Arr2[i]);
+  if(type.toLowerCase() == 'or'){
+    for(let i in Arr1)
+      if(response.indexOf(Arr1[i]) == -1) response.push(Arr1[i]);
+    for(let i in Arr2)
+      if(response.indexOf(Arr2[i]) == -1) response.push(Arr2[i]);
+  }
+  return response
+}
+
 function quickSort(list,target=null,reverse=false) {
     var length = list.length;
     if (length <= 1) return list

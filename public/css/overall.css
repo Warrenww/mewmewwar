@@ -54,58 +54,62 @@ body::-webkit-scrollbar-thumb {
   margin: 10;
 }
 
-#world,#future{
+.stageBG[bg='world'],.stageBG[bg='future']{
   background-image: url("http://www.outline-world-map.com/map-images-original/political-gray-white-world-map-thin-b10a.png");
   background-blend-mode: color-burn;
   background-color: rgb(235, 160, 61);
   background-size: 450%;
   background-position: 90% 30%;
 }
-#future{
+.stageBG[bg='future']{
   background-size: 300%;
   background-position: 50% 20%;
 }
-#universe{
+.stageBG[bg='universe']{
   background-image: url("http://cdn.akamai.steamstatic.com/steam/apps/230290/extras/Universe-Sandbox-Saturn-Neptune-Earth.jpg?t=1512675913");
   background-blend-mode: hard-light;
   background-color: rgb(235, 160, 61);
   background-size: 150%;
   background-position: 80% 10%;
 }
-#tower{
+.stageBG[bg='tower']{
   background-image: url("https://i.imgur.com/9oC4NLj.jpg");
   background-blend-mode: color-burn;
   background-color: rgb(235, 160, 61);
   background-size: 150%;
   background-position: 50% 10%;
 }
-#story,#trueStory{
+.stageBG[bg='story'],.stageBG[bg='trueStory']{
   background-image: url("footage/stage/story_BG.png");
   background-color: transparent;
 }
-#maylook{background-image: url("footage/stage/maylook_BG.png");}
-#baseball,#lazybird,#easter,#eva,#pokopang,#egg,#ranking{
+.stageBG[bg='maylook']{background-image: url("footage/stage/maylook_BG.png");}
+.stageBG[bg='baseball'],.stageBG[bg='lazybird'],
+.stageBG[bg='easter'],.stageBG[bg='eva'],
+.stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking']{
   background-image: url("footage/stage/pawapuro_BG.jpg");
   background-size: cover;
   background-position: center;
 }
-#eva{background-image: url("footage/stage/eva_BG.jpg");}
-#crazy,#hard,#smallCat,#XP,#castleMaterial{
+.stageBG[bg='eva']{background-image: url("footage/stage/eva_BG.jpg");}
+.stageBG[bg='crazy'],.stageBG[bg='hard'],.stageBG[bg='smallCat'],
+.stageBG[bg='XP'],.stageBG[bg='castleMaterial']{
   background-image: url("footage/stage/crazy_BG.png");
   background-color: rgba(0,0,0,.1);
   font-size: 0;
 }
-#hard{background-image: url("footage/stage/hard_BG.png");}
-#smallCat{background-image: url("footage/stage/smallCat_BG.png");}
-#smallCat:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
-#XP{background-image: url("footage/stage/XP_BG.png");}
-#castleMaterial{background-image: url("footage/stage/castleMaterial.png");}
-#lazybird{background-image: url("footage/stage/lazybird.png");}
-#easter{background-image: url("footage/stage/easter.png");}
-#pokopang{background-image: url("footage/stage/pokopang.jpg");}
-#egg{background-image: url("footage/stage/egg.png");}
-#ranking{background-image: url("footage/stage/ranking.jpg");}
-#cyclone,#evolution,#castleMaterial,#ticket
+.stageBG[bg='hard']{background-image: url("footage/stage/hard_BG.png");}
+.stageBG[bg='smallCat']{background-image: url("footage/stage/smallCat_BG.png");}
+.stageBG[bg='smallCat']:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
+.stageBG[bg='XP']{background-image: url("footage/stage/XP_BG.png");}
+.stageBG[bg='castleMaterial']{background-image: url("footage/stage/castleMaterial.png");}
+.stageBG[bg='lazybird']{background-image: url("footage/stage/lazybird.png");}
+.stageBG[bg='easter']{background-image: url("footage/stage/easter.png");}
+.stageBG[bg='pokopang']{background-image: url("footage/stage/pokopang.jpg");}
+.stageBG[bg='egg']{background-image: url("footage/stage/egg.png");}
+.stageBG[bg='ranking']{background-image: url("footage/stage/ranking.jpg");}
+.stageBG[bg='cyclone'],.stageBG[bg='evolution'],
+.stageBG[bg='castleMaterial'],.stageBG[bg='ticket']
 {background-blend-mode: normal;}
 
 iframe{

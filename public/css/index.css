@@ -235,3 +235,4 @@ nav a{cursor: pointer;}
   justify-content: space-around;
 }
 #enemyBoard div img{margin: 20;transform: scale(1.5);}
+.stageBG{width:100%;height:70px;background-size:cover}
