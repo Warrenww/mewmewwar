@@ -150,7 +150,7 @@ $(document).ready(function () {
   });
 
   socket.on("required data",(data)=>{
-    console.log(data);
+    // console.log(data);
     var data = data.buffer[0],
         _data = new Cat(data.data);
     current_cat_data = _data;
@@ -161,11 +161,12 @@ $(document).ready(function () {
     });
   });
   socket.on("comment",function (data) {
-    // console.log(data);
+    console.log(data);
     var survey = data.survey?data.survey:{};
+    var info = data.comment?data.comment:{statistic:null,comment:null};
     initial_survey();
-    addSurvey(data.comment.statistic,data.survey);
-    append_comment(data.comment.comment);
+    addSurvey(info.statistic,data.survey);
+    append_comment(info.comment);
   });
   function displayCatData(data,arr,brr,lv,count,own) {
     let html = "",
@@ -681,7 +682,7 @@ $(document).ready(function () {
     // console.log(comment);
     commentMap = {};
     $(".comment_input").parents('tr').siblings(".comment").remove();
-    if(comment == undefined){
+    if(!comment){
       $("<tr class='comment'><td colspan='6'>尚無評論</td></tr>")
         .insertAfter(".dataTable #comment_head");
         return
