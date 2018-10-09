@@ -456,7 +456,7 @@ var config = {
           a = /s[0-9]+\-*[0-9]+/.exec(a)[0];
           if (a.indexOf("-")!=-1) n = stageMap[a.split("-")[0]]?stageMap[a.split("-")[0]][Number(a.split("-")[1])].name:"-";
           else n = stageMap[a]?stageMap[a].name:b;
-          condition.stage = {id:a,name:n};
+          condition.stage = {id:a.split("-")[0]+"-"+Number(a.split("-")[1]),name:n};
           if(s.indexOf("XP")!=-1){
             b = /XP[0-9]+/.exec(s)[0].split("XP")[1];
             condition.xp = Number(b);
