@@ -86,11 +86,12 @@ body::-webkit-scrollbar-thumb {
 .stageBG[bg='maylook']{background-image: url("footage/stage/maylook_BG.png");}
 .stageBG[bg='baseball'],.stageBG[bg='lazybird'],
 .stageBG[bg='easter'],.stageBG[bg='eva'],
-.stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking']{
-  background-image: url("footage/stage/pawapuro_BG.jpg");
+.stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking'],
+.stageBG[bg='castleAndDragon']{
   background-size: cover;
   background-position: center;
 }
+.stageBG[bg='baseball']{background-image: url("footage/stage/pawapuro_BG.jpg");}
 .stageBG[bg='eva']{background-image: url("footage/stage/eva_BG.jpg");}
 .stageBG[bg='crazy'],.stageBG[bg='hard'],.stageBG[bg='smallCat'],
 .stageBG[bg='XP'],.stageBG[bg='castleMaterial']{
@@ -108,6 +109,7 @@ body::-webkit-scrollbar-thumb {
 .stageBG[bg='pokopang']{background-image: url("footage/stage/pokopang.jpg");}
 .stageBG[bg='egg']{background-image: url("footage/stage/egg.png");}
 .stageBG[bg='ranking']{background-image: url("footage/stage/ranking.jpg");}
+.stageBG[bg='castleAndDragon']{background-image: url("footage/stage/castleAndDragon.jpg");}
 .stageBG[bg='cyclone'],.stageBG[bg='evolution'],
 .stageBG[bg='castleMaterial'],.stageBG[bg='ticket']
 {background-blend-mode: normal;}
@@ -227,6 +229,7 @@ td, th {
 .dataTable td,.content td,.compareTable td,#calendar td,#prediction td{
     background-color: rgba(255, 255, 255, 0.9);
 }
+#upper_table th[andCase='1']{background-color: rgba(255, 126, 108, 0.9)}
 .card{
   align-items: center;
   background-blend-mode: multiply;
@@ -509,7 +512,8 @@ table {
   font-weight: bold;
   color: white;
   box-shadow: 3px 4px 10px 1px rgba(0,0,0,.9);
-  transition: .6s ease-in-out
+  transition: .6s ease-in-out;
+  z-index: 10
 }
 #fight_alert{top: 180px;}
 #a_fight::after{
@@ -662,3 +666,26 @@ select{
   cursor: pointer;
 }
 select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94)}
+.loading{
+  position: relative !important;
+  pointer-events: none;
+}
+.loading::after{
+  content: "";
+  background-image: url("/css/footage/loading.svg");
+  background-size: cover;
+  width: 40;
+  height: 40;
+  position: absolute;
+  top: calc( 50% - 20px);
+  left: calc(50% - 20px);
+  animation-name: rotate;
+  animation-duration: 3s;
+  animation-timing-function: cubic-bezier(0.64, 0, 0.32, 0.99);
+  animation-iteration-count: infinite;
+}
+@keyframes rotate {
+  0%{transform: rotate(0deg);}
+  50%{transform: rotate(-180deg);}
+  100%{transform: rotate(-360deg);}
+}

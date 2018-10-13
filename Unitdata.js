@@ -3,8 +3,8 @@ var Util = require("./Utility");
 var __numberOfCat = 0;
 var __numberOfCatSearch = 0;
 var catNameMap = {};
-var catAbilityMap = {};
-var enemyAbilityMap = {};
+var catAbilityMap = {All:[]};
+var enemyAbilityMap = {All:[]};
 
 // Get cat data,comment and enemy data from firebase.
 exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
@@ -18,6 +18,7 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
       __numberOfCat ++ ;
       catNameMap[i] = temp[i].name?temp[i].name:temp[i].jp_name;
 
+      catAbilityMap.All.push(i);
       var tag = temp[i].tag, rarity = temp[i].rarity;
       for(let j in tag){
         if(catAbilityMap[tag[j]]) catAbilityMap[tag[j]].push(i);
@@ -35,7 +36,7 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
         localCount = catdata[i].count?catdata[i].count:0;
       }
     }
-    
+
     buffer = Util.Sort(buffer,'count',true);
     for(let i=0; i<3; i++){
       let id = buffer[i].id;
@@ -66,6 +67,7 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
     for(let i in temp){
       enemydata[i] = temp[i];
 
+      enemyAbilityMap.All.push(i);
       var tag = temp[i].tag,color = temp[i].color;
       for(let j in tag){
         if(enemyAbilityMap[tag[j]]) enemyAbilityMap[tag[j]].push(i);
@@ -101,6 +103,7 @@ exports.catName = function (id = null) {
 exports.GetAbilityList = function (type,ability) {
   var Obj;
   if(!type||!ability) return
+
   if(type == 'cat') Obj = catAbilityMap;
   else Obj = enemyAbilityMap;
 

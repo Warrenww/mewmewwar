@@ -56,6 +56,13 @@ $(document).on('keypress','#searchBox',function (e) {
     socket.emit("text search",{key:keyword,type:page});
   }
 });
+//table th reaction
+$('#upper_table th').click(function () {
+  if($(this).next().attr('class') == 'select_rarity') return
+  var andCase = Number($(this).attr("andCase"))?1:0;
+  andCase ++;
+  $(this).attr("andCase",andCase%2);
+});
 // Start a search
 $('#search_ability').click(search) ;
 function search() {
@@ -77,6 +84,8 @@ function search() {
     uid:CurrentUserID,
     query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
     query_type:type,
+    colorAnd:$(".select_color").prev().attr("andCase"),
+    abilityAnd:$(".select_ability").prev().attr("andCase"),
     filterObj,
     type:page
   });
@@ -109,13 +118,22 @@ $(document).ready(function () {
     if (data.type == "gacha"&&data.query.length == 1)
       $(".compareSorce .title #option #Gogacha").attr('value',data.query[0]).show();
     else $(".compareSorce .title #option #Gogacha").hide();
+    // Show the query as text
     var query = '';
-    for(let i in data.query){  // Show the query as text
-      if(data.type == 'gacha') query+=parseGachaName(data.query[i])+" ";
-      else for(let j in data.query[i]) query+=(parseRarity(data.query[i][j])?parseRarity(data.query[i][j]):data.query[i][j])+" ";
+    if(data.type == 'gacha') for(let i in data.query) query += "<span>"+parseGachaName(data.query[i])+"</span>";
+    else {
+      for(let j in data.query.rFilter)
+        query +=  "<span>"+(parseRarity(data.query.rFilter[j])?parseRarity(data.query.rFilter[j]):data.query.rFilter[j])+"</span>";
+      query += "<b>|</b>";
+      for(let j in data.query.cFilter)
+        query +=  "<span>"+(parseRarity(data.query.cFilter[j])?parseRarity(data.query.cFilter[j]):data.query.cFilter[j])+"</span>";
+      query += "<b>|</b>";
+      for(let j in data.query.aFilter)
+        query +=  "<span>"+(parseRarity(data.query.aFilter[j])?parseRarity(data.query.aFilter[j]):data.query.aFilter[j])+"</span>";
+
     }
     // console.log(query);
-    $(".compareSorce").find("#query").text("篩選條件:"+query);
+    $(".compareSorce").find("#query").html(query);
   });
 });
 function parseGachaName(name) {

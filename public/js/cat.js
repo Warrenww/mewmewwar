@@ -62,6 +62,8 @@ $(document).ready(function () {
         for(let i in last.query)
          for(let j in last.query[i])
           $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
+        if(Number(last.colorAnd)) $(".select_color").prev().click();
+        if(Number(last.abilityAnd)) $(".select_ability").prev().click();
       }
       var value_search = false;
       for(let i in last.filterObj){

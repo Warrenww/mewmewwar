@@ -18,6 +18,13 @@
   animation-duration: .5s ;
   animation-iteration-count: 5;
 }
+#select_level .card[value='1']{
+  border-color: #ff8d40;
+  animation-name: border-blink;
+  animation-duration: .5s ;
+  animation-iteration-count: 5;
+    box-shadow: 0px 0px 20px 5px;
+}
 @keyframes border-blink {
   0%{border-color: rgb(255, 93, 46)}
   50%{border-color: yellow}

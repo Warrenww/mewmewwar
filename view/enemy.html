@@ -29,6 +29,13 @@
       <div class="search_table">
         <table id="upper_table">
           <tr>
+            <th colspan="6" style="pointer-events:none">
+              點擊分類名稱以切換該項篩選特質為"完全符合"或"部分符合"<br />
+              <b style="text-decoration:underline;margin:0 10">紅色:完全符合</b>
+              <b style="text-decoration:underline;margin:0 10">橘色:部分符合(預設)</b>
+            </th>
+          </tr>
+          <tr>
             <th colspan="2">屬性</th>
             <td colspan="4" class="select_color">
               <span class='button' name='紅色敵人' value='0'>紅色敵人</span>
@@ -101,7 +108,7 @@
       <button id="search_ability" value="normal">GO</button>
       <div class="compareSorce">
         <div class="title">
-          <span>搜尋篩選結果<span id="query"></span></span>
+          <span>搜尋篩選結果</span>
           <div id="option">
             <i class="material-icons"text='展開/收合'id="result_expand">&#xe240;</i>
             <i class="material-icons"text='截圖'id="result_snapshot">&#xe439;</i>
@@ -109,6 +116,7 @@
           </div>
           <span id="result_count">共<span></span>筆結果</span>
         </div>
+        <div id="query"></div>
         <div id="selected" class="sortable">
         </div>
         <div class="button_group" style="margin-top:10px" >
@@ -196,7 +204,6 @@
 
     <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
-    <div id="fight_alert">已加入對戰 <i class="material-icons">&#xe877;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>
     </div>

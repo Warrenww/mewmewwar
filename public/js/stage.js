@@ -35,6 +35,10 @@ $(document).ready(function () {
         stage:arr[1],
         level:arr[2]
       });
+      setTimeout(function () {
+        $("#select_stage").find("#"+arr[1]).attr("value",1);
+        $("#select_level").find("#"+arr[2]).attr("value",1);
+      },500)
       socket.emit("required stage name",arr[0]);
       $('#select_stage').attr("chapter",arr[0]);
       $('#select_level').attr("stage",arr[1]);
@@ -89,7 +93,6 @@ $(document).ready(function () {
     $("#toggleSearch").attr("value",0);
     $("#rewardSelector").attr("show",0);
   });
-
 
   $("#searchBox").blur(textSearch);
   $("#searchBut").click(textSearch);
@@ -150,6 +153,8 @@ $(document).ready(function () {
     }
     expend_sl_chap = expend_sl_chap ? 0 : 1 ;
   }
+
+  var loadingTimeOut;
   $(document).on("click",".select_chapter button",function () {
     let chapter = $(this).attr('id');
     $(this).attr("value",'1');
@@ -164,11 +169,15 @@ $(document).ready(function () {
     $("#select_stage").attr("chapter",chapter);
     socket.emit("required stage name",chapter);
     scroll_to_div('selector');
+    $("#select_stage").empty();
+    loadingTimeOut = setTimeout(function () {
+      $("#select_stage").addClass("loading");
+    },300);
   });
-
   socket.on("stage name",function (data) {
     // console.log(data);
-    $("#select_stage").empty();
+    clearTimeout(loadingTimeOut);
+    $("#select_stage").empty().removeClass("loading");
     for( let i in data )
       $("#select_stage").append(
         "<button value='0' style='width:180px;height:"+
@@ -188,10 +197,15 @@ $(document).ready(function () {
     socket.emit("required level name",{chapter:chapter,stage:stage});
     let timeout = 0;
     scrollSelectArea('stage',stage);
+    $("#select_level").empty();
+    loadingTimeOut = setTimeout(function () {
+      $("#select_level").addClass("loading");
+    },300);
   });
   socket.on("level name",function (data) {
     // console.log(data);
-    $("#select_level").empty();
+    clearTimeout(loadingTimeOut);
+    $("#select_level").empty().removeClass("loading");
     for( let i in data )
       $("#select_level").append(
         "<span class='card'style='"+
@@ -209,6 +223,9 @@ $(document).ready(function () {
         stage = $(this).parent().attr('stage'),
         chapter = $(this).parent().siblings().attr('chapter');
     // console.log(chapter+">"+stage+">"+level);
+    $(this).attr('value',1).siblings().each(function () {
+      $(this).attr('value',0);
+    });
     socket.emit("required level data",{
       uid: CurrentUserID,
       chapter:chapter,
@@ -217,7 +234,7 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    // console.log(obj);
+    console.log(obj);
     current_level_data = obj;
     let html = "",
         data = obj.data,
@@ -246,6 +263,7 @@ $(document).ready(function () {
     },300);
     scroll_to_class('display',0);
   });
+
   $('#prev,#next').click(function () {
     let data = JSON.parse($(this).attr('query'));
     // console.log(data.level);

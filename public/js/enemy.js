@@ -26,9 +26,11 @@ $(document).ready(function () {
       });
     if(data.last_enemy_search){
       let last = data.last_enemy_search;
-      if(last.query)
+      if(last.query){
         socket.emit("normal search",last);
-      else{
+        if(Number(last.colorAnd)) $(".select_color").prev().click();
+        if(Number(last.abilityAnd)) $(".select_ability").prev().click();
+      } else {
         last.query = {};
         socket.emit("normal search",last);
       }

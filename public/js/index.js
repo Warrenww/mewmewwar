@@ -1,6 +1,5 @@
 const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
 var miner_count = 0 ;
-var explor_page = [],explor_index = 0,current_page = '';
 var userPhoto;
 
 if(Storage){
@@ -163,7 +162,7 @@ $(document).ready(function () {
         },100000);
       }
     }
-    console.log(data);
+    // console.log(data);
     dataArr = ['name','hp','atk','count'];
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
@@ -202,7 +201,6 @@ $(document).ready(function () {
   $("nav a,.m_nav_panel a").click(function () {
     if(!openInNew&&!is_ios)  $('#iframe_holder').attr("active",true);
     let target = $(this).attr("id");
-    explor_page.splice(0,explor_index);
     if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target,false);
     changeIframe(target);
 
@@ -251,21 +249,7 @@ $(document).ready(function () {
 
   $('.navBox i').click(function () {
     var type = $(this).attr("id");
-    if (type == 'prev'){
-      explor_index ++;
-      if (explor_index>=explor_page.length){
-        explor_index--;
-        return
-      }
-    }
-    else if (type == 'next') {
-      explor_index --;
-      if (explor_index<0){
-        explor_index++;
-        return
-      }
-    }
-    else if(type == 'reload'){
+    if(type == 'reload'){
       var target = $("#iframe_holder iframe[active='true']").attr("id");
       reloadIframe(target,false);
     }
@@ -299,7 +283,6 @@ $(document).ready(function () {
       }
       return
     }
-    changeIframe(explor_page[explor_index],false);
   });
   // e for event d for direction (touch input only)
   var scrollHolder = function (e,d=null) {
@@ -421,9 +404,7 @@ function changeIframe(target,record = true) {
   } else
   $("#iframe_holder").find("#"+target).attr("active",true)
   .siblings().attr("active",false);
-  if(record) explor_page.splice(0,0,target);
   current_page = target;
-  // console.log(explor_page);
 }
 function reloadIframe(target,record = true) {
   if(!$("#iframe_holder").find("#"+target)[0]) {
@@ -432,7 +413,6 @@ function reloadIframe(target,record = true) {
   else{
     let src = $("#iframe_holder").find("#"+target).attr("src");
     $("#iframe_holder").find("#"+target).attr('src',src);
-    explor_page.splice(0,0,target);
   }
 }
 

@@ -309,17 +309,20 @@
 .function .like i[value~='1']
 {color: rgb(251, 146, 60)}
 
-.compareSorce .title span #query{
-  position: absolute;
-  opacity: 0;
-  top: -30px;
-  padding: 5px 10px;
-  font-size: 14;
-  right: 0px;
-  background-color: rgba(255,255,255,.9);
-  transition: .3s ease-in-out;
+.compareSorce #query{
+  width: 100%;
+  background-color: rgba(255,255,255,.7);
+  padding: 3 20;
+  display: flex;
+  justify-content: flex-end;
 }
-.compareSorce .title:hover span #query{opacity: 1}
+.compareSorce #query span{
+  border: 1px solid;
+  padding: 1 5;
+  margin: 3 5;
+  border-radius: 20px;
+  background: gainsboro;
+}
 #zoomImg{
   position:fixed;
   background-color:rgba(0,0,0,.4);

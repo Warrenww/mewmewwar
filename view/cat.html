@@ -35,7 +35,7 @@
     <div class="content">
       <div class="search_type">
         <span class="button" value='1' id="normal_search">一般篩選</span>
-        <span class="button" value='0' id="gacha_search">轉蛋篩選</span>
+        <span class="button" value='0' id="gacha_search">轉蛋/合作活動</span>
         <span class="button" value='0' id="value_search">數值篩選</span>
         <div class="search" >
           <input type="text" id="searchBox" placeholder="Search for Cats...">
@@ -44,6 +44,13 @@
       </div>
       <div class="search_table">
         <table id="upper_table">
+          <tr>
+            <th colspan="6" style="pointer-events:none">
+              點擊分類名稱以切換該項篩選特質為"完全符合"或"部分符合"<br />
+              <b style="text-decoration:underline;margin:0 10">紅色:完全符合</b>
+              <b style="text-decoration:underline;margin:0 10">橘色:部分符合(預設)</b>
+            </th>
+          </tr>
           <tr>
             <th colspan="2">稀有度</th>
             <td colspan="4" class="select_rarity">
@@ -155,6 +162,12 @@
               <span name="metal_slug_defense" class="button" value="0">越南大戰 合作活動</span>
             </td>
           </tr>
+          <tr class="gacha_search">
+            <th>無轉蛋合作活動</th>
+            <td>
+              <span name="castleAndDragon" class="button" value="0">城與龍 合作活動</span>
+            </td>
+          </tr>
         </table>
         <table id="lower_table" style="display:none">
           <tbody>
@@ -186,7 +199,7 @@
       <button id="search_ability" value='normal'>GO</button>
       <div class="compareSorce">
         <div class="title">
-          <span>搜尋篩選結果:<span id="query"></span></span>
+          <span>搜尋篩選結果</span>
           <div id="option">
             <i class="material-icons"id="result_expand" text='展開'>&#xe240;</i>
             <i class="material-icons"id="result_snapshot" text='截圖'>&#xe439;</i>
@@ -196,6 +209,7 @@
           </div>
           <span id="result_count">共<span></span>筆結果</span>
         </div>
+        <div id="query"></div>
         <div id="selected"></div>
         <div class="button_group" style="margin-top:10px" >
           <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
@@ -443,7 +457,6 @@
 
     <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
-    <div id="fight_alert">已加入對戰 <i class="material-icons">&#xe877;</i></div>
     <div id="batch_alert">已加入圖鑑 <i class="material-icons">&#xe877;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>

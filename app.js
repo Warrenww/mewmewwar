@@ -66,8 +66,8 @@ function ReloadAllData() {
   Activity.UpdateEvent(eventdata);
   Unitdata.load(catdata,catComment,enemydata,mostSearchCat);
   Stagedata.load(stagedata,mostSearchStage);
-  Users.load(userdata);
   Combodata.load(combodata);
+  Users.load(userdata);
   database.ref("/version").once("value",(snapshot)=>{
     VERSION = snapshot.val();
     console.log("VERSION : ",VERSION);
@@ -272,7 +272,7 @@ io.on('connection', function(socket){
         id = id.join("-");
       } else {
         load_data[id].count = load_data[id].count?load_data[id].count+1:1;
-        database.ref("/"+(type=='cat'?'newCat':type)+"data/"+id+"/count").set(load_data[id].count);
+        database.ref("/"+(type=='cat'?'newCatData/':type+"data/")+id+"/count").set(load_data[id].count);
       }
       if(type == 'cat') id = id.substring(0,3);
       if(!user_variable[id]) user_variable[id] = {};
@@ -297,6 +297,7 @@ io.on('connection', function(socket){
       }
       // console.log(buffer);
       for(let i in buffer) {
+        if(!buffer[i]) continue
         let gross = buffer[i].substring(0,3);
         for(let j=1;j<4;j++){
           let id = gross+"-"+j;
@@ -323,9 +324,12 @@ io.on('connection', function(socket){
           cFilter = data.query.cFilter?data.query.cFilter:[],
           aFilter = data.query.aFilter?data.query.aFilter:[],
           filterObj = data.filterObj?data.filterObj:[],
+          colorAnd = Number(data.colorAnd)?"and":"or",
+          abilityAnd = Number(data.abilityAnd)?"and":"or",
           type = data.type,
-          buffer_1 = [],
+          buffer_1 = Unitdata.GetAbilityList(type,"All"),
           buffer_2 = [],
+          counter = 0,
           load_data = {},
           user = data.uid;
           console.log("recording last search quene");
@@ -345,29 +349,30 @@ io.on('connection', function(socket){
           var level = user?userdata[user].setting.default_cat_lv:30,
           showJP = user?userdata[user].setting.show_jp_cat:false;
 
-          for(let i in load_data) buffer_1.push(i);
-
           if(cFilter.length != 0){
+            counter = 0;
+            buffer_2 = [];
             for(let i in cFilter){
               var temp = Unitdata.GetAbilityList(type,cFilter[i]);
-              buffer_2 = Util.MergeArray(buffer_2,temp);
-              console.log(cFilter[i],temp.length,buffer_2.length);
+              buffer_2 = Util.MergeArray(buffer_2,temp,counter?colorAnd:"or");
               if(type == "cat"){
                 if(cFilter[i] != "對白色" && cFilter[i] != "對鋼鐵"){
                   temp = Unitdata.GetAbilityList(type,"對全部");
                   buffer_2 = Util.MergeArray(buffer_2,temp);
                 }
               }
-              console.log(buffer_2.length);
+              counter++;
             }
             buffer_1 = Util.MergeArray(buffer_1,buffer_2,"and");
           }
 
           if(aFilter.length != 0){
+            counter = 0;
             buffer_2 = [];
             for(let i in aFilter){
               var temp = Unitdata.GetAbilityList(type,aFilter[i]);
-              buffer_2 = Util.MergeArray(temp,buffer_2);
+              buffer_2 = Util.MergeArray(temp,buffer_2,counter?abilityAnd:"or");
+              counter++;
             }
             buffer_1 = Util.MergeArray(buffer_1,buffer_2,"and");
           }
