@@ -416,7 +416,7 @@ $(document).ready(function () {
   }
   function addSurvey(data,survey) {
     // console.log(data,survey);
-    current_cat_survey = survey;
+    current_cat_survey = survey?survey:{};
     current_cat_statistic = data?data:current_cat_statistic;
     let arr = [];
     if(!data) return

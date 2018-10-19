@@ -10,7 +10,6 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
-var gsjson = require('google-spreadsheet-to-json');
 var userdata;
 var catdata;
 firebase.initializeApp(config);
@@ -118,28 +117,3 @@ database.ref('/vote').once("value",function (snapshot) {
 function AddZero(n) {
   return n>9 ? "0"+n : n
 }
-//
-//
-// var ID = '1lGJC6mfH9E0D2bYNKVBz78He1QhLMUYNFSfASzaZE9A' ;
-// gsjson({
-//     spreadsheetId: ID,
-//     // hash : 'id' ,
-//     //propertyMode: 'pascal'
-//     worksheet: 1
-//     // other options...
-// })
-// .then(function (result) {
-//   // console.log(result);
-//   for(let i in result){
-//     console.log(result[i].id);
-//     result[i] = {
-//       id : result[i].id,
-//       catagory : result[i].catagory,
-//       name : result[i].name,
-//       effect : result[i].effect,
-//       amount : result[i].amount,
-//       cat : [result[i].cat_1,result[i].cat_2,result[i].cat_3,result[i].cat_4,result[i].cat_5]
-//     }
-//     database.ref("/combodata/"+result[i].id).update(result[i]);
-//   }
-// });

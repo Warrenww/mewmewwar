@@ -26,10 +26,33 @@ xmlhttp.onreadystatechange = function(){
     $("#select_rarity span[id='"+active+"']").click();
   }
 }
-var RarityName = {'R':'稀有','SR':'激稀有','SSR':'超激稀有'}
+var RarityName = {'R':'稀有貓','SR':'激稀有貓','SSR':'超激稀有貓'}
 function changeDataTable(active) {
-  $("#select_rarity span[id='"+active+"']").siblings().attr("value",0);
+  var target = $("#select_rarity span[id='"+active+"']");
+  target.siblings().attr("value",0);
   $(".dataTable tbody").empty();
+  $("#select_rarity").parent().next().hide();
+  if(target.attr("value") == "1") return;
+  if (active == "SR_alt"){
+    $("#select_rarity").parent().next().show();
+  } else {
+    $(".dataTable tbody").append(function () {
+      var html = '';
+      for(let j in EXPDATA[active]){
+        html += "<tr><th>"+j+" > "+(Number(j)+1)+"</th>"+
+        "<td>"+EXPDATA[active][j].xp+"</td>"+
+        "<td>"+EXPDATA[active][j].eye+"</td></tr>";
+      }
+      return html
+    });
+    $("h3 span").text(RarityName[active]);
+  }
+  localStorage.active = active;
+}
+$("#select_cat .card").click(function () {
+  $(this).attr("value",1).siblings().attr("value",0);
+  $(".dataTable tbody").empty();
+  var html = '',active = $(this).attr("id");
   $(".dataTable tbody").append(function () {
     var html = '';
     for(let j in EXPDATA[active]){
@@ -39,9 +62,8 @@ function changeDataTable(active) {
     }
     return html
   });
-  $("h3 span").text(RarityName[active]);
-  localStorage.active = active;
-}
+  $("h3 span").text($(this).text());
+});
 function Calculate() {
   var lower = Number($("#interval input").eq(0).val()),
       upper = Number($("#interval input").eq(1).val()),
@@ -49,6 +71,7 @@ function Calculate() {
       startLv = Number($("#xp2lv input").eq(1).val()),
       type = Number($("#start").attr("type"))%2,
       active = $("#select_rarity span[value='1']").attr("id");
+  if(active == "SR_alt") active = $("#select_cat span[value='1']").attr("id");
   if(upper == 0) upper = 50;
   if(upper<lower) [upper,lower] = [lower,upper];
   if(upper > 50) upper = 50;
@@ -65,7 +88,7 @@ function Calculate() {
   $("#interval input").eq(1).val(upper);
   $("#xp2lv input").eq(0).val(totalexp);
   $("#xp2lv input").eq(1).val(startLv);
-  console.log(lower,upper,active,totalexp,startLv,type);
+  // console.log(lower,upper,active,totalexp,startLv,type);
   var data = EXPDATA[active],
       expSum = 0,
       eyeSum = 0;
@@ -76,9 +99,10 @@ function Calculate() {
       startLv ++;
       if(startLv >= 50) break
     }
-    console.log(startLv,totalexp,eyeSum);
+    // console.log(startLv,totalexp,eyeSum);
     $("#result_2").show().find("td").children().eq(0).text(startLv).next().text(totalexp)
     .next().attr("src",function () {
+      if (active.indexOf("_alt")!=-1) active = "SR";
       return "./css/footage/gameIcon/eye_"+active+".png"
     }).next().text(eyeSum);
     $("#result").hide();
@@ -92,7 +116,7 @@ function Calculate() {
       expSum += data[i].xp;
       eyeSum += data[i].eye;
     }
-    console.log(eyeSum,expSum);
+    // console.log(eyeSum,expSum);
     $("#result").show().find("td").children().eq(0).attr("src",function () {
       var src = "./css/footage/gameIcon/xp_";
       if (expSum < 5001) src += 5000;
@@ -101,6 +125,7 @@ function Calculate() {
       else src += 100000;
       return src+".png"
     }).next().text(expSum).next().attr("src",function () {
+      if (active.indexOf("_alt")!=-1) active = "SR";
       return "./css/footage/gameIcon/eye_"+active+".png"
     }).next().text(eyeSum);
     $("#result_2").hide();

@@ -30,7 +30,7 @@ $(document).ready(function () {
 //-----------------------------------------------------------------------------
   $('.filter_option').click(function () {
     $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0');
+    $(this).css('border-bottom','5px solid #f1a643').siblings().css('border-bottom','0');
     filter_name = $(this).attr('id') ;
     filterSlider($(this));
   });

@@ -83,6 +83,18 @@ exports.MergeArray = function (Arr1,Arr2,type = 'or') {
   return response
 }
 
+exports.MaxDayInMonth = function (month,year=1) {
+  var Day_30 = [4,6,9,11];
+  if(!Number(month)) return null
+  if(Number(month) == 2){
+    return year%400?(year%100?(year%4?false:true):false):true
+  } else if(Day_30.indexOf(Number(month)) != -1){
+    return 30
+  } else {
+    return 31
+  }
+}
+
 function quickSort(list,target=null,reverse=false) {
     var length = list.length;
     if (length <= 1) return list

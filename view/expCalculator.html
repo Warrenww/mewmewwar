@@ -16,6 +16,8 @@
     <style>
       .dataTable tr:nth-child(10n) td{ background-color: rgba(225,225,225,.9); }
       .dataTable tr:nth-child(10n) th{ background-color: rgba(204, 180, 141, 0.93); }
+      td .card{width: 90;height: 60;}
+      td .card[value='1']{border-color:#ee9851 }
       input{
         border: 0;
         background: transparent;
@@ -34,9 +36,26 @@
         <tr>
           <th>選擇稀有度</th>
           <td id="select_rarity">
-            <span class="button" value='1' id="R" onclick='changeDataTable("R")'>稀有</span>
+            <span class="button" value='0' id="R" onclick='changeDataTable("R")'>稀有</span>
             <span class="button" value='0' id="SR" onclick='changeDataTable("SR")'>激稀有</span>
+            <span class="button" value='0' id="SR_alt" onclick='changeDataTable("SR_alt")'>激稀有狂亂</span>
             <span class="button" value='0' id="SSR" onclick='changeDataTable("SSR")'>超激稀有</span>
+          </td>
+        </tr>
+        <tr style="display:none">
+          <th>選擇貓咪</th>
+          <td >
+            <div style="display:flex" id="select_cat">
+              <span class="card" value='0' id="SR_alt_01" style="background-image:url('/css/footage/cat/u092-3.png')" >狂亂貓</span>
+              <span class="card" value='0' id="SR_alt_02" style="background-image:url('/css/footage/cat/u093-3.png')" >狂亂坦克貓</span>
+              <span class="card" value='0' id="SR_alt_03" style="background-image:url('/css/footage/cat/u094-3.png')" >狂亂戰鬥貓</span>
+              <span class="card" value='0' id="SR_alt_04" style="background-image:url('/css/footage/cat/u095-3.png')" >狂亂噁心貓</span>
+              <span class="card" value='0' id="SR_alt_05" style="background-image:url('/css/footage/cat/u096-3.png')" >狂亂牛貓</span>
+              <span class="card" value='0' id="SR_alt_06" style="background-image:url('/css/footage/cat/u097-3.png')" >狂亂鳥貓</span>
+              <span class="card" value='0' id="SR_alt_07" style="background-image:url('/css/footage/cat/u098-3.png')" >狂亂魚貓</span>
+              <span class="card" value='0' id="SR_alt_08" style="background-image:url('/css/footage/cat/u099-3.png')" >狂亂蜥蜴貓</span>
+              <span class="card" value='0' id="SR_alt_09" style="background-image:url('/css/footage/cat/u100-3.png')" >狂亂巨神貓</span>
+            </div>
           </td>
         </tr>
         <tr>
@@ -62,7 +81,7 @@
       <button id="start" onclick="Calculate()" type='0'>計算</button>
     </div>
     <div class="content">
-      <h3><span>稀有</span>貓升等經驗表</h3>
+      <h3 style="font-weight:bold;font-size:30"><span>稀有貓</span>升等經驗表</h3>
       <table class="dataTable">
         <thead>
           <tr>

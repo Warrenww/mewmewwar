@@ -15,6 +15,14 @@ var config = {
   var stdin = process.openStdin();
   var chap = stage = i = j = 0;
   console.log('chapter,stage,i');
+  var CatNameMap = {};
+  database.ref("/newCatData").once("value",function (snapshot) {
+    temp = snapshot.val();
+    for(let i in temp){
+      CatNameMap[i] = temp[i].name?temp[i].name:temp[i].jp_name;
+    }
+    console.log('cat data lode complete');
+  });
   stdin.addListener("data", function(d) {
       // note:  d is an object, and when converted to a string it will
       // end with a linefeed.  so we (rather crudely) account for that
@@ -24,21 +32,32 @@ var config = {
       chap = arr[0]
       stage = arr[1]
       i = arr[2]
-      j = arr.length == 4?arr[3]:1
+      j = arr.length == 4?arr[3]:0
       getData(i,j);
 
     });
   // var i=69,j=1,chap='hard',stage='010',ii=0;
   // i = Arr[ii];
   // getData(i,j);
+  var NumberOfLevel;
   function getData(i,j) {
     // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
-    let url = "https://battlecats-db.com/stage/s"+stage+AddZero(i)+"-"+AddZero(j)+".html";
+    let url = "https://battlecats-db.com/stage/s"+stage+AddZero(i)+(j?("-"+AddZero(j)):"")+".html";
     request({
       url: url,
       method: "GET"
     }, function(e,r,b) {
-      let obj = {
+      if(!Number(j) && !e){
+        $ = cheerio.load(b);
+        var StageName = $("h2").text();
+        NumberOfLevel = ($("td[rowspan='2']").length)/2;
+        database.ref("/stagedata/"+chap+"/s"+stage+AddZero(i)+"/name").set(StageName);
+        j++;
+        getData(i,j);
+        return
+      }
+
+      var obj = {
         name : "",
         energy : "",
         exp : "",
@@ -58,14 +77,13 @@ var config = {
         process.stdout.cursorTo(0);
         process.stdout.write(url+" ");
         process.stdout.write(obj.id+"---");
-        process.stdout.write((j/8*100).toFixed(1).toString()+"%");
+        process.stdout.write((j/NumberOfLevel*100).toFixed(1).toString()+"%");
         $ = cheerio.load(b);
-        let content = $(".maincontents table"),
-        final = content.children().length == 6 ? true : false,
-        thead = content.children("thead").eq(0).children("tr"),
-        tbody_1 = content.children("tbody").eq(final?1:0).children("tr"),
-        tbody_2 = content.children("tbody").eq(final?2:1).children("tr");
-        console.log(final);
+        var content = $(".maincontents table"),
+            final = Number(j) == NumberOfLevel?true:false,
+            thead = content.children("thead").eq(0).children("tr"),
+            tbody_1 = content.children("tbody").eq(final?1:0).children("tr"),
+            tbody_2 = content.children("tbody").eq(final?2:1).children("tr");
         obj.final = final;
         obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
         obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
@@ -79,7 +97,7 @@ var config = {
         for(let k = 0;k<tbody_1.length;k++){
           process.stdout.write("reward "+k);
           obj.reward.push({
-            prize : parsePrize(tbody_1.eq(k).children("td").eq(2)),
+            prize : parsePrize(tbody_1.eq(k).children("td").eq(2),tbody_1.eq(k).children("td").eq(1)),
             chance : tbody_1.eq(k).children("td").eq(3).text(),
             limit : tbody_1.eq(k).children("td").eq(4).text() == '無制限' ? "無限" : tbody_1.eq(k).children("td").eq(4).text()
           });
@@ -123,7 +141,7 @@ var config = {
     });
 
   }
-  function parsePrize(p) {
+  function parsePrize(p,img) {
     let obj ={name:"",amount:""},
     s = p.text();
     // console.log(s);
@@ -221,7 +239,8 @@ var config = {
       obj.amount = s.split(" ")[1];
     }
     else if(p.children("a").attr("href")) {
-      obj.name = "u" + p.children("a").attr("href").split("/")[2].split(".html")[0]
+      obj.name = "u" + img.children("img").attr("src").split("/")[3].split(".png")[0];
+      obj.amount = CatNameMap[obj.name];
     } else {
       obj.name = s;
     }

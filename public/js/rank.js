@@ -50,7 +50,7 @@ function query(type,val) {
       interval = $("#interval").find("input"),
       arr = [Number(interval.eq(0).val()),Number(interval.eq(1).val())],
       buffer={};
-  console.log(type,val,bors,arr);
+  // console.log(type,val,bors,arr);
   let i ;
   for(i in rank_data){
     if(type == 'exact'){

@@ -528,6 +528,14 @@ function scrollSelectArea(area,target) {
   // console.log(area,target);
   var This = $("#select_"+area),
       Target = This.find("#"+target);
+
+  // If this area is still loading
+  if(This.attr("class") == "loading"){
+    setTimeout(function () {
+      scrollSelectArea(area,target);
+    },500);
+    return
+  }
   if(!Target) return
   This.animate({
     scrollTop:This.scrollTop() + Target.offset().top - This.offset().top - This.outerHeight()/2 + Target.outerHeight()/2

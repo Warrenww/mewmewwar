@@ -67,7 +67,7 @@ var config = {
       url: url,
       method: "GET"
     }, function(e,r,b) {
-      let obj = {tag:[],char:[]};
+      var obj = {tag:[],char:[],count:0};
       if(!e){
         console.log("get data");
         // process.stdout.clearLine();

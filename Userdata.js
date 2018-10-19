@@ -1,19 +1,158 @@
 var database = require("firebase").database();
 var admin = require("firebase-admin");
 var Util = require("./Utility");
-var UserData;
+var UserData = {};
 
-exports.load = function (userdata) {
+exports.load = function () {
   console.log("Module start load user data.");
 
   database.ref("/user").once("value",(snapshot)=>{
-    UserData = snapshot.val();
-    for(let i in UserData) userdata[i] = UserData[i];
+    temp = snapshot.val();
+    for(let i in temp) UserData[i] = temp[i];
     console.log("Module load user data complete!");
-    arrangeUserData(userdata);
+    // arrangeUserData(userdata);
+    arrangeUserData(UserData);
   });
 }
 
+exports.getSetting = function (uid,subtype=null) {
+  if(!UserData[uid]) return null
+  if(!subtype) return UserData[uid].setting
+  else return UserData[uid].setting[subtype]
+}
+exports.setSetting = function (uid,attr,data) {
+  if(!UserData[uid]) return null
+  UserData[uid].setting[attr] = data;
+  database.ref("/user/"+uid+"/setting/"+attr).set(data);
+}
+exports.getVariable = function (uid,type = null) {
+  if(!UserData[uid]) return null
+  if (!type){
+    if(UserData[uid].variable)
+     return UserData[uid].variable;
+  }
+  if(UserData[uid].variable[type] == "") UserData[uid].variable[type] = {};
+  return UserData[uid].variable[type];
+}
+exports.getHistory = function (uid,type=null) {
+  if(!UserData[uid]) return null
+  if(!type) return UserData[uid].history;
+  if(UserData[uid].history[type] == "" ) UserData[uid].history[type] = {};
+  return UserData[uid].history[type];
+}
+exports.getCompare = function (uid,type) {
+  if(!UserData[uid]) return null
+  return UserData[uid].compare[type+"2"+type];
+}
+exports.setCompare = function (uid,type,array) {
+  if(!UserData[uid]) return null
+  UserData[uid].compare[type+"2"+type] = array;
+  database.ref('/user/'+uid+"/compare/"+type+"2"+type).set(array);
+}
+exports.getFolder = function (uid) {
+  if(!UserData[uid]) return null
+  if(!UserData[uid].folder){
+    UserData[uid].folder = {};
+    database.ref('/user/'+uid+"/folder").set({own:""});
+  }
+  return UserData[uid].folder
+}
+exports.setFolder = function (uid,folder,data) {
+  if(!UserData[uid]) return null
+  UserData[uid].folder[folder] = data ;
+  database.ref("/user/"+data.uid+"/folder/"+folder).set(data);
+}
+exports.getAttr = function (uid,attr) {
+  if(!UserData[uid]) return null
+  return UserData[uid][attr]
+}
+exports.getList = function (uid) {
+  if(!UserData[uid]) return null
+  return UserData[uid].list
+}
+exports.setHistory = function (uid,type,id){
+  try{
+    // Check if it is last search
+    if(UserData[uid].history['last_'+type] == id) return
+
+    var user_history = UserData[uid].history[type],
+        user_variable = UserData[uid].variable[type];
+    // Find same unit and clear it
+    for(let i in user_history){
+      if(user_history[i].id == id) delete user_history[i]
+    }
+    var key = database.ref().push().key; // Generate hash key
+    // Update history and write to firebase
+    user_history[key] = {type : type,id : id,time:new Date().getTime()};
+    database.ref("/user/"+uid+"/history/"+type).set(user_history);
+    UserData[uid].history["last_"+type] = id;
+    database.ref("/user/"+uid+"/history/last_"+type).set(id);
+
+    if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
+    if(type == 'cat') id = id.substring(0,3);
+    if(!user_variable[id]) user_variable[id] = {};
+    user_variable[id].count = user_variable[id].count?user_variable[id].count+1:1;
+    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
+    .set(user_variable[id].count);
+  } catch(err){
+    Util.__handalError(err);
+  }
+}
+exports.SearchHistory = function (uid,type,data) {
+  if(!UserData[uid]) return null
+  database.ref("/user/"+uid+"/history/last_"+type+"_search").set(data);
+  UserData[uid].history["last_"+type+"_search"] = data;
+}
+exports.StoreLevel = function(uid,id,type,lv){
+  console.log(uid+" change his/her "+type,id+"'s level to "+lv);
+  try{
+    id = id.substring(0,3);
+    // target cat or enemy
+    var buffer = UserData[uid].variable[type][id] ;
+    buffer = buffer?buffer:{lv:1,count:0}; // handal of not exist data
+    // set level and store to firebase
+    buffer.lv = lv;
+    database.ref("/user/"+uid+"/variable/"+type+"/"+id).update({lv:lv});
+  }catch(e){
+    Util.__handalError(e);
+  }
+
+}
+
+exports.Login = function (user) {
+  try{
+    var exist = false;
+    var timer = new Date().getTime();
+    var data;
+    console.log('login time : '+timer);
+
+    if(UserData[user.uid]){
+      console.log("find same user");
+      exist = true;
+      data = UserData[user.uid];
+    }
+
+    if(exist){
+      console.log('user exist');
+      database.ref('/user/'+user.uid).update({"last_login" : timer});
+    } else {
+      console.log('new user');
+      data = Util.GenerateUser(user,UserData);
+    }
+    socket.emit("login complete",{user:user,name:data.nickname});
+  }
+  catch(e){
+    Util.__handalError(e);
+  }
+}
+exports.Rename = function (uid,name) {
+  try{
+    UserData[uid].nickname = name;
+    database.ref("/user/"+uid+"/nickname").set(name);
+  }catch(e){
+    Util.__handalError(e);
+  }
+}
 
 function arrangeUserData(userdata) {
   console.log('arrange user data');
@@ -23,6 +162,7 @@ function arrangeUserData(userdata) {
     if(i == undefined|| i == "undefined"){
       console.log("remove "+i);
       database.ref('/user/'+i).remove();
+      delete userdata[i];
       continue
     }
     if(userdata[i].Anonymous){
@@ -32,6 +172,7 @@ function arrangeUserData(userdata) {
         admin.auth().deleteUser(i)
         .then(function() { console.log("Successfully deleted user"); })
         .catch(function(error) { console.log("Error deleting user:", error); });
+        delete userdata[i];
         continue
       }
     }
@@ -55,6 +196,7 @@ function arrangeUserData(userdata) {
     if(!userdata[i].variable) {
       console.log("user "+i+" no variable");
       database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
+      userdata[i].variable = {cat:"",enemy:"",stage:""};
     }
   }
   console.log("there are "+count+" users!!");

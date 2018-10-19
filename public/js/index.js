@@ -162,7 +162,7 @@ $(document).ready(function () {
         },100000);
       }
     }
-    // console.log(data);
+    console.log(data);
     dataArr = ['name','hp','atk','count'];
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
