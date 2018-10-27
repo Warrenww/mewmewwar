@@ -346,7 +346,6 @@ $(document).ready(function () {
               "</th>"+"<td>"+arr[i].chance+"</td>"+
               "<th>取得上限</th>"+"<td>"+arr[i].limit+"</td>"+
               "</tr>"
-
     }
     return html
   }
@@ -465,12 +464,14 @@ $(document).ready(function () {
   }
   function prize(s) {
     // console.log(s);
+    var html;
     if(s.indexOf("u")!=-1){
-      return "<img src='"+image_url_cat+s.split("u")[1]+
+      html = "<img src='"+image_url_cat+s.split("u")[1]+
       ".png' style='width:100%' class='cat' id='"+s.split("u")[1]+"' />"
     } else {
-      return s
+      html = s + rewardPicture(s);
     }
+    return html
   }
   function parseEXP(n) {
     n = n.split(",").join("");

@@ -28,34 +28,29 @@ var db = admin.firestore();
 console.log('start');
 
 // db.collection('users').doc('alovelace').collection('www').doc('wwww').set({w:true});;
-db.collection('users').get()
-    .then((snapshot) => {
-      snapshot.forEach(doc => {
-        console.log(doc.id, '=>', doc.data());
-      });
-    })
-    .catch((err) => {
-      console.log('Error getting documents', err);
-    });
-database.ref("/newCatData/001-1").once("value",function (snapshot) {
-  catdata = snapshot.val();
-  console.log("cat data load complete");
-  let statistic,
-      exist = '000';
-  // let data = catdata["001-1"];
-  console.log(catdata);
-  db.collection("catdata").doc('001').set({"001-1":catdata})
-
-
-
-
-
-  console.log("finish");
-  // process.exit();
-  // console.log("finish");
-  // process.exit();
-});
-
+// db.collection('users').get()
+//     .then((snapshot) => {
+//       snapshot.forEach(doc => {
+//         console.log(doc.id, '=>', doc.data());
+//       });
+//     })
+//     .catch((err) => {
+//       console.log('Error getting documents', err);
+//     });
+// database.ref("/newCatData/001-1").once("value",function (snapshot) {
+//   catdata = snapshot.val();
+//   console.log("cat data load complete");
+//   let statistic,
+//       exist = '000';
+//   // let data = catdata["001-1"];
+//   console.log(catdata);
+//   db.collection("catdata").doc('001').set({"001-1":catdata})
+//
+// console.log("finish");
+// // process.exit();
+// // console.log("finish");
+// // process.exit();
+// });
 
 // var gachadata = {};
 // database.ref("/gachadata").once("value",function (snapshot) {
@@ -77,6 +72,51 @@ database.ref("/newCatData/001-1").once("value",function (snapshot) {
 //   }
 //   console.log('finfish');
 // });
+
+var stagedata;
+var url = "https://battlecats-db.com/stage/treasure_space01.html";
+database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
+  stagedata = snapshot.val();
+  request({
+    url: url,
+    method: "GET"
+  }, function(e,r,b) {
+    if(!e){
+      console.log("HTML loaded!");
+      $ = cheerio.load(b);
+      var counter = -1;
+      var result = {};
+      var table = $(".maincontents").find("tbody tr");
+      table.each(function () {
+        // console.log($(this).children('td').length);
+        if($(this).children('td').length != 4){
+          counter ++ ;
+          var stage = Number($(this).children('td').eq(3).text());
+          result[counter] = {
+            name:$(this).children('td').eq(0).text(),
+            effect:$(this).children('td').eq(2).text(),
+            treasure:[{
+              stage:stage,
+              name:stagedata[stage].reward[0].prize.amount
+            }]
+          }
+        } else {
+          var stage = Number($(this).children('td').eq(0).text());
+          result[counter].treasure.push({
+            stage:stage,
+            name:stagedata[stage].reward[0].prize.amount
+          })
+        }
+      });
+      console.log(result);
+      fs.appendFile('treasure2.txt', JSON.stringify(result),(err) =>{
+          if (err) throw err;
+          console.log('Is saved!');
+          process.exit();
+        });
+    }
+  });
+});
 
 // database.ref("/enemydata").once("value",function (snapshot) {
 //   let enemydata = snapshot.val();

@@ -83,8 +83,7 @@ function compareTargetAddCard(target,name) {
       '<span class="card" value="'+target+
       '" style="background-image:url('+
       (type == "enemy"?image_url_enemy:image_url_cat)+target+
-      '.png'+
-      '">'+name+'</span>');
+      '.png" name="'+name+'"></span>');
 }
 function addToCompare(target,name='') {
   $('.compare_panel').css('height',0);

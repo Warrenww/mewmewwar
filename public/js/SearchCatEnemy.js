@@ -152,8 +152,8 @@ function condenseCatName(data) {
     if(current == now){
       html += '<span class="card" value="'+id+'" '+
       'style="background-image:url('+
-      image_url_cat+id+'.png);display:none">'+
-      name+'</span>' ;
+      image_url_cat+id+'.png);display:none" name="'+
+      name+'"></span>' ;
     }
     else{
       html += '</span>' ;
@@ -162,8 +162,7 @@ function condenseCatName(data) {
       '<span class="glyphicon glyphicon-shopping-cart"></span>'+
       '<span class="card" value="'+id+'" '+
       'style="background-image:url('+
-      image_url_cat+id+'.png)">'+
-      name+'</span>' ;
+      image_url_cat+id+'.png)" name="'+name+'"></span>';
       now = current ;
       number_page ++ ;
       current_search.push(current);
@@ -181,9 +180,7 @@ function condenseEnemyName(data) {
     '<span class="glyphicon glyphicon-shopping-cart"></span>'+
     '<span class="card" value="'+id+'" '+
     'style="background-image:url('+
-     image_url_enemy+id+'.png'
-    +')">'+
-    name+'</span></span>'
+     image_url_enemy+id+'.png)" name="'+name+'"></span></span>';
     number_page ++ ;
     current_search.push(id);
   }

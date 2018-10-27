@@ -106,7 +106,7 @@ $(document).ready(function () {
        image_url_cat+choose.id+'.png);'+
        "margin:5px;transform:scale(0);"+
        "border-color:"+color[rarity]+
-       '">'+choose.name+'</span>');
+       '" name="'+choose.name+'"></span>');
     }
     setTimeout(function () {
       $("#result").find("span").css("transform","scale(1)").fadeIn();

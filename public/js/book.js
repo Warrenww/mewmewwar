@@ -106,14 +106,14 @@ $(document).ready(function () {
     let result = [];
     position = [];
     pos = 0 ;
-    $(".dataTable").find(".card").removeClass('blink');
+    $(".dataScetion").find(".card").removeClass('blink');
     for(let i in own_data){
       let name = own_data[i].name;
       if(name.indexOf(k)!=-1) result.push(own_data[i].id);
     }
     // console.log(result);
     for(let i in result){
-        let target = $(".dataTable").find(".card[value='"+result[i]+"']");
+        let target = $(".dataScetion").find(".card[value='"+result[i]+"']");
         target.addClass('blink');
         for(let j=0;j<target.length;j++){
           position.push(target[j].offsetTop);
@@ -143,7 +143,7 @@ $(document).ready(function () {
   $(document).on("click","#clear",function () {
     $("#searchBox").val("");
     $(".action").fadeOut();
-    $(".dataTable").find(".card").removeClass('blink');
+    $(".dataScetion").find(".card").removeClass('blink');
   });
   function gotoPos() {
     if(pos<0) pos = position.length-1;
@@ -196,11 +196,11 @@ function appendArrange(obj) {
     for(let j in obj[i].arr){
       html += '<span class="card cat" type="cat" value="'+obj[i].arr[j].id+'" '+
       'style="background-image:url('+
-      image_url_cat+obj[i].arr[j].id+'.png);" name>'+
-      obj[i].arr[j].name+'</span>'
+      image_url_cat+obj[i].arr[j].id+'.png);" name="'+
+      obj[i].arr[j].name+'"></span>'
     }
     html += "</span></div>"
   }
-  $(".display .dataTable").empty();
-  $(".display .dataTable").append(html);
+  $(".display .dataScetion").empty();
+  $(".display .dataScetion").append(html);
 }

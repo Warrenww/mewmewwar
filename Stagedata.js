@@ -6,6 +6,7 @@ exports.load = function (stagedata,mostSearchStage) {
 
   database.ref("/stagedata").once("value",(snapshot)=>{
     StageData = snapshot.val();
+    mostSearchStage = [];
     var buffer = [];
     for(let i in StageData){
       stagedata[i] = StageData[i];

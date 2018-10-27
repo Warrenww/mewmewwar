@@ -1,8 +1,4 @@
 var EXPDATA;
-$(document).ready(function () {
-
-
-});
 var xmlhttp = new XMLHttpRequest() ;
 var url = "./data/exp.json";
 

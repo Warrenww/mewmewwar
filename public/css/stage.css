@@ -153,6 +153,7 @@
   cursor: pointer;
 }
 .display{position: relative;top:-400px}
+.reward img{width: 30}
 #searchResult{
   width: 100%;
   background-color: rgba(255,255,255,.8);
@@ -305,3 +306,8 @@
 #rewardSelector img,#searchResult img{width: 30;height: 30}
 #rewardSelector span[value='0'] img{mix-blend-mode: multiply;}
 .ability_tip{min-width: 200px;text-align: center;}
+.card{
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  background-blend-mode: multiply;
+}

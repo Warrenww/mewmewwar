@@ -31,7 +31,7 @@ exports.getVariable = function (uid,type = null) {
     if(UserData[uid].variable)
      return UserData[uid].variable;
   }
-  if(UserData[uid].variable[type] == "") UserData[uid].variable[type] = {};
+  if(UserData[uid].variable[type] == "") UserData[uid].variable[type] = {"0":"0"};
   return UserData[uid].variable[type];
 }
 exports.getHistory = function (uid,type=null) {
@@ -77,6 +77,9 @@ exports.setHistory = function (uid,type,id){
 
     var user_history = UserData[uid].history[type],
         user_variable = UserData[uid].variable[type];
+
+    if(user_history == "" ) user_history = {};
+    if(user_variable == "" ) user_variable = {};
     // Find same unit and clear it
     for(let i in user_history){
       if(user_history[i].id == id) delete user_history[i]
@@ -90,8 +93,8 @@ exports.setHistory = function (uid,type,id){
 
     if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
     if(type == 'cat') id = id.substring(0,3);
-    if(!user_variable[id]) user_variable[id] = {};
-    user_variable[id].count = user_variable[id].count?user_variable[id].count+1:1;
+    if(!user_variable[id]) user_variable[id] = {count:0};
+    user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
     database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
     .set(user_variable[id].count);
   } catch(err){
@@ -130,16 +133,12 @@ exports.Login = function (user) {
       console.log("find same user");
       exist = true;
       data = UserData[user.uid];
-    }
-
-    if(exist){
-      console.log('user exist');
       database.ref('/user/'+user.uid).update({"last_login" : timer});
     } else {
       console.log('new user');
       data = Util.GenerateUser(user,UserData);
     }
-    socket.emit("login complete",{user:user,name:data.nickname});
+    return {user,"nickname":data.nickname}
   }
   catch(e){
     Util.__handalError(e);

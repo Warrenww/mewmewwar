@@ -89,8 +89,10 @@ function ReloadAllData() {
             legenddata[i].thisWeek = {date:tempD};
             database.ref("/legend/"+i+"/thisWeek").set(legenddata[i].thisWeek);
         }
+
       }
     }
+    // mostSearchStage = {};
     // for(let i in legenddata.stage.lastWeek){
     //   if (i == "date") continue
     //   var id = i.split("-");
@@ -99,6 +101,8 @@ function ReloadAllData() {
     //   if(mostSearchStage[id]) mostSearchStage[id] += Number(legenddata.stage.lastWeek[i]);
     //   else mostSearchStage[id] = Number(legenddata.stage.lastWeek[i]);
     // }
+    // Util.Sort(mostSearchStage);
+
   });
 
   setTimeout(ReloadAllData,6*3600*1000);
@@ -156,6 +160,7 @@ io.on('connection', function(socket){
         //Extract data
         var CatOnlyData = {bro:[],combo:[],own:null};
         if (type == 'cat') _catOnlyData(CatOnlyData,id,uid);
+        if(!user_variable[grossID]) user_variable[grossID] = {count:0,lv:default_lv[type]}
         buffer.push({
           data:load_data[id],
           count:user_variable[grossID].count?user_variable[grossID].count:0,
@@ -181,8 +186,8 @@ io.on('connection', function(socket){
     data.combo = Combodata.FindCat(id);
 
     if(uid){
-      var own = Users.getVariable(uid,'cat')[grossID].own;
-      own = own?own:false;
+      var own = Users.getVariable(uid,'cat')[grossID];
+      own = own?own.own:false;
       data.own = own;
     }
   }
@@ -518,30 +523,31 @@ io.on('connection', function(socket){
 
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
-     Users.Login(user);
+     var data = Users.Login(user);
+     socket.emit("login complete",{user:data.user,name:data.nickname});
    });
   socket.on("user connect",function (data){
     try{
-      let timer = new Date().getTime(),
-      last_cat = '',
-      last_combo = [],
-      last_enemy = '',
-      last_stage = '',
-      user = data.user,
-      CurrentUserData = {uid : user.uid},
-      page = data.page.split("/")[1];
+      var timer = new Date().getTime(),
+          last_cat = '',
+          last_combo = [],
+          last_enemy = '',
+          last_stage = '',
+          user = data.user,
+          CurrentUserData = {uid : user.uid},
+          page = data.page.split("/")[1];
       console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
       database.ref('/user/'+user.uid).update({"last_login" : timer});
       var history = Users.getHistory(user.uid),
-      setting = Users.getSetting(user.uid),
-      variable = Users.getVariable(user.uid);
-      last_cat = history.last_cat;
-      last_enemy = history.last_enemy;
-      last_combo = history.last_combo;
-      last_stage = history.last_stage;
-      last_gacha = history.last_gacha;
-      last_cat_search = history.last_cat_search;
-      last_enemy_search = history.last_enemy_search;
+          setting = Users.getSetting(user.uid),
+          variable = Users.getVariable(user.uid);
+          last_cat = history.last_cat;
+          last_enemy = history.last_enemy;
+          last_combo = history.last_combo;
+          last_stage = history.last_stage;
+          last_gacha = history.last_gacha;
+          last_cat_search = history.last_cat_search;
+          last_enemy_search = history.last_enemy_search;
       var compareCat = Users.getCompare(user.uid,'cat'),
           compareEnemy = Users.getCompare(user.uid,'enemy');
       let obj , arr = [] , brr = [];
@@ -585,8 +591,9 @@ io.on('connection', function(socket){
         }
       }
       else if(page == 'combo'){CurrentUserData.last_combo = last_combo;}
-      else if(page == 'compareCat'){CurrentUserData.compare_c2c = arr;}
-      else if(page == 'compareEnemy'){CurrentUserData.compare_e2e = brr;}
+      else if(page == 'compareCat' || page == 'compareEnemy'){
+        CurrentUserData.compare = {cat:arr,enemy:brr};
+      }
       else if(page == 'history'){
         obj = {cat:{},enemy:{},stage:{},gacha:{}};
         for(i in history.cat){
@@ -695,7 +702,7 @@ io.on('connection', function(socket){
         }
       }
       socket.emit("combo result",buffer) ;
-      if(uid) setHistory(uid,'combo',arr);
+      if(uid) SetHistory(uid,'combo',arr);
     }
     catch(e){
       Util.__handalError(e);
@@ -883,7 +890,7 @@ io.on('connection', function(socket){
     console.log("load level data");
     console.log(data);
     try{
-      let chapter = data.chapter,
+      var chapter = data.chapter,
       stage = data.stage,
       level = data.level,
       id = chapter+"-"+stage+"-"+level,
@@ -895,9 +902,10 @@ io.on('connection', function(socket){
         if(i != level) prev = i ;
         else flag = true ;
       }
-      if(legenddata.stage.thisWeek[id]) legenddata.stage.thisWeek[id] ++;
-      else legenddata.stage.thisWeek[id] = 1;
-      database.ref("/legend/stage/thisWeek/"+id).set(legenddata.stage.thisWeek[id]);
+      var tempID = [chapter,stage].join("-");
+      if(legenddata.stage.thisWeek[tempID]) legenddata.stage.thisWeek[tempID] ++;
+      else legenddata.stage.thisWeek[tempID] = 1;
+      database.ref("/legend/stage/thisWeek/"+tempID).set(legenddata.stage.thisWeek[tempID]);
       socket.emit("level data",{
         data:stagedata[chapter][stage][level],
         parent:parent.name,
@@ -926,8 +934,7 @@ io.on('connection', function(socket){
       if(!uid||!gacha) return
       console.log("user",uid,"select gacha",gacha);
       result.key = gacha;
-      Users.setHistory(uid,'last_gacha',gacha);
-      database.ref("/user/"+uid+"/history/last_gacha").set(gacha);
+      SetHistory(uid,'gacha',gacha);
       for(let i in result){
         if (i=='id'||i=='name'||i=='key') continue
         for(let j in result[i]){
@@ -1191,10 +1198,10 @@ io.on('connection', function(socket){
   //     }
   // });
   //
-  // function checkList(list,id) {
-  //   for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
-  //   return false
-  // }
+  function checkList(list,id) {
+    for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
+    return false
+  }
 
   // socket.on("delete list",function (data) {
   //   console.log(data.uid,'delete list',data.key);

@@ -14,7 +14,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     CurrentUserID = data.uid;
-    var _compare = page == 'cat'?data.compare_c2c:data.compare_e2e;
+    var _compare = data.compare[page];
     if(_compare) {
       let buffer = [] ;
       for(let i in _compare){

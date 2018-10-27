@@ -1,11 +1,11 @@
-.dataTable{
+.dataScetion{
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 .display{padding: 0}
 .section{padding: 10px}
-.display .dataTable .name
+.display .dataScetion .name
 {
   font-size: 30px;
   font-weight: bold;
@@ -14,7 +14,7 @@
   border-radius: 10px;
   cursor: pointer;
 }
-.dataTable .section_snapshot{
+.dataScetion .section_snapshot{
   width: 50px;
   height: 50px;
   color: white;
@@ -28,8 +28,8 @@
   cursor: pointer;
   transition: .4s ease-in-out
 }
-.dataTable .section_snapshot:hover{background-color: rgb(204, 89, 161);}
-.dataTable .item{
+.dataScetion .section_snapshot:hover{background-color: rgb(204, 89, 161);}
+.dataScetion .item{
   width: 100%;
   display: flex;
   flex-wrap: wrap;

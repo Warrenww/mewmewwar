@@ -231,9 +231,7 @@ td, th {
 }
 #upper_table th[andCase='1']{background-color: rgba(255, 126, 108, 0.9)}
 .card{
-  align-items: center;
-  background-blend-mode: multiply;
-  background-color: rgba(0,0,0,0.5);
+  align-items: flex-end;
   background-repeat: no-repeat;
   background-size: cover;
   border: 4px solid white ;
@@ -249,6 +247,21 @@ td, th {
   margin: 10px ;
   transition: .3s ease-in-out;
 }
+.card::after{
+  content: attr(name);
+  background: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+  bottom: 0;
+  transition: .3s ease-in-out;
+}
+.card:hover::after{
+  height: auto;
+  padding: 10
+}
+.comboPic .card::after{display: none;}
 #selected{
   width: 100%;
   height: 347.88px;
@@ -579,7 +592,8 @@ animation-iteration-count: infinite;
 }
 #compareTarget_tag,
 #select_chap_tag,
-#nav_tag{
+#nav_tag,
+#ChooseFunc_tag{
   padding: 10px;
   font-size: 20px;
   font-weight: bolder;

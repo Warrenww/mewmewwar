@@ -1,7 +1,4 @@
 var rank_data;
-$(document).ready(function () {
-});
-
 var xmlhttp = new XMLHttpRequest() ;
 var url = "./data/rank.json";
 
