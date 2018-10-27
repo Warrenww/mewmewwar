@@ -62,6 +62,8 @@ var mostSearchCat = [],
     mostSearchStage = [];
 ReloadAllData();
 function ReloadAllData() {
+  mostSearchCat = [];
+  mostSearchStage = [];
   Activity.UpdateEvent(eventdata);
   Unitdata.load(catdata,catComment,enemydata,mostSearchCat);
   Stagedata.load(stagedata,mostSearchStage);

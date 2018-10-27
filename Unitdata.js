@@ -13,7 +13,6 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
   var exist=null,buffer=[],localCount=0 ;
   database.ref("/newCatData").once("value",(snapshot)=>{
     var temp = snapshot.val();
-    mostSearchCat = [];
     for(let i in temp){
       catdata[i] = temp[i];
       __numberOfCat ++ ;
@@ -43,7 +42,7 @@ exports.load = function (catdata,catComment,enemydata,mostSearchCat) {
       let id = buffer[i].id;
       mostSearchCat.push({
         name:catdata[id].name,
-        count:catdata[id].count,
+        count:buffer[i].count,
         id:id,
         hp:Util.levelToValue(catdata[id].hp,catdata[id].rarity,30).toFixed(0),
         atk:Util.levelToValue(catdata[id].atk,catdata[id].rarity,30).toFixed(0),
