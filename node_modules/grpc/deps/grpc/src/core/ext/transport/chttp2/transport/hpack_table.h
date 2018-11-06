@@ -19,8 +19,9 @@
 #ifndef GRPC_CORE_EXT_TRANSPORT_CHTTP2_TRANSPORT_HPACK_TABLE_H
 #define GRPC_CORE_EXT_TRANSPORT_CHTTP2_TRANSPORT_HPACK_TABLE_H
 
-#include <grpc/slice.h>
 #include <grpc/support/port_platform.h>
+
+#include <grpc/slice.h>
 #include "src/core/lib/iomgr/error.h"
 #include "src/core/lib/transport/metadata.h"
 
@@ -64,27 +65,33 @@ typedef struct {
   /* a circular buffer of headers - this is stored in the opposite order to
      what hpack specifies, in order to simplify table management a little...
      meaning lookups need to SUBTRACT from the end position */
-  grpc_mdelem *ents;
+  grpc_mdelem* ents;
   grpc_mdelem static_ents[GRPC_CHTTP2_LAST_STATIC_ENTRY];
 } grpc_chttp2_hptbl;
 
 /* initialize a hpack table */
-void grpc_chttp2_hptbl_init(grpc_exec_ctx *exec_ctx, grpc_chttp2_hptbl *tbl);
-void grpc_chttp2_hptbl_destroy(grpc_exec_ctx *exec_ctx, grpc_chttp2_hptbl *tbl);
-void grpc_chttp2_hptbl_set_max_bytes(grpc_exec_ctx *exec_ctx,
-                                     grpc_chttp2_hptbl *tbl,
+void grpc_chttp2_hptbl_init(grpc_chttp2_hptbl* tbl);
+void grpc_chttp2_hptbl_destroy(grpc_chttp2_hptbl* tbl);
+void grpc_chttp2_hptbl_set_max_bytes(grpc_chttp2_hptbl* tbl,
                                      uint32_t max_bytes);
-grpc_error *grpc_chttp2_hptbl_set_current_table_size(grpc_exec_ctx *exec_ctx,
-                                                     grpc_chttp2_hptbl *tbl,
+grpc_error* grpc_chttp2_hptbl_set_current_table_size(grpc_chttp2_hptbl* tbl,
                                                      uint32_t bytes);
 
 /* lookup a table entry based on its hpack index */
-grpc_mdelem grpc_chttp2_hptbl_lookup(const grpc_chttp2_hptbl *tbl,
+grpc_mdelem grpc_chttp2_hptbl_lookup(const grpc_chttp2_hptbl* tbl,
                                      uint32_t index);
 /* add a table entry to the index */
-grpc_error *grpc_chttp2_hptbl_add(grpc_exec_ctx *exec_ctx,
-                                  grpc_chttp2_hptbl *tbl,
+grpc_error* grpc_chttp2_hptbl_add(grpc_chttp2_hptbl* tbl,
                                   grpc_mdelem md) GRPC_MUST_USE_RESULT;
+
+size_t grpc_chttp2_get_size_in_hpack_table(grpc_mdelem elem,
+                                           bool use_true_binary_metadata);
+
+/* Returns the static hpack table index that corresponds to /a elem. Returns 0
+  if /a elem is not statically stored or if it is not in the static hpack
+  table */
+uint8_t grpc_chttp2_get_static_hpack_table_index(grpc_mdelem md);
+
 /* Find a key/value pair in the table... returns the index in the table of the
    most similar entry, or 0 if the value was not found */
 typedef struct {
@@ -92,6 +99,6 @@ typedef struct {
   int has_value;
 } grpc_chttp2_hptbl_find_result;
 grpc_chttp2_hptbl_find_result grpc_chttp2_hptbl_find(
-    const grpc_chttp2_hptbl *tbl, grpc_mdelem md);
+    const grpc_chttp2_hptbl* tbl, grpc_mdelem md);
 
 #endif /* GRPC_CORE_EXT_TRANSPORT_CHTTP2_TRANSPORT_HPACK_TABLE_H */

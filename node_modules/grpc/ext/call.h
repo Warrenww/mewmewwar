@@ -52,6 +52,8 @@ class Call : public Nan::ObjectWrap {
   /* Wrap a grpc_call struct in a javascript object */
   static v8::Local<v8::Value> WrapStruct(grpc_call *call);
 
+  grpc_call *GetWrappedCall();
+
   void CompleteBatch(bool is_final_op);
 
  private:
@@ -103,6 +105,7 @@ struct tag {
       v8::Local<v8::Value> call_value);
   ~tag();
   Nan::Callback *callback;
+  Nan::AsyncResource *async_resource;
   OpVec *ops;
   Call *call;
   Nan::Persistent<v8::Value, Nan::CopyablePersistentTraits<v8::Value>>
