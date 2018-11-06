@@ -257,6 +257,7 @@ io.on('connection', function(socket){
           .set(load_data[id[0]][id[1]][id[2]].count);
         id = id.join("-");
       } else {
+        Unitdata.SearchCount(type,1);
         load_data[id].count = load_data[id].count?load_data[id].count+1:1;
         database.ref("/"+(type=='cat'?'newCatData/':type+"data/")+id+"/count").set(load_data[id].count);
       }
@@ -521,7 +522,6 @@ io.on('connection', function(socket){
       Util.__handalError(e);
     }
   });
-
 
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
@@ -1232,8 +1232,15 @@ io.on('connection', function(socket){
     socket.emit("Game Picture",buffer);
   });
 
-  socket.on("index survey",function (data) {
-    database.ref("/vote/"+data.uid).update(data.answer);
+  socket.on("dashboard",()=>{
+    socket.emit("dashboard",{
+      catSearchCount:Unitdata.SearchCount('cat')
+    })
+  });
+  socket.on("fetch data",(data)=>{
+    if(data.type == "cat") Unitdata.fetch('cat',data.arr);
+    if(data.type == "stage") Stagedata.fetch(data.chapter,data.id);
+
   });
 
 });
@@ -1246,10 +1253,21 @@ http.listen(process.env.PORT || port, function(){
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/view/index.html');
 });
-app.get('/:page',function (req,res) {
-  if(fs.existsSync(__dirname + "/view/"+req.params.page+".html")){
-    res.sendFile(__dirname + "/view/"+req.params.page+".html");
+app.get("/dashboard/:uid",function (req,res) {
+  if(req.params.uid == "zB56cQVSuOdBEdCZmn6bl4AA8wx1"){
+    res.sendFile(__dirname + "/view/dashboard.html")
   } else {
+    res.send("<Error>Invalid Auth</Error>");
+  }
+});
+app.get('/:page',function (req,res) {
+  if(req.params.page == "dashboard"){
+    res.send("<Error>Invalid Auth</Error>");
+  }
+  else if(fs.existsSync(__dirname + "/view/"+req.params.page+".html")){
+    res.sendFile(__dirname + "/view/"+req.params.page+".html");
+  }
+  else {
     res.sendFile(__dirname + '/view/index.html');
   }
 });

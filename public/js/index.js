@@ -17,21 +17,6 @@ if(Storage){
 else {
   console.log("Browser don't support local storage!!");
 }
-$(".tutorial i").click(function () {
-  $(this).attr('active',true).siblings().attr('active',false);
-});
-$(".tutorial button[action=submit]").click(function () {
-  var answer = [];
-  var r = confirm("感謝你的填答，是否確認送出問卷?");
-  if(!r) return
-  $(".tutorial .answer i[active='true']").each(function () {
-    answer.push($(this).attr("text"));
-  });
-  answer.push($(".tutorial textarea").val());
-  $(".tutorial").fadeOut();
-  if(Storage) localStorage.tutorial_ = 1;
-  socket.emit("index survey",{uid:CurrentUserId,answer});
-});
 
 var CurrentUserId;
 $(document).ready(function () {

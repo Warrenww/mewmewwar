@@ -860,7 +860,7 @@ $(document).ready(function () {
     else $("#slider_holder").find('.slider').slider('option','value',filter_org);
   }
   function calculateLV() {
-    let val = Number($(this).val()),
+    var val = Number($(this).val()),
         rarity = current_cat_data.rarity,
         type = $(this).parents('td').attr('id'),
         ori = current_cat_data[type],
@@ -869,7 +869,7 @@ $(document).ready(function () {
       $(this).parent().html(input_org);
       return
     }
-    let limit ;
+    var limit ;
     switch (rarity) {
       case 'R':
       limit = 70 ;
@@ -882,7 +882,7 @@ $(document).ready(function () {
     }
     // console.log(val+","+rarity+","+ori+","+limit);
     lv = val/ori*10-8 ;
-    lv = lv/2 > limit ? lv-limit : lv/2 ;
+    lv = lv/2 > limit ? (lv > 2*limit+20 ? (lv-10-1.5*limit)*2 : lv-limit) : lv/2 ;
     lv = Math.ceil(lv) ;
     // console.log(lv);
     if(lv > 100){

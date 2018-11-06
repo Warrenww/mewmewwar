@@ -126,7 +126,6 @@ class Cat{
     else{
       for(let i in gacha){
         name = gacha[i].name;
-        name = name=='にゃんこ'?"貓咪":name;
         html += "在<span type='gacha' id='"+gacha[i].id+"'>"+name+"</span>轉蛋中獲得<br>";
       }
     }
