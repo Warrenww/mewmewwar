@@ -169,7 +169,7 @@ function getData(type,grossID,stage,exist) {
       obj.atk_period = Number(row_3.children().eq(7).children().eq(0).text())?Number(row_3.children().eq(7).children().eq(0).text())/30:"-";
       obj.aoe = row_4.children().eq(3).children().eq(0).text() == "単体" ? false : true;
       obj.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
-      obj.cd = Number(row_4.children().eq(7).children().eq(0).text())/30;
+      obj.cd = Number(row_3.children().eq(7).children().eq(0).text())/30;
       if(!exist) obj.region = '[TW][JP]';
       obj.id = Util.AddZero(grossID,2)+"-"+stage;
       Parser.parseChar(row_5.children().eq(1),obj);

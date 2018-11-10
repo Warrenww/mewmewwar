@@ -61,7 +61,9 @@ var catdata = {},
 var mostSearchCat = [],
     mostSearchStage = [];
 ReloadAllData();
+var reloadTimeOut;
 function ReloadAllData() {
+  clearTimeout(reloadTimeOut);
   mostSearchCat = [];
   mostSearchStage = [];
   Activity.UpdateEvent(eventdata);
@@ -106,8 +108,7 @@ function ReloadAllData() {
     // Util.Sort(mostSearchStage);
 
   });
-
-  setTimeout(ReloadAllData,6*3600*1000);
+  reloadTimeOut = setTimeout(ReloadAllData,6*3600*1000);
 }
 
 var onLineUser = {};
@@ -1240,8 +1241,45 @@ io.on('connection', function(socket){
   socket.on("fetch data",(data)=>{
     if(data.type == "cat") Unitdata.fetch('cat',data.arr);
     if(data.type == "stage") Stagedata.fetch(data.chapter,data.id);
-
   });
+  socket.on("loadstage",()=>{
+    var obj={};
+    database.ref("/stagedata").once('value',(snapshot)=>{
+      var temp = snapshot.val();
+      for(let i in temp){
+        obj[i] = {};
+        for (let j in temp[i]){
+          obj[i][j]={};
+          for(let k in temp[i][j]){
+            obj[i][j][k] = typeof(temp[i][j][k]) == "object"?temp[i][j][k].name:temp[i][j][k];
+          }
+        }
+      }
+      socket.emit("loadStage",obj);
+    });
+  });
+  socket.on("loadcat",()=>{
+    var obj={};
+    database.ref("/newCatData").once('value',(snapshot)=>{
+      var temp = snapshot.val();
+      for(let i in temp){
+        obj[i] = {
+          name : temp[i].name,
+          jp_name : temp[i].jp_name,
+          region : temp[i].region
+        };
+      }
+      socket.emit("loadCat",obj);
+    });
+  });
+  socket.on("DashboardUpdateData",(data)=>{
+    console.log('update',data);
+    var path = data.path.split(",").join("/");
+    var obj = {};
+    obj[data.type] = data.val;
+    database.ref("/"+path).update(obj);
+  });
+  socket.on("reloadAllData",()=>{ReloadAllData()});
 
 });
 

@@ -203,7 +203,6 @@ $(document).ready(function () {
     },300);
   });
   socket.on("level name",function (data) {
-    // console.log(data);
     clearTimeout(loadingTimeOut);
     $("#select_level").empty().removeClass("loading");
     for( let i in data )
@@ -478,7 +477,7 @@ $(document).ready(function () {
     return Math.ceil(Number(n)*4.2);
   }
   function rewardPicture(s) {
-    var html;
+    var html = "";
     $("#rewardSelector .button").each(function () {
       if($(this).attr("name") == s) html = $(this).html();
     });

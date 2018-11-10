@@ -315,9 +315,10 @@ exports.parseCondition = function(row_7,row_8,obj) {
       if(a.indexOf("stage")!=-1){
         b = c[i].find("a").text();
         a = /s[0-9]+\-*[0-9]+/.exec(a)[0];
-        if (a.indexOf("-")!=-1) n = Stage.stageMap()[a.split("-")[0]]?Stage.stageMap()[a.split("-")[0]][Number(a.split("-")[1])].name:"-";
+        c = a.indexOf("-")!=-1;
+        if (c) n = Stage.stageMap()[a.split("-")[0]]?Stage.stageMap()[a.split("-")[0]][Number(a.split("-")[1])].name:"-";
         else n = Stage.stageMap()[a]?Stage.stageMap()[a].name:b;
-        condition.stage = {id:a.split("-")[0]+"-"+Number(a.split("-")[1]),name:n};
+        condition.stage = {id:(a.split("-")[0]+(c?("-"+a.split("-")[1]):"")),name:n};
         if(s.indexOf("XP")!=-1){
           b = /XP[0-9]+/.exec(s)[0].split("XP")[1];
           condition.xp = Number(b);
@@ -534,7 +535,7 @@ exports.parsePrize = function(p,img) {
   }
   else if(p.children("a").attr("href")) {
     obj.name = img.children("img").attr("src").split("/")[3].split(".png")[0];
-    obj.amount = Unit.CatName[obj.name.substring(1)];
+    obj.amount = Unit.catName(obj.name.substring(1));
   } else {
     obj.name = s;
   }

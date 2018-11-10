@@ -1,15 +1,18 @@
 var database = require("firebase").database();
 var Util = require("./Utility");
 var Parser = require("./Parser");
-var StageData,stageMap={};
+var request = require("request");
+var cheerio = require("cheerio");
+var StageData={},stageMap={};
 exports.load = function (stagedata,mostSearchStage) {
   console.log("Module start loading stage data.");
 
   database.ref("/stagedata").once("value",(snapshot)=>{
-    StageData = snapshot.val();
+    temp = snapshot.val();
     var buffer = [];
-    for(let i in StageData){
-      stagedata[i] = StageData[i];
+    for(let i in temp){
+      stagedata[i] = temp[i];
+      StageData[i] = temp[i];
       for(let j in stagedata[i]){
         for(let k in stagedata[i][j]){
           if(k == 'name') continue
@@ -50,23 +53,26 @@ exports.stageMap = function () {
 }
 
 exports.fetch = function (chapter,id) {
+  var exist = false;
   id = id.split("-");
-  getData(chapter,id[0],id[1]?id[1]:0);
+  console.log(chapter,id);
+  getData(chapter,id[0],id[1]?id[1]:0,id[1]?false:true);
 }
-function getData(chapter,i,j) {
+var NumberOfLevel;
+function getData(chapter,i,j,single) {
   // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
-  var url = "https://battlecats-db.com/stage/s"+i+(j?("-"+Util.AddZero(j)):"")+".html";
+  var url = "https://battlecats-db.com/stage/s"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
   request({
     url: url,
     method: "GET"
   }, function(e,r,b) {
-    if(!Number(j) && !e){
+    if(Number(j) == 0 && !e){
       $ = cheerio.load(b);
       var StageName = $("h2").text();
       NumberOfLevel = ($("td[rowspan='2']").length)/2;
       database.ref("/stagedata/"+chapter+"/s"+i+"/name").set(StageName);
       j++;
-      getData(i,j);
+      getData(chapter,i,j,false);
       return
     }
 
@@ -76,7 +82,6 @@ function getData(chapter,i,j) {
       exp : "",
       castle : "",
       length : "",
-      count : 0,
       limit_no : "",
       reward : [],
       enemy : [],
@@ -84,6 +89,9 @@ function getData(chapter,i,j) {
       "continue" : "",
       id:[chapter,"s"+i,j].join("-"),
     };
+    if(!StageData[chapter]) obj.count = 0;
+    else if(!StageData[chapter][i]) obj.count = 0;
+    else if(!StageData[chapter][i][j]) obj.count = 0;
     if(!e){
       // console.log("get data");
       $ = cheerio.load(b);
@@ -121,13 +129,13 @@ function getData(chapter,i,j) {
           amount : ene.eq(4).text(),
           castle : ene.eq(5).text(),
           first_show : (Number(ene.eq(6).text())/30).toFixed(1),
-          next_time : FtoS(ene.eq(7).text())
+          next_time : Parser.FtoS(ene.eq(7).text())
         });
       }
       console.log(obj);
       database.ref("/stagedata/"+chapter+"/s"+i+"/"+j).update(obj);
       j++;
-      if(!final) getData(chapter,i,j);
+      if(!final && !single) getData(chapter,i,j,true);
     }
     else {
       // console.log("error s070"+AddZero(i)+"-0"+j);

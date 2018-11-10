@@ -1,8 +1,8 @@
-const image_url_cat =  "./css/footage/cat/u" ;
-const image_url_enemy =  "./css/footage/enemy/e" ;
-const image_url_icon =  "./css/footage/gameIcon/" ;
-const image_url_gacha =  "./css/footage/gacha/" ;
-const VERSION = "10.28.4"
+const image_url_cat =  "/css/footage/cat/u" ;
+const image_url_enemy =  "/css/footage/enemy/e" ;
+const image_url_icon =  "/css/footage/gameIcon/" ;
+const image_url_gacha =  "/css/footage/gacha/" ;
+const VERSION = "10.28.5"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
