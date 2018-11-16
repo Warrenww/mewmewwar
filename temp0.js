@@ -63,11 +63,21 @@ database.ref('/vote').once("value",function (snapshot) {
       "不要改變":0,
       "純嵌入式":0,
       "純新視窗":0
-    }},count = 0;
+    }},count = 0,
+    block = "------------------\n";
+
   for(let i in data){
-    if(data[i].length!=4)continue
+    if(data[i].length!=4){
+      console.log(data[i]);
+      continue;
+    }
     count ++;
-    if(data[i][3]&&data[i][3]!=""&&data[i][3]!=" ") console.log(data[i][3]);
+    if(data[i][3]&&data[i][3]!=""&&data[i][3]!=" "){
+      fs.appendFile("comment.txt",(data[i][3])+block,(e)=>{
+        if(e) console.log(e);
+      })
+      // console.log(data[i][3]);
+    }
     for(let j in data[i]) {
       if(j==3)continue
       result[j][data[i][j]] ++;
@@ -75,7 +85,7 @@ database.ref('/vote').once("value",function (snapshot) {
   }
   console.log(result);
   // console.log('finish');
-  process.exit();
+  // process.exit();
 });
 
 // var stagedata

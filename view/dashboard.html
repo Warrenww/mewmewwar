@@ -24,6 +24,27 @@
         border-bottom: 1px solid gray;
       }
       th img{width: 120}
+      .signal{
+        display: flex;
+        width: 20;
+        height:20;
+        border-radius: 50%;
+        background-color:#e25959;
+        box-shadow: 1px 1px 10px 0px black;
+      }
+      .signal[ok='wait']{
+        background-color:#ffb538;
+        animation-name: scale;
+        animation-duration: 1.5s;
+        animation-iteration-count: infinite;
+      }
+      .signal[ok='ok']{background-color:#8bf477 }
+      @keyframes scale {
+        0%{width: 20;height: 20}
+        50%{width: 25;height: 25}
+        100%{width: 20;height: 20}
+      }
+      .editable .reward{display: flex;width: 15;height: 15;border-radius: 50%;background-color: gray}
     </style>
     <i class="material-icons" id="PageGoToTop">expand_less</i>
 
@@ -59,10 +80,12 @@
         <input type="text" />
         <button onclick="fetchStagedata()">fetch</button>
         <span>format: chapter/01003-3/01003</span>
+        <br />Correction : <input type="checkbox">
       </div>
       <button onclick="reloadAllData()">reloadAllData</button>
     </div>
     <div class="content">
+      <span class="signal"></span>
       <h1>Rename</h1>
       <div id="renameStage" style="width:100%">
         <button onclick="loadData('stage')">Load Stage</button>
@@ -87,6 +110,23 @@
           <option>451~500</option>
         </select>
         <table class="renameCattable"></table>
+      </div>
+      <div id="renameEnemy" style="width:100%">
+        <button onclick="loadData('enemy')">Load Enemy</button>
+        <select id="renameEneSelec">
+          <option>choose ID Range</option>
+          <option>1~50</option>
+          <option>51~100</option>
+          <option>101~150</option>
+          <option>151~200</option>
+          <option>201~250</option>
+          <option>251~300</option>
+          <option>301~350</option>
+          <option>351~400</option>
+          <option>401~450</option>
+          <option>451~500</option>
+        </select>
+        <table class="renameEnetable"></table>
       </div>
     </div>
 

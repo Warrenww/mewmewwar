@@ -22,6 +22,7 @@ $(document).ready(function () {
   socket.on("loadStage",(data)=>{
     console.log(data);
     stageName = data;
+    $(".signal").attr("ok",'ok');
     for(let i in data)
       $("#renameStageSelec").append("<option>"+i+"</option>");
   });
@@ -32,13 +33,15 @@ $(document).ready(function () {
     for(let i in stageName[chapter]){
       html += "<tr><th class='editable' type='name' path='"+
               ["stagedata",chapter,i].join()+"'colspan='8'>"+
-              stageName[chapter][i].name+"</th></tr><tr>";
+              stageName[chapter][i].name.name+"</th></tr><tr>";
       count = 0;
       for(let j in stageName[chapter][i]){
         if(j == 'name') continue
         html += "<td class='editable' type='name' path='"+
-                ["stagedata",chapter,i,j].join()+"'>"+
-                stageName[chapter][i][j]+"</td>"
+                ["stagedata",chapter,i,j].join()+
+                "'reward='"+JSON.stringify(stageName[chapter][i][j].reward)+"'>"+
+                stageName[chapter][i][j].name+
+                "<span class='reward'></span></td>"
         count++;
         if(count%8 == 0) html += "</tr><tr>";
       }
@@ -46,6 +49,13 @@ $(document).ready(function () {
     }
     $(".renameStagetable").append(html);
   });
+  $(document).on("click",".editable .reward",function(e){
+    var reward = $(this).parent().attr('reward'),
+        path = $(this).parent().attr('path'),
+        html = "";
+    if(reward) reward = JSON.parse(reward);
+    e.stopPropagation() ;
+   });
   var input_org ;
   $(document).on('click',".editable",function () {
     input_org = $(this).text();
@@ -69,10 +79,7 @@ $(document).ready(function () {
     return
   });
   var catName;
-  socket.on("loadCat",(data)=>{
-    console.log(data);
-    catName = data;
-  });
+  socket.on("loadCat",(data)=>{ catName = data;$(".signal").attr("ok",'ok'); });
   $("#renameCatSelec").on("change",()=>{
     var range = Number($("#renameCatSelec :selected").val().split("~")[0]);
     $(".renameCattable").empty();
@@ -111,6 +118,28 @@ $(document).ready(function () {
     }
     $(this).text(text);
   });
+  var eneName;
+  socket.on("loadEnemy",(data)=>{ eneName = data;$(".signal").attr("ok",'ok');});
+  $("#renameEneSelec").on("change",()=>{
+    var range = Number($("#renameEneSelec :selected").val().split("~")[0]);
+    $(".renameEnetable").empty();
+    var html = "<tr>",count = 0
+    for(let i = range;i<range+50;i++){
+      var id = AddZero(i,2);
+      if(eneName[id]){
+        html += "<th><img src='"+image_url_enemy+id+".png'/></th>"+
+        "<th>"+id+"</th>"+
+        "<td class='editable' type='name' path='"+
+        ["enemydata",id].join()+"'>"+
+        (eneName[id].name?eneName[id].name:eneName[id].jp_name);
+      } else {
+        html += "<th></th><th></th><td></td>";
+      }
+      count ++;
+      if(count%3 == 0)html += "</tr><tr>";
+    }
+    $(".renameEnetable").append(html);
+  });
 });
 
 function UpdateData() { socket.emit("dashboard"); }
@@ -130,11 +159,12 @@ function fetchUnitdata() {
   socket.emit("fetch data",{type,arr});
 }
 function fetchStagedata() {
-  var chapter = $("#fetchStage input").eq(0).val();
-  var id = $("#fetchStage input").eq(1).val();
-  socket.emit("fetch data",{type:'stage',chapter,id});
+  var chapter = $("#fetchStage input").eq(0).val(),
+      id = $("#fetchStage input").eq(1).val(),
+      correction = $("#fetchStage input").eq(2).prop('checked');
+  socket.emit("fetch data",{type:'stage',chapter,id,correction});
 }
-function loadData(type) { socket.emit("load"+type); }
+function loadData(type) { socket.emit("load"+type); $(".signal").attr("ok",'wait');}
 function reloadAllData() { socket.emit("reloadAllData"); }
 var noclick=function (e) {
   return false

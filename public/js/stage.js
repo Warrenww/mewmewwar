@@ -233,7 +233,7 @@ $(document).ready(function () {
     });
   });
   socket.on("level data",function (obj) {
-    console.log(obj);
+    // console.log(obj);
     current_level_data = obj;
     let html = "",
         data = obj.data,
@@ -266,6 +266,8 @@ $(document).ready(function () {
   $('#prev,#next').click(function () {
     let data = JSON.parse($(this).attr('query'));
     // console.log(data.level);
+    $("#select_level").find("#"+data.level)
+      .attr("value",1).prev().attr("value",0);
     if(data.level)
       socket.emit("required level data",{
         uid: CurrentUserID,

@@ -87,7 +87,7 @@ body::-webkit-scrollbar-thumb {
 .stageBG[bg='baseball'],.stageBG[bg='lazybird'],
 .stageBG[bg='easter'],.stageBG[bg='eva'],
 .stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking'],
-.stageBG[bg='castleAndDragon']{
+.stageBG[bg='castleAndDragon'],.stageBG[bg='CrashFever']{
   background-size: cover;
   background-position: center;
 }
@@ -110,6 +110,7 @@ body::-webkit-scrollbar-thumb {
 .stageBG[bg='egg']{background-image: url("footage/stage/egg.png");}
 .stageBG[bg='ranking']{background-image: url("footage/stage/ranking.jpg");}
 .stageBG[bg='castleAndDragon']{background-image: url("footage/stage/castleAndDragon.jpg");}
+.stageBG[bg='CrashFever']{background-image: url("footage/stage/CrashFever.png");}
 .stageBG[bg='cyclone'],.stageBG[bg='evolution'],
 .stageBG[bg='castleMaterial'],.stageBG[bg='ticket']
 {background-blend-mode: normal;}

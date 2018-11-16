@@ -52,14 +52,16 @@ exports.stageMap = function () {
   return stageMap
 }
 
-exports.fetch = function (chapter,id) {
+exports.fetch = function (chapter,id,correction) {
   var exist = false;
   id = id.split("-");
   console.log(chapter,id);
-  getData(chapter,id[0],id[1]?id[1]:0,id[1]?false:true);
+  if(!chapter||!id) return;
+  getData(chapter,id[0],id[1]?id[1]:0,correction,id[1]?false:true);
+
 }
 var NumberOfLevel;
-function getData(chapter,i,j,single) {
+function getData(chapter,i,j,correction=false,single=false) {
   // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
   var url = "https://battlecats-db.com/stage/s"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
   request({
@@ -72,7 +74,7 @@ function getData(chapter,i,j,single) {
       NumberOfLevel = ($("td[rowspan='2']").length)/2;
       database.ref("/stagedata/"+chapter+"/s"+i+"/name").set(StageName);
       j++;
-      getData(chapter,i,j,false);
+      getData(chapter,i,j,correction,false);
       return
     }
 
@@ -98,8 +100,8 @@ function getData(chapter,i,j,single) {
       var content = $(".maincontents table"),
           final = Number(j) == NumberOfLevel?true:false,
           thead = content.children("thead").eq(0).children("tr"),
-          tbody_1 = content.children("tbody").eq(final?1:0).children("tr"),
-          tbody_2 = content.children("tbody").eq(final?2:1).children("tr");
+          tbody_1 = content.children("tbody").eq((final?1:0)+(correction?1:0)).children("tr"),
+          tbody_2 = content.children("tbody").eq((final?2:1)+(correction?1:0)).children("tr");
       obj.final = final;
       obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
       obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
@@ -135,7 +137,7 @@ function getData(chapter,i,j,single) {
       console.log(obj);
       database.ref("/stagedata/"+chapter+"/s"+i+"/"+j).update(obj);
       j++;
-      if(!final && !single) getData(chapter,i,j,true);
+      if(!final && !single) getData(chapter,i,j,correction,false);
     }
     else {
       // console.log("error s070"+AddZero(i)+"-0"+j);

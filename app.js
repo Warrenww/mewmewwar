@@ -1240,7 +1240,7 @@ io.on('connection', function(socket){
   });
   socket.on("fetch data",(data)=>{
     if(data.type == "cat") Unitdata.fetch('cat',data.arr);
-    if(data.type == "stage") Stagedata.fetch(data.chapter,data.id);
+    if(data.type == "stage") Stagedata.fetch(data.chapter,data.id,data.correction);
   });
   socket.on("loadstage",()=>{
     var obj={};
@@ -1251,7 +1251,10 @@ io.on('connection', function(socket){
         for (let j in temp[i]){
           obj[i][j]={};
           for(let k in temp[i][j]){
-            obj[i][j][k] = typeof(temp[i][j][k]) == "object"?temp[i][j][k].name:temp[i][j][k];
+            obj[i][j][k] =
+              typeof(temp[i][j][k]) == "object"?
+                {name:temp[i][j][k].name,reward:temp[i][j][k].reward}:
+                  {name:temp[i][j][k]};
           }
         }
       }
@@ -1270,6 +1273,19 @@ io.on('connection', function(socket){
         };
       }
       socket.emit("loadCat",obj);
+    });
+  });
+  socket.on("loadenemy",()=>{
+    var obj={};
+    database.ref("/enemydata").once('value',(snapshot)=>{
+      var temp = snapshot.val();
+      for(let i in temp){
+        obj[i] = {
+          name : temp[i].name,
+          jp_name : temp[i].jp_name
+        };
+      }
+      socket.emit("loadEnemy",obj);
     });
   });
   socket.on("DashboardUpdateData",(data)=>{
