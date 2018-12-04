@@ -23,6 +23,7 @@ nav img{
 }
 nav a,
 .navLinkBox a,
+.nav_panel a,
 .navLinkBox span{
   font-size: 20px;
   color: white ;

@@ -239,7 +239,7 @@ class Enemy{
     return ""
   }
   AddZero(s) {
-    console.log(temp);
+    var temp = Number(s);
     if(!temp) return s
     else return temp>99?temp:(temp>9?'0'+temp:'00'+temp)
   }
