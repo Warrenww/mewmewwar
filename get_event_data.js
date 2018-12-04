@@ -66,8 +66,8 @@ var start,end;
         var gachaP = $("section").eq(0).find(".c-article__content"),
             eventP = $("section").eq(1).find(".c-article__content");
         var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
-        gachaP.children("div").each(function () {
-          let content = $(this).text();
+        gachaP.find("div").each(function () {
+          var content = $(this).text();
           if(content&&content.length<30){
             let arr = content.split(' ');
             let brr = arr[0].split("~");

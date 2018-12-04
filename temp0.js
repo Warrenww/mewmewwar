@@ -48,45 +48,58 @@ var stdin = process.openStdin();
 //   });
 // });
 
-database.ref('/vote').once("value",function (snapshot) {
-  var data = snapshot.val();
-  var result = {
-    0:{
-      "移除功能":0,
-      "留下功能":0
-    },
-    1:{
-      "移除功能":0,
-      "留下功能":0
-    },
-    2:{
-      "不要改變":0,
-      "純嵌入式":0,
-      "純新視窗":0
-    }},count = 0,
-    block = "------------------\n";
-
+database.ref("/error_log").once('value',(snapshot)=>{
+  data = snapshot.val();
+  exist = [];
   for(let i in data){
-    if(data[i].length!=4){
-      console.log(data[i]);
-      continue;
+    if(exist.indexOf(data[i].message)==-1)
+    {
+      console.log(data[i].message);
+      exist.push(data[i].message)
     }
-    count ++;
-    if(data[i][3]&&data[i][3]!=""&&data[i][3]!=" "){
-      fs.appendFile("comment.txt",(data[i][3])+block,(e)=>{
-        if(e) console.log(e);
-      })
-      // console.log(data[i][3]);
-    }
-    for(let j in data[i]) {
-      if(j==3)continue
-      result[j][data[i][j]] ++;
-    }
+
   }
-  console.log(result);
-  // console.log('finish');
-  // process.exit();
-});
+})
+
+// database.ref('/vote').once("value",function (snapshot) {
+//   var data = snapshot.val();
+//   var result = {
+//     0:{
+//       "移除功能":0,
+//       "留下功能":0
+//     },
+//     1:{
+//       "移除功能":0,
+//       "留下功能":0
+//     },
+//     2:{
+//       "不要改變":0,
+//       "純嵌入式":0,
+//       "純新視窗":0
+//     }},count = 0,
+//     block = "------------------\n";
+//
+//   for(let i in data){
+//     if(data[i].length!=4){
+//       console.log(data[i]);
+//       continue;
+//     }
+//     count ++;
+//     if(data[i][3]&&data[i][3]!=""&&data[i][3]!=" "){
+//       fs.appendFile("comment.txt",(data[i][3])+block,(e)=>{
+//         if(e) console.log(e);
+//       })
+//       // console.log(data[i][3]);
+//     }
+//     for(let j in data[i]) {
+//       if(j==3)continue
+//       result[j][data[i][j]] ++;
+//     }
+//   }
+//   console.log(result);
+//   // console.log('finish');
+//   // process.exit();
+// });
 
 // var stagedata
 // database.ref("/stagedata").once("value",function (snapshot){
@@ -125,5 +138,5 @@ database.ref('/vote').once("value",function (snapshot) {
 
 
 function AddZero(n) {
-  return n>9 ? "0"+n : n
+  return n>9 ? n : "0"+n
 }

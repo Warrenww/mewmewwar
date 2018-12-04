@@ -9,9 +9,6 @@ $(document).ready(function () {
       $("#"+i).text(data[i]);
     }
   });
-  $("#fetchUnit select").on('change',()=>{
-    $("#fetchUnit button").attr("type",$("#fetchUnit select :selected").text());
-  });
   $("#fetchUnit input").on('keypress',(e)=>{
     if(e.keyCode == 13){
       fetchUnitdata();
@@ -144,8 +141,9 @@ $(document).ready(function () {
 
 function UpdateData() { socket.emit("dashboard"); }
 function fetchUnitdata() {
-  var type = $("#fetchUnit button").attr("type");
-  var id = $("#fetchUnit input").val();
+  var type = $("#fetchUnit").find("select").val();
+  var id = $("#fetchUnit").find("input").val();
+  console.log(id);
   id = id.split(",");
   var arr = [];
   for(i in id){
@@ -156,6 +154,7 @@ function fetchUnitdata() {
       if(arr.indexOf(Number(id[i])) == -1) arr.push(Number(id[i]));
     }
   }
+  console.log(type,arr);
   socket.emit("fetch data",{type,arr});
 }
 function fetchStagedata() {

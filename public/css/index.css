@@ -44,19 +44,6 @@ html,body{overflow: hidden;}
   background-position: center;
   height: 100%;
 }
-.widget_container{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.widget{
-  background-color: rgba(255,255,255,.8);
-  border: 6px solid white;
-  border-radius: 6px;
-  padding: 2%;
-  margin: 3%;
-}
 #iframe_holder{
   width: 100%;
   height: 100%;
@@ -106,24 +93,99 @@ iframe[active='true']{ right:0%; }
 nav a{cursor: pointer;}
 #support{background: linear-gradient(rgb(156, 237, 109),rgb(22, 159, 68))}
 #nottoday{background: linear-gradient(rgb(164, 164, 164),rgb(108, 108, 108))}
-#bulletin .main{
-  width: 60%;
-  background-color: rgba(255,255,255,.9);
-  padding: 3% 5%;
-  border-radius: 20px;
-  font-size: 16px;
-  margin-bottom: 5%;
+
+#bulletin{
+  height: calc(100% + 50px);
+  overflow-y: scroll;
 }
-#bulletin .main h2{text-align: center;font-weight: bold;}
-#year_event{
+#bulletin::-webkit-scrollbar {width: 0}
+#bulletin .main{
+  display: flex;
+  flex-direction: column;
+  position: relative;
   width: 100%;
-  height: 100%;
-  padding: 5% 15%;
-  position: fixed;
-  top: 0;
-  z-index: 2;
-  overflow: scroll;
-  background-color: rgba(0,0,0,.7)
+  padding: 3% 5%;
+  font-size: 16px;
+}
+#bulletin .main:nth-child(2n+1){
+  background-color: rgba(250,250,250,.9);
+  color: black;
+}
+#bulletin .main:nth-child(2n){
+  background-color: rgba(10,10,10,.9);
+  color:white;
+}
+#bulletin .main:first-child{ background-color: transparent; }
+#bulletin .main:last-child{margin-bottom: 50px}
+#bulletin .main h2{text-align: center;font-weight: bold;margin: 20 0}
+#bulletin .main>div{
+  display:flex;
+}
+#bulletin .main .article{
+  flex: 1;
+  padding: 15px;
+  line-height: 2;
+  font-weight: 100;
+}
+#bulletin .main th{background-color: rgba(242, 213, 167, 0.93);}
+#bulletin .main td{background-color: rgba(200, 200, 200, 0.93);}
+#bulletin .main .eventTableHolder{
+  width:100%;
+  overflow-x: auto;
+}
+#bulletin .main .eventTableHolder table{width: auto;display: none;}
+#bulletin .main .eventTableHolder::-webkit-scrollbar {width: 0}
+#event_iframe{
+  position: relative;
+  right: 0;
+  height: 60%;
+  border: 5px solid white;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 0px grey;
+}
+#eventTableScroll_L,#eventTableScroll_R{
+  position: absolute;
+  top: 50%;
+  left: 50px;
+  opacity: .5;
+  padding: 20;
+  cursor: pointer;
+}
+#eventTableScroll_L:hover,#eventTableScroll_R:hover{opacity: 1;}
+#eventTableScroll_R{left:calc(90% - 20px)}
+.contact_block{
+  display: flex;
+  flex-direction: column;
+  margin: 0 20;
+  padding: 10;
+  align-items: center;
+  color: white
+}
+.contact_block:hover{
+  text-decoration: none;
+  color:white;
+  border: 1px dashed;
+}
+.contact_block img{
+  width: 100;
+  height: 100
+}
+#event_date{margin-bottom: 10px }
+
+#expandContent{
+  position: absolute;
+  bottom: 20px;
+  color: white;
+  left: 50%;
+  opacity: 0.5;
+  cursor: pointer;
+  transform:translateY(40px);
+}
+#expandContent:hover{
+  opacity: .7;
+  animation-name: jump;
+  animation-duration: 1s;
+  animation-iteration-count: 3
 }
 
 .new::after{
@@ -145,6 +207,8 @@ nav a{cursor: pointer;}
   display: flex;
   width: 100%;
   justify-content: space-around;
+  max-width: 600;
+  align-items: flex-start;
 }
 .LegendCard{
   display: flex;
@@ -197,14 +261,15 @@ nav a{cursor: pointer;}
 .LegendCard span[enemy]:hover{color: orange}
 #LegendRedirect{
   margin-top:10;
-  text-align:right;
+  justify-content: flex-end;
   color:#2a7fad;
   font-weight: bold;
   cursor: pointer;
+  font-size: 20
 }
-#LegendRedirect:hover{color: #642c88}
+#LegendRedirect span:hover{color: #642c88}
 #onLineUser{
-  position: fixed;
+  position: absolute;
   bottom: 0;
   right: 0;
   color: white;
@@ -236,3 +301,11 @@ nav a{cursor: pointer;}
 }
 #enemyBoard div img{margin: 20;transform: scale(1.5);}
 .stageBG{width:100%;height:70px;background-size:cover}
+
+#newEvent{
+  display: flex;
+  font-size: 20;
+  font-weight: bold;
+  align-items: center;
+  cursor: pointer;
+}

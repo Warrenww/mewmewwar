@@ -538,8 +538,13 @@ function scrollSelectArea(area,target) {
     },500);
     return
   }
-  if(!Target) return
+  if(!target || !Target) return
+  var scrollTop = This ? This.scrollTop() : 0,
+      TargetOffsetTop = Target.offset() ? Target.offset().top : 0,
+      ThisOffsetTop = This ? This.offset().top : 0,
+      ThisHeight = This ? This.outerHeight()/2 : 0,
+      TargetHeight = Target ? Target.outerHeight()/2 : 0 ;
   This.animate({
-    scrollTop:This.scrollTop() + Target.offset().top - This.offset().top - This.outerHeight()/2 + Target.outerHeight()/2
+    scrollTop: scrollTop + TargetOffsetTop - ThisOffsetTop - ThisHeight + TargetHeight
   },400);
 }

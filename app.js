@@ -93,7 +93,6 @@ function ReloadAllData() {
             legenddata[i].thisWeek = {date:tempD};
             database.ref("/legend/"+i+"/thisWeek").set(legenddata[i].thisWeek);
         }
-
       }
     }
     // mostSearchStage = {};
@@ -663,6 +662,7 @@ io.on('connection', function(socket){
         CurrentUserData.first_login = Users.getAttr(user.uid,'first_login');
         CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert,user_photo:setting.photo};
         CurrentUserData.legend = {mostSearchCat,mostSearchStage};
+        CurrentUserData.event = eventdata;
       }
       countOnlineUser(socket.id,user.uid,true);
       socket.emit("current_user_data",CurrentUserData);
@@ -1052,6 +1052,7 @@ io.on('connection', function(socket){
         catComment[cat].statistic = catComment[cat].statistic?catComment[cat].statistic:{};
         catComment[cat].statistic[type] = data.all;
         database.ref("/catComment/"+cat+"/statistic/"+type).set(data.all);
+        if(!target.survey) target.survey = {};
         target.survey[type] = val;
         database.ref("/user/"+uid+"/variable/cat/"+cat+"/survey/"+type).set(val);
       }
@@ -1225,7 +1226,7 @@ io.on('connection', function(socket){
   socket.on("Game Picture",function () {
     var buffer = [];
     for(let i=0;i<18;i++){
-      let cat = Math.ceil(Math.random()*Unitdata.cat.__numberOfCat());
+      let cat = Math.ceil(Math.random()*Unitdata.__numberOfCat());
       cat = Util.AddZero(cat,2);
       let data = catdata[cat+"-3"]?catdata[cat+"-3"]:catdata[cat+"-2"];
       buffer.push(data);
@@ -1240,6 +1241,7 @@ io.on('connection', function(socket){
   });
   socket.on("fetch data",(data)=>{
     if(data.type == "cat") Unitdata.fetch('cat',data.arr);
+    if(data.type == "enemy") Unitdata.fetch('enemy',data.arr);
     if(data.type == "stage") Stagedata.fetch(data.chapter,data.id,data.correction);
   });
   socket.on("loadstage",()=>{

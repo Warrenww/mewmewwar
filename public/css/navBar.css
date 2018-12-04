@@ -104,7 +104,7 @@ nav a,
   cursor: pointer;
 }
 @media screen and (max-width:1024px) {
-  .navLinkBox{flex:6}
+  .navLinkBox{flex:5}
   .settingBox{flex:2}
   .navBox i{margin: 0 5px}
 }

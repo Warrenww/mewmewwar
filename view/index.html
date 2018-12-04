@@ -46,7 +46,7 @@
           <a  id="game">釣魚小遊戲</a>
         </div>
         <a  id="calendar">活動日程</a>
-        <a  id="event">最新消息</a>
+        <!-- <a  id="event">最新消息</a> -->
       </div>
       <div class="navBox">
         <i class="material-icons" id="carousel">view_carousel</i>
@@ -92,7 +92,7 @@
           <a  id="game">釣魚小遊戲</a>
         </div>
         <a  id="calendar">活動日程</a>
-        <a  id="event">最新消息</a>
+        <!-- <a  id="event">最新消息</a> -->
       </div>
       <div class="m_settingBox">
         <a class="current_user_name"></a>
@@ -106,132 +106,203 @@
 
     <div class="head">
       <div id="bulletin">
-        <div class="content">
-          <div class="main">
-            <h2>問卷調查統計結果</h2>
-            問卷預計統計結果， 已經公布在
-            <a href="https://www.facebook.com/BattleCatStation/" target="_blank">粉絲團</a>
-            囉!!並不定期會回答一些大家在問卷上提出的問題，有興趣的人請隨時關注動態噢><
+        <div class="main"style="height:85%">
+          <div id="onLineUser">
+            <div>
+              目前線上人數 : <span>0</span> 人
+            </div>
           </div>
-          <div class="main">
-            <h2>貓咪查詢排行榜</h2>
+          <div id="expandContent">
+            <i class="material-icons" style="font-size:100px"> expand_less </i>
+          </div>
+        </div>
+        <div class="main"style="padding:10 0">
+          <div style="width:100%;justify-content: center">
+            <span style="margin:0 10">
+              問卷預計統計結果， 已經公布在
+              <a href="https://www.facebook.com/BattleCatStation/" target="_blank">粉絲團</a>
+              囉!!並不定期會回答一些大家在問卷上提出的問題，有興趣的人請隨時關注動態噢><
+            </span>
+          </div>
+        </div>
+        <div class="main">
+          <h2>貓咪資料庫</h2>
+          <div>
             <div class="LegendCardholder">
-              <div class="LegendCard">
-                <img src="./css/footage/cat/u001-1.png">
-                <span>貓咪</span>
-                <span>血量 : 9999</span>
-                <span>攻擊 : 9999</span>
-                <span>查詢次數 : 9999</span>
-                <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
-              </div>
-              <div class="LegendCard">
-                <img src="./css/footage/cat/u001-1.png">
-                <span>貓咪</span>
-                <span>血量 : 9999</span>
-                <span>攻擊 : 9999</span>
-                <span>查詢次數 : 9999</span>
-                <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
-              </div>
-              <div class="LegendCard">
-                <img src="./css/footage/cat/u001-1.png">
-                <span>貓咪</span>
-                <span>血量 : 9999</span>
-                <span>攻擊 : 9999</span>
-                <span>查詢次數 : 9999</span>
-                <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
-              </div>
+            <div class="LegendCard">
+              <img src="./css/footage/cat/u001-1.png">
+              <span>貓咪</span>
+              <span>血量 : 9999</span>
+              <span>攻擊 : 9999</span>
+              <span>查詢次數 : 9999</span>
+              <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
             </div>
-            <div id="LegendRedirect" onclick="changeIframe('cat')">
-              前往貓咪資料庫 >
+            <div class="LegendCard">
+              <img src="./css/footage/cat/u001-1.png">
+              <span>貓咪</span>
+              <span>血量 : 9999</span>
+              <span>攻擊 : 9999</span>
+              <span>查詢次數 : 9999</span>
+              <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
+            </div>
+            <div class="LegendCard">
+              <img src="./css/footage/cat/u001-1.png">
+              <span>貓咪</span>
+              <span>血量 : 9999</span>
+              <span>攻擊 : 9999</span>
+              <span>查詢次數 : 9999</span>
+              <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
             </div>
           </div>
-          <div class="main">
-            <h2>關卡查詢排行榜</h2>
+            <div class="article">
+              在這裡你可以查詢到每隻貓咪的基本資料，如:血量、攻擊力甚至是相關的聯組，
+              你也可以對每隻貓咪評分或是留下使用感想，這些資訊對新手或是剛抽的這隻貓
+              的朋友會十分的有用~</br></br>
+              此外你可以用不同的篩選條件，像是:稀有度、特殊能力、對付敵人屬性甚至是數值化的
+              血量、生產金額等篩選出符合條件的貓咪，並將他們加入"貓咪購物車"，當開啟
+              <span onclick="changeIframe('compareCat')" style="color:#3795e8;font-weight:bold;cursor:pointer">
+                貓咪比較器
+              </span>
+              的時候，在購物車中的貓咪就會被列舉出各項數值比較表，讓你一眼就可以看出
+              每隻貓咪的優缺點。</br></br>
+              左側為貓咪查詢排行榜，點擊"more"來看看這些貓為甚麼大受好評吧!
+            </div>
+          </div>
+          <div id="LegendRedirect">
+            <span onclick="changeIframe('cat')">前往貓咪資料庫 ></span>
+          </div>
+        </div>
+        <div class="main">
+          <h2>關卡資料庫</h2>
+          <div>
+            <div class="article">
+              在這裡你可以查詢到各個關卡的資訊，像是:敵人出擊限制、我方出擊限制還有關卡獎勵
+              與個敵人的強化倍率、出現時間等有用資訊。在出現敵人的列表中，你可以點擊表格上方
+              的欄位，來依照出現時間或是強化倍率等排序敵人，也可以點擊敵人圖片來顯示該敵人的
+              基本資料，對於攻略關卡十分的有幫助。</br></br>
+              另外，資料庫還提供了可以用關卡名稱或是過關獎勵來篩選關卡，對於想要刷素材的朋友
+              也很方便，之後也預計加入讓大家撰寫攻略的功能，敬請期待。</br></br>
+              右側為上週關卡查詢排行榜，點擊"more"來看看大家都在刷什麼關卡吧!
+            </div>
             <div class="LegendCardholder">
-              <div class="LegendCard">
-                <div class="stageBG" bg=""></div>
-                <span>關卡名稱</span>
-                <span>消耗統帥力 : 0</span>
-                <span>查詢次數 : 9999</span>
-                <span >出現敵人一覽</span>
-                <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
-              </div>
-              <div class="LegendCard">
-                <div class="stageBG" bg=""></div>
-                <span>關卡名稱</span>
-                <span>消耗統帥力 : 0</span>
-                <span>查詢次數 : 9999</span>
-                <span >出現敵人一覽</span>
-                <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
-              </div>
-              <div class="LegendCard">
-                <div class="stageBG" bg=""></div>
-                <span>關卡名稱</span>
-                <span>消耗統帥力 : 0</span>
-                <span>查詢次數 : 9999</span>
-                <span >出現敵人一覽</span>
-                <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
-              </div>
+            <div class="LegendCard">
+              <div class="stageBG" bg=""></div>
+              <span>關卡名稱</span>
+              <span>消耗統帥力 : 0</span>
+              <span>查詢次數 : 9999</span>
+              <span >出現敵人一覽</span>
+              <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
             </div>
-            <div id="LegendRedirect" onclick="changeIframe('stage')">
-              前往關卡資料庫 >
+            <div class="LegendCard">
+              <div class="stageBG" bg=""></div>
+              <span>關卡名稱</span>
+              <span>消耗統帥力 : 0</span>
+              <span>查詢次數 : 9999</span>
+              <span >出現敵人一覽</span>
+              <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
+            </div>
+            <div class="LegendCard">
+              <div class="stageBG" bg=""></div>
+              <span>關卡名稱</span>
+              <span>消耗統帥力 : 0</span>
+              <span>查詢次數 : 9999</span>
+              <span >出現敵人一覽</span>
+              <span class="searchMore">more<i class="material-icons">&#xE315;</i></span>
             </div>
           </div>
-          <div class="main">
-            <h2>網站公告</h2>
-            <b style="color:rgb(235, 96, 68)">在iphone上的safari因為預設javascript是關閉的，要啟用後本站大部分的的內容才能顯示歐</b>
-            <br />
-            關於支持本網站，不管你有沒有點同意，都先感謝大家對本站的愛戴，
-            一些支持的問題在此統一回覆。</br>
-            <ul>
-              <li>
-                <b>
-                  我希望能夠支持大大，不過有個小疑問就是說，
-                  如果改天我希望關閉利用我電腦的CPU幫忙計算的話，
-                  要怎麼做呢?
-                </b></br>
-                我知道有時候用手機，或是電腦效能比較不好的時候，怕用過多的CPU會發燙，
-                所以在設定中最下方的開始支持按鈕是可以關閉、暫停的，但...要記得偶爾去把它
-                打開呦，感謝支持><
-              </li>
-              <li>
-                <b>
-                  打開支持後會不會讓電腦/手機變很燙，或是很容易壞啊?
-                </b></br>
-                基本上不會的，我有設定預留大概50%的時間讓CPU休息，所以比起玩遊戲，
-                消耗的效能更少，當然如果你的手機或電腦效能本來就不夠，或是在外面怕消耗
-                電力太快，都可以在設定中暫時關掉，但一樣要記得開回來啊XDD
-              </li>
-              <li>
-                <b>
-                  學校網路無法進入網站
-                </b></br>
-                雖然我在學校沒有發生類似狀況，不過我認為是他偵測到挖礦的腳本就直接擋掉了...
-                (儘管根本沒有啟動QQ)。我之後應該會把挖礦贊助改掉，因為問題真的很多TAT
-                加上名聲不好，而且完全不能賺錢wwww。可是現在只能麻煩大家在學校不要用了..專心上課X)
-
-              </li>
-            </ul>
           </div>
-          <div class="main">
-            <h2>其他網站連結</h2>
-            <table>
-              <th> <a target="_blank" href="https://battlecats-db.com/">超絕攻略網</a> </th>
-              <th>
-                <a target="_blank" href="https://forum.gamer.com.tw/A.php?bsn=23772">巴哈姆特貓戰版</a> </th> <th>
-                <a target="_blank" href="https://www.youtube.com/channel/UC6UBir4I6o_0dJQa8eoGoDQ">貓咪大戰爭中文版官方YouTube</a>
-              </th>
-              <th> <a target="_blank" href="https://www.facebook.com/NyankoTW/">貓咪大戰爭中文版官方FB</a> </th>
-            </table>
-            <h2>遊戲中網站連結</h2>
-            <table>
-              <tr>
-                <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/evolution/tw/index.html"> 貓薄荷介紹 </a> </th>
-                <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/combo/tw/index.html"> 聯組介紹 </a> </th>
-                <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/zukan/tw/index.html"> 貓咪圖鑑介紹 </a> </th>
-                <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/mission/tw/index.html"> 貓咪任務介紹 </a> </th>
-              </tr>
-            </table>
+          <div id="LegendRedirect">
+            <span onclick="changeIframe('stage')">前往關卡資料庫 ></span>
+          </div>
+        </div>
+        <div class="main">
+          <h2>最新消息</h2>
+          <div style="flex-direction:column;align-items:center">
+            選擇日期 : <select id="event_date"></select>
+            <iframe id="event_iframe"></iframe>
+            <div style="margin-top:20">
+              <a target="_blank" style="margin-right:20">在新分頁開啟</a>
+              <a onclick="reloadEventIframe()">重新整理</a>
+            </div>
+          </div>
+        </div>
+        <div class="main">
+          <h2>未來活動預測</h2>
+          <div style="align-items:center;flex-direction:row">
+            <span class="button"value='0'id="event_tw_but">台版情報</span>
+            <span class="button"value='0'id="event_jp_but">日版情報</span>
+            <span>
+              資料來源 :
+              <a id="event_source_tw" target="_blank">巴哈姆特_台版</a> ,
+              <a id="event_source_jp" target="_blank">巴哈姆特_日版</a>
+            </span>
+          </div>
+          <div class="eventTableHolder" style="flex-direction:column;align-items:baseline">
+            <table id="event_tw"></table>
+            <table id="event_jp"></table>
+          </div>
+          <span id="eventTableScroll_L"onclick="eventTableScroll('L')">
+            <i class="material-icons"style="font-size:75"> chevron_left </i>
+          </span>
+          <span id="eventTableScroll_R"onclick="eventTableScroll('R')">
+            <i class="material-icons"style="font-size:75"> chevron_right </i>
+          </span>
+        </div>
+        <div class="main">
+          <div>
+            <div style="flex:1">
+              <h2>其他網站連結</h2>
+              <table>
+                <tr>
+                  <th><a target="_blank" href="https://battlecats-db.com/">超絕攻略網</a> </th>
+                  <td>日文的攻略網，也是本網站目前主要的資料來源</td>
+                </tr>
+                <tr>
+                  <th><a target="_blank" href="https://forum.gamer.com.tw/A.php?bsn=23772">巴哈姆特貓戰版</a> </th>
+                  <td>中文的論壇，是本網站次要的資料來源</td>
+                </tr>
+                <tr>
+                  <th> <a target="_blank" href="https://www.youtube.com/channel/UC6UBir4I6o_0dJQa8eoGoDQ">貓咪大戰爭中文版官方YouTube</a> </th>
+                  <td>官方的Youtube頻道</td>
+                </tr>
+                <tr>
+                  <th> <a target="_blank" href="https://www.facebook.com/NyankoTW/">貓咪大戰爭中文版官方FB</a> </th>
+                  <td>官方的Facebook粉絲團</td>
+                </tr>
+                </table>
+            </div>
+            <div style="flex:1">
+              <h2>遊戲中網站連結</h2>
+              <table>
+                <tr>
+                  <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/evolution/tw/index.html"> 貓薄荷介紹 </a> </th>
+                  <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/combo/tw/index.html"> 聯組介紹 </a> </th>
+                  <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/zukan/tw/index.html"> 貓咪圖鑑介紹 </a> </th>
+                  <th> <a target="_blank" href="https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/mission/tw/index.html"> 貓咪任務介紹 </a> </th>
+                </tr>
+              </table>
+            </div>
+          </div>
+          </div>
+        <div class="main">
+          <h2>聯絡我們</h2>
+          <div style="justify-content:center">
+            <a class="contact_block"target="_blank"href="https://www.facebook.com/BattleCatStation/">
+              <img src='/css/footage/facebook.png'/>
+              <span>
+                <b>facebook粉絲專頁</b></br>
+                幫我們按個讚，隨時獲得最新的更新消息</br>
+                有問題的時候也可以私訊粉專，我們會以最快的速度幫你解決
+              </span>
+            </a>
+            <a class="contact_block"target="_blank"href="https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform">
+              <img src='/css/footage/googleSheet .png'/>
+              <span>
+                <b>意見表單</b></br>
+                如果有Bug或是希望我們改進、加強的功能</br>
+                抑或是有任何的建議與指教，歡迎填寫此google表單回報給我們知道
+              </span>
+            </a>
           </div>
         </div>
       </div>
@@ -263,10 +334,6 @@
       </div>
     </div>
 
-    <div id="onLineUser">
-      目前線上人數 : <span>0</span> 人
-    </div>
-
     <script src="https://authedmine.com/lib/authedmine.min.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
@@ -279,6 +346,7 @@
     <script src="./js/class.js"></script>
     <script src="./js/overall.js"></script>
     <script src="./js/index.js"></script>
+    <script src="./js/event.js"></script>
     <script src="./js/jquery.touchSwipe.min.js"></script>
     <script src="./js/jquery.easing.1.3.js"></script>
     <script src="/socket.io/socket.io.js"></script>

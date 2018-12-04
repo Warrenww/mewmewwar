@@ -38,7 +38,8 @@ exports.UpdateEvent = function (eventdata) {
           database.ref("/event_date/"+(y+AddZero(m)+AddZero(d))).set(cc);
           if(cc){
             for(let i in eventdata){
-              if(Number(i.substring(0,4))<y||Number(i.substring(4,6))<m) delete eventdata[i]
+              if(i == 'prediction' || i == 'prediction_jp') continue;
+              if(Number(i) < Number((y+AddZero(m)+AddZero(d)))-100) delete eventdata[i];
             }
             database.ref("/event_date").set(eventdata);
           }
@@ -107,7 +108,7 @@ function parsePrediction(obj,eventdate) {
       var gachaP = $("section").eq(0).find(".c-article__content"),
           eventP = $("section").eq(1).find(".c-article__content");
       var gachaObj = [],eventObj = [],dateRe = /[0-9]+\/[0-9]+\~[0-9]+\/[0-9]+/ ;
-      gachaP.children("div").each(function () {
+      gachaP.find("div").each(function () {
         let content = $(this).text();
         if(content&&content.length<30){
           let arr = content.split(' ');

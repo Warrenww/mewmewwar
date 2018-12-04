@@ -2,7 +2,7 @@ const image_url_cat =  "/css/footage/cat/u" ;
 const image_url_enemy =  "/css/footage/enemy/e" ;
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
-const VERSION = "10.28.6"
+const VERSION = "10.29.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -315,6 +315,9 @@ function parseRarity(s) {
     case 'SSR':
       s = '超激稀有'
       break;
+    case 'SSSR':
+      s = '傳說稀有'
+      break;
     default:
       s = s
   }
@@ -385,12 +388,6 @@ function filterSlider(target) {
     value:Number(value)?Number(value):JSON.parse(value),
     lv_bind:target.attr('lv-bind')=='true'
   }
-}
-function parseRarity(r) {
-  let arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'],
-      brr = ['B','EX','R','SR','SR_alt','SSR'];
-
-  return arr[brr.indexOf(r)]
 }
 function sum(list) {
   let sum = 0 ;

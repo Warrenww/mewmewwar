@@ -4,14 +4,14 @@ var weekArr=['Sun.','Mon.','Tue.','Wed','Thu.','Fri','Sat'];
 var site ;
 $(document).ready(function () {
   var show_jp_cat;
-  createCalendar();
-  auth.onAuthStateChanged(function(user) {
-    if (user)  socket.emit("user connect",{user:user,page:location.pathname});
-    else {
-      window.parent.location.assign("/");
-      console.log('did not sign in');
-    }
-  });
+  if(location.pathname == "/event") createCalendar();
+  // auth.onAuthStateChanged(function(user) {
+  //   if (user)  socket.emit("user connect",{user:user,page:location.pathname});
+  //   else {
+  //     window.parent.location.assign("/");
+  //     console.log('did not sign in');
+  //   }
+  // });
   socket.on("current_user_data",function (data) {
     show_jp_cat = data.setting.show_jp_cat;
     socket.emit('get event date');
@@ -19,20 +19,25 @@ $(document).ready(function () {
   });
   socket.on('true event date',function (data) {
     // console.log(data);
-    let now;
-    for(let i in data){
-      if (i == 'now'||i == 'prev'||i.indexOf('prediction')!=-1) continue
-      if(data[i]&&Number(i.substring(4,6))==new Date().getMonth()+1) {
-        $('#calendar').find("#"+Number(i.substring(6,8)))
+    if(location.pathname == "/event") {
+      var now;
+      for(let i in data){
+        if (i == 'now'||i == 'prev'||i.indexOf('prediction')!=-1) continue
+        if(data[i]&&Number(i.substring(4,6))==new Date().getMonth()+1) {
+          $('#calendar').find("#"+Number(i.substring(6,8)))
           .addClass('event')
-        now = i ;
+          now = i ;
+        }
       }
-    }
-    appendIframe(now);
-    var prediction = show_jp_cat?data.prediction_jp:data.prediction;
-    createPredictionQueue(prediction);
-    // console.log(src,now);
+      appendIframe(now);
+      var prediction = show_jp_cat?data.prediction_jp:data.prediction;
+      var tableContent = createPredictionQueue(prediction);
 
+      $("#prediction").append(tableContent);
+      $('.prediction_holder').find('a').attr('href',prediction.source);
+      $("#prediction").find("#"+new Date().getMonth()+1+AddZero(new Date().getDate())).addClass("today");
+      // console.log(src,now);
+    }
   });
 
   $('.calendar_holder,.prediction_holder').click(function () {
@@ -173,8 +178,7 @@ function createPredictionQueue(data) {
   }
   // console.log(start,end);
   // console.log(map);
-  $("#prediction").append(table_head);
-  $("#prediction").append(table_head_2);
+
   var table_body='';
   for(let i in map){
     let html = "<tr>",exist='';
@@ -190,9 +194,8 @@ function createPredictionQueue(data) {
     }
     table_body+=html;
   }
-  $("#prediction").append(table_body);
-  $('.prediction_holder').find('a').attr('href',data.source);
-  $("#prediction").find("#"+mm+AddZero(dd)).addClass("today");
+
+  return table_head + table_head_2 + table_body;
 }
 function todate(n) {
   a = n.toString();

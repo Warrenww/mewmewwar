@@ -78,8 +78,8 @@ exports.setHistory = function (uid,type,id){
     var user_history = UserData[uid].history[type],
         user_variable = UserData[uid].variable[type];
 
-    if(user_history == "" ) user_history = {};
-    if(user_variable == "" ) user_variable = {};
+    if(user_history == "" || !user_history ) user_history = {};
+    if(user_variable == "" || !user_variable ) user_variable = {};
     // Find same unit and clear it
     for(let i in user_history){
       if(user_history[i].id == id) delete user_history[i]

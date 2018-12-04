@@ -22,12 +22,16 @@ exports.parseRarity = function(r) {
     case "激レア狂乱":
       r = "SR_alt";
       break;
+    case "伝説レア":
+      r = "SSSR";
+      break;
     default:
       r = r
   }
   return r
 }
-exports.parseChar = function(c,obj) {
+exports.parseChar = function(c,obj,type) {
+  console.log(c.html());
   c = c.html().split("<font class=\"at1 hide")[0].split("<br>");
   for(let i in c){
     c[i] = $("<div/>").html(c[i]).text();
@@ -48,6 +52,14 @@ exports.parseChar = function(c,obj) {
           range:c[i].split("（")[1].split("）")[0].split("～")
         });
       }
+      else if(c[i].indexOf("バリア")!=-1){
+        let aa = c[i].split("（")[1].split('）')[0].split(",").join("");
+        obj.tag.push("護盾");
+        obj.char.push({
+          type:"護盾",
+          hard:Number(aa),
+        });
+      }
       else if(c[i].indexOf("使徒キラー")!=-1){
         obj.tag.push("使徒殺手");
         obj.char.push({
@@ -63,10 +75,14 @@ exports.parseChar = function(c,obj) {
           obj.char.push({type:"免疫"+parseAbility(aa[i])});
         }
       }
+      else if(c[i].indexOf("メタル")!=-1){
+        obj.tag.push("鋼鐵");
+        obj.char.push({type:"鋼鐵 (受到會心一擊以外傷害值為1)"});
+      }
       else if(c[i].indexOf("クリティカル")!=-1){
         let aa = c[i].split("％")[0];
         obj.tag.push("爆擊");
-        obj.tag.push("對鋼鐵");
+        if(type == 'cat') obj.tag.push("對鋼鐵");
         obj.char.push({
           type:"會心一擊",
           chance:aa
@@ -87,6 +103,33 @@ exports.parseChar = function(c,obj) {
           type:aa[0]+"段連續攻擊",
           arr:bb
         })
+      }
+      else if(c[i].indexOf("お城")!=-1){
+        obj.tag.push("攻城");
+        obj.char.push({
+          type:"對貓咪城傷害x4"
+        });
+      }
+      else if(c[i].indexOf("蘇生")!=-1){
+        let aa = c[i].split("％"),
+        times = c[i].split("（")[1].split("）")[0];
+        obj.tag.push("復活");
+        obj.char.push({
+          type:"重生",
+          hp:Number(aa[0].split("力")[1]),
+          delay:Number(c[i].split("F")[0].split("た")[1])/30,
+          times:times == '無制限'?'無限': Number(times.split("回")[0])
+        });
+      }
+      else if(c[i].indexOf("地中移動")!=-1){
+        let aa = c[i].split("％"),
+        times = c[i].split("（")[1].split("）")[0];
+        obj.tag.push("潛地");
+        obj.char.push({
+          type:"地中移動",
+          delay:Number(c[i].split("F")[0].split("と")[1])/30,
+          times:times == '無制限'?'無限': Number(times.split("回")[0])
+        });
       }
       else if(c[i].indexOf("波動打ち消し")!=-1){
         obj.tag.push("免疫波動");
@@ -122,6 +165,25 @@ exports.parseChar = function(c,obj) {
           type:"增攻",
           lower:low,
           percent:per
+        });
+      }
+      else if(c[i].indexOf("へワープさせる")!=-1){
+        let aa = c[i].split("％");
+        obj.tag.push("傳送");
+        obj.char.push({
+          type:"傳送",
+          chance:Number(aa[0]),
+          dist:Number(aa[1].split('後方')[0].split('で')[1]),
+          time:Number(aa[1].split('（')[1].split('F）')[0])
+        });
+      }
+      else if(c[i].indexOf("古代の呪い")!=-1){
+        let aa = c[i].split("％");
+        obj.tag.push("古代詛咒");
+        obj.char.push({
+          type:"特殊能力封印",
+          chance:/[0-9]+％/.exec(c[i])[0].split("％")[0],
+          time:/[0-9]+F/.exec(c[i])[0].split("F")[0]/30
         });
       }
       else if (c[i].indexOf("の確率で")!=-1) {
@@ -167,6 +229,9 @@ exports.parseChar = function(c,obj) {
     }
   }
 
+}
+exports.parseEnemy = function (s) {
+  return parseEnemy(s)
 }
 function parseAbility(s) {
   if(!s) return ""
@@ -278,11 +343,14 @@ exports.parseCondition = function(row_7,row_8,obj) {
     obj.condition = '-';
     return
   }
-  var condition ={};
+  var condition ={},c_text=[];
   c = c.split("<br>");
-  for(i in c){
-    c[i] = $("<div/>").html(c[i]);
-    s = c[i].text();
+  for(let i in c){
+    c[i] = $("<div>").html(c[i]);
+    c_text.push(c[i].text());
+  }
+  for(let i in c){
+    s = c_text[i];
     console.log(s);
     if(s.indexOf("マタタビ") != -1){
       let g = s.indexOf("緑"),p = s.indexOf("紫"),
@@ -293,11 +361,11 @@ exports.parseCondition = function(row_7,row_8,obj) {
       // console.log(g+","+p+","+r+","+b+","+y+","+ra+","+se);
       let arr = [r,b,p,g,y,ra,an],brr = ['綠色','紫色','紅色','藍色','黃色','彩虹','古代'];
       // console.log(arr);
-      for (let i in arr){
-        if(arr[i] != -1){
+      for (let j in arr){
+        if(arr[j] != -1){
           condition.fruit[i] = {
             seed:se == -1 ? false : (arr[i]>se ? true : false ),
-            number:Number(s.substring(arr[i]+1,arr[i]+2))
+            number:Number(s.substring(arr[j]+1,arr[j]+2))
           }
         }
       }

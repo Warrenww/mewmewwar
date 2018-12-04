@@ -5,7 +5,7 @@ $(document).ready(function () {
 
   socket.emit("Game Picture");
   socket.on("Game Picture",(data)=>{
-    // console.log(data);
+    console.log(data);
     for(let i in data){
       if(!data[i]){
         socket.emit("Game Picture");

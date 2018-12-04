@@ -57,13 +57,13 @@ exports.fetch = function (chapter,id,correction) {
   id = id.split("-");
   console.log(chapter,id);
   if(!chapter||!id) return;
-  getData(chapter,id[0],id[1]?id[1]:0,correction,id[1]?false:true);
+  getData(chapter,id[0],id[1]?id[1]:0,correction,id[1]?true:false);
 
 }
 var NumberOfLevel;
 function getData(chapter,i,j,correction=false,single=false) {
-  // console.log("https://battlecats-db.com/stage/s070"+"00-"+AddZero(j)+".html");
   var url = "https://battlecats-db.com/stage/s"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
+  console.log(url);
   request({
     url: url,
     method: "GET"
@@ -123,7 +123,7 @@ function getData(chapter,i,j,correction=false,single=false) {
       for(let k=0;k<tbody_2.length;k++){
         // console.log("enemy "+k);
         let ene = tbody_2.eq(k).children("td");
-        // console.log(ene.eq(1).text());s
+        // console.log(ene.eq(1).text());
         obj.enemy.push({
           Boss : ene.eq(0).text() == "BOSS" ? true : false,
           id : ene.eq(2).children("a").attr("href").split("/")[2].split(".html")[0],

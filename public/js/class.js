@@ -25,8 +25,8 @@ class Cat{
     this.statistic = obj.statistic;
   }
   get Rarity(){
-    var arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有'],
-        brr = ['B','EX','R','SR','SR_alt','SSR'];
+    var arr = ['基本','EX','稀有','激稀有','激稀有狂亂','超激稀有','傳說稀有'],
+        brr = ['B','EX','R','SR','SR_alt','SSR','SSSR'];
     return arr[brr.indexOf(this.rarity)]
   }
   get Aoe(){
@@ -176,7 +176,7 @@ class Enemy{
     return this.aoe?"範圍":"單體"
   }
   get imgURL(){
-    return "./css/footage/enemy/e"+this.id+".png"
+    return "./css/footage/enemy/e"+this.AddZero(this.id)+".png"
   }
   get serial(){
     for(let i in this.char){
@@ -237,5 +237,10 @@ class Enemy{
       }
     }
     return ""
+  }
+  AddZero(s) {
+    console.log(temp);
+    if(!temp) return s
+    else return temp>99?temp:(temp>9?'0'+temp:'00'+temp)
   }
 }
