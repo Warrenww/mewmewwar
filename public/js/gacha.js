@@ -52,7 +52,7 @@ $(document).ready(function () {
   socket.on("gacha result",function (data) {
     data = data.result;
     current_gacha_data = data;
-    $(".monitor").attr('id',data.id);
+    $(".monitor").attr({'id':data.id,'key':data.key});
   });
 
   $(document).on("click",".title",function () {
@@ -83,15 +83,15 @@ $(document).ready(function () {
 
   function gacha(n) {
     let data=[],
-        id = $(".monitor").attr('id'),
+        key = $(".monitor").attr('key'),
         c = [0.05,0.3];
 
-    if(!id){alert("尚未選擇轉蛋");showhideNav(null,0);return}
+    if(!key){alert("尚未選擇轉蛋");showhideNav(null,0);return}
     showhideNav(null,1);
-    if(id == 'R255' || id == 'R261') c = [0.09,0.39] ;
+    if(key == "special_cat" || key == "super_cat") c = [0.09,0.39] ;
     for(let i=0;i<n;i++){
       let result = Math.random();
-      if(result<c[0]||id=='R264') {data.push("ssr");ssr++;}
+      if(result<c[0]||key == "platinum") {data.push("ssr");ssr++;}
       else if(c[0]<result&&result<c[1]) {data.push("sr");sr++;}
       else if(c[1]<result) {data.push("r");r++;}
     }

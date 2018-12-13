@@ -31,7 +31,7 @@ exports.UpdateEvent = function (eventdata) {
       },function (e,r,b) {
         if(!e){
           $ = cheerio.load(b);
-          let body = $("body").html(),
+          var body = $("body").html(),
           cc = body.indexOf("<error>") == -1;
           console.log("event page load complete,update = ",cc);
           eventdata[(y+AddZero(m)+AddZero(d))] = cc;
@@ -40,12 +40,28 @@ exports.UpdateEvent = function (eventdata) {
             for(let i in eventdata){
               if(i == 'prediction' || i == 'prediction_jp') continue;
               if(Number(i) < Number((y+AddZero(m)+AddZero(d)))-100) delete eventdata[i];
+              eventdata.text_event = simplifyTextEvent(b);
             }
             database.ref("/event_date").set(eventdata);
           }
         } else {console.log(e);}
       });
-    } else console.log(y+AddZero(m)+AddZero(d),"exist");
+    } else {
+       console.log(y+AddZero(m)+AddZero(d),"exist");
+       var date;
+       for (let i in eventdata){
+         if(i == 'prediction' || i == 'prediction_jp') continue;
+         if(eventdata[i]) date = i;
+       }
+       request({
+         url: event_url+date+".html",
+         method: "GET"
+       },function (e,r,b) {
+         if(!e){
+           eventdata.text_event = simplifyTextEvent(b);
+         }
+       });
+     }
 
     //update prediction
     request({
@@ -84,6 +100,7 @@ exports.UpdateEvent = function (eventdata) {
           }
         }
       });
+
   });
 }
 
@@ -148,4 +165,21 @@ function parsePrediction(obj,eventdate) {
       gachaP:gachaObj
     });
   });
+}
+function simplifyTextEvent(b) {
+  $ = cheerio.load(b);
+  var html = $("body"),object=[];
+
+  html.children("article").each(function () {
+    var title = $(this).find("h2"),
+        block = $(this).find(".block").children("p");
+
+    if(title.length == 0) return;
+    if( title.text() == "活動日程"||
+        title.text() == "貓咪大戰爭 官方YouTube"||
+        title.text() == "貓咪大戰爭首款LINE貼圖上架！") return;
+    block.remove(".fs76");
+    object.push({title:title.text(),content:block.html()});
+  });
+  return object
 }

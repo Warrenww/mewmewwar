@@ -9,7 +9,7 @@
     </script>
     <meta charset='utf-8' />
     <title>貓咪大戰中文資料站</title>
-    <link rel="Shortcut Icon" type="image" href="./css/footage/logo.svg">
+    <link rel="Shortcut Icon" type="image" href="/css/footage/logo.svg">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -55,7 +55,7 @@
       <div class="settingBox">
         <i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>
         <div class="show_panel" style="display:flex;">
-          <span id="userPhoto" class=""></span>
+          <span id="userPhoto"></span>
           <span class="current_user_name"></span>
         </div>
         <div class="nav_panel">
@@ -64,11 +64,11 @@
         </div>
       </div>
       <div class="mobile">
-        <i class="material-icons" id="m_nav_menu" active='0'>menu</i>
+        <i class="material-icons" id="m_nav_menu" onclick="showhideNav()" active='0'>menu</i>
       </div>
     </nav>
 
-    <div id="m_nav_panel_BG"></div>
+    <div id="m_nav_panel_BG"onclick="showhideNav()"></div>
     <div class="m_nav_panel">
       <div class="m_navLinkBox">
         <span class="show_panel" value='0'>資料庫</span>
@@ -92,14 +92,13 @@
           <a  id="game">釣魚小遊戲</a>
         </div>
         <a  id="calendar">活動日程</a>
-        <!-- <a  id="event">最新消息</a> -->
       </div>
       <div class="m_settingBox">
         <a class="current_user_name"></a>
         <div style="display:flex;justify-content:center">
           <i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>
           <a id="setting"><i class="material-icons">settings</i></a>
-          <div id='service'></div>
+          <a id="history"><i class="material-icons">history</i></a>
         </div>
       </div>
     </div>
@@ -110,6 +109,11 @@
           <div id="onLineUser">
             <div>
               目前線上人數 : <span>0</span> 人
+            </div>
+          </div>
+          <div id="Version_display">
+            <div>
+              目前版本 : <span>0.0.0</span>
             </div>
           </div>
           <div id="expandContent">
@@ -125,7 +129,7 @@
             </span>
           </div>
         </div>
-        <div class="main">
+        <div id='2'class="main">
           <h2>貓咪資料庫</h2>
           <div>
             <div class="LegendCardholder">
@@ -172,7 +176,7 @@
             <span onclick="changeIframe('cat')">前往貓咪資料庫 ></span>
           </div>
         </div>
-        <div class="main">
+        <div id='3'class="main">
           <h2>關卡資料庫</h2>
           <div>
             <div class="article">
@@ -215,10 +219,10 @@
             <span onclick="changeIframe('stage')">前往關卡資料庫 ></span>
           </div>
         </div>
-        <div class="main">
+        <div id='4'class="main">
           <h2>最新消息</h2>
           <div style="flex-direction:column;align-items:center">
-            選擇日期 : <select id="event_date"></select>
+            選擇日期 : <select id="event_date" style="color:black"></select>
             <iframe id="event_iframe"></iframe>
             <div style="margin-top:20">
               <a target="_blank" style="margin-right:20">在新分頁開啟</a>
@@ -226,7 +230,7 @@
             </div>
           </div>
         </div>
-        <div class="main">
+        <div id='5'class="main">
           <h2>未來活動預測</h2>
           <div style="align-items:center;flex-direction:row">
             <span class="button"value='0'id="event_tw_but">台版情報</span>
@@ -248,7 +252,7 @@
             <i class="material-icons"style="font-size:75"> chevron_right </i>
           </span>
         </div>
-        <div class="main">
+        <div id='6'class="main">
           <div>
             <div style="flex:1">
               <h2>其他網站連結</h2>

@@ -177,17 +177,21 @@ $(document).ready(function () {
     }
 
     // Update Event
-    $("#event_tw,#event_jp").empty();
+    $("#event_tw,#event_jp").empty(); // Initial area
+     // Append prediction queue
     $("#event_tw").append(createPredictionQueue(data.event.prediction));
     $("#event_jp").append(createPredictionQueue(data.event.prediction_jp));
+    // calculate table width
     $("#event_tw").css('width',function(){ return Number($(this).find("th").length)/2*60 + 100 });
     $("#event_jp").css('width',function(){ return Number($(this).find("th").length)/2*60 + 100 });
+    // Append source URL
     $("#event_source_tw").attr('href',data.event.prediction.source);
     $("#event_source_jp").attr('href',data.event.prediction_jp.source);
+    // Find most recent new event day
     var flag = false,str="",last;
     $("#event_date").empty();
     for(let i in data.event){
-      if(i.indexOf('prediction')!=-1) continue ;
+      if(i.indexOf('prediction')!=-1||i=="text_event") continue ;
       if(data.event[i]){
         if(str != ""){
           str += strTodate(Number(i)-1)+"</option>";
@@ -199,20 +203,35 @@ $(document).ready(function () {
         last = i ;
       }
     }
-    $("#event_date").prepend(str+"</option>");
-    $('#event_date').val(last);
+    $("#event_date").prepend(str+"</option>"); // Add date option to selector
+    $('#event_date').val(last); // choose most recent date
     function strTodate(s) {
       s = s.toString();
       return [s.substring(0,4),s.substring(4,6),s.substring(6,8)].join("/")
     }
-    $("#event_iframe").attr("src",eventURL+last+'.html')
-        .next().children().eq(0).attr("href",eventURL+last+'.html');
+    // if device is running ios OS replace iframe with text div
+    if(is_ios){
+      var alt_text="";
+      for(i in data.event.text_event){
+        alt_text += "<h3>"+data.event.text_event[i].title+"</h3><div>"+data.event.text_event[i].content+"</div>"
+      }
+      $("<div id='alt_text'>"+alt_text+"</div>").insertAfter("#event_iframe");
+      $("#event_iframe").prev().prop("disabled",'disabled');
+      $("#event_iframe").next().next().children().eq(0).attr("href",last);
+      $("#event_iframe").remove();
+    }
+    // update new event iframe
+    updateNewEventIframe(last);
     $("#event_date").on("change",function () {
       var date = $("#event_date").val();
-      $("#event_iframe").attr("src",eventURL+date+'.html')
-          .next().children().eq(0).attr("href",eventURL+date+'.html');
+      updateNewEventIframe(date)
     });
   });
+  function updateNewEventIframe(date) {
+    var url = eventURL+date+'.html';
+    $("#event_iframe").attr("src",url)
+        .next().children().eq(0).attr("href",url);
+  }
   $("#expandContent").click(function () {
     $('#bulletin').animate(
       {scrollTop: $(".main").eq(2).offset().top},
@@ -226,26 +245,17 @@ $(document).ready(function () {
     for(let i in arr) $("#enemyBoard div").append("<img src='"+image_url_enemy+arr[i]+".png'/>");
   });
   $(document).on('click',"#enemyBoard",function () { $(this).remove() });
-  //mobile navigation reaction
-  $('#m_nav_menu,#m_nav_panel_BG').click(showhideNav);
-  function showhideNav() {
-    var active = Number($('#m_nav_menu').attr("active"))%2;
-    $("#m_nav_menu,#m_nav_panel_BG,.m_nav_panel").attr("active",active+1);
-  }
 
-  //index page get year
-  var today = new Date();
   $("nav a,.m_nav_panel a").click(function () {
     if(!openInNew&&!is_ios)  $('#iframe_holder').attr("active",true);
     let target = $(this).attr("id");
     if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target,false);
     changeIframe(target);
 
-    $(".m_nav_panel").css('right',-180);
-    $("#m_nav_panel_BG").fadeOut();
+    $(".m_nav_panel,#m_nav_panel_BG").attr("active",function () {
+      return (Number($(this).attr("active"))+1)%2
+    });
     iframeNormalize();
-    showMobilePanel = 1 ;
-    explor_index = 0;
   });
   $("nav img").click(function () { $("#iframe_holder").attr("active",false); });
 
@@ -275,8 +285,7 @@ $(document).ready(function () {
 
   $(".nav_panel").hover(function () {
     clearTimeout(close_nav_panel);
-  },
-  function () {
+  },function () {
     var target = $(this);
     close_nav_panel = setTimeout(function () {
       target.animate({"height":0},400);
@@ -296,24 +305,26 @@ $(document).ready(function () {
       // if alt-tab state is true restore normal view
       if($(this).attr("active") == 'true'){
         $("#iframe_holder").attr("active",true);
-        $("#iframe_holder iframe").css("top",0);
+        $("#iframe_holder iframe").attr("style","");
         $("#iframe_holder").unbind("mousewheel",scrollHolder);
         $(this).attr("active",false);
       } else {  // Turn into carousel view
         var _index = 0, // indexing iframe
             doc_h = $(document).height(), // Get the height of document
             active_index; // Store the index of active iframe
+            console.log(doc_h);
         $("#iframe_holder").attr("active","alt-tab"); // Turn into carousel view
         // loop through iframe and set its position
         $("#iframe_holder iframe").each(function () {
           if($(this).attr('active') == 'true') active_index = _index;
+          console.log(_index,-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
           $(this).css("top",-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
           _index += 1;
         });
         // Scroll iframe to active iframe
         setTimeout(function () {
           $("#iframe_holder iframe").css("top","-="+active_index*doc_h/2+"px");
-        },_index*150);
+        },_index*200);
         // Bind it to scrollHolder function
         $("#iframe_holder").bind("mousewheel",scrollHolder);
         $(this).attr("active",true);
@@ -372,7 +383,7 @@ $(document).ready(function () {
   function iframeNormalize () {
     if(openInNew||is_ios) return
     $("#iframe_holder").attr("active",true); // Turn iframe to normal view
-    $("#iframe_holder").children().css('top',0); // Restore all iframes' top
+    $("#iframe_holder").children().attr('style',""); // Restore all iframes' top
     $("#iframe_holder").unbind("mousewheel",scrollHolder); // Unbind event
     $("#carousel").attr("active",false); // Reset alt-tab trigger state
     $("#iframe_holder .nameHolder").remove(); // remove iframe name holder
@@ -411,6 +422,7 @@ $(document).ready(function () {
     if(Storage) localStorage.event = target;
     $("#"+target).show().siblings("table").hide();
   });
+
   var xmlhttp = new XMLHttpRequest() ;
   var url = "./data/update_dialog.html";
   var update_dialog ;
@@ -446,7 +458,6 @@ function changeIframe(target,record = true) {
   } else
   $("#iframe_holder").find("#"+target).attr("active",true)
   .siblings().attr("active",false);
-  current_page = target;
 }
 function reloadIframe(target,record = true) {
   if(!$("#iframe_holder").find("#"+target)[0]) {
@@ -469,4 +480,8 @@ function eventTableScroll(direction) {
   $(".eventTableHolder").animate({
     scrollLeft: $(".eventTableHolder").scrollLeft() + 480*direction
   },400)
+}
+function showhideNav() {
+  var active = Number($('#m_nav_menu').attr("active"));
+  $("#m_nav_menu,#m_nav_panel_BG,.m_nav_panel").attr("active",(active+1)%2);
 }

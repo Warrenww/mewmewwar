@@ -48,8 +48,8 @@ html,body{overflow: hidden;}
   width: 100%;
   height: 100%;
   overflow: hidden;
-  right: -100%;
-  top: 0;
+  left: 0;
+  top: 100%;
   position: absolute;
   transition: .3s ease-in-out;
   z-index: 10;
@@ -57,21 +57,21 @@ html,body{overflow: hidden;}
 iframe{
   transition: .4s ease-in-out;
   position: absolute;
-  top: 0;
-  right: -100%;
+  top: 100%;
+  left: 0;
 }
-iframe[active='true']{ right:0%; }
-#iframe_holder[active='true']{ right:0%; }
+iframe[active='true']{ top:0; }
+#iframe_holder[active='true']{ top:0; }
 #iframe_holder[active='alt-tab']{
   background: rgba(0,0,0,.5);
   display: flex;
   flex-wrap: wrap;
-  right: 0;
+  top: 0;
 }
 #iframe_holder[active='alt-tab'] iframe{
   transform: scale(.5);
   position: relative;
-  right: 0;
+  top: 0;
   pointer-events: none;
 }
 #iframe_holder[active='alt-tab'] iframe[active='true']{
@@ -135,13 +135,27 @@ nav a{cursor: pointer;}
 }
 #bulletin .main .eventTableHolder table{width: auto;display: none;}
 #bulletin .main .eventTableHolder::-webkit-scrollbar {width: 0}
-#event_iframe{
+#event_iframe,#alt_text{
   position: relative;
   right: 0;
   height: 60%;
   border: 5px solid white;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 0px grey;
+}
+#alt_text{
+  overflow-y: scroll;
+  padding:0 20;
+  background-color:white;
+  color:black;
+}
+#bulletin .main:nth-child(2n+1) #alt_text{
+  background-color: black;
+  color: white;
+}
+#alt_text h3{
+  background-color: gray;
+  padding: 5;
 }
 #eventTableScroll_L,#eventTableScroll_R{
   position: absolute;
@@ -166,6 +180,8 @@ nav a{cursor: pointer;}
   color:white;
   border: 1px dashed;
 }
+#bulletin .main:nth-child(2n+1) .contact_block{color: black}
+#bulletin .main:nth-child(2n+1) .contact_block:hover{color: black}
 .contact_block img{
   width: 100;
   height: 100
@@ -176,7 +192,7 @@ nav a{cursor: pointer;}
   position: absolute;
   bottom: 20px;
   color: white;
-  left: 50%;
+  left: calc(50% - 50px);
   opacity: 0.5;
   cursor: pointer;
   transform:translateY(40px);
@@ -268,7 +284,7 @@ nav a{cursor: pointer;}
   font-size: 20
 }
 #LegendRedirect span:hover{color: #642c88}
-#onLineUser{
+#onLineUser,#Version_display{
   position: absolute;
   bottom: 0;
   right: 0;
@@ -278,6 +294,7 @@ nav a{cursor: pointer;}
   font-size: 20px;
   z-index: 0;
 }
+#Version_display{left:0}
 #enemyBoard{
   position: fixed;
   top: 0;

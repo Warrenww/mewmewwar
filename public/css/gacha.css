@@ -148,7 +148,7 @@
   bottom: -5px;
   left: 0;
 }
-.monitor .content img{ min-width: 75%;cursor: pointer;}
+.monitor .content img{ min-width: 50%;max-width: 75%;cursor: pointer;}
 @media screen and (max-width: 1024px){
   .button_holder{height: 120px;}
 }
@@ -165,5 +165,5 @@
   .button_holder{height: 100px;right: 30px;}
   #toggleScore{bottom: 3px;left:30%}
   #foot{left:0}
-  .monitor .content img{ min-width: 90% }
+  .monitor .content img{ margin-top: 5%}
 }

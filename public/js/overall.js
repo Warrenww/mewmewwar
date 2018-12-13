@@ -2,7 +2,7 @@ const image_url_cat =  "/css/footage/cat/u" ;
 const image_url_enemy =  "/css/footage/enemy/e" ;
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
-const VERSION = "10.29.1"
+const VERSION = "10.29.2"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -167,6 +167,7 @@ $(document).ready(function () {
   var countDown = 5;
   socket.on("check version",(version)=>{
     console.log(version,VERSION);
+    $("#Version_display span").text(version);
     if(invalidVersion(version)) {
       $("body").append(
       '<div id="version_alert">'+
