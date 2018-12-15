@@ -130,7 +130,7 @@ function createPredictionQueue(data) {
   var table_head='<tr>',
       table_head_2='<tr>';
   start = Number(start);end = Number(end)
-  // console.log(start,end,maxDay,month);
+  console.log(start,end,maxDay,month);
 
   // console.log(emptyObj);
   var map = [];
@@ -142,6 +142,8 @@ function createPredictionQueue(data) {
       d[j][0] = AddZero(d[j][0]);
       d[j][1] = AddZero(d[j][1]);
       d[j] = Number(d[j].join(""));
+      // console.log(start,end,d[j]);
+      if(start > 1200 && d[j]<200) d[j] += 1200;
       if(d[j]>end) end = d[j];
       if(d[j]<start) start = d[j];
     }
@@ -158,6 +160,8 @@ function createPredictionQueue(data) {
       d[j][0] = AddZero(d[j][0]);
       d[j][1] = AddZero(d[j][1]);
       d[j] = Number(d[j].join(""));
+      // console.log(start,end,d[j]);
+      if(start > 1200 && d[j]<200) d[j] += 1200;
       if(d[j]>end) end = d[j];
       if(d[j]<start) start = d[j];
     }
@@ -165,13 +169,13 @@ function createPredictionQueue(data) {
     if(day>30) day = d[1]-(Number(month)+1)*100+Number(month+maxDay)-d[0]+1;
     updateMap(map,0,d[0],day,n,maxDay,month);
   }
-  console.log(start,end);
+  // console.log(start,end);
   month = AddZero(start,3).substring(0,2);
   maxDay = TotalDay(Number(month),data.start.substring(0,4));
-  for(i=start;i<=end;i++) {
+  for(let i=start;i<=end;i++) {
     if(i>Number(month+maxDay)&&i<(Number(month)+1)*100+1) continue
-    table_head+="<th id='"+i+"'>"+todate(i)+"</th>";
-    table_head_2+="<th>"+toweek(i,yy)+"</th>";
+    table_head+="<th id='"+i+"'>"+todate(i>1300?i-1200:i)+"</th>";
+    table_head_2+="<th>"+toweek(i>1300?i-1200:i,i>1300?yy+1:yy)+"</th>";
     for(let j in map){
       if(!map[j][i]) map[j][i] = null;
     }
@@ -202,6 +206,7 @@ function todate(n) {
   return n<1000?(a[0]+"/"+a[1]+a[2]):(a[0]+a[1]+"/"+a[2]+a[3])
 }
 function toweek(n,y) {
+  // console.log(n,y);
   n = n>1000?n.toString():"0"+n.toString();
   var w = new Date(Date.parse([n.substring(0,2),n.substring(2,4),y])).getDay();
   return weekArr[w]

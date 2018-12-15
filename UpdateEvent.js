@@ -81,8 +81,12 @@ exports.UpdateEvent = function (eventdata) {
             for(let i in b){
               b[i] = b[i].split("/");
               for(let j in b[i]) b[i][j] = AddZero(b[i][j]);
-              b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
+              if(Number(b[i][0])>Number(m)+1) b[i] = (y-1)+b[i].join("");
+              else if(Number(b[i][0])<Number(m)-10) b[i] = (y+1)+b[i].join("");
+              else b[i] = (y)+b[i].join("");
+              // b[i] = ((Number(b[i][0])>Number(m)+1?y-1:y)+b[i].join(""));
             }
+            // console.log(b);
             if(b[1]>today){
               // console.log(a.text());
               start = b[0];end=b[1];
