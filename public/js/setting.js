@@ -129,7 +129,7 @@ $(document).ready(function () {
         "background-image":'url("'+user_photo_url+'")',
         "background-position":'0'
       });
-      window.parent.changePhoto(user_photo_url);
+      if(window.parent.changePhoto) window.parent.changePhoto(user_photo_url);
     }
     socket.emit("user photo",{
       uid:current_user_data.uid,

@@ -17,7 +17,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     CurrentUserID = data.uid ;
-    if(data.last_enemy && location.pathname.indexOf("once") == -1)
+    if(data.last_enemy)
       socket.emit("required data",{
         type:'enemy',
         target:data.last_enemy,
@@ -116,6 +116,9 @@ $(document).ready(function () {
         break;
       case '重生':
         c = '不死剋星'
+        break;
+      case '特殊能力封印':
+        c = '免疫古代詛咒'
         break;
       default:
         c = '免疫'+c

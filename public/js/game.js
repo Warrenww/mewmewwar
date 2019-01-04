@@ -5,12 +5,13 @@ $(document).ready(function () {
 
   socket.emit("Game Picture");
   socket.on("Game Picture",(data)=>{
-    console.log(data);
+    // console.log(data);
     for(let i in data){
       if(!data[i]){
         socket.emit("Game Picture");
         return
       }
+      data[i].stage = data[i].data.length - 1;
     }
     catArr = data;
     initialGame(size);
@@ -25,15 +26,17 @@ $(document).ready(function () {
     if(pos == pos_open_now) return
     else pos_open_now = pos;
     if(clear.indexOf(coord)!=-1) {
-      let data = new Cat(catArr[Decode(ans)]);
+      var index = Decode(ans),
+          element = catArr[index],
+          data = new Cat(element.data[element.stage]);
       displayCatData(data);
-      scroll_to_class('display',0)
+      scroll_to_class('display',0);
       return
     }
     if(!start) startTime = new Date().getTime();
     start = true;
     $(this).css({
-      "background-image":"url(./css/footage/cat/u"+catArr[Decode(ans)].id+".png)",
+      "background-image":"url(./css/footage/cat/u"+AddZero(catArr[Decode(ans)].id,2)+"-"+catArr[Decode(ans)].stage+".png)",
       "background-blend-mode":"normal"
     });
     open.push({coord,ans});
@@ -54,9 +57,11 @@ $(document).ready(function () {
         },1000);
       else{
         $(".game_table td").unbind('click',noclick);
-        clear.push(open[0].coord)
-        clear.push(open[1].coord)
-        let data = new Cat(catArr[Decode(open[0].ans)]);
+        clear.push(open[0].coord);
+        clear.push(open[1].coord);
+        var index = Decode(open[0].ans),
+            element = catArr[index],
+            data = new Cat(element.data[element.stage]);
         displayCatData(data);
       }
       open = [];
@@ -159,9 +164,6 @@ function checkEndState(clear) {
       return size==4?"-200px":"-300px"
     }).children().eq(1).show();
   }
-}
-function AddZero(n) {
-  return n>9?n:"0"+n
 }
 function Decode(s) {
   s = s.charCodeAt(0);

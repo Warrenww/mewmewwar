@@ -47,13 +47,13 @@ if(page == 'cat'){
 // Text Search
 $('#searchBut').click(function () {
   let keyword = $(this).siblings().val();
-  socket.emit("text search",{key:keyword,type:page});
+  socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page});
 });
 $(document).on('keypress','#searchBox',function (e) {
   let code = (e.keyCode ? e.keyCode : e.which);
   if (code == 13) {
     let keyword = $(this).val();
-    socket.emit("text search",{key:keyword,type:page});
+    socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page});
   }
 });
 //table th reaction
@@ -74,7 +74,6 @@ function search() {
       type = $("#search_ability").attr("value"),
       value_search = Number($("#value_search").attr("value"));
   var rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
-
   for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
   for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
   for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
@@ -86,7 +85,7 @@ function search() {
     query_type:type,
     colorAnd:$(".select_color").prev().attr("andCase"),
     abilityAnd:$(".select_ability").prev().attr("andCase"),
-    filterObj,
+    filterObj:value_search?filterObj:{},
     type:page
   });
   scroll_to_div('selected');
@@ -94,8 +93,9 @@ function search() {
 $(document).ready(function () {
   // Recive query response
   socket.on("search result",function (data) {
+    if(data.type != page) return;
     console.log("recive search result");
-    console.log(data);
+    // console.log(data);
     current_search = [];
     number_page = 0 ; // # of page of search result
     page_factor = 1 ; // 1 dot represent how many pages
@@ -115,12 +115,13 @@ $(document).ready(function () {
     for (let i = 0;i<Math.ceil(number_page)/page_factor;i++) // Display page dot
       $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
     $("#page_dot span").eq(0).css("background-color",'#fea84a'); // Active 1st page dot
-    if (data.type == "gacha"&&data.query.length == 1)
+    if (data.query_type == "gacha" && data.query.length == 1)
       $(".compareSorce .title #option #Gogacha").attr('value',data.query[0]).show();
     else $(".compareSorce .title #option #Gogacha").hide();
     // Show the query as text
     var query = '';
-    if(data.type == 'gacha') for(let i in data.query) query += "<span>"+parseGachaName(data.query[i])+"</span>";
+    if(data.query_type == 'gacha') for(let i in data.query) query += "<span>"+parseGachaName(data.query[i])+"</span>";
+    else if(data.query_type == 'text') {}
     else {
       for(let j in data.query.rFilter)
         query +=  "<span>"+(parseRarity(data.query.rFilter[j])?parseRarity(data.query.rFilter[j]):data.query.rFilter[j])+"</span>";
@@ -143,30 +144,27 @@ function parseGachaName(name) {
   return name
 }
 function condenseCatName(data) {
-  let now = '000' ;
-  let html = '<span class="card-group" hidden>' ;
+  var html = '' ;
   for(let i in data){
     if(!data[i].id) continue
-    let name = data[i].name?data[i].name:data[i].jp_name,
-    id = data[i].id,current = id.substring(0,3) ;
-    if(current == now){
-      html += '<span class="card" value="'+id+'" '+
-      'style="background-image:url('+
-      image_url_cat+id+'.png);display:none" name="'+
-      name+'"></span>' ;
+    var nameArr = data[i].name, id = data[i].id, stage = data[i].stage?data[i].stage-1:0;
+
+    html += '<span class="card-group" value="'+id+'">'+
+            '<span class="glyphicon glyphicon-refresh"></span>'+
+            '<span class="glyphicon glyphicon-shopping-cart"></span>';
+    for(let j in nameArr){
+      html +=
+      '<span class="card" value="'+id+"-"+(Number(j)+1)+
+      '"style="background-image:url('+
+      image_url_cat+id+"-"+(Number(j)+1)+'.png);'+
+      (j == stage?"":"display:none")+
+      '"name="'+nameArr[j]+'"></span>';
     }
-    else{
-      html += '</span>' ;
-      html += '<span class="card-group" value="'+current+'">'+
-      '<span class="glyphicon glyphicon-refresh"></span>'+
-      '<span class="glyphicon glyphicon-shopping-cart"></span>'+
-      '<span class="card" value="'+id+'" '+
-      'style="background-image:url('+
-      image_url_cat+id+'.png)" name="'+name+'"></span>';
-      now = current ;
-      number_page ++ ;
-      current_search.push(current);
-    }
+    html += "</span>"
+
+    number_page ++ ;
+    current_search.push(id);
+
   }
   $(".compareSorce #result_count").find("span").text(number_page);
   return html ;
@@ -237,8 +235,9 @@ $(document).on('click','.compareSorce .title #option i',function () {
             name = visible.text();
         // console.log(id,name);
         if(id) {
-          compareTargetAddCard(id,name);
-          target.push(id);
+          id = id.split("-");
+          compareTargetAddCard(id[0],name,id[1]);
+          target.push(id[0]);
         }
       });
       // console.log(target);

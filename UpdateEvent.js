@@ -40,29 +40,15 @@ exports.UpdateEvent = function (eventdata) {
             for(let i in eventdata){
               if(i == 'prediction' || i == 'prediction_jp') continue;
               if(Number(i) < Number((y+AddZero(m)+AddZero(d)))-100) delete eventdata[i];
-              eventdata.text_event = simplifyTextEvent(b);
             }
+            eventdata.text_event = simplifyTextEvent(b);
             database.ref("/event_date").set(eventdata);
           }
         } else {console.log(e);}
       });
     } else {
        console.log(y+AddZero(m)+AddZero(d),"exist");
-       var date;
-       for (let i in eventdata){
-         if(i == 'prediction' || i == 'prediction_jp') continue;
-         if(eventdata[i]) date = i;
-       }
-       request({
-         url: event_url+date+".html",
-         method: "GET"
-       },function (e,r,b) {
-         if(!e){
-           eventdata.text_event = simplifyTextEvent(b);
-         }
-       });
      }
-
     //update prediction
     request({
       url: predic_url,

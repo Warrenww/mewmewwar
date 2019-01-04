@@ -10,7 +10,7 @@ if(Storage){
 }
 $(document).ready(function () {
   var gacha_url = 'https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/'
-  var r = sr = ssr = 0 ;
+  var r = sr = ssr = sssr = 0 ;
   var current_gacha_data;
 
 
@@ -43,13 +43,14 @@ $(document).ready(function () {
     $("#result").empty();
     $("#scoreboard").children("h2").text($(this).text())
       .parent().find("td").empty();
-    ssr = sr = r = 0 ;
+    sssr = ssr = sr = r = 0 ;
     socket.emit("record gacha",{
       uid:CurrentUserID,
       gacha:name
     });
   });
   socket.on("gacha result",function (data) {
+    console.log(data);
     data = data.result;
     current_gacha_data = data;
     $(".monitor").attr({'id':data.id,'key':data.key});
@@ -85,6 +86,7 @@ $(document).ready(function () {
     let data=[],
         key = $(".monitor").attr('key'),
         c = [0.05,0.3];
+        if(current_gacha_data.sssr) c.push(0.997);
 
     if(!key){alert("尚未選擇轉蛋");showhideNav(null,0);return}
     showhideNav(null,1);
@@ -93,9 +95,9 @@ $(document).ready(function () {
       let result = Math.random();
       if(result<c[0]||key == "platinum") {data.push("ssr");ssr++;}
       else if(c[0]<result&&result<c[1]) {data.push("sr");sr++;}
+      else if(c[2]&&result>c[2]){data.push("sssr");sssr++;}
       else if(c[1]<result) {data.push("r");r++;}
     }
-    var color = { "ssr":"#f14747", "sr":"#e7b83f", "r":"#8bd61f" }
     for(let i in data){
       let rarity = data[i],
           buffer = current_gacha_data[rarity],
@@ -105,8 +107,7 @@ $(document).ready(function () {
        'style="background-image:url('+
        image_url_cat+choose.id+'.png);'+
        "margin:5px;transform:scale(0);"+
-       "border-color:"+color[rarity]+
-       '" name="'+choose.name+'"></span>');
+       '"name="'+choose.name+'"></span>');
     }
     setTimeout(function () {
       $("#result").find("span").css("transform","scale(1)").fadeIn();
@@ -124,16 +125,16 @@ $(document).ready(function () {
       .text(ssr).next().text((ssr/total*100).toFixed(0)+"%");
     $("#scoreboard").find("#total").text(total).next().text("100%");
 
-    if(africa <= 0.01) $("#www").text("非洲大酋長");
-    else if(africa<0.04) $("#www").text("非洲土著");
-    else if(africa>0.09) $("#www").text("歐皇");
-    else if(africa>0.06) $("#www").text("歐洲人");
+    if(africa <= 0.01 && sssr == 0) $("#www").text("非洲大酋長");
+    else if(africa<0.04 && sssr == 0) $("#www").text("非洲土著");
+    else if(africa>0.09 || sssr != 0) $("#www").text("歐皇");
+    else if(africa>0.06 && sssr == 0) $("#www").text("歐洲人");
     else $("#www").text("普通人");
 
     socket.emit("gacha history",{
       uid:CurrentUserID,
       gacha:current_gacha_data.key,
-      ssr,sr,r
+      sssr,ssr,sr,r
     });
   }
   function showhideNav(e,n) {

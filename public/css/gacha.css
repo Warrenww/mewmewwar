@@ -149,6 +149,19 @@
   left: 0;
 }
 .monitor .content img{ min-width: 50%;max-width: 75%;cursor: pointer;}
+#result .card[rarity='ssr']{border-color: #f14747}
+#result .card[rarity='sr']{border-color: #e7b83f}
+#result .card[rarity='r']{border-color: #8bd61f}
+#result .card[rarity='sssr']{
+  animation-name:border-blink;
+  animation-duration: .5s;
+  animation-iteration-count: infinite;
+}
+@keyframes border-blink {
+  0%{border-color: rgb(255, 93, 46)}
+  50%{border-color: yellow}
+  100%{border-color: orange}
+}
 @media screen and (max-width: 1024px){
   .button_holder{height: 120px;}
 }

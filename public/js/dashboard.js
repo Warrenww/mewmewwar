@@ -76,28 +76,30 @@ $(document).ready(function () {
     return
   });
   var catName;
-  socket.on("loadCat",(data)=>{ catName = data;$(".signal").attr("ok",'ok'); });
+  socket.on("loadCat",(data)=>{ catName = data;$(".signal").attr("ok",'ok');});
   $("#renameCatSelec").on("change",()=>{
     var range = Number($("#renameCatSelec :selected").val().split("~")[0]);
     $(".renameCattable").empty();
     var html = "";
     for(let i = range;i<range+50;i++){
-      var grossID = AddZero(i,2);
-      if(!catName[grossID+"-1"]) continue;
+      var id = AddZero(i,2);
+      if(!catName[id]) continue;
       html += "<tr>";
+      html += "<td id='"+id+"' class='rarity'>"+catName[id][1].rarity+"</td>";
       for(let j=1;j<4;j++){
-        var id = grossID+"-"+j;
-        if(catName[id]){
-          html += "<th><img src='"+image_url_cat+id+".png'/></th>"+
-                  "<th>"+id+"</th>"+
+        var sid = id+"-"+j;
+        if(!catName[id]) continue
+        if(catName[id][j]){
+          html += "<th><img src='"+image_url_cat+sid+".png'/></th>"+
+                  "<th>"+sid+"</th>"+
                   "<td class='editable' type='name' path='"+
-                  ["newCatData",id].join()+"'>"+
-                  (catName[id].name?catName[id].name:catName[id].jp_name);
+                  ["CatData",id,"data",j].join()+"'>"+
+                  (catName[id][j].name?catName[id][j].name:catName[id][j].jp_name);
         } else {
           html += "<th></th><th></th><td></td>";
         }
       }
-      html += "</td><td id='"+grossID+"' class='region'>"+catName[grossID+"-1"].region+"</td><tr>";
+      html += "<td id='"+id+"' class='region'>"+catName[id][1].region+"</td></tr>";
     }
     $(".renameCattable").append(html);
   });
@@ -105,14 +107,10 @@ $(document).ready(function () {
     var id = $(this).attr("id"),
         text = $(this).text();
     text = text == "[JP]"?"[TW][JP]":"[JP]";
-    for(let i=1;i<4; i++){
-      if(catName[id+"-"+i]){
-        socket.emit("DashboardUpdateData",{
-          path:"newCatData,"+id+"-"+i,
-          type:"region",val:text
-        });
-      }
-    }
+    socket.emit("DashboardUpdateData",{
+      path:"CatData,"+id,
+      type:"region",val:text
+    });
     $(this).text(text);
   });
   var eneName;

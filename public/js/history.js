@@ -1,8 +1,13 @@
 var CurrentUserID;
+var UserHistory = {
+      cat:{},enemy:{},stage:{},gacha:{},combo:{}
+    },cat_history,
+    enemy_history,
+    combo_history,
+    stage_history,
+    last_gacha;
 $(document).ready(function () {
   var timer = new Date().getTime();
-
-  var cat_history,enemy_history,combo_history,stage_history,last_gacha;
 
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
@@ -13,22 +18,17 @@ $(document).ready(function () {
   });
   socket.on("current_user_data",function (data) {
     CurrentUserID = data.uid;
-    cat_history = data.history.cat;
-    enemy_history = data.history.enemy;
-    stage_history = data.history.stage;
-    combo_history = data.history.combo;
-    gacha_history = data.history.gacha;
-    if(cat_history){
-      $(".main_board").empty();
-      for(i in cat_history){
-        $(".main_board").prepend("<div id='"+cat_history[i].id+"' class='cat'>"+
-          "<img src='"+image_url_cat+cat_history[i].id+".png'>"+
-          "<span class='name'><b>Lv."+cat_history[i].lv+" </b>"+
-          cat_history[i].name+"</span>"+
-          "<span class='time'>"+parseTime(cat_history[i].time)+"</span>"+
-          "</div>");
-      }
+    UserHistory.cat = data.history.cat;
+    UserHistory.enemy = data.history.enemy;
+    UserHistory.stage = data.history.stage;
+    UserHistory.combo = data.history.combo;
+    UserHistory.gacha = data.history.gacha;
+    var historyPage = 'cat';
+    if(Storage){
+      historyPage = localStorage.historyPage?localStorage.historyPage:'cat';
     }
+    $(".title span[id='"+historyPage+"']").click();
+    // appendHistory(historyPage?historyPage:"cat");
   });
 
   $(".title span").hover(function () {
@@ -42,53 +42,14 @@ $(document).ready(function () {
     let type = $(this).attr("id"),
         active = Number($(this).attr("value"));
     if(!active){
-      $(".main_board").empty();
       $(this).attr('value',1).siblings().attr('value',0);
-      if(type == 'cat'){
-        for(i in cat_history){
-          $(".main_board").prepend("<div id='"+cat_history[i].id+"' class='cat'>"+
-            "<img src='"+image_url_cat+cat_history[i].id+".png'>"+
-            "<span class='name'><b>Lv."+cat_history[i].lv+" </b>"+
-            cat_history[i].name+"</span>"+
-            "<span class='time'>"+parseTime(cat_history[i].time)+"</span>"+
-            "</div>");
-        }
-      }
-      else if(type == 'enemy'){
-        for(i in enemy_history){
-          $(".main_board").prepend("<div id='"+enemy_history[i].id+"' class='enemy'>"+
-            "<img src='"+image_url_enemy+enemy_history[i].id+".png'>"+
-            "<span class='name'><b>"+Number(enemy_history[i].lv)*100+"% </b>"+
-            enemy_history[i].name+"</span>"+
-            "<span class='time'>"+parseTime(enemy_history[i].time)+"</span>"+
-            "</div>");
-        }
-      }
-      else if(type == 'stage'){
-        for(i in stage_history){
-          $(".main_board").prepend("<div id='"+stage_history[i].id+"' class='stage'>"+
-            "<button class='stageBG' bg='"+stage_history[i].chapter+"' value='0'></button>"+
-            "<span class='name'><b>"+stage_history[i].stage+" </b>"+
-            stage_history[i].level+"</span>"+
-            "<span class='time'>"+parseTime(stage_history[i].time)+"</span>"+
-            "</div>");
-        }
-      }
-      else if (type == 'gacha') {
-        for(i in gacha_history){
-          $(".main_board").prepend(
-            "<div id='"+gacha_history[i].id+"' class='gacha' style='background-image:url()'>"+
-            "<img src='"+image_url_gacha+gacha_history[i].id+".png'>"+
-            "<ww style='display:flex;flex-direction:column;flex:2;align-items:center'>"+
-            "<span class='name'><b>"+ gacha_history[i].name+"</b></span>"+
-            "<ww style='font-size:14px;font-weight:bold'>"+
-            "<span style='color:#18a651'>稀有 : "+gacha_history[i].r+"\t</span>"+
-            "<span style='color:#eeb62e'>激稀有 : "+gacha_history[i].sr+"\t</span>"+
-            "<span style='color:#8e18a6'>超激稀有 : "+gacha_history[i].ssr+"\t</span></ww></ww>"+
-            "<span class='time'>"+parseTime(gacha_history[i].time)+"</span>"+
-            "</div>");
-        }
-      }
+      if(type == 'cat') appendHistory("cat");
+      else if(type == 'enemy') appendHistory("enemy");
+      else if(type == 'stage') appendHistory("stage");
+      else if (type == 'gacha') appendHistory("gacha");
+    }
+    if(Storage){
+      localStorage.historyPage = type;
     }
   });
   $(document).on('click',".main_board div",function () {
@@ -124,4 +85,35 @@ function parseTime(n) {
   else if(yy == today.getFullYear()) return mm+"/"+dd+" "+h+":"+m
   else return yy+"/"+mm+"/"+dd+" "+h+":"+m
 
+}
+function appendHistory(type) {
+  var data = UserHistory[type];
+  if(!data) return;
+  $(".main_board").empty();
+  for(let i in data){
+    $(".main_board").prepend("<div id='"+data[i].id+"' class='"+type+"'>"+
+      historyPicture(type,data[i].id,data[i].stage)+
+      historyName(type,data[i].name,data[i].lv,data[i].stage)+
+      "<span class='time'>"+parseTime(data[i].time)+"</span>"+
+      "</div>");
+  }
+}
+function historyPicture(type,id,stage=null) {
+  if(type == 'cat') return "<img src='"+image_url_cat+id+'-'+(stage?stage:1)+".png'>";
+  else if(type == 'enemy') return "<img src='"+image_url_enemy+id+".png'>";
+  else if(type == 'stage') return "<button class='stageBG' bg='"+stage+"' value='0'></button>";
+  else if(type == 'gacha') return "<img src='"+image_url_gacha+id+".png'>";
+}
+function historyName(type,regular,bold,stage=null) {
+  if(type == 'cat') return "<span class='name'><b>Lv."+bold+"</b>"+regular[stage-1]+"</span>";
+  else if(type == 'enemy') return "<span class='name'><b>"+bold*100+"%</b>"+regular+"</span>";
+  else if(type == 'stage') return "<span class='name'><b>"+regular[1]+"\t</b>"+regular[0]+"</span>";
+  else if(type == 'gacha'){
+    var temp =  "<ww style='display:flex;flex-direction:column;flex:2;align-items:center'>"+
+                "<span class='name'><b>"+regular+"</b></span>"+"<ww style='font-size:14px;font-weight:bold'>"+
+                "<span style='color:#18a651'>稀有 : "+(stage[2]?stage[2]:0)+"\t</span>"+
+                "<span style='color:#eeb62e'>激稀有 : "+(stage[1]?stage[1]:0)+"\t</span>"+
+                "<span style='color:#8e18a6'>超激稀有 : "+(stage[0]?stage[0]:0)+"\t</span></ww></ww>";
+    return temp
+  }
 }

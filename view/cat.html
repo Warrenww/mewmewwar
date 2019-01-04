@@ -86,7 +86,9 @@
               <span class='button smallicon'name='免疫降攻'value='0'><i id='noatkdown'class="ability_icon"></i><span> 攻擊力下降無效</span></span>
               <span class='button smallicon'name='善於攻擊'value='0'><i id='goodat'class="ability_icon"></i><span> 善於攻擊</span></span>
               <span class='button smallicon'name='很耐打'value='0'><i id='morehp'class="ability_icon"></i><span> 很耐打</span></span>
+              <span class='button smallicon'name='超級耐打'value='0'><i id='morehp_ex'class="ability_icon"></i><span>超級耐打</span></span>
               <span class='button smallicon'name='超大傷害'value='0'><i id='bighurt'class="ability_icon"></i><span> 超大傷害</span></span>
+              <span class='button smallicon'name='極度傷害'value='0'><i id='bighurt_ex'class="ability_icon"></i><span>極度傷害</span></span>
               <span class='button smallicon'name='爆擊'value='0'><i id='criticalhit'class="ability_icon"></i><span> 會心一擊</span></span>
               <span class='button smallicon'name='擊退'value='0'><i id='goaway'class="ability_icon"></i><span> 打飛敵人</span></span>
               <span class='button smallicon'name='免疫擊退'value='0'><i id='nogoaway'class="ability_icon"></i><span> 打飛無效</span></span>
@@ -226,7 +228,6 @@
           <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
           <i class="material-icons"id='snapshot'text='截圖'>&#xe439;</i>
           <i class="material-icons"id='top'text='回到頂端'>&#xE25A;</i>
-        <!-- <div id='addfight'>加到對戰 &#9876;</div> -->
       </div>
       <div class="display">
         <table class="dataTable">
@@ -234,209 +235,206 @@
             <th>ID</th><td id="id"></td>
             <th>查詢次數</th><td id="count"></td>
           </tr>
-          <tr class="non_mobile">
-            <th style='height:80px;padding:0' class="img"></th>
-            <th colspan=3 rarity='data.rarity' class='name'></th>
-            <th colspan=2 class="bro"></th>
-          </tr>
-          <tr class="mobile">
-            <th class="name" colspan="6"></th>
-          </tr>
-          <tr class="mobile">
-            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
-            </th>
-          </tr>
-          <tr class="mobile">
-            <th style="padding:0;background-color:transparent" colspan="6" class="bro"></th>
+          <tr>
+            <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td>
           </tr>
           <tr>
             <th colspan='1'>等級</th>
             <td colspan='4' class='level'><div id='level' class='slider'></div></td>
             <td><span id='level_num'>30</span></td>
-            <tr>
-              <th>體力</th><td id='hp'><span class='editable'></span></td>
-              <th>KB</th><td id='KB'></td>
-              <th>硬度</th><td id='hardness'><span class='editable'></span></td>
-            </tr>
-            <tr>
-              <th>攻擊力</th><td id='atk'><span class='editable'></span></td>
-              <th>DPS</th><td id='dps'><span class='editable'></span></td>
-              <th>射程</th><td id='range'></td>
-            </tr>
-            <tr>
-              <th>攻頻</th><td id='freq'></td>
-              <th>跑速</th><td id='speed'></td>
-              <td colspan='2' rowspan='3' id='aoe'></td>
-            </tr>
-            <tr>
-              <th>攻擊週期</th><td id='atk_period'></td>
-              <th>攻發時間</th><td id='atk_speed'></td>
-            </tr>
-            <tr>
-              <th>花費</th><td id='cost'></td>
-              <th>再生産</th><td id='cd'></td>
-            </tr>
-            <tr><th>取得方法</th><td colspan='5' id='condition'></td></tr>
-            <tr><td colspan = '6' id='char'></td></tr>
-            <tr id="combo_head"><th colspan='6'>發動聯組<i class="material-icons">&#xe315;</i></th></tr>
-            <tr id="survey_head"><th colspan='6'>統計數據<i class="material-icons">&#xe315;</i></th></tr>
-            <tr class="survey"><th>暱稱</th><td colspan='5'>
-              <div id='nickname'>
-                <div>暫無暱稱</div>
-                <span id="add_nick"><i class="material-icons">&#xe145;</i></span>
-                <span id="confirm_nick" style="display:none"><i class="material-icons">&#xe5ca;</i></span>
-                <span id="cancel_nick" style="display:none"><i class="material-icons">&#xe5cd;</i></span>
+          <tr>
+            <th>體力</th><td id='hp'><span class='editable'></span></td>
+            <th>KB</th><td id='KB'></td>
+            <th>硬度</th><td id='hardness'><span class='editable'></span></td>
+          </tr>
+          <tr>
+            <th>攻擊力</th><td id='atk'><span class='editable'></span></td>
+            <th>DPS</th><td id='dps'><span class='editable'></span></td>
+            <th>射程</th><td id='range'></td>
+          </tr>
+          <tr>
+            <th>攻頻</th><td id='freq'></td>
+            <th>跑速</th><td id='speed'></td>
+            <td colspan='2' rowspan='3' id='aoe'></td>
+          </tr>
+          <tr>
+            <th>攻擊週期</th><td id='atk_period'></td>
+            <th>攻發時間</th><td id='atk_speed'></td>
+          </tr>
+          <tr>
+            <th>花費</th><td id='cost'></td>
+            <th>再生産</th><td id='cd'></td>
+          </tr>
+          <tr><th>取得方法</th><td colspan='5' id='condition'></td></tr>
+          <tr><td colspan = '6' id='char'></td></tr>
+        </table>
+
+        <div id="combo_head">發動聯組</div>
+        <table class="comboTable"></table>
+
+        <div id="survey_head">統計數據</div>
+        <div class="surveyTable">
+          <div class="survey">
+            <div class="th"style="padding:0 20">暱稱</div>
+            <div id='nickname'class="td">
+              <div>暫無暱稱</div>
+              <span id="add_nick"><i class="material-icons">&#xe145;</i></span>
+              <span id="confirm_nick" style="display:none"><i class="material-icons">&#xe5ca;</i></span>
+              <span id="cancel_nick" style="display:none"><i class="material-icons">&#xe5cd;</i></span>
+            </div>
+          </div>
+          <div class="survey">
+            <div class="th">實用度評分</div>
+              <div style="flex-direction:column" class="td" id="rank">
+                <div style="margin-bottom:5px">
+                  <svg width='86' height='86' id="rank_c">
+                    <circle cx='43' cy='43' r='40' stroke='rgba(194, 194, 194, 0.88)' stroke-width='6' fill='none'></circle>
+                    <text x="26,46,26,46" y="40" dy='0,0,20'>尚無評分</text>
+                  </svg>
+                </div>
+                <span new='true' type='total'>
+                  <i class="material-icons" value='0' no='1'>&#xe885;</i>
+                  <i class="material-icons" value='0' no='2'>&#xe885;</i>
+                  <i class="material-icons" value='0' no='3'>&#xe885;</i>
+                  <i class="material-icons" value='0' no='4'>&#xe885;</i>
+                  <i class="material-icons" value='0' no='5'>&#xe885;</i>
+                </span>
               </div>
-            </td></tr>
-            <tr class="survey mobile"><th colspan='6'>實用度評分</th></tr>
-            <tr class="survey">
-              <th class="non_mobile">實用度評分</th>
-              <td colspan="2">
-                <div style="display:flex;flex-direction:column" id="rank">
-                  <div style="margin-bottom:5px">
-                    <svg width='86' height='86' id="rank_c">
-                      <circle cx='43' cy='43' r='40' stroke='rgba(194, 194, 194, 0.88)' stroke-width='6' fill='none'></circle>
-                      <text x="26,46,26,46" y="40" dy='0,0,20'>尚無評分</text>
-                    </svg>
-                  </div>
-                  <span new='true' type='total'>
-                    <i class="material-icons" value='0' no='1'>&#xe885;</i>
-                    <i class="material-icons" value='0' no='2'>&#xe885;</i>
-                    <i class="material-icons" value='0' no='3'>&#xe885;</i>
-                    <i class="material-icons" value='0' no='4'>&#xe885;</i>
-                    <i class="material-icons" value='0' no='5'>&#xe885;</i>
+              <div id="rank_detail" class="td">
+                <div class="detail">
+                  <span style="display:flex;align-items:center">
+                    <span style="font-size:14px">5</span>
+                    <i class="material-icons" style="font-size:14px">&#xe885;</i>
                   </span>
-                </div>
-              </td>
-              <td colspan="3">
-                <div id="rank_detail">
-                  <div class="detail">
-                    <span style="display:flex;align-items:center">
-                      <span style="font-size:14px">5</span>
-                      <i class="material-icons" style="font-size:14px">&#xe885;</i>
-                    </span>
-                    <div>
-                      <span class="char" style="background-color:rgb(38, 208, 86)"></span>
-                      <span class="num">0</span>
-                    </div>
-                  </div>
-                  <div class="detail">
-                    <span style="display:flex;align-items:center">
-                      <span style="font-size:14px">4</span>
-                      <i class="material-icons" style="font-size:14px">&#xe885;</i>
-                    </span>
-                    <div>
-                      <span class="char" style="background-color:rgb(133, 242, 110)"></span>
-                      <span class="num">0</span>
-                    </div>
-                  </div>
-                  <div class="detail">
-                    <span style="display:flex;align-items:center">
-                      <span style="font-size:14px">3</span>
-                      <i class="material-icons" style="font-size:14px">&#xe885;</i>
-                    </span>
-                    <div>
-                      <span class="char" style="background-color:rgb(241, 222, 48)"></span>
-                      <span class="num">0</span>
-                    </div>
-                  </div>
-                  <div class="detail">
-                    <span style="display:flex;align-items:center">
-                      <span style="font-size:14px">2</span>
-                      <i class="material-icons" style="font-size:14px">&#xe885;</i>
-                    </span>
-                    <div>
-                      <span class="char" style="background-color:rgb(241, 158, 48)"></span>
-                      <span class="num">0</span>
-                    </div>
-                  </div>
-                  <div class="detail">
-                    <span style="display:flex;align-items:center">
-                      <span style="font-size:14px">1</span>
-                      <i class="material-icons" style="font-size:14px">&#xe885;</i>
-                    </span>
-                    <div>
-                      <span class="char" style="background-color:rgb(232, 75, 75)"></span>
-                      <span class="num">0</span>
-                    </div>
+                  <div>
+                    <span class="char" style="background-color:rgb(38, 208, 86)"></span>
+                    <span class="num">0</span>
                   </div>
                 </div>
-              </td>
-            </tr>
-            <tr class="survey mobile"><th colspan='5'>細項評分</th><td id="mobile_rank_respec">評分</td></tr>
-            <tr class="survey">
-              <td rowspan="6" colspan="2">
-                <svg height='200' width='238.56' id="rank_respec">
-                  <path d='M 119.28 20 l 69.28 40 l 0 80 l -69.28 40 l -69.28 -40 l 0 -80 l 69.28 -40'
-                  stroke="gray" stroke-width="1" fill="none"></path>
-                  <path d='M 119.28 36 l 55.43 32 l 0 64 l -55.43 32 l -55.43 -32 l 0 -64 l 55.43 -32'
-                  stroke="gray" stroke-width="1" fill="none"></path>
-                  <path d='M 119.28 52 l 41.57 24 l 0 48 l -41.57 24 l -41.57 -24 l 0 -48 l 41.57 -24'
-                  stroke="gray" stroke-width="1" fill="none"></path>
-                  <path d='M 119.28 68 l 27.71 16 l 0 32 l -27.71 16 l -27.71 -16 l 0 -32 l 27.71 -16'
-                  stroke="gray" stroke-width="1" fill="none"></path>
-                  <path d='M 119.28 84 l 13.86 8 l 0 16 l -13.86 8 l -13.86 -8 l 0 -16 l 13.86 -8'
-                  stroke="gray" stroke-width="1" fill="none"></path>
-                  <line x1='119.28' y1='20' x2='119.28' y2='180' stroke='gray' stroke-width='1'></line>
-                  <line x1='50' y1='60' x2='188.56' y2='140' stroke='gray' stroke-width='1'></line>
-                  <line x1='50' y1='140' x2='188.56' y2='60' stroke='gray' stroke-width='1'></line>
-                  <text x='96'y='16'>攻擊力</text> <text x='16'y='50'>控場力</text>
-                  <text x='16'y='160'>價格</text> <text x='102'y='196'>體力</text>
-                  <text x='170'y='170'>攻擊範圍</text> <text x='180'y='50'>速度</text>
-                </svg>
-              </td>
-              <th class="non_mobile">攻擊力</th><td colspan="3" class="rank_respec non_mobile"></td>
-            </tr>
-            <tr class="survey non_mobile"><th>控場力</th><td colspan='3' class="rank_respec"></td></tr>
-            <tr class="survey non_mobile"><th>價格</th><td colspan='3' class="rank_respec"></td></tr>
-            <tr class="survey non_mobile"><th>體力</th><td colspan='3' class="rank_respec"></td></tr>
-            <tr class="survey non_mobile"><th>攻擊範圍</th><td colspan='3' class="rank_respec"></td></tr>
-            <tr class="survey non_mobile"><th>速度</th><td colspan='3' class="rank_respec"></td></tr>
-            <tr class="survey"><th colspan='6'>定位</th></tr>
-            <tr class="survey">
-              <th>砲灰</th>
-              <td colspan="3">便宜且生產快速，可以拖延戰線的推進</td>
-              <td class="num"></td>
-              <td class="application" ></td>
-            </tr>
-            <tr class="survey">
-              <th>攻擊手</th>
-              <td colspan="3"> 主要為我方推線的角色</td>
-              <td class="num"></td>
-              <td class="application" ></td>
-            </tr>
-            <tr class="survey">
-              <th>控場</th>
-              <td colspan="3"> 以各種妨礙效果阻止敵人推進</td>
-              <td class="num"></td>
-              <td class="application" ></td>
-            </tr>
-            <tr class="survey">
-              <th>快攻手</th>
-              <td colspan="3"> 跑速快，通常有擊退反擊特性，可以迅速衝入敵人射程，給予重創</td>
-              <td class="num"></td>
-              <td class="application" ></td>
-            </tr>
-            <tr class="survey">
-              <th>肉盾</th>
-              <td colspan="3"> 有高血量可以有效阻擋戰線被推進</td>
-              <td class="num"></td>
-              <td class="application" ></td>
-            </tr>
-            <tr class="survey">
-              <th>坦攻</th>
-              <td colspan="3"> 高血量且具有一定攻擊力，可以坦入敵人射程內給予傷害</td>
-              <td class="num"></td>
-              <td class="application" ></td>
-            </tr>
-            <tr id="comment_head"><th colspan="6">評論<i class="material-icons">&#xe315;</i></th></tr>
-            <tr class="comment"><th colspan='6'>
-              <div class="comment_input">
-                <textarea rows='1' maxlength='100' placeholder="想說什麼呢..."></textarea>
-                <i class="material-icons" id="comment_submit">&#xe163;</i>
+                <div class="detail">
+                  <span style="display:flex;align-items:center">
+                    <span style="font-size:14px">4</span>
+                    <i class="material-icons" style="font-size:14px">&#xe885;</i>
+                  </span>
+                  <div>
+                    <span class="char" style="background-color:rgb(133, 242, 110)"></span>
+                    <span class="num">0</span>
+                  </div>
+                </div>
+                <div class="detail">
+                  <span style="display:flex;align-items:center">
+                    <span style="font-size:14px">3</span>
+                    <i class="material-icons" style="font-size:14px">&#xe885;</i>
+                  </span>
+                  <div>
+                    <span class="char" style="background-color:rgb(241, 222, 48)"></span>
+                    <span class="num">0</span>
+                  </div>
+                </div>
+                <div class="detail">
+                  <span style="display:flex;align-items:center">
+                    <span style="font-size:14px">2</span>
+                    <i class="material-icons" style="font-size:14px">&#xe885;</i>
+                  </span>
+                  <div>
+                    <span class="char" style="background-color:rgb(241, 158, 48)"></span>
+                    <span class="num">0</span>
+                  </div>
+                </div>
+                <div class="detail">
+                  <span style="display:flex;align-items:center">
+                    <span style="font-size:14px">1</span>
+                    <i class="material-icons" style="font-size:14px">&#xe885;</i>
+                  </span>
+                  <div>
+                    <span class="char" style="background-color:rgb(232, 75, 75)"></span>
+                    <span class="num">0</span>
+                  </div>
+                </div>
               </div>
-            </th></tr>
-          </table>
+          </div>
+          <div class="survey">
+            <div class="td">
+              <svg height='200' width='238.56' id="rank_respec">
+                <path d='M 119.28 20 l 69.28 40 l 0 80 l -69.28 40 l -69.28 -40 l 0 -80 l 69.28 -40'
+                stroke="gray" stroke-width="1" fill="none"></path>
+                <path d='M 119.28 36 l 55.43 32 l 0 64 l -55.43 32 l -55.43 -32 l 0 -64 l 55.43 -32'
+                stroke="gray" stroke-width="1" fill="none"></path>
+                <path d='M 119.28 52 l 41.57 24 l 0 48 l -41.57 24 l -41.57 -24 l 0 -48 l 41.57 -24'
+                stroke="gray" stroke-width="1" fill="none"></path>
+                <path d='M 119.28 68 l 27.71 16 l 0 32 l -27.71 16 l -27.71 -16 l 0 -32 l 27.71 -16'
+                stroke="gray" stroke-width="1" fill="none"></path>
+                <path d='M 119.28 84 l 13.86 8 l 0 16 l -13.86 8 l -13.86 -8 l 0 -16 l 13.86 -8'
+                stroke="gray" stroke-width="1" fill="none"></path>
+                <line x1='119.28' y1='20' x2='119.28' y2='180' stroke='gray' stroke-width='1'></line>
+                <line x1='50' y1='60' x2='188.56' y2='140' stroke='gray' stroke-width='1'></line>
+                <line x1='50' y1='140' x2='188.56' y2='60' stroke='gray' stroke-width='1'></line>
+                <text x='96'y='16'>攻擊力</text> <text x='16'y='50'>控場力</text>
+                <text x='16'y='160'>價格</text> <text x='102'y='196'>體力</text>
+                <text x='170'y='170'>攻擊範圍</text> <text x='180'y='50'>速度</text>
+              </svg>
+            </div>
+            <div class="td"style="flex-direction:column">
+              <div class="rank_holder"><div class='th'>攻擊力</div><div colspan="3" class="rank_respec"></div></div>
+              <div class="rank_holder"><div class='th'>控場力</div><div colspan='3' class="rank_respec"></div></div>
+              <div class="rank_holder"><div class='th'>價格</div><div colspan='3' class="rank_respec"></div></div>
+              <div class="rank_holder"><div class='th'>體力</div><div colspan='3' class="rank_respec"></div></div>
+              <div class="rank_holder"><div class='th'>攻擊範圍</div><div colspan='3' class="rank_respec"></div></div>
+              <div class="rank_holder"><div class='th'>速度</div><div colspan='3' class="rank_respec"></div></div>
+            </div>
+          </div>
+          <div class="survey">
+            <div class="th"style="padding:0 20">定位</div>
+            <div class="td">
+              <div class="pos_holder">
+                <div class="th">砲灰</div>
+                <div class='describe'>便宜且生產快速，可以拖延戰線的推進</div>
+                <div class="num"></div>
+                <div class="application" ></div>
+              </div>
+              <div class="pos_holder">
+                <div class="th">攻擊手</div>
+                <div class='describe'> 主要為我方推線的角色</div>
+                <div class="num"></div>
+                <div class="application" ></div>
+              </div>
+              <div class="pos_holder">
+                <div class="th">控場</div>
+                <div class='describe'> 以各種妨礙效果阻止敵人推進</div>
+                <div class="num"></div>
+                <div class="application" ></div>
+              </div>
+              <div class="pos_holder">
+                <div class="th">快攻手</div>
+                <div class='describe'> 跑速快，通常有擊退反擊特性，可以迅速衝入敵人射程，給予重創</div>
+                <div class="num"></div>
+                <div class="application" ></div>
+              </div>
+              <div class="pos_holder">
+                <div class="th">肉盾</div>
+                <div class='describe'> 有高血量可以有效阻擋戰線被推進</div>
+                <div class="num"></div>
+                <div class="application" ></div>
+              </div>
+              <div class="pos_holder">
+                <div class="th">坦攻</div>
+                <div class='describe'> 高血量且具有一定攻擊力，可以坦入敵人射程內給予傷害</div>
+                <div class="num"></div>
+                <div class="application" ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="comment_head">評論</div>
+        <table class="commentTable">
+          <tr><th>
+            <div class="comment_input">
+              <textarea rows='1' maxlength='100' placeholder="想說什麼呢..."></textarea>
+              <i class="material-icons" id="comment_submit">&#xe163;</i>
+            </div>
+          </th></tr>
+        </table>
       </div>
 
     </div>
@@ -457,7 +455,6 @@
     </div>
 
     <div id="TOOLTIP">This is a tool tip</div>
-    <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
     <div id="batch_alert">已加入圖鑑 <i class="material-icons">&#xe877;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>
@@ -503,6 +500,7 @@
     <script src="/js/cat.js"></script>
     <script src="/js/AddToCompare.js"></script>
     <script src="/js/SearchCatEnemy.js"></script>
+    <script src="/js/Comment.js"></script>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

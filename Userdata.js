@@ -25,14 +25,17 @@ exports.setSetting = function (uid,attr,data) {
   UserData[uid].setting[attr] = data;
   database.ref("/user/"+uid+"/setting/"+attr).set(data);
 }
-exports.getVariable = function (uid,type = null) {
+exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
   if(!UserData[uid]) return null
-  if (!type){
-    if(UserData[uid].variable)
-     return UserData[uid].variable;
-  }
-  if(UserData[uid].variable[type] == "") UserData[uid].variable[type] = {"0":"0"};
-  return UserData[uid].variable[type];
+  var response;
+  if(arg_0){
+    if(arg_1){
+      if(arg_2) response = UserData[uid].variable[arg_0][arg_1][arg_2];
+      else response = UserData[uid].variable[arg_0][arg_1];
+    } else response = UserData[uid].variable[arg_0];
+  } else response = UserData[uid].variable;
+
+  return response;
 }
 exports.getHistory = function (uid,type=null) {
   if(!UserData[uid]) return null
@@ -82,7 +85,9 @@ exports.setHistory = function (uid,type,id){
     if(user_variable == "" || !user_variable ) user_variable = {};
     // Find same unit and clear it
     for(let i in user_history){
-      if(user_history[i].id == id) delete user_history[i]
+      var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id,
+          current = type == 'cat'?id.toString().substring(0,3):id;
+      if(exist == current) delete user_history[i]
     }
     var key = database.ref().push().key; // Generate hash key
     // Update history and write to firebase
@@ -92,7 +97,6 @@ exports.setHistory = function (uid,type,id){
     database.ref("/user/"+uid+"/history/last_"+type).set(id);
 
     if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
-    if(type == 'cat') id = id.substring(0,3);
     if(!user_variable[id]) user_variable[id] = {count:0};
     user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
     database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
@@ -106,10 +110,11 @@ exports.SearchHistory = function (uid,type,data) {
   database.ref("/user/"+uid+"/history/last_"+type+"_search").set(data);
   UserData[uid].history["last_"+type+"_search"] = data;
 }
+
 exports.StoreLevel = function(uid,id,type,lv){
   console.log(uid+" change his/her "+type,id+"'s level to "+lv);
   try{
-    id = id.substring(0,3);
+    id = id.toString().substring(0,3);
     // target cat or enemy
     var buffer = UserData[uid].variable[type][id] ;
     buffer = buffer?buffer:{lv:1,count:0}; // handal of not exist data
@@ -119,7 +124,21 @@ exports.StoreLevel = function(uid,id,type,lv){
   }catch(e){
     Util.__handalError(e);
   }
-
+}
+exports.StoreStage = function(uid,id,stage){
+  stage = Number(stage)+1;
+  console.log(uid+" change his/her cat"+id+"'s stage to "+stage);
+  try{
+    id = id.toString().substring(0,3);
+    // target cat or enemy
+    var buffer = UserData[uid].variable['cat'][id] ;
+    buffer = buffer?buffer:{lv:1,count:0,stage:1}; // handal of not exist data
+    // set level and store to firebase
+    buffer.stage = stage;
+    database.ref("/user/"+uid+"/variable/cat/"+id).update({stage:stage});
+  }catch(e){
+    Util.__handalError(e);
+  }
 }
 
 exports.Login = function (user) {

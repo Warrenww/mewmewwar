@@ -1,5 +1,6 @@
 var CurrentUserID;
 var current_compare = {};
+var rowCatData = {};
 var page = location.pathname.split("/compare")[1].toLowerCase();
 $(document).ready(function () {
   var compare = [] ;
@@ -31,35 +32,32 @@ $(document).ready(function () {
 
   });
   socket.on("required data",(data)=>{
-    console.log(data);
+    // console.log(data);
     if(data.buffer.length > 1){
       $(".comparedatabody").empty();
       for(let i in data.buffer){
-        var _data = page == 'cat'?new Cat(data.buffer[i].data):new Enemy(data.buffer[i].data),
+        var _data,
             lv = data.buffer[i].lv,
-            bro = data.buffer[i].bro;
-        current_compare[_data.id] = _data;
-        $(".comparedatabody").append(AddCompareData(_data,lv,bro));
-      }
-    } else if(page =='cat'){
-      var _data = new Cat(data.buffer[0].data),
-          arr = data.buffer[0].bro,
-          lv = data.buffer[0].lv,
-          id = _data.id.substring(0,3),
-          brr=[];
-      current_compare[_data.id] = _data;
-      $(".comparedata").each(function () {
-        let a = $(this).attr("id").substring(0,3),
-            _this = $(this);
-        if(a == id) {
-          $(AddCompareData(_data,lv,arr)).insertBefore(this);
-          $(this).remove();
+            stage = Number(data.buffer[i].currentStage)-1,
+            rarity = data.buffer[i].data.rarity
+            id = data.buffer[i].data.id;
+        if(page == 'cat'){
+          _data = [];
+          for(let j in data.buffer[i].data.data){
+            if(!data.buffer[i].data.data[j]) continue;
+            _data.push(new Cat(data.buffer[i].data.data[j]));
+          }
+        } else _data = new Enemy(data.buffer[i].data);
+        // console.log(id,_data);
+        if(page == 'cat'){
+          rowCatData[id] = _data;
+          rowCatData[id].rarity = rarity;
+          _data = _data[stage];
         }
-      });
-      $(".comparedata").each(function () {brr.push($(this).attr("id"))});
-      socket.emit("compare cat",{id:CurrentUserID,target:brr});
-      closePanel();
-    } else return
+        current_compare[id] = _data;
+        $(".comparedatabody").append(AddCompareData(_data,lv,rarity));
+      }
+    }
     highlightTheBest();
   });
   $(document).on('click',"#level i",function () {
@@ -83,7 +81,6 @@ $(document).ready(function () {
     }).parents('.comparedata').siblings().each(function () {
       $(this).find("#level i").css('transform','rotate(0deg)');
     });
-    $('.panel #switch').html("切換階級");
   });
   $(document).on("click",'.panel span',function () {
     let action = $(this).attr("id"),id = $('.panel').attr("id");
@@ -102,18 +99,21 @@ $(document).ready(function () {
       closePanel();
     }
     else if(action == 'switch'){
-      let bro = $('.comparedataholder').find("#"+id).attr("bro").split(",");
-      if(bro.length>1){
-        let html = '';
-        for(let i in bro) html+='<span id="'+bro[i]+'">'+bro[i].split("-")[1]+'階</span>';
-        $(this).html(html);
-      } else {
-        socket.emit("required data",{
-          uid:CurrentUserID,
-          type:"cat",
-          target:bro[0]
-        });
-      }
+      var stage = current_compare[id].id.split("-")[1],
+          newstage = stage%rowCatData[id].length,
+          newdata = rowCatData[id][newstage],
+          target = $(".comparedata[id='"+id+"']"),
+          lv = target.find("#level span").text();
+      console.log(stage,newstage,newdata);
+      current_compare[id] = newdata;
+      $(AddCompareData(newdata,lv,rowCatData[id].rarity)).insertBefore(target);
+      target.remove();
+      socket.emit("store stage",{
+        uid : CurrentUserID,
+        id : id,
+        stage : newstage
+      });
+      closePanel();
     }
     else {
       socket.emit("mark own",{
@@ -123,13 +123,6 @@ $(document).ready(function () {
       });
       closePanel();
     }
-  });
-  $(document).on('click','.panel #switch span',function () {
-    socket.emit("required data",{
-      uid:CurrentUserID,
-      type:"cat",
-      target:$(this).attr('id')
-    });
   });
 
   $('.compareDisplay').on("scroll",closePanel);
@@ -194,7 +187,13 @@ $(document).ready(function () {
       else $(this).parent().html(input_org);
   }
   function highlightTheBest() {
-    $('.comparedata').find('td').removeClass('best');
+    var levelmap = {};
+    $(".comparedata").each(function () {
+      // console.log($(this).attr("id"));
+      $(this).find('td').removeClass('best');
+      levelmap[$(this).attr("id")] = $(this).find("#level span").text();
+      if(page == 'enemy') levelmap[$(this).attr("id")] = $(this).find("#level span").text().split("%")[0]/100
+    });
     $('.comparedatahead tbody').children().each(function () {
       let name = $(this).children().attr("id");
       if(!name||name==undefined) return ;
@@ -207,7 +206,7 @@ $(document).ready(function () {
       }
       var arr = [];
       for(let i in current_compare)
-        arr.push({id:i,item:Number(current_compare[i][name])});
+        arr.push({id:i,item:Number(current_compare[i].Tovalue(name,levelmap[i]))});
       arr = quickSort(arr,'item');
       // console.log(name,arr);
       if(name == 'cd' || name == 'freq' || name == 'cost') {
@@ -308,10 +307,11 @@ $(document).ready(function () {
     $(".compareTable").css('transform','scale('+scale+','+scale+')');
   });
 
-  function AddCompareData(data,lv,bro) {
+  function AddCompareData(data,lv,rarity) {
+    // console.log(data);
     let html = '';
     html +=
-      "<div style='flex:1' class='comparedata' id='"+data.id+"' bro='"+bro+"'>"+
+      "<div style='flex:1' class='comparedata' id='"+(data.id).toString().substring(0,3)+"'>"+
       "<table>"+
       "<tr>"+
       "<th id='level'><span>"+(page == 'cat'?lv:lv*100+"%")+"</span><i class='material-icons'>&#xe5c5;</i></th>"+
@@ -321,7 +321,7 @@ $(document).ready(function () {
       "<th id='name'>"+data.Name+"</th>"+
       "</tr><tr>"+
       "<th id='"+(page == 'cat'?"rarity":"color")+"'>"+
-      (page == 'cat'?parseRarity(data.rarity):data.color)+"</th>"+
+      (page == 'cat'?parseRarity(rarity):data.color)+"</th>"+
       "</tr><tr>"+
       "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
       "</tr><tr>"+

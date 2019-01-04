@@ -71,14 +71,14 @@ exports.__handalError = function (e) {
 exports.MergeArray = function (Arr1,Arr2,type = 'or') {
   if(typeof(Arr1)!='object') Arr1 = [Arr1];
   if(typeof(Arr2)!='object') Arr2 = [Arr2];
-  var response = [];
+  var response = [],temp = [];
   for(let i in Arr2)
     if(Arr1.indexOf(Arr2[i]) != -1) response.push(Arr2[i]);
+    else temp.push(Arr2[i]);
   if(type.toLowerCase() == 'or'){
     for(let i in Arr1)
       if(response.indexOf(Arr1[i]) == -1) response.push(Arr1[i]);
-    for(let i in Arr2)
-      if(response.indexOf(Arr2[i]) == -1) response.push(Arr2[i]);
+    response = response.concat(temp);
   }
   return response
 }

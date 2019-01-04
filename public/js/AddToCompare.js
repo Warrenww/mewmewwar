@@ -4,14 +4,17 @@ $(document).ready(function () {
 
   $(document).on('click','.glyphicon-shopping-cart',function () {
     var target = $(this).parent().children(".card:visible").attr('value'),
-        name = $(this).parent().children(".card:visible").text();
-        console.log(target,name);
-    addToCompare(target,name);
+        name = $(this).parent().children(".card:visible").attr('name');
+        target = target.split("-");
+        console.log(target[0],name,target[1]);
+    addToCompare(target[0],name,target[1]);
   });
   $(document).on('click',"#addcart", function () {
-    let target = $(".dataTable").attr('id'),
-    name = $(".dataTable").find(".name").eq(0).text().split(" ")[0];
-    addToCompare(target,name);
+    var target = $(".dataTable").find("#id").text(),
+        stage = Number($(".dataTable").find(".img[active='1']").attr('stage')),
+        name = $(".dataTable").find(".name").eq(stage).text().split(" ")[0];
+    stage = type == 'cat'?Number(stage)+1:null;
+    addToCompare(target,name,stage);
   });
   //compare tag for cat and enemy
   $(document).on('click','#compareTarget_tag',showhidecomparetarget);
@@ -78,14 +81,14 @@ $(document).ready(function () {
     $('.compare_panel').css('height',0);
   });
 });
-function compareTargetAddCard(target,name) {
+function compareTargetAddCard(target,name,stage=null) {
   $(".compareTarget").append(
       '<span class="card" value="'+target+
       '" style="background-image:url('+
-      (type == "enemy"?image_url_enemy:image_url_cat)+target+
+      (type == "enemy"?image_url_enemy:image_url_cat)+target+(stage?('-'+stage):'')+
       '.png" name="'+name+'"></span>');
 }
-function addToCompare(target,name='') {
+function addToCompare(target,name='',stage=null) {
   $('.compare_panel').css('height',0);
   if(showcomparetarget) showhidecomparetarget();
   compare = []
@@ -102,7 +105,7 @@ function addToCompare(target,name='') {
       repeat.css('border-color','white');
     },1000);
   } else {
-    compareTargetAddCard(target,name)
+    compareTargetAddCard(target,name,stage)
     $('.compareTarget_holder').animate({
       scrollTop : $('.compareTarget').height()
     },500,'easeInOutCubic');

@@ -9,7 +9,6 @@ class Cat{
     this.cd = obj.cd.toFixed(1);
     this.char = obj.char;
     this.cost = obj.cost;
-    this.count = obj.count;
     this.dps = obj.dps;
     this.freq = Number(obj.freq)?obj.freq.toFixed(2):"-";
     this.condition = obj.condition;
@@ -51,7 +50,7 @@ class Cat{
   }
   CharHtml(lv){
     let html = '',char = this.char;
-    if(!this.tag) html = '無'
+    if(!this.tag||this.char=='無') html = '無'
     else{
       for(let k in char){
         if(char[k].type=='波動'){

@@ -19,6 +19,7 @@ $(document).ready(function () {
   });
   socket.on("owned data",function (data) {
     own_data = data ;
+    // console.log(data);
     let arrange = {};
     for(let i in data){
       let rarity = data[i].rarity;
@@ -30,9 +31,6 @@ $(document).ready(function () {
     }
     // console.log(arrange);
     appendArrange(arrange);
-  });
-  $(document).on("click","#reload",function () {
-    location.assign("/view/book.html");
   });
   $(document).on("click",".section_snapshot",function () {
     let target = $(this).parent()[0];
@@ -53,7 +51,7 @@ $(document).ready(function () {
           arrange[rarity].arr.push(own_data[i]);
         }
       } else if(type == 'id'){
-        let id = Number(own_data[i].id.substring(0,3));
+        let id = Number(own_data[i].id.toString().substring(0,3));
         buffer[id] = own_data[i];
       } else {
         let flag = true ,exist = [];
@@ -83,11 +81,14 @@ $(document).ready(function () {
       arrange[0].name = '無';
       for(let i in buffer) arrange[0].arr.push(buffer[i]);
     }
-    console.log(arrange);
+    // console.log(arrange);
     appendArrange(arrange);
   });
   $(document).on("click",'.name',function () {
-    $(this).siblings(".item").toggle(400);
+    var name = $(this).text();
+    $(".subclass span").attr("active",0);
+    $(this).attr("active",1);
+    $('.section[id="'+name+'"]').show().siblings().hide();
   });
 
   $(document).on('click','#searchBut',function () {
@@ -107,9 +108,11 @@ $(document).ready(function () {
     position = [];
     pos = 0 ;
     $(".dataScetion").find(".card").removeClass('blink');
+    $("#id").click();
     for(let i in own_data){
-      let name = own_data[i].name;
-      if(name.indexOf(k)!=-1) result.push(own_data[i].id);
+      var name = own_data[i].name;
+      for(let j in name)
+        if(name[j].indexOf(k)!=-1) result.push(own_data[i].id);
     }
     // console.log(result);
     for(let i in result){
@@ -168,7 +171,7 @@ $(document).ready(function () {
       });
     }
   });
-  $(document).on("click",'.card',function () {
+  $(document).on("click",'.card',function (e) {
     editOn = Number($("#edit").attr("value"));
     if(editOn){
       let name = $(this).text(),
@@ -183,24 +186,36 @@ $(document).ready(function () {
         });
       }
     }
+    e.stopPropagation();
+    return false;
   });
 
 });
 function appendArrange(obj) {
-  let html = ''
+  var section = '', subclass = '<div>',subclassCount = 0,limit = is_mobile?4:6;
   for(let i in obj){
-    html +=
-      "<div class='section'><span class='name'>"+obj[i].name+"</span>"+
-      "<span class='section_snapshot'><i class='material-icons'>&#xe439;</i></span>"+
-      "<span class='item'>";
+    if(subclassCount >= limit){
+      subclass += "</div><div><span class='name' active='0'>"+obj[i].name+"</span>";
+      subclassCount = 0;
+    } else subclass += "<span class='name' active='0'>"+obj[i].name+"</span>";
+    subclassCount ++;
+    section += "<div class='section'id='"+obj[i].name+"'><div class='item'>";
     for(let j in obj[i].arr){
-      html += '<span class="card cat" type="cat" value="'+obj[i].arr[j].id+'" '+
+      if(!obj[i].arr[j].name)continue;
+      var id = obj[i].arr[j].id,
+          stage = obj[i].arr[j].stage?obj[i].arr[j].stage:1,
+          name = obj[i].arr[j].name[stage-1]
+      section += '<span class="card cat" type="cat" value="'+id+'" '+
       'style="background-image:url('+
-      image_url_cat+obj[i].arr[j].id+'.png);" name="'+
-      obj[i].arr[j].name+'"></span>'
+      image_url_cat+id+"-"+stage+'.png);" name="'+
+      name+'"></span>';
     }
-    html += "</span></div>"
+    section += "</span></div></div>";
   }
-  $(".display .dataScetion").empty();
-  $(".display .dataScetion").append(html);
+  // section += "</div>";
+  // subclass += "<span class='section_snapshot'><i class='material-icons'>&#xe439;</i></span></div>";
+  subclass += "</div>";
+  $(".display .dataScetion").empty().append(section);
+  $(".display .subclass").empty().append(subclass);
+  $(".display .subclass span:first").click();
 }

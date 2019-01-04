@@ -6,6 +6,7 @@ var gachadata;
 database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
 
 exports.parseRarity = function(r) {
+  console.log(r);
   switch (r) {
     case "基本":
       r = "B";
@@ -31,7 +32,7 @@ exports.parseRarity = function(r) {
   return r
 }
 exports.parseChar = function(c,obj,type) {
-  console.log(c.html());
+  c.find(".hide").remove();
   c = c.html().split("<font class=\"at1 hide")[0].split("<br>");
   for(let i in c){
     c[i] = $("<div/>").html(c[i]).text();
@@ -52,7 +53,7 @@ exports.parseChar = function(c,obj,type) {
           range:c[i].split("（")[1].split("）")[0].split("～")
         });
       }
-      else if(c[i].indexOf("バリア")!=-1){
+      else if(c[i].indexOf("バリア")!=-1 && type == 'enemy'){
         let aa = c[i].split("（")[1].split('）')[0].split(",").join("");
         obj.tag.push("護盾");
         obj.char.push({
@@ -75,10 +76,6 @@ exports.parseChar = function(c,obj,type) {
           obj.char.push({type:"免疫"+parseAbility(aa[i])});
         }
       }
-      else if(c[i].indexOf("メタル")!=-1){
-        obj.tag.push("鋼鐵");
-        obj.char.push({type:"鋼鐵 (受到會心一擊以外傷害值為1)"});
-      }
       else if(c[i].indexOf("クリティカル")!=-1){
         let aa = c[i].split("％")[0];
         obj.tag.push("爆擊");
@@ -92,6 +89,7 @@ exports.parseChar = function(c,obj,type) {
         let aa = c[i].split("連続攻撃"),
         bb = aa[1].split("（")[1].split("）")[0].split(" "),
         sum = 0;
+        console.log(bb);
         for(let i in bb){
           bb[i] = Number(bb[i].split(",").join(""));
           sum += bb[i];
@@ -110,7 +108,7 @@ exports.parseChar = function(c,obj,type) {
           type:"對貓咪城傷害x4"
         });
       }
-      else if(c[i].indexOf("蘇生")!=-1){
+      else if(c[i].indexOf("蘇生")!=-1 && type == 'enemy'){
         let aa = c[i].split("％"),
         times = c[i].split("（")[1].split("）")[0];
         obj.tag.push("復活");
@@ -209,6 +207,10 @@ exports.parseChar = function(c,obj,type) {
             percent:abi.split(" ")[1]?abi.split(" ")[1].split("%")[0]:null
           });
       }
+      else if(c[i].indexOf("メタル")!=-1 && c[i].indexOf("な敵 ")==-1){
+        obj.tag.push("鋼鐵");
+        obj.char.push({type:"鋼鐵 (受到會心一擊以外傷害值為1)"});
+      }
       else {
         c[i] = c[i].split(" ※")[0];
         let bb = c[i].split("（"),
@@ -293,6 +295,12 @@ function parseAbility(s) {
     case "バリアブレイク":
       s = "破盾";
       break;
+    case "超打たれ強い":
+      s = "超級耐打";
+      break;
+    case "極ダメージ":
+      s = "極度傷害";
+      break;
     default:
       s = s ;
   }
@@ -363,8 +371,8 @@ exports.parseCondition = function(row_7,row_8,obj) {
       // console.log(arr);
       for (let j in arr){
         if(arr[j] != -1){
-          condition.fruit[i] = {
-            seed:se == -1 ? false : (arr[i]>se ? true : false ),
+          condition.fruit[j] = {
+            seed:se == -1 ? false : (arr[j]>se ? true : false ),
             number:Number(s.substring(arr[j]+1,arr[j]+2))
           }
         }
@@ -603,7 +611,8 @@ exports.parsePrize = function(p,img) {
   }
   else if(p.children("a").attr("href")) {
     obj.name = img.children("img").attr("src").split("/")[3].split(".png")[0];
-    obj.amount = Unit.catName(obj.name.substring(1));
+    var catName = Unit.catName(obj.name.split("-")[0].split("u")[1]);
+    obj.amount = catName?catName[Number(obj.name.split("-")[1])-1]:"";
   } else {
     obj.name = s;
   }

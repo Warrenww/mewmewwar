@@ -152,7 +152,7 @@
 }
 #mark_own[value~='0']{color:rgb(224, 103, 103)}
 #mark_own[value~='1']{color:rgb(96, 176, 37)}
-.survey #nickname{display: flex}
+.survey #nickname{display: flex;text-align: center;}
 .survey #nickname span,
 .survey #nickname div,
 {
@@ -359,4 +359,125 @@
   0%{left:1000px}
   50%{left:0px}
   100%{left:-1000px}
+}
+.dataTable #title{
+  display: flex;
+  height: 120px;
+}
+.dataTable #title .img{
+      padding: 0px;
+      background-size: cover;
+      width: 100;
+      height: 100;
+      margin: 10;
+      border-radius: 50%;
+      box-shadow: 1px 1px 10px 0px;
+      border: 3px solid white;
+      cursor: pointer;
+      transition: .3s ease
+}
+.dataTable #title .img[active~='1']{
+  width: 180px;
+  border-radius: 10px;
+}
+.dataTable #title .name{
+  flex:1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0px;
+  transition: .3s ease;
+  pointer-events: none;
+}
+.dataTable #title .name[active~='0']{
+  flex: 0;
+  color: transparent
+}
+#combo_head,#survey_head,#comment_head{
+  width: calc(100% - 6px);
+  background-color: #e9d6ad;
+  font-size: 16;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  padding: 8;
+  margin-top: 10
+}
+.surveyTable{
+  width: calc(100% - 6px);
+  font-size: 16;
+}
+.surveyTable .survey{
+  display: flex;
+  width: 100%;
+}
+.surveyTable .th{
+  background-color: #e9d6ad;
+  font-weight: bold;
+  margin: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5
+}
+.surveyTable .td{
+  background-color: rgba(255,255,255,.9);
+  padding: 5;
+  margin: 1.5;
+  flex:1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#rank_detail{display: block}
+.surveyTable .rank_holder{
+  display: flex;
+  width: 100%
+}
+.surveyTable .rank_holder div{
+  flex:1;
+  text-align: center;
+  border-bottom: 1px dashed lightgray;
+  margin: 1.5;
+}
+.surveyTable .pos_holder{
+  flex:1;
+  margin: 2;
+  border: 1px dashed lightgray;
+  text-align: center;
+  position: relative;
+}
+.surveyTable .pos_holder .describe{
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  background-color: black;
+  color: white;
+  padding: 5;
+  border-radius: 10px;
+  z-index: 3;
+}
+.surveyTable .pos_holder .describe:after{
+  content: "";
+  width: 20;
+  height: 20;
+  position: absolute;
+  top: -20px;
+  left: calc(50% - 10px);
+  border: 10px solid transparent;
+  border-bottom: 10px solid black;
+}
+.surveyTable .pos_holder:hover .describe{display: flex}
+@media screen and (max-width: 425px) {
+  .dataTable #title .img{ width: 50px; height: 50px; }
+  .dataTable #title .img[active='1']{ width: 90px}
+  .dataTable #title .name{ font-size: 14}
+  .dataTable #title {height: 60}
+  .survey{flex-direction: column;}
+  .survey:first-of-type{height: 100}
+  .survey:nth-of-type(2n){height: 300}
+  .survey:nth-of-type(3n){height: 400}
+  .survey:last-of-type{height: 150}
 }

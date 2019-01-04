@@ -57,12 +57,12 @@ exports.fetch = function (chapter,id,correction) {
   id = id.split("-");
   console.log(chapter,id);
   if(!chapter||!id) return;
-  getData(chapter,id[0],id[1]?id[1]:0,correction,id[1]?true:false);
+  getData(chapter,"s"+id[0],id[1]?id[1]:0,correction,id[1]?true:false);
 
 }
 var NumberOfLevel;
 function getData(chapter,i,j,correction=false,single=false) {
-  var url = "https://battlecats-db.com/stage/s"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
+  var url = "https://battlecats-db.com/stage/"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
   console.log(url);
   request({
     url: url,
@@ -70,9 +70,11 @@ function getData(chapter,i,j,correction=false,single=false) {
   }, function(e,r,b) {
     if(Number(j) == 0 && !e){
       $ = cheerio.load(b);
-      var StageName = $("h2").text();
+      if(!StageData[chapter][i]){
+        var StageName = $("h2").text();
+        database.ref("/stagedata/"+chapter+"/"+i+"/name").set(StageName);
+      }
       NumberOfLevel = ($("td[rowspan='2']").length)/2;
-      database.ref("/stagedata/"+chapter+"/s"+i+"/name").set(StageName);
       j++;
       getData(chapter,i,j,correction,false);
       return
@@ -89,7 +91,7 @@ function getData(chapter,i,j,correction=false,single=false) {
       enemy : [],
       final : "",
       "continue" : "",
-      id:[chapter,"s"+i,j].join("-"),
+      id:[chapter,i,j].join("-"),
     };
     if(!StageData[chapter]) obj.count = 0;
     else if(!StageData[chapter][i]) obj.count = 0;
@@ -103,7 +105,8 @@ function getData(chapter,i,j,correction=false,single=false) {
           tbody_1 = content.children("tbody").eq((final?1:0)+(correction?1:0)).children("tr"),
           tbody_2 = content.children("tbody").eq((final?2:1)+(correction?1:0)).children("tr");
       obj.final = final;
-      obj.name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
+      obj.jp_name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
+      obj.name = StageData[chapter][i][j]?StageData[chapter][i][j].name:obj.jp_name;
       obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
       obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
       obj.constrain = thead.eq(0).children("td").eq(2).find("font").text().indexOf("制限")!=-1?Parser.parseConstrain(thead.eq(0).children("td").eq(2).find("font").text()):null;
@@ -135,7 +138,7 @@ function getData(chapter,i,j,correction=false,single=false) {
         });
       }
       console.log(obj);
-      database.ref("/stagedata/"+chapter+"/s"+i+"/"+j).update(obj);
+      database.ref("/stagedata/"+chapter+"/"+i+"/"+j).update(obj);
       j++;
       if(!final && !single) getData(chapter,i,j,correction,false);
     }

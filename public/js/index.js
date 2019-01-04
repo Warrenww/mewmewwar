@@ -161,7 +161,7 @@ $(document).ready(function () {
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
       let target = $(".LegendCard").eq(i);
-      target.children("img").attr("src",image_url_cat+data.legend.mostSearchCat[i].id+'.png');
+      target.children("img").attr("src",image_url_cat+data.legend.mostSearchCat[i].id+'-1.png');
       for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchCat[i][dataArr[j]]);
       target.attr({"id":data.legend.mostSearchCat[i].id,type:'cat'});
     }
@@ -217,7 +217,7 @@ $(document).ready(function () {
       }
       $("<div id='alt_text'>"+alt_text+"</div>").insertAfter("#event_iframe");
       $("#event_iframe").prev().prop("disabled",'disabled');
-      $("#event_iframe").next().next().children().eq(0).attr("href",last);
+      $("#event_iframe").next().next().children().eq(0).attr("href",eventURL+last+'.html');
       $("#event_iframe").remove();
     }
     // update new event iframe
@@ -312,12 +312,12 @@ $(document).ready(function () {
         var _index = 0, // indexing iframe
             doc_h = $(document).height(), // Get the height of document
             active_index; // Store the index of active iframe
-            console.log(doc_h);
+            // console.log(doc_h);
         $("#iframe_holder").attr("active","alt-tab"); // Turn into carousel view
         // loop through iframe and set its position
         $("#iframe_holder iframe").each(function () {
           if($(this).attr('active') == 'true') active_index = _index;
-          console.log(_index,-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
+          // console.log(_index,-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
           $(this).css("top",-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
           _index += 1;
         });

@@ -23,9 +23,10 @@ $(document).ready(function () {
   });
 
   socket.on("required data",(data)=>{
+    console.log(data);
     var type = data.type,
         buffer = data.buffer[0],
-        data = type == 'cat'?new Cat(buffer.data):new Enemy(buffer.data),
+        data = type == 'cat'?new Cat(buffer.data.data[buffer.currentStage]):new Enemy(buffer.data),
         lv = buffer.lv/(type == "enemy"?100:1);
     $(".floatDisplay_holder").fadeIn();
     $(".floatDisplay .dataTable #lv").text(lv);
@@ -53,7 +54,6 @@ $(document).ready(function () {
     var type = $('.floatDisplay div span').attr('type'),
         id = $('.floatDisplay div span').attr('id'),
         lv = Number($(".floatDisplay .dataTable #lv").text());
-    if(type == 'enemy') lv /= 100;
     socket.emit("store level",{
       uid : CurrentUserID,
       id : id,
