@@ -29,6 +29,8 @@ exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
   if(!UserData[uid]) return null
   var response;
   if(arg_0){
+    if(UserData[uid].variable[arg_0]==''||!UserData[uid].variable[arg_0])
+      UserData[uid].variable[arg_0] = {};
     if(arg_1){
       if(arg_2) response = UserData[uid].variable[arg_0][arg_1][arg_2];
       else response = UserData[uid].variable[arg_0][arg_1];
