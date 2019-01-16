@@ -8,11 +8,13 @@ if(Storage){
     $("#toggleSearch").attr("value",0);
   }
 }
+var current_level_data = {},
+    current_enemy_data = {},
+    current_user_setting = {};
 $(document).ready(function () {
   var timer = new Date().getTime();
   var filter_name = '' ;
 
-  var current_level_data = {};
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -26,6 +28,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     CurrentUserID = data.uid ;
+    current_user_setting = data.setting;
     if(data.last_stage){
       let last_stage = data.last_stage,
           arr = last_stage.split("-");
@@ -207,10 +210,10 @@ $(document).ready(function () {
     $("#select_level").empty().removeClass("loading");
     for( let i in data )
       $("#select_level").append(
-        "<span class='card'style='"+
-        "background-image:url(\"./css/footage/stage/fight_BG_0"+
-        (Math.ceil(Math.random()*5))+".png\")"+
-        "' id='"+data[i].id+"'>"+data[i].name+"</span>"
+        '<span class="card"style="'+
+        "background-image:url('"+image_url_stage+
+        (data[i].bg?data[i].bg:("bg"+AddZero(Math.ceil(Math.random()*12),2)))+
+        ".png')\"id='"+data[i].id+"'>"+data[i].name+"</span>"
       );
       $("#select_stage").find("button[id='"+data[0].id.split("-")[1]+"']")
         .attr('value',1).siblings().attr('value',0);
@@ -235,26 +238,48 @@ $(document).ready(function () {
   socket.on("level data",function (obj) {
     // console.log(obj);
     current_level_data = obj;
-    let html = "",
+    current_enemy_data = null;
+
+    var html = "",
         data = obj.data,
         prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
         next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
+    // Initialization
     $(".display .dataTable td").empty();
-    $(".reward").remove();
-    $(".enemy_row").remove();
+    $(".reward,.moredata,.enemy_row").remove();
+    $(".display .dataTable img").remove();
+    $(".display #star").hide();
+    $("*[class='orgdata']").show();
+    $(".enemy_head th").attr("reverse","");
+    // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
     $(".display .dataTable #stage").html(obj.parent).attr('value',obj.stage);
     $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
-    $(".enemy_head th").attr("reverse","");
+    // append data
     for(let i in data){
       if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
       else if (i == 'continue') $(".display .dataTable").find("#"+i).text(data[i]?"可以":"不行");
+      else if (i == 'castle_img') $(".display .dataTable").find("#"+i).html("<img src='"+image_url_stage+data[i]+".png'>");
+      else if (i == 'bg_img') $(".display .dataTable").find("#"+i).html("<img src='"+image_url_stage+data[i]+".png'>");
+      else if (i == 'star') {
+        let starArr = data[i],starhtml="";
+        if(data[i].length > 1) {
+          $("#star").show();
+          for(let j in starArr){
+            if(j == 0)
+              starhtml += '<i class="material-icons" val="'+starArr[j]+'" active="1"> star </i>';
+            else if(starArr[j] != 1)
+              starhtml += '<i class="material-icons" val="'+starArr[j]+'"star="'+j+'"> star </i>';
+          }
+          $(".display .dataTable").find("#"+i).html(starhtml);
+        }
+      }
       else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
-    $(Addreward(data.reward,data.integral)).insertAfter($("#reward_head"))
-    $(Addenemy(data.enemy)).insertAfter($(".enemy_head:last"));
+    $("#rewardTable").append(Addreward(data.reward,data.integral));
+    $("#enemyTable").append(Addenemy(data.enemy));
     // $(Addlist(data.list)).insertAfter($("#list_toggle"));
     setTimeout(function () {
       scrollSelectArea('stage',obj.stage);
@@ -262,7 +287,22 @@ $(document).ready(function () {
     },300);
     scroll_to_class('display',0);
   });
-
+  // Change level star
+  $(document).on('click',"#star i",function () {
+    var mul = Number($(this).attr("val"))/Number($("#star i[active='1']:last").attr('val')),
+        star = $(this).attr("star");
+    $(this).attr('active',1).prev().attr('active',1).prev().attr('active',1);
+    $(this).next().attr('active',0).next().attr('active',0).next().attr('active',0);
+    $(".enemy_row").each(function () {
+      let org = $(this).find("#multiple");
+      org.text((Number(org.text().split("％")[0])*mul).toFixed(0)+"％");
+    });
+    current_level_data.data.enemy.map((x) => {x.multiple = (Number(x.multiple.split("％")[0])*mul).toFixed(0)+"％"});
+    if(star == 3) $(".dataTable #constrain").text("Ex・稀有");
+    else $(".dataTable #constrain").text("-");
+    // console.log(current_level_data);
+  });
+  // More Option
   $('#prev,#next').click(function () {
     let data = JSON.parse($(this).attr('query'));
     // console.log(data.level);
@@ -277,7 +317,7 @@ $(document).ready(function () {
       });
   })
   $("#AddToCompare").click(function () {
-    let enemy = current_level_data.data.enemy,
+    var enemy = current_level_data.data.enemy,
         arr = [];
     for(let i in enemy){
       let id = enemy[i].id,
@@ -301,6 +341,7 @@ $(document).ready(function () {
       window.open("/compareEnemy","_blank");
     }
   });
+  // Show where this level come from
   $(".display .dataTable #chapter").click(function () {
     scroll_to_div('selector');
     $(".select_chapter").find("button[id='"+$(this).attr('value')+"']").click();
@@ -310,33 +351,118 @@ $(document).ready(function () {
         stage = $(this).attr('value');
     socket.emit("required level name",{chapter:chapter,stage:stage});
   });
-  $("#reward_head").click(function () {
-    $(".reward").toggle();
-    $(this).find('i').attr("value",function () {
-      return Number($(this).attr("value"))+1
-    }).css("transform",function () {
-      return "rotate("+Number($(this).attr("value"))*180+"deg)"
-    });
-  });
-  $("#enemy_toggle").click(function () {
-    $(".enemy_row,.enemy_head").toggle();
-    $(this).find('i').attr("value",function () {
-      return Number($(this).attr("value"))+1
-    }).css("transform",function () {
-      return "rotate("+Number($(this).attr("value"))*180+"deg)"
-    });
-  });
+  // Enemy filter function
+  $("#reward_head,#enemy_head").click(function () { $(this).next("table").toggle(); });
   $(".enemy_head th>span").click(function (e) {
     e.stopPropagation();
     if($(this).attr("active") == "true")
       $(this).attr('active',false).next().css("height",0);
     else
-      $(this).attr('active',true).next().css("height","auto");
+      $(this).attr('active',true).next().css("height","auto")
+        .parent().siblings().each(function () {
+          $(this).find('span').attr('active',false).next().css("height",0);
+        });
+    $(document).bind('click',closePanel);
   });
-  $(".enemy_head th div").click(function () {
+  var closePanel = function () {
+    $(".enemy_head").find('span').attr('active',false).next().css("height",0);
+    $(document).unbind('click',closePanel);
+  }
+  $(".enemy_head th>div").click(function (e) {
+    e.stopPropagation();
+    $(this).children().click(function (e) {
+      var target = $(this).text(),
+          name = $(this).parent().parent().attr('id');;
+      // console.log(target,name);
+      if(target == "無篩選") {
+        $(".enemy_row").show();
+        $(".enemy_head").find("th div div").attr("active",0);
+        $(".enemy_head").find("th").attr("reverse",'');
+        $(this).parent().css('height',0).prev().attr("active",false);
+      }
+      else{
+        $(".enemy_row").each(function () {
+          let val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
+          val = !val ? (val==0?0:1e20) : val;
+          if(val!=target) $(this).hide();
+          else $(this).show();
+        });
+        $(".enemy_head").find("th div div").attr("active",0);
+        $(".enemy_head").find("th").attr("reverse",'');
+        $(this).attr("active",1)
+        .parent().css('height',0).prev().attr("active",false)
+        .parent().attr("reverse",'filter');
+      }
+    });
+  });
+  // Switch level/enemy data
+  $("#enemy_head span").click(function (e) {
+    e.stopPropagation();
+    if(current_enemy_data){
+      $('.moredata').toggle().siblings("*[class='orgdata']").toggle();
+      if(!current_level_data.data.enemy[0].point) $(" .enemy_head #point").hide();
+    } else {
+      var enemy = current_level_data.data.enemy,
+          arr = [];
+      FloatDisplayMutex = false;
+      for(let i in enemy) arr.push(enemy[i].id)
+      socket.emit("required data",{
+        type : 'enemy',
+        target : arr,
+        record : false,
+        uid : CurrentUserID,
+        lv : 1
+      });
+    }
+  });
+  socket.on("required data",(data)=>{
+    if(FloatDisplayMutex || current_enemy_data) return;
+    // console.log(data);
+    current_enemy_data = {};
+    for(let i in data.buffer) {
+      let id = data.buffer[i].data.id;
+      current_enemy_data[id] = new Enemy(data.buffer[i].data);
+    }
+    SwitchData();
+  });
+  function SwitchData(data) {
+    var showlist = ['hp','atk','range','tag'],
+        fieldNameMap = {
+          'aoe':'範圍攻擊','atk':'攻擊力','atk_speed':'攻擊速度','char':'特性','color':'屬性',
+          'dps':'DPS','freq':'攻擊頻率','hardness':'硬度','hp':'血量','name':'名稱','range':'攻擊範圍',
+          'reward':'獲得金錢','speed':'跑速','tag':'特性'
+        };
+    if(current_user_setting.MoreDataField) showlist = current_user_setting.MoreDataField;
+    $(".orgdata").hide();
+    for(let i in showlist){
+      $(".enemy_head").append("<th id='"+showlist[i]+"'class='moredata'>"+fieldNameMap[showlist[i]]+"</th>");
+      $(".enemy_row").each(function () {
+        var id = $(this).children().eq(0).attr('id').toString(),
+            lv = Number($(this).children().eq(1).text().split("％")[0])/100,
+            appendText;
+        if(showlist[i] == 'tag'){
+          if(current_enemy_data[id].tag) appendText = current_enemy_data[id].tag;
+          else appendText = "-";
+        }
+        else if(showlist[i] == 'aoe'){
+          appendText = current_enemy_data[id].Aoe;
+        }
+        else if (showlist[i] == 'char') {
+          appendText = current_enemy_data[id].CharHtml(lv);
+        }
+        else if(showlist[i] == 'color'){
+          appendText = current_enemy_data[id].Color;
+        }
+        else if (showlist[i] == 'name') {
+          appendText = current_enemy_data[id].Name;
+        }
+        else appendText = current_enemy_data[id].Tovalue(showlist[i],lv);
 
-  });
-  $(".enemy_head th div").click((e)=>{e.stopPropagation();})
+        $(this).append("<td id='"+showlist[i]+"'class='moredata'>"+appendText+"</td>")
+      });
+    }
+  }
+
   function Addreward(arr,b) {
     // console.log(arr);
     let html ="";
@@ -359,34 +485,22 @@ $(document).ready(function () {
           first_show:[],
           next_time:[]
         };
-    if(arr[0].point) $(".enemy_head #point,#bufferZone").show();
-    else $(".enemy_head #point,#bufferZone").hide();
+    if(arr[0].point) $(".enemy_head #point").show();
+    else $(".enemy_head #point").hide();
     for(let i in arr){
       if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
       "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
       (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
-      "'  colspan='"+(is_mobile?2:1)+"'><img src='"+image_url_enemy+arr[i].id+
+      "'  colspan='1'><img src='"+image_url_enemy+arr[i].id+
       ".png' style='width:100%'/></td>" ;
-      if(is_mobile){
-        html +=
-        "<td id='amount' colspan='2'>"+arr[i].amount+"</td>"+
-        "<td id='first_show' colspan='2'>"+arr[i].first_show+"</td>"+
-        "</tr><tr class='enemy_row' id='"+i+"'>"+
-        "<td id='multiple' colspan='2'>"+arr[i].multiple+"</td>"+
-        "<td id='castle' colspan='2'>"+arr[i].castle+"</td>"+
-        "<td id='next_time' colspan='2'>"+arr[i].next_time+"</td>"+
-        (arr[0].point?"<td id='point'>"+arr[i].point+"</td>":"")+
-        "</tr>";
-      } else {
-        html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
-        "<td id='amount'>"+arr[i].amount+"</td>"+
-        "<td id='castle'>"+arr[i].castle+"</td>"+
-        "<td id='first_show'>"+arr[i].first_show+"</td>"+
-        "<td id='next_time'>"+arr[i].next_time+"</td>"+
-        (arr[0].point?"<td id='point'>"+arr[i].point+"</td>":"")+
-        "</tr>";
-      }
+      html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
+      "<td id='amount'class='orgdata'>"+arr[i].amount+"</td>"+
+      "<td id='castle'class='orgdata'>"+arr[i].castle+"</td>"+
+      "<td id='first_show'class='orgdata'>"+arr[i].first_show+"</td>"+
+      "<td id='next_time'class='orgdata'>"+arr[i].next_time+"</td>"+
+      (arr[0].point?"<td id='point'class='orgdata'>"+arr[i].point+"</td>":"")+
+      "</tr>";
       for(let j in range) if(range[j].indexOf(arr[i][j]) == -1) range[j].push(arr[i][j]);
     }
     for(let j in range){
@@ -395,11 +509,11 @@ $(document).ready(function () {
     }
     for(let j in range){
       range[j] = quickSort(range[j]);
-      $(".enemy_head").find("#"+j).children("div")
-      .append("<div>無篩選</div>");
+      $(".enemy_head").find("#"+j).children("div").empty().append("<div>無篩選</div>");
       for(let k in range[j])
-        $(".enemy_head").find("#"+j).children("div")
-        .append("<div>"+range[j][k]+"</div>");
+        if(!Number.isNaN(range[j][k]))
+          $(".enemy_head").find("#"+j).children("div")
+            .append("<div>"+range[j][k]+"</div>");
     }
     // console.log(range);
     return html
@@ -490,7 +604,6 @@ $(document).ready(function () {
     var name = $(this).attr('id'),
         arr = [],
         flag = $(this).attr('reverse') ;
-    if(is_mobile) return
     $(".enemy_row").each(function () {
       let obj = {},
           val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
@@ -509,6 +622,9 @@ $(document).ready(function () {
       for(let i=0;i<arr.length;i++) $(".enemy_head:visible:last").after($(".enemy_row[id='"+arr[i].id+"']"));
       $(this).attr('reverse','decrease').siblings().attr('reverse','');
     }
+    $(".enemy_head").find("span").attr("active",false).next().css("height",0);
+    $(".enemy_head").find("th div div").attr("active",0);
+    $(".enemy_row").show();
   }
 
   var tip_fadeOut;

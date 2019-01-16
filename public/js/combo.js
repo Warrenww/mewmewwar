@@ -178,7 +178,7 @@ function mergeCombo(This,data=null) {
     if(flag) target.find(".seat:last").remove();
     $(this).css("border-color","white").clone().prependTo(target);
   });
-  target.find("i").click();
+  target.find("i").click().click();
 }
 
 function checkList(list,id) {

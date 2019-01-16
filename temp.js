@@ -27,6 +27,7 @@ var database = firebase.database();
 var db = admin.firestore();
 console.log('start');
 
+database.ref("/error_log").set(null);
 // db.collection('users').doc('alovelace').collection('www').doc('wwww').set({w:true});;
 // db.collection('users').get()
 //     .then((snapshot) => {
@@ -65,41 +66,41 @@ console.log('start');
 //
 //   }
 // })
-var mutex = new Promise(function(resolve, reject) {
-    database.ref("/catComment").once("value",(snapshot)=>{
-          resolve(snapshot.val())
-    });
-});
-mutex.then(function (comment) {
-  database.ref("/newCatData").once("value",(snapshot)=>{
-    var data = snapshot.val();
-    var exist = "000",
-        StageCount = 0,
-        SearchCount = 0;
-    for(let i in data){
-      if(i.substring(0,3) != exist){
-        if(exist!="000"){
-          console.log(exist,SearchCount);
-          database.ref("/CatData/"+exist+"/").update({
-            comment:comment[exist]?(comment[exist].comment?comment[exist].comment:"-"):"-",
-            statistic:comment[exist]?(comment[exist].statistic?comment[exist].statistic:"-"):"-",
-            count:SearchCount
-          });
-        }
-
-        exist = i.substring(0,3);
-        // StageCount = 1;
-        SearchCount = data[i].count?data[i].count:0;
-        // database.ref("/CatData/"+exist+"/data/"+StageCount).update(data[i]);
-      } else {
-        // StageCount ++;
-        SearchCount += data[i].count?data[i].count:0;
-        // database.ref("/CatData/"+exist+"/data/"+StageCount).update(data[i]);
-      }
-    }
-  });
-
-});
+// var mutex = new Promise(function(resolve, reject) {
+//     database.ref("/catComment").once("value",(snapshot)=>{
+//           resolve(snapshot.val())
+//     });
+// });
+// mutex.then(function (comment) {
+//   database.ref("/newCatData").once("value",(snapshot)=>{
+//     var data = snapshot.val();
+//     var exist = "000",
+//         StageCount = 0,
+//         SearchCount = 0;
+//     for(let i in data){
+//       if(i.substring(0,3) != exist){
+//         if(exist!="000"){
+//           console.log(exist,SearchCount);
+//           database.ref("/CatData/"+exist+"/").update({
+//             comment:comment[exist]?(comment[exist].comment?comment[exist].comment:"-"):"-",
+//             statistic:comment[exist]?(comment[exist].statistic?comment[exist].statistic:"-"):"-",
+//             count:SearchCount
+//           });
+//         }
+//
+//         exist = i.substring(0,3);
+//         // StageCount = 1;
+//         SearchCount = data[i].count?data[i].count:0;
+//         // database.ref("/CatData/"+exist+"/data/"+StageCount).update(data[i]);
+//       } else {
+//         // StageCount ++;
+//         SearchCount += data[i].count?data[i].count:0;
+//         // database.ref("/CatData/"+exist+"/data/"+StageCount).update(data[i]);
+//       }
+//     }
+//   });
+//
+// });
 
 // var gachadata = {};
 // database.ref("/gachadata").once("value",function (snapshot) {

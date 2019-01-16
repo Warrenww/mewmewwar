@@ -1,3 +1,4 @@
+var FloatDisplayMutex = true; // handle synchronization problem
 $(document).ready(function () {
   var page = location.pathname.split('/')[1];
   $(document).on('click','.cat,.enemy',function (e) {
@@ -23,6 +24,7 @@ $(document).ready(function () {
   });
 
   socket.on("required data",(data)=>{
+    if(!FloatDisplayMutex) {FloatDisplayMutex = true;return;}
     console.log(data);
     var type = data.type,
         buffer = data.buffer[0],

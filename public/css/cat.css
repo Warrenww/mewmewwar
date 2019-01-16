@@ -395,16 +395,6 @@
   flex: 0;
   color: transparent
 }
-#combo_head,#survey_head,#comment_head{
-  width: calc(100% - 6px);
-  background-color: #e9d6ad;
-  font-size: 16;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  padding: 8;
-  margin-top: 10
-}
 .surveyTable{
   width: calc(100% - 6px);
   font-size: 16;

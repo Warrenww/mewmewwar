@@ -445,7 +445,9 @@ table {
 #analyze_area i,
 .functionArea i,
 .floatDisplay i,
-#function_tag i{
+#function_tag i,
+#restoreField,
+#saveField{
   margin: 10px;
   background-color: rgba(255, 255, 255, 0.71);
   padding: 5px;
@@ -465,7 +467,9 @@ table {
 .list_display_holder .option i::before,
 #analyze_area div i::before,
 .functionArea i::before,
-#function_tag i::before{
+#function_tag i::before,
+#restoreField::before,
+#saveField::before{
   content: attr(text);
   position: absolute;
   z-index: 3;
@@ -488,7 +492,9 @@ table {
 .list_display_holder .option i:hover::before,
 #analyze_area div i:hover::before,
 .functionArea i:hover::before,
-#function_tag i:hover::before
+#function_tag i:hover::before,
+#restoreField:hover::before,
+#saveField:hover::before
 {opacity: 1;width: 100;overflow: visible;}
 /* optional : To enable border */
 .compareSorce .title #option i,
@@ -698,6 +704,17 @@ select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94
   animation-duration: 3s;
   animation-timing-function: cubic-bezier(0.64, 0, 0.32, 0.99);
   animation-iteration-count: infinite;
+}
+#combo_head,#survey_head,#comment_head,#reward_head,#enemy_head{
+  width: calc(100% - 6px);
+  background-color: #e9d6ad;
+  font-size: 16;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  padding: 8;
+  margin-top: 10;
+  position: relative;
 }
 @keyframes rotate {
   0%{transform: rotate(0deg);}

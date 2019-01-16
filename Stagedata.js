@@ -42,30 +42,99 @@ exports.GetNameArr = function (chapter,level=null) {
       response = [];
   if(level) target = target[level];
   for(let i in target) {
-    if (i == 'name') continue
-    response.push({id:i,name:target[i].name});
+    if (i == 'name') continue;
+    var temp = {id:i,name:target[i].name};
+    if(level) temp.bg = target[i].bg_img;
+    response.push(temp);
   }
   return response
+}
+
+exports.setHistory = function (id) {
+  id = id.split("-");
+  StageData[id[0]][id[1]][id[2]].count =
+    StageData[id[0]][id[1]][id[2]].count?StageData[id[0]][id[1]][id[2]].count+1:1;
+  database.ref("/stagedata/"+id.join("/")+"/count").set(StageData[id[0]][id[1]][id[2]].count);
+}
+
+exports.Search = function (type,query) {
+  console.log(type,'search stage with query : ');
+  console.log(query);
+  var buffer;
+  if(type == 'text'){
+    buffer = [];
+    for(let i in StageData){
+      for(let j in StageData[i]){
+        if(StageData[i][j].name.indexOf(query)!=-1)
+        buffer.push({id:i+"-"+j,name:StageData[i][j].name});
+        for(let k in StageData[i][j]){
+          if (k=='name') continue
+          if(StageData[i][j][k].name.indexOf(query)!=-1)
+          buffer.push({
+            id:i+"-"+j+"-"+k,
+            name:StageData[i][j].name+"/"+StageData[i][j][k].name
+          });
+        }
+      }
+    }
+  }
+  else if(type == 'reward'){
+    buffer = {};
+    // Go through all stage data to find reward
+    for(let i in StageData){
+      for(let j in StageData[i]){
+        for(let k in StageData[i][j]){
+          if('name' == k) continue  // Bypass it's name
+          var reward = StageData[i][j][k].reward,
+              id = StageData[i][j][k].id,
+              name = StageData[i][j].name+"-"+StageData[i][j][k].name;
+          for(let l in reward){
+            // Get the reward position in target list, if not exist return -1
+            var pos = query.indexOf(reward[l].prize.name);
+            // If this reward is contained in target reward list
+            if( pos != -1){
+              // If this stage does not exist in buffer, create it
+              if(!buffer[id]) buffer[id] = {name:name};
+              // Store chance into it, if reward exist and chance is bigger pass this
+              if(buffer[id][query[pos]])
+                if(Number(reward[l].chance.split("％")[0]) < Number(buffer[id][list[pos]].split("％")[0]))
+                    continue
+              buffer[id][query[pos]] = reward[l].chance;
+            }
+          }
+        }
+      }
+    }
+  }
+  return buffer
 }
 
 exports.stageMap = function () {
   return stageMap
 }
 
+var NumberOfLevel,fetch_Url,starVar;
 exports.fetch = function (chapter,id,correction) {
   var exist = false;
   id = id.split("-");
   console.log(chapter,id);
   if(!chapter||!id) return;
-  getData(chapter,"s"+id[0],id[1]?id[1]:0,correction,id[1]?true:false);
-
+  try {
+    anotherShot = 0;
+    getData(chapter,"s"+id[0],id[1]?id[1]:0,correction,id[1]?true:false);
+  } catch (e) {
+    try {
+      getData(chapter,"s"+id[0],id[1]?id[1]:0,true,id[1]?true:false);
+    } catch (e) {
+      Util.__handalError(e);
+    }
+  }
 }
-var NumberOfLevel;
 function getData(chapter,i,j,correction=false,single=false) {
-  var url = "https://battlecats-db.com/stage/"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
-  console.log(url);
+  fetch_Url = "https://battlecats-db.com/stage/"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
+  console.log(fetch_Url);
   request({
-    url: url,
+    url: fetch_Url,
     method: "GET"
   }, function(e,r,b) {
     if(Number(j) == 0 && !e){
@@ -73,6 +142,7 @@ function getData(chapter,i,j,correction=false,single=false) {
       if(!StageData[chapter][i]){
         var StageName = $("h2").text();
         database.ref("/stagedata/"+chapter+"/"+i+"/name").set(StageName);
+        StageData[chapter][i] = {name:StageName};
       }
       NumberOfLevel = ($("td[rowspan='2']").length)/2;
       j++;
@@ -90,6 +160,7 @@ function getData(chapter,i,j,correction=false,single=false) {
       reward : [],
       enemy : [],
       final : "",
+      star : [],
       "continue" : "",
       id:[chapter,i,j].join("-"),
     };
@@ -103,18 +174,23 @@ function getData(chapter,i,j,correction=false,single=false) {
           final = Number(j) == NumberOfLevel?true:false,
           thead = content.children("thead").eq(0).children("tr"),
           tbody_1 = content.children("tbody").eq((final?1:0)+(correction?1:0)).children("tr"),
-          tbody_2 = content.children("tbody").eq((final?2:1)+(correction?1:0)).children("tr");
+          tbody_2 = content.children("tbody").eq((final?2:1)+(correction?1:0)).children("tr"),
+          star_len = $("#List").find("td").eq(0).find("a").length+1;
+          console.log(star_len);
+
       obj.final = final;
       obj.jp_name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
-      obj.name = StageData[chapter][i][j]?StageData[chapter][i][j].name:obj.jp_name;
+      obj.name = StageData[chapter]?(StageData[chapter][i]?(StageData[chapter][i][j]?StageData[chapter][i][j].name:obj.jp_name):obj.jp_name):obj.jp_name;
       obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
       obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
       obj.constrain = thead.eq(0).children("td").eq(2).find("font").text().indexOf("制限")!=-1?Parser.parseConstrain(thead.eq(0).children("td").eq(2).find("font").text()):null;
       obj.energy = thead.eq(0).children("td").eq(4).text();
       obj.exp = thead.eq(1).children("td").eq(1).text().split("XP+")[1];
-      obj.castle = thead.eq(2).children("td").eq(2).text();
-      obj.length = thead.eq(3).children("td").eq(2).text();
-      obj.limit_no = thead.eq(4).children("td").eq(2).text();
+      obj.castle = thead.eq(2).children("td").eq(3).text();
+      obj.length = thead.eq(3).children("td").eq(1).text();
+      obj.limit_no = thead.eq(4).children("td").eq(1).text();
+      obj.bg_img = thead.eq(2).children("td").eq(1).find('.bg').attr("src").split("/")[3].split(".")[0];
+      obj.castle_img = thead.eq(2).children("td").eq(1).find('.castle').attr("src").split("/")[3].split(".")[0];
       for(let k = 0;k<tbody_1.length;k++){
         obj.reward.push({
           prize : Parser.parsePrize(tbody_1.eq(k).children("td").eq(2),tbody_1.eq(k).children("td").eq(1)),
@@ -127,6 +203,7 @@ function getData(chapter,i,j,correction=false,single=false) {
         // console.log("enemy "+k);
         let ene = tbody_2.eq(k).children("td");
         // console.log(ene.eq(1).text());
+
         obj.enemy.push({
           Boss : ene.eq(0).text() == "BOSS" ? true : false,
           id : ene.eq(2).children("a").attr("href").split("/")[2].split(".html")[0],
@@ -136,8 +213,15 @@ function getData(chapter,i,j,correction=false,single=false) {
           first_show : (Number(ene.eq(6).text())/30).toFixed(1),
           next_time : Parser.FtoS(ene.eq(7).text())
         });
+        if(k==0){
+          for(let l=0;l<star_len;l++) obj.star.push(Number(ene.eq(3).text().split('％')[0]));
+        }
       }
       console.log(obj);
+
+      if(star_len>1) updateStar(obj,star_len,final,correction);
+      else StageData[chapter][i][j] = obj;
+
       database.ref("/stagedata/"+chapter+"/"+i+"/"+j).update(obj);
       j++;
       if(!final && !single) getData(chapter,i,j,correction,false);
@@ -147,5 +231,28 @@ function getData(chapter,i,j,correction=false,single=false) {
       console.log(e);
     }
   });
+}
+function updateStar(obj,n,final,correction) {
+  var id = obj.id.split("-"),
+      fetch_Url = "https://battlecats-db.com/stage/"+id[1]+"-"+Util.AddZero(id[2])+".html?s"+n;
+  console.log(fetch_Url,final);
+  request({
+    url: fetch_Url,
+    method: "GET"
+  }, function(e,r,b) {
+    $ = cheerio.load(b);
+    var x = $(".maincontents table").children("tbody").eq((final?2:1)+(correction?1:0)).children("tr").eq(0).children("td").eq(3).text().split('％')[0];
+    // console.log(x);
+    x = Number(x);
+    // console.log(x);
+    n--;
+    obj.star[n] = x/obj.star[n];
 
+    if(n>1) updateStar(obj,n,final,correction);
+    else{
+      obj.star[0] = 1;
+      StageData[id[0]][id[1]][id[2]] = obj;
+      database.ref("/stagedata/"+id[0]+"/"+id[1]+"/"+id[2]).update(obj);
+    }
+  });
 }

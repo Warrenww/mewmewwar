@@ -232,7 +232,7 @@ $(document).on('click','.compareSorce .title #option i',function () {
       $("#selected").children('.card-group').each(function () {
         let visible = $(this).children(".card:visible"),
             id = visible.attr('value'),
-            name = visible.text();
+            name = visible.attr('name');
         // console.log(id,name);
         if(id) {
           id = id.split("-");
@@ -241,8 +241,8 @@ $(document).on('click','.compareSorce .title #option i',function () {
         }
       });
       // console.log(target);
-      socket.emit("compare "+page,{id:CurrentUserID,target:target});
       compare = target;
+      socket.emit("Set Compare",{type:'cat',id:CurrentUserID,target:compare});
       if(showcomparetarget) showhidecomparetarget();
       $("#compare_number").text(target.length);
     }

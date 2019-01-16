@@ -173,12 +173,13 @@ nav a{cursor: pointer;}
   margin: 0 20;
   padding: 10;
   align-items: center;
-  color: white
+  color: white;
+  border: 1px dashed transparent;
 }
 .contact_block:hover{
   text-decoration: none;
   color:white;
-  border: 1px dashed;
+  border-color: white;
 }
 #bulletin .main:nth-child(2n+1) .contact_block{color: black}
 #bulletin .main:nth-child(2n+1) .contact_block:hover{color: black}

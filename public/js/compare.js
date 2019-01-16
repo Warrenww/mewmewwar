@@ -114,6 +114,7 @@ $(document).ready(function () {
         stage : newstage
       });
       closePanel();
+      highlightTheBest();
     }
     else {
       socket.emit("mark own",{

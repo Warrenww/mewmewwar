@@ -210,15 +210,14 @@ $(document).ready(function () {
       return [s.substring(0,4),s.substring(4,6),s.substring(6,8)].join("/")
     }
     // if device is running ios OS replace iframe with text div
+    var alt_text="";
+    for(i in data.event.text_event){
+      alt_text += "<h3>"+data.event.text_event[i].title+"</h3><div>"+data.event.text_event[i].content+"</div>"
+    }
+    $("#alt_text").append(alt_text);
     if(is_ios){
-      var alt_text="";
-      for(i in data.event.text_event){
-        alt_text += "<h3>"+data.event.text_event[i].title+"</h3><div>"+data.event.text_event[i].content+"</div>"
-      }
-      $("<div id='alt_text'>"+alt_text+"</div>").insertAfter("#event_iframe");
       $("#event_iframe").prev().prop("disabled",'disabled');
-      $("#event_iframe").next().next().children().eq(0).attr("href",eventURL+last+'.html');
-      $("#event_iframe").remove();
+      $("#event_iframe").hide().next().show();
     }
     // update new event iframe
     updateNewEventIframe(last);
@@ -484,4 +483,16 @@ function eventTableScroll(direction) {
 function showhideNav() {
   var active = Number($('#m_nav_menu').attr("active"));
   $("#m_nav_menu,#m_nav_panel_BG,.m_nav_panel").attr("active",(active+1)%2);
+}
+var pureText = false;
+function switchPureText() {
+    if(is_ios) return;
+    if(pureText){
+      $("#event_iframe").prev().prop("disabled",false);
+      $("#event_iframe").show().next().hide();
+    } else {
+      $("#event_iframe").prev().prop("disabled",'disabled');
+      $("#event_iframe").hide().next().show();
+    }
+    pureText = pureText?false:true;
 }

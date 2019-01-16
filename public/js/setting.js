@@ -12,7 +12,7 @@ $(document).ready(function () {
       socket.emit("user connect",{user:user,page:location.pathname});
       socket.emit("require setting",user.uid);
       if (!user.isAnonymous) user_photo_url = user.providerData[0].photoURL;
-      console.log(user_photo_url);
+      // console.log(user_photo_url);
     } else {
       window.parent.location.assign("/");
       console.log('did not sign in');
@@ -22,10 +22,11 @@ $(document).ready(function () {
   $(document).on('blur','#default_cat_lv',function () {
     let val = Number($(this).val()) ;
     if(val>100||val<1){
+      alert("超出範圍!!!");
       $(this).val(current_user_data.setting.default_cat_lv);
       return
      }
-    socket.emit("set default cat level",{uid:current_user_data.uid,lv:val})
+    socket.emit("Set Setting",{uid:current_user_data.uid,target:'default_cat_lv',value:val})
   });
   $(document).on('blur','#userName',function () {
     let val = $(this).val() ;
@@ -37,13 +38,13 @@ $(document).ready(function () {
     let r = confirm("所有貓咪等級將重設為"+current_user_data.setting.default_cat_lv+"等");
     if(!r) return
     socket.emit("reset cat level",current_user_data.uid);
-    window.parent.reloadIframe('all');
+    if(window.parent.reloadIframe) window.parent.reloadIframe('all');
   });
   $(document).on("click","#reset_own_cat",function () {
     let r = confirm("要重置所有擁有的貓咪嗎?");
     if(!r) return
     socket.emit("reset owned cat",current_user_data.uid);
-    window.parent.reloadIframe('all');
+    if(window.parent.reloadIframe) window.parent.reloadIframe('all');
   });
   $(document).on("click","#logout",function () {
     if(!confirm("確定要登出嗎")) return
@@ -74,10 +75,9 @@ $(document).ready(function () {
       state:$(this).prop("checked")
     });
     if(type.indexOf("cat")!=-1 || type == 'ability_text')
-      window.parent.reloadIframe('cat');
+      if(window.parent.reloadIframe) window.parent.reloadIframe('cat');
     if(type.indexOf("enemy")!=-1)
-      window.parent.reloadIframe('enemy');
-    // window.parent.reloadIframe('stage');
+      if(window.parent.reloadIframe) window.parent.reloadIframe('enemy');
   });
   $(document).on('click',"#show_miner",function () {
     setTimeout(function () {
@@ -92,25 +92,36 @@ $(document).ready(function () {
   });
   socket.on("user setting",function (data) {
     // console.log(data);
-    let exp = 0 ;
+    var exp = 0 , dataField = ['hp','atk','range','tag'];
     for(let i in data){
       if(i == "default_cat_lv"){
         $("#default_cat_lv").attr('value',data.default_cat_lv);
-      } else if(i == 'mine_alert'){
+      }
+      else if(i == 'mine_alert'){
         console.log(data[i].count);
         let count = data[i].count,ww;
         ww = count>1e5?count/1e6:count/1e3 ;
         exp += count;
         $("#total_hash").text(ww.toFixed(2)+(count>1e5?"MH":"kH"))
-      } else if(i == 'cat_survey_count') {
+      }
+      else if(i == 'cat_survey_count') {
         $("#total_survey").text(data[i]);
         exp += 1000*Number(data[i]);
-      }else if(i == 'photo'){
+      }
+      else if(i == 'photo'){
         $('#photo').css("background-image",'url("'+data[i]+'")');;
-      } else {
+      }
+      else {
         $("#"+i).prop('checked',data[i]);
       }
     }
+    if(data.MoreDataField) dataField = data.MoreDataField;
+    for(let i in dataField){
+      $("#exclude span[tag='"+dataField[i]+"']").appendTo("#include");
+    }
+    $("#include,#exclude").sortable({ connectWith:"#include,#exclude" });
+    $("#saveField").attr("save",'true');
+
   });
 
   $("#photo").hover(function () {
@@ -143,6 +154,37 @@ $(document).ready(function () {
       "background-image":'url("'+photo+'")',
       "background-position":'-4px 6px'
     });
-    window.parent.changePhoto(photo);
+    if(window.parent.changePhoto) window.parent.changePhoto(photo);
+  });
+  $(".showNext").click(function () {
+    $(this).attr('active',()=>{return (Number($(this).attr('active'))+1)%2})
+      .siblings('i').toggle().parent().next().toggle();
+  });
+  $("#include").on("sortupdate",()=>{ $("#saveField").attr("save",'false');
+  });
+  $("#saveField").click(()=>{
+    var arr = $("#include").sortable("toArray",{attribute:"tag"});
+    console.log(arr);
+    if(arr.length > 4) if(!confirm("超過4個欄位可能造成顯示過於擁擠，是否仍要保存?")) return;
+    if(arr.length == 0) {alert("請至少選擇一個欄位!!!");return; }
+    $("#saveField").attr("save",'true');
+    socket.emit("Set Setting",{
+      uid : current_user_data.uid,
+      target: 'MoreDataField',
+      value : arr
+    });
+    if(window.parent.reloadIframe) window.parent.reloadIframe('stage');
+  });
+  $("#restoreField").click(()=>{
+    var arr = ['hp','atk','range','tag'];
+    $("#include span").appendTo("#exclude");
+    socket.emit("Set Setting",{
+      uid : current_user_data.uid,
+      target: 'MoreDataField',
+      value : arr
+    });
+    arr.map( x => $("#exclude span[tag='"+x+"']").appendTo("#include"));
+    $("#saveField").attr("save",'true');
+    if(window.parent.reloadIframe) window.parent.reloadIframe('stage');
   });
 });

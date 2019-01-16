@@ -164,4 +164,5 @@ nav .mobile,
   #bulletin .main th,#bulletin .main td,#bulletin .main{font-size: 12}
   #eventTableScroll_L, #eventTableScroll_R{left:-10}
   #eventTableScroll_R { left: calc(80% - 30px); }
+  #bg_img,#castle_img{display: none;}
 }

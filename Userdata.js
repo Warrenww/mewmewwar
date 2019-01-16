@@ -29,12 +29,12 @@ exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
   if(!UserData[uid]) return null
   var response;
   if(arg_0){
+    if(UserData[uid].variable[arg_0]=='') UserData[uid].variable[arg_0]={};
     if(arg_1){
       if(arg_2) response = UserData[uid].variable[arg_0][arg_1][arg_2];
       else response = UserData[uid].variable[arg_0][arg_1];
     } else response = UserData[uid].variable[arg_0];
   } else response = UserData[uid].variable;
-
   return response;
 }
 exports.getHistory = function (uid,type=null) {
@@ -99,8 +99,7 @@ exports.setHistory = function (uid,type,id){
     if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
     if(!user_variable[id]) user_variable[id] = {count:0};
     user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
-    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
-    .set(user_variable[id].count);
+    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count").set(user_variable[id].count);
   } catch(err){
     Util.__handalError(err);
   }
@@ -207,10 +206,11 @@ function arrangeUserData(userdata) {
       if (arr.length > 40){
         console.log(i+" too many "+edit[j]);
         arr = arr.slice(0,arr.length-40);
-        for(let k in arr) database.ref('/user/'+i+"/history/"+edit[j]+"/"+arr[k]).remove();
+        for(let k in arr) delete userdata[i].history[edit[j]][arr[k]];
       }
       arr = [];
     }
+    database.ref('/user/'+i+"/history").set(userdata[i].history);
     if(!userdata[i].variable) {
       console.log("user "+i+" no variable");
       database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});

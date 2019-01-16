@@ -52,19 +52,18 @@ var levelToValue = Util.levelToValue;
 var combodata = {},
     stagedata = {},
     gachadata = {},
-    catComment = {},
-    eventdata = {},
     legenddata,
     VERSION ;
 var mostSearchCat = [],
     mostSearchStage = [];
 ReloadAllData();
-var reloadTimeOut;
+var reloadTimeOut,firstReload=true;
 function ReloadAllData() {
   clearTimeout(reloadTimeOut);
+  firstReload = false;
   mostSearchCat = [];
   mostSearchStage = [];
-  Activity.UpdateEvent(eventdata);
+  Activity.UpdateEvent();
   Unitdata.load(mostSearchCat);
   Stagedata.load(stagedata,mostSearchStage);
   Combodata.load(combodata);
@@ -134,7 +133,7 @@ io.on('connection', function(socket){
           default_cat_lv = Users.getSetting(uid,"default_cat_lv"),
           user_variable = Users.getVariable(uid,type),
           buffer = [];
-
+      console.log(user_variable);
       // Make sure the target's type is array
       target = typeof(target) == 'object'?target:[target];
 
@@ -147,6 +146,7 @@ io.on('connection', function(socket){
         // record history
         if (data.record) SetHistory(uid,type,id);
         if(Number(stage)){
+          console.log(user_variable);
           if(!user_variable[id]) user_variable[id] = {count:0,stage:1};
           user_variable[id].stage = stage;
         }
@@ -207,16 +207,8 @@ io.on('connection', function(socket){
 
     Users.setHistory(uid,type,id);
     if(type=='cat'||type=='enemy'||type=='stage'){
-      if(type == 'stage'){
-        id = id.split("-");
-        stagedata[id[0]][id[1]][id[2]].count =
-          stagedata[id[0]][id[1]][id[2]].count?stagedata[id[0]][id[1]][id[2]].count+1:1;
-        database.ref("/"+type+"data/"+id.join("/")+"/count")
-          .set(stagedata[id[0]][id[1]][id[2]].count);
-        id = id.join("-");
-      } else {
-        Unitdata.setHistory(type,id);
-      }
+      if(type == 'stage') Stagedata.setHistory(id);
+      else Unitdata.setHistory(type,id);
     }
   }
 
@@ -274,64 +266,8 @@ io.on('connection', function(socket){
       Util.__handalError(e);
     }
   });
-  socket.on('text search stage',function (text) {
-    console.log('text search stage: ',text);
-    try{
-      let buffer = [];
-      for(let i in stagedata){
-        for(let j in stagedata[i]){
-          if(stagedata[i][j].name.indexOf(text)!=-1)
-          buffer.push({id:i+"-"+j,name:stagedata[i][j].name});
-          for(let k in stagedata[i][j]){
-            if (k=='name') continue
-            if(stagedata[i][j][k].name.indexOf(text)!=-1)
-            buffer.push({
-              id:i+"-"+j+"-"+k,
-              name:stagedata[i][j].name+"/"+stagedata[i][j][k].name
-            });
-          }
-        }
-      }
-      socket.emit('text search stage',buffer);
-    }
-    catch(e){
-      Util.__handalError(e);
-    }
-  });
-  socket.on("search stage",(list)=>{
-    try{
-      console.log("stage search :",list);
-      var buffer = {};
-      // Go through all stage data to find reward
-      for(let i in stagedata){
-        for(let j in stagedata[i]){
-          for(let k in stagedata[i][j]){
-            if('name' == k) continue  // Bypass it's name
-            var reward = stagedata[i][j][k].reward,
-                id = stagedata[i][j][k].id,
-                name = stagedata[i][j].name+"-"+stagedata[i][j][k].name;
-            for(let l in reward){
-              // Get the reward position in target list, if not exist return -1
-              var pos = list.indexOf(reward[l].prize.name);
-              // If this reward is contained in target reward list
-              if( pos != -1){
-                // If this stage does not exist in buffer, create it
-                if(!buffer[id]) buffer[id] = {name:name};
-                // Store chance into it, if reward exist and chance is bigger pass this
-                if(buffer[id][list[pos]])
-                  if(Number(reward[l].chance.split("％")[0]) < Number(buffer[id][list[pos]].split("％")[0]))
-                      continue
-                buffer[id][list[pos]] = reward[l].chance;
-              }
-            }
-          }
-        }
-      }
-      socket.emit("search stage",buffer);
-    } catch(e){
-      Util.__handalError(e);
-    }
-  });
+  socket.on('text search stage',(text) => {socket.emit('text search stage',Stagedata.Search('text',text));});
+  socket.on("search stage",(list) => {socket.emit("search stage",Stagedata.Search('reward',list));});
 
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
@@ -341,10 +277,6 @@ io.on('connection', function(socket){
   socket.on("user connect",function (data){
     try{
       var timer = new Date().getTime(),
-          last_cat = '',
-          last_combo = [],
-          last_enemy = '',
-          last_stage = '',
           user = data.user,
           CurrentUserData = {uid : user.uid},
           page = data.page.split("/")[1];
@@ -353,13 +285,6 @@ io.on('connection', function(socket){
       var history = Users.getHistory(user.uid),
           setting = Users.getSetting(user.uid),
           variable = Users.getVariable(user.uid);
-          last_cat = history.last_cat;
-          last_enemy = history.last_enemy;
-          last_combo = history.last_combo;
-          last_stage = history.last_stage;
-          last_gacha = history.last_gacha;
-          last_cat_search = history.last_cat_search;
-          last_enemy_search = history.last_enemy_search;
       var compareCat = Users.getCompare(user.uid,'cat'),
           compareEnemy = Users.getCompare(user.uid,'enemy');
       let obj , arr = [] , brr = [];
@@ -387,9 +312,9 @@ io.on('connection', function(socket){
         CurrentUserData.setting = {show_more_option:setting.show_more_option}
       }
       else if(page == 'cat'){
-        CurrentUserData.last_cat = last_cat;
+        CurrentUserData.last_cat = history.last_cat;
         CurrentUserData.compare_c2c = arr;
-        CurrentUserData.last_cat_search = last_cat_search;
+        CurrentUserData.last_cat_search = history.last_cat_search;
         CurrentUserData.setting = {
           show_more_option:setting.show_more_option,
           show_ability_text:setting.show_ability_text,
@@ -399,16 +324,16 @@ io.on('connection', function(socket){
         }
       }
       else if(page == 'enemy'){
-        CurrentUserData.last_enemy = last_enemy;
+        CurrentUserData.last_enemy = history.last_enemy;
         CurrentUserData.compare_e2e = brr;
-        CurrentUserData.last_enemy_search = last_enemy_search;
+        CurrentUserData.last_enemy_search = history.last_enemy_search;
         CurrentUserData.setting = {
           show_more_option:setting.show_more_option,
           show_enemy_id:setting.show_enemy_id,
           show_enemy_count:setting.show_enemy_count
         }
       }
-      else if(page == 'combo'){CurrentUserData.last_combo = last_combo;}
+      else if(page == 'combo'){CurrentUserData.last_combo = history.last_combo;}
       else if(page == 'compareCat' || page == 'compareEnemy'){
         CurrentUserData.compare = {cat:arr,enemy:brr};
       }
@@ -426,14 +351,20 @@ io.on('connection', function(socket){
           var id = history.enemy[i].id,
               name = Unitdata.enemyName(id),
               lv = variable.enemy[id]?variable.enemy[id].lv:null;
-
           if(!name) continue;
           obj.enemy[i] = {id:id,time:history.enemy[i].time,name:name,lv:lv?lv:1}
         }
         for(i in history.stage){
           let id = history.stage[i].id.split("-"),
-          chapter = id[0],stage=stagedata[id[0]][id[1]].name,
-          level=stagedata[id[0]][id[1]][id[2]].name;
+          chapter = id[0],stage,level
+          stageArr=Stagedata.GetNameArr([id[0]])[id[1]],
+          levelArr=Stagedata.GetNameArr([id[0]],[id[1]])[id[2]];
+          for (var j in stageArr)
+            if (stageArr[j].id == id[1])
+              stage = stageArr[j].name;
+          for (var j in levelArr)
+            if (levelArr[j].id == id[1])
+              level = levelArr[j].name;
           obj.stage[i] = {
             id:id.join("-"),
             time:history.stage[i].time,
@@ -454,18 +385,20 @@ io.on('connection', function(socket){
         CurrentUserData.history = obj;
       }
       else if(page == 'stage'){
-        CurrentUserData.last_stage = last_stage;
-        CurrentUserData.setting = {show_more_option:setting.show_more_option};
+        CurrentUserData.last_stage = history.last_stage;
+        CurrentUserData.setting = {
+          show_more_option:setting.show_more_option,
+          MoreDataField : setting.MoreDataField
+        };
       }
       else if(page == 'setting'){
         CurrentUserData.setting = setting;
         CurrentUserData.name = Users.getAttr(user.uid,'nickname');
         CurrentUserData.setting = {show_more_option:setting.show_more_option}
       }
-      else if(page == 'event'){ CurrentUserData.setting = {show_jp_cat:setting.show_jp_cat} }
-      else if(page == 'gacha'){ CurrentUserData.last_gacha = last_gacha }
+      else if(page == 'gacha'){CurrentUserData.last_gacha = history.last_gacha;}
       else if (page == 'list'){
-        CurrentUserData.last_cat_search = last_cat_search;
+        CurrentUserData.last_cat_search = history.last_cat_search;
         CurrentUserData.list = Users.getList(user.uid);
       }
       else {
@@ -473,7 +406,7 @@ io.on('connection', function(socket){
         CurrentUserData.first_login = Users.getAttr(user.uid,'first_login');
         CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert,user_photo:setting.photo};
         CurrentUserData.legend = {mostSearchCat,mostSearchStage};
-        CurrentUserData.event = eventdata;
+        CurrentUserData.event = Activity.getData();
         // console.log(CurrentUserData.event.text_event.length);
       }
       countOnlineUser(socket.id,user.uid,true);
@@ -546,21 +479,12 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on("compare cat",function (data) {
-    console.log("compare cat!!");
+  socket.on("Set Compare",function (data) {
+    console.log("compare "+data.type+"!!");
     console.log(data);
     try{
-      Users.setCompare(data.id,'cat',data.target);
+      Users.setCompare(data.id,data.type,data.target);
     }
-    catch(e){
-      Util.__handalError(e);
-    }
-  });
-  socket.on("compare enemy",function (data) {
-    console.log("compare enemy!!");
-    console.log(data);
-    try{
-      Users.setCompare(data.id,'enemy',data.target);    }
     catch(e){
       Util.__handalError(e);
     }
@@ -619,9 +543,9 @@ io.on('connection', function(socket){
       Util.__handalError(e);
     }
   });
-  socket.on("set default cat level",function (data) {
-    console.log("set "+data.uid+"'s default_cat_lv to "+data.lv);
-    Users.setSetting(data.uid,'default_cat_lv',data.lv);
+  socket.on("Set Setting",function (data) {
+    console.log("set "+data.uid+"'s "+data.target+" "+data.value);
+    Users.setSetting(data.uid,data.target,data.value);
   });
   socket.on("reset cat level",function (uid) {
     console.log("reset all "+id+"'s cat lv to default");
@@ -630,8 +554,8 @@ io.on('connection', function(socket){
           default_lv = Users.getSetting(uid,'default_cat_lv');
       for(let i in data){
         data[i].lv = default_lv;
-        database.ref("/user/"+uid+"/variable/cat/"+i+"/lv").set(default_lv);
       }
+      database.ref("/user/"+uid+"/variable/cat").update(data);
     }
     catch(e){
       Util.__handalError(e);
@@ -643,8 +567,8 @@ io.on('connection', function(socket){
       var data = Users.getVariable(uid,'cat');
       for(let i in data){
         data[i].own = false;
-        database.ref("/user/"+uid+"/variable/cat/"+i+"/own").set(false);
       }
+      database.ref("/user/"+uid+"/variable/cat/").update(data);
       Users.setFolder(udi,'owned','0');
     }
     catch(e){
@@ -730,7 +654,6 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on('get event date',function () { socket.emit('true event date',eventdata); });
   socket.on("check version",()=>{socket.emit("check version",VERSION);});
 
   socket.on("record gacha",function (data) {
@@ -1051,10 +974,10 @@ io.on('connection', function(socket){
   });
   socket.on("DashboardUpdateData",(data)=>{
     console.log('update',data);
-    var path = data.path.split(",").join("/");
-    var obj = {};
+    var path = data.path.split(",");
+    var obj = {},target;
     obj[data.type] = data.val;
-    database.ref("/"+path).update(obj);
+    database.ref("/"+path.join("/")).update(obj);
   });
   socket.on("reloadAllData",()=>{ReloadAllData()});
 
