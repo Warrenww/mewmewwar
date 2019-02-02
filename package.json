@@ -19,6 +19,8 @@
     "npm-start-command": "^0.2.0"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "temp0" : "node temp0.js",
+    "temp" : "node temp.js"
   }
 }

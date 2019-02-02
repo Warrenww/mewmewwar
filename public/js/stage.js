@@ -234,6 +234,7 @@ $(document).ready(function () {
       stage:stage,
       level:level
     });
+    scroll_to_class('display',0);
   });
   socket.on("level data",function (obj) {
     // console.log(obj);
@@ -254,7 +255,8 @@ $(document).ready(function () {
     // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
     $(".display .dataTable #stage").html(obj.parent).attr('value',obj.stage);
-    $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+"-"+AddZero((data.id).split("-")[2])+'.html');
+    $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
+          "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
     $("#more_option #next").attr("query",JSON.stringify(next_stage));
     $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
     // append data
@@ -270,7 +272,7 @@ $(document).ready(function () {
           for(let j in starArr){
             if(j == 0)
               starhtml += '<i class="material-icons" val="'+starArr[j]+'" active="1"> star </i>';
-            else if(starArr[j] != 1)
+            else if(j != starArr.length-1)
               starhtml += '<i class="material-icons" val="'+starArr[j]+'"star="'+j+'"> star </i>';
           }
           $(".display .dataTable").find("#"+i).html(starhtml);
@@ -285,7 +287,6 @@ $(document).ready(function () {
       scrollSelectArea('stage',obj.stage);
       scrollSelectArea('level',data.id.split("-")[2]);
     },300);
-    scroll_to_class('display',0);
   });
   // Change level star
   $(document).on('click',"#star i",function () {
@@ -307,7 +308,7 @@ $(document).ready(function () {
     let data = JSON.parse($(this).attr('query'));
     // console.log(data.level);
     $("#select_level").find("#"+data.level)
-      .attr("value",1).prev().attr("value",0);
+      .attr("value",1).siblings().attr("value",0);
     if(data.level)
       socket.emit("required level data",{
         uid: CurrentUserID,
@@ -426,16 +427,11 @@ $(document).ready(function () {
     SwitchData();
   });
   function SwitchData(data) {
-    var showlist = ['hp','atk','range','tag'],
-        fieldNameMap = {
-          'aoe':'範圍攻擊','atk':'攻擊力','atk_speed':'攻擊速度','char':'特性','color':'屬性',
-          'dps':'DPS','freq':'攻擊頻率','hardness':'硬度','hp':'血量','name':'名稱','range':'攻擊範圍',
-          'reward':'獲得金錢','speed':'跑速','tag':'特性'
-        };
+    var showlist = ['hp','atk','range','tag'];
     if(current_user_setting.MoreDataField) showlist = current_user_setting.MoreDataField;
     $(".orgdata").hide();
     for(let i in showlist){
-      $(".enemy_head").append("<th id='"+showlist[i]+"'class='moredata'>"+fieldNameMap[showlist[i]]+"</th>");
+      $(".enemy_head").append(createHtml("th",Unit.propertiesName(showlist[i]),{id:showlist[i],class:'moredata'}));
       $(".enemy_row").each(function () {
         var id = $(this).children().eq(0).attr('id').toString(),
             lv = Number($(this).children().eq(1).text().split("％")[0])/100,
@@ -469,7 +465,8 @@ $(document).ready(function () {
     for(let i in arr){
       html += "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
                 "<td>"+arr[i].prize.amount+"</td>";
-      html += "<th>"+(b?(arr[i].chance.indexOf("%")!=-1?"取得機率":"累計積分"):"取得機率")+
+      html += "<th>"+(b?((arr[i].chance.indexOf("%")!=-1||arr[i].chance.indexOf("％")!=-1)?
+                  "取得機率":"累計積分"):"取得機率")+
               "</th>"+"<td>"+arr[i].chance+"</td>"+
               "<th>取得上限</th>"+"<td>"+arr[i].limit+"</td>"+
               "</tr>"
@@ -492,8 +489,8 @@ $(document).ready(function () {
       html += "<tr class='enemy_row' id='"+i+"'>"+
       "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
       (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
-      "'  colspan='1'><img src='"+image_url_enemy+arr[i].id+
-      ".png' style='width:100%'/></td>" ;
+      "'  colspan='1'><img src='"+Unit.imageURL('enemy',arr[i].id)+
+      "' style='width:100%'/></td>" ;
       html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
       "<td id='amount'class='orgdata'>"+arr[i].amount+"</td>"+
       "<td id='castle'class='orgdata'>"+arr[i].castle+"</td>"+
@@ -549,7 +546,7 @@ $(document).ready(function () {
     for(let i in list){
       html +=
       '<span class="card" value="'+list[i].id+'"'+
-      'style="background-image:url(\''+image_url_cat+list[i].id+'.png\')"'+
+      'style="background-image:url(\''+Unit.imageURL('cat',list[i].id)+'\')"'+
       'cost="'+list[i].cost+'"lv="'+list[i].lv+'"bro="'+list[i].bro+'" detail="cost"></span>';
       count++;
     }
@@ -581,8 +578,8 @@ $(document).ready(function () {
     // console.log(s);
     var html;
     if(s.indexOf("u")!=-1){
-      html = "<img src='"+image_url_cat+s.split("u")[1]+
-      ".png' style='width:100%' class='cat' id='"+s.split("u")[1]+"' />"
+      html = "<img src='"+Unit.imageURL('cat',s.split("u")[1])+
+      "' style='width:100%' class='cat' id='"+s.split("u")[1]+"' />"
     } else {
       html = s + rewardPicture(s);
     }

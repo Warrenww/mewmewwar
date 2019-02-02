@@ -124,14 +124,20 @@ $(document).ready(function () {
     else if(data.query_type == 'text') {}
     else {
       for(let j in data.query.rFilter)
-        query +=  "<span>"+(parseRarity(data.query.rFilter[j])?parseRarity(data.query.rFilter[j]):data.query.rFilter[j])+"</span>";
-      query += "<b>|</b>";
+        query +=  "<span>"+Cat.parseRarity(data.query.rFilter[j])+"</span>";
+      if(data.query.rFilter.length) query += "<b>|</b>";
       for(let j in data.query.cFilter)
-        query +=  "<span>"+(parseRarity(data.query.cFilter[j])?parseRarity(data.query.cFilter[j]):data.query.cFilter[j])+"</span>";
-      query += "<b>|</b>";
+        query +=  "<span>"+data.query.cFilter[j]+"</span>";
+      if(data.query.cFilter.length) query += "<b>|</b>";
       for(let j in data.query.aFilter)
-        query +=  "<span>"+(parseRarity(data.query.aFilter[j])?parseRarity(data.query.aFilter[j]):data.query.aFilter[j])+"</span>";
-
+        query +=  "<span>"+data.query.aFilter[j]+"</span>";
+      if(data.query.aFilter.length) query += "<b>|</b>";
+      for(let j in filterObj){
+        if(!filterObj[j].active) continue;
+        query +=  "<span>"+Unit.propertiesName(j)+" : "+
+                  (typeof(filterObj[j].value)=='object'?filterObj[j].value.join("到"):filterObj[j].value)+
+                  ['以上','以下','之間'][filterObj[j].type]+"</span>"
+      }
     }
     // console.log(query);
     $(".compareSorce").find("#query").html(query);
@@ -156,7 +162,7 @@ function condenseCatName(data) {
       html +=
       '<span class="card" value="'+id+"-"+(Number(j)+1)+
       '"style="background-image:url('+
-      image_url_cat+id+"-"+(Number(j)+1)+'.png);'+
+      Unit.imageURL('cat',`${AddZero(id,2)}-${Number(j)+1}`)+');'+
       (j == stage?"":"display:none")+
       '"name="'+nameArr[j]+'"></span>';
     }
@@ -178,7 +184,7 @@ function condenseEnemyName(data) {
     '<span class="glyphicon glyphicon-shopping-cart"></span>'+
     '<span class="card" value="'+id+'" '+
     'style="background-image:url('+
-     image_url_enemy+id+'.png)" name="'+name+'"></span></span>';
+     Unit.imageURL('enemy',id)+')" name="'+name+'"></span></span>';
     number_page ++ ;
     current_search.push(id);
   }

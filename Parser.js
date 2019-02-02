@@ -552,6 +552,9 @@ exports.parsePrize = function(p,img) {
         case "謎の骨":
         obj.name = "神秘骨頭";
         break;
+        case "黄金":
+        obj.name = "黃金";
+        break;
         case "鋼の歯車":
         obj.name = "鋼製齒輪";
         break;

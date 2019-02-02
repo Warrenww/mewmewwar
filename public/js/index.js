@@ -9,7 +9,7 @@ if(Storage){
   if(localStorage.userPhoto){
     $("#userPhoto").css("background-image","url("+localStorage.userPhoto+")");
   } else if(localStorage.userPhoto == "undefined"){
-    $("#userPhoto").css("background-image","url("+image_url_cat+"001-1.png)");
+    $("#userPhoto").css("background-image","url("+Unit.imageURL('cat','001-1')+")");
   }
   if(localStorage.tutorial_ != 1) $(".tutorial").attr("show",true);
   else $(".tutorial").remove();
@@ -161,7 +161,7 @@ $(document).ready(function () {
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
       let target = $(".LegendCard").eq(i);
-      target.children("img").attr("src",image_url_cat+data.legend.mostSearchCat[i].id+'-1.png');
+      target.children("img").attr("src",Unit.imageURL('cat',data.legend.mostSearchCat[i].id+"-1"));
       for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchCat[i][dataArr[j]]);
       target.attr({"id":data.legend.mostSearchCat[i].id,type:'cat'});
     }
@@ -241,7 +241,7 @@ $(document).ready(function () {
     if(!$(this).attr("enemy")) return
     var arr = JSON.parse($(this).attr("enemy"));
     $('body').append("<div id='enemyBoard'><div></div></div>");
-    for(let i in arr) $("#enemyBoard div").append("<img src='"+image_url_enemy+arr[i]+".png'/>");
+    for(let i in arr) $("#enemyBoard div").append("<img src='"+Unit.imageURL('enemy',arr[i])+"'/>");
   });
   $(document).on('click',"#enemyBoard",function () { $(this).remove() });
 

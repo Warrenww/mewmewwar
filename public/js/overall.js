@@ -1,5 +1,3 @@
-const image_url_cat =  "/css/footage/cat/u" ;
-const image_url_enemy =  "/css/footage/enemy/e" ;
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
@@ -209,13 +207,6 @@ $(document).ready(function () {
   }
   $("#version_alert #ok").click(function () { location.reload(); });
 });
-
-$("#PageGoToTop").click(function () {
-  $("body").animate({
-    scrollTop :0
-  },500);
-});
-
 $(window).load(function () {
   $('#slider_holder').children('.active').click(function () {
     let target = $("#"+filter_name+".filter_option");
@@ -252,12 +243,16 @@ $(window).load(function () {
 
 });
 
+$("#PageGoToTop").click(function () {
+  $("body").animate({
+    scrollTop :0
+  },500);
+});
 //google Analytics
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'UA-111466284-1');
-
 
 function snapshot(target) {
 
@@ -300,48 +295,6 @@ function snapshot(target) {
 
 
 }
-function parseRarity(s) {
-  switch (s) {
-    case 'B':
-      s = '基本'
-      break;
-    case 'R':
-      s = '稀有'
-      break;
-    case 'SR':
-      s = '激稀有'
-      break;
-    case 'SR_alt':
-      s = '激稀有狂亂'
-      break;
-    case 'SSR':
-      s = '超激稀有'
-      break;
-    case 'SSSR':
-      s = '傳說稀有'
-      break;
-    default:
-      s = s
-  }
-  return s
-}
-function levelToValue(origin,rarity,lv) {
-  var result,limit ;
-  switch (rarity) {
-    case 'R':
-    limit = 70 ;
-    break;
-    case 'SR_alt':
-    limit = 20 ;
-    break;
-    default:
-    limit = 60 ;
-  }
-  result = (0.8+0.2*lv)*origin;
-  if(lv>limit) result = result - 0.1*(lv-limit)*origin;
-  if(lv>limit+20) result = result - 0.05*(lv-limit-20)*origin;
-  return result
-}
 function scroll_to_div(div_id){
   $('html,body').animate(
     {scrollTop: $("#"+div_id).offset().top-100},
@@ -354,7 +307,7 @@ function scroll_to_class(class_name,n) {
 }
 function AddZero(n,e=1) {
   var s = Number(n).toString();
-  if(s == "NaN") return s
+  if(s == "NaN") return n;
   if(n == 0) e--;
   for(let i = e; i >= 0; i--){
     if (n < 10**(i)) s = "0"+s;
@@ -362,7 +315,6 @@ function AddZero(n,e=1) {
   }
   return s
 }
-
 
 function filterSlider(target) {
   let value = target.attr('value') ;
@@ -439,6 +391,7 @@ function quickSort(list,target=null) {
 
   return smaller.concat([list[pivot_index]]).concat(bigger)
 }
+
 const ChineseNumber = ["一","二","三","四","五","六","七","八","九"];
 const ChineseNumber_10 = ["十","百","千"];
 const ChineseNumber_10_alt = ["萬","億","兆"];
@@ -455,4 +408,16 @@ function ToChineseNumber(n,m=0) {
     m ++;
     return ToChineseNumber(n,m)+ChineseNumber_10_alt[m-1]+ToChineseNumber(org%1e4)
   }
+}
+
+function createHtml(tag,content=null,attr=null) {
+  var attribute="";
+  if(typeof(attr)=='object'){
+    for(let i in attr){
+      attribute += ` ${i}="${attr[i].toString()}"`
+    }
+  }
+  tag = tag.toLowerCase();
+  if (tag == 'img') return `<${tag}${attribute}/>` ;
+  else return `<${tag}${attribute}>${content}</${tag}>` ;
 }

@@ -133,7 +133,6 @@ io.on('connection', function(socket){
           default_cat_lv = Users.getSetting(uid,"default_cat_lv"),
           user_variable = Users.getVariable(uid,type),
           buffer = [];
-      console.log(user_variable);
       // Make sure the target's type is array
       target = typeof(target) == 'object'?target:[target];
 
@@ -146,7 +145,6 @@ io.on('connection', function(socket){
         // record history
         if (data.record) SetHistory(uid,type,id);
         if(Number(stage)){
-          console.log(user_variable);
           if(!user_variable[id]) user_variable[id] = {count:0,stage:1};
           user_variable[id].stage = stage;
         }
@@ -357,13 +355,13 @@ io.on('connection', function(socket){
         for(i in history.stage){
           let id = history.stage[i].id.split("-"),
           chapter = id[0],stage,level
-          stageArr=Stagedata.GetNameArr([id[0]])[id[1]],
-          levelArr=Stagedata.GetNameArr([id[0]],[id[1]])[id[2]];
+          stageArr = Stagedata.GetNameArr(chapter),
+          levelArr = Stagedata.GetNameArr(chapter,id[1]);
           for (var j in stageArr)
             if (stageArr[j].id == id[1])
               stage = stageArr[j].name;
           for (var j in levelArr)
-            if (levelArr[j].id == id[1])
+            if (levelArr[j].id == id[2])
               level = levelArr[j].name;
           obj.stage[i] = {
             id:id.join("-"),
@@ -379,7 +377,7 @@ io.on('connection', function(socket){
             id:id,
             time:history.gacha[i].time,
             name:name,
-            stage:[history.gacha[i].ssr,history.gacha[i].sr,history.gacha[i].r]
+            stage:[history.gacha[i].r,history.gacha[i].sr,history.gacha[i].ssr,history.gacha[i].sssr]
           }
         }
         CurrentUserData.history = obj;

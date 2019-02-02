@@ -24,7 +24,7 @@ $(document).ready(function () {
     for(let i in data){
       let rarity = data[i].rarity;
       if(!arrange[rarity]){
-        arrange[rarity] = {name:parseRarity(rarity),arr:[data[i]]}
+        arrange[rarity] = {name:Cat.parseRarity(rarity),arr:[data[i]]}
       } else {
         arrange[rarity].arr.push(data[i]);
       }
@@ -46,7 +46,7 @@ $(document).ready(function () {
       if(type == 'rarity'){
         let rarity = own_data[i].rarity;
         if(!arrange[rarity]){
-          arrange[rarity] = {name:parseRarity(rarity),arr:[own_data[i]]}
+          arrange[rarity] = {name:Cat.parseRarity(rarity),arr:[own_data[i]]}
         } else {
           arrange[rarity].arr.push(own_data[i]);
         }
@@ -207,8 +207,8 @@ function appendArrange(obj) {
           name = obj[i].arr[j].name[stage-1]
       section += '<span class="card cat" type="cat" value="'+id+'" '+
       'style="background-image:url('+
-      image_url_cat+id+"-"+stage+'.png);" name="'+
-      name+'"></span>';
+      Unit.imageURL('cat',id+"-"+stage)+
+      ');" name="'+name+'"></span>';
     }
     section += "</span></div></div>";
   }

@@ -25,8 +25,7 @@ $(".select_ability").find(".ability_icon").each(function () {
 });
 $(document).ready(function () {
   var timer = new Date().getTime();
-
-
+  
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
     else  {
@@ -172,7 +171,7 @@ $(document).ready(function () {
 
     for (let cat in data){
       $(".dataTable").find("#title").append(
-        "<div class='img'stage='"+cat+"'style='background-image:url(\""+data[cat].imgURL+
+        "<div class='img'stage='"+cat+"'style='background-image:url(\""+data[cat].image+
         "\")'active='0'></div><div class='name' active='0'>"+data[cat].Name+"</div>");
     }
     updateCatData(currentStage,lv);
@@ -421,15 +420,15 @@ $(document).ready(function () {
     if(lv > 100){
       alert("超出範圍!!!");
       $('#level').slider('option','value',100);
-      $(this).parent().html(levelToValue(ori,rarity,100));
+      $(this).parent().html(Cat.levelToValue(ori,rarity,100));
     } else if(lv <1){
       alert("超出範圍!!!");
       $('#level').slider('option','value',1);
-      $(this).parent().html(levelToValue(ori,rarity,1));
+      $(this).parent().html(Cat.levelToValue(ori,rarity,1));
     }
     else{
       $('#level').slider('option','value',lv);
-      $(this).parent().html(levelToValue(ori,rarity,lv));
+      $(this).parent().html(Cat.levelToValue(ori,rarity,lv));
     }
 
   }
@@ -450,7 +449,7 @@ function AddCombo(arr) {
         pic_html +=
         '<span class="card" value="'+arr[i].cat[j]+'" '+
         'style="background-image:url('+
-        image_url_cat+arr[i].cat[j]+'.png);'+
+        Unit.imageURL('cat',arr[i].cat[j])+');'+
         (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
         +'"></span>' ;
       }

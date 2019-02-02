@@ -175,7 +175,7 @@ $(document).ready(function () {
         let target = $('.compareTable #'+id).find('#char'),
             original = target.attr('original'),
             atk = target.attr('atk');
-        if(original && original.indexOf("連續攻擊") != -1) target.html(serialATK(original,levelToValue(atk,rarity,level)))
+        if(original && original.indexOf("連續攻擊") != -1) target.html(serialATK(original,Cat.levelToValue(atk,rarity,level)))
         highlightTheBest();
         $('.comparedatahead tr').attr("reverse","");
         socket.emit("store level",{
@@ -310,49 +310,37 @@ $(document).ready(function () {
 
   function AddCompareData(data,lv,rarity) {
     // console.log(data);
-    let html = '';
-    html +=
-      "<div style='flex:1' class='comparedata' id='"+(data.id).toString().substring(0,3)+"'>"+
-      "<table>"+
-      "<tr>"+
-      "<th id='level'><span>"+(page == 'cat'?lv:lv*100+"%")+"</span><i class='material-icons'>&#xe5c5;</i></th>"+
-      "</tr><tr>"+
-      "<th style='height:80px;padding:0'><img src='"+data.imgURL+"' style='height:100%'></th>"+
-      "</tr><tr>"+
-      "<th id='name'>"+data.Name+"</th>"+
-      "</tr><tr>"+
-      "<th id='"+(page == 'cat'?"rarity":"color")+"'>"+
-      (page == 'cat'?parseRarity(rarity):data.color)+"</th>"+
-      "</tr><tr>"+
-      "<td id='hp'>"+data.Tovalue('hp',lv)+"</td>"+
-      "</tr><tr>"+
-      "<td id='KB'>"+data.kb+"</td>"+
-      "</tr><tr>"+
-      "<td id='hardness'>"+data.Tovalue('hardness',lv)+"</td>"+
-      "</tr><tr>"+
-      "<td id='atk'>"+data.Tovalue('atk',lv)+"</td>"+
-      "</tr><tr>"+
-      "<td id='dps'>"+data.Tovalue('dps',lv)+"</td>"+
-      "</tr><tr>"+
-      "<td id='range'>"+data.range+"</td>"+
-      "</tr><tr>"+
-      "<td id='freq'>"+data.freq+"</td>"+
-      "</tr><tr>"+
-      "<td id='speed'>"+data.speed+"</td>"+
-      "</tr><tr>"+
-      "<td id='multi'>"+data.Aoe+"</td>"+
-      "</tr><tr>"+
-      "<td id='cost'>"+(page == 'cat'?data.cost:data.reward)+"</td>"+
-      "</tr>"+(page == 'cat'?
-      "<tr><td id='cd'>"+data.cd+"</td></tr>":""
-      )+"<tr>"+
-      "<td id='char'>"+
-      (char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"))+
-      "</td>"+
-      "</tr>"+
-      "</table>"+
-      "</div>";
-      return html
+    var html;
+    html =
+      createHtml("tr",
+        createHtml("th",
+          createHtml("span",(page == 'cat'?lv:lv*100+"%"))+
+          createHtml("i","arrow_drop_down",{class:'material-icons'}),
+        {id:'level'}))+
+      createHtml("tr",
+        createHtml("th",
+          createHtml('img',null,{src:data.image,style:"height:100%"}),
+        {style:'height:80px;padding:0'}))+
+      createHtml("tr",createHtml("th",data.Name,{id:'name'}))+
+      (page == 'cat'?
+        createHtml("tr",createHtml("th",(Cat.parseRarity(rarity)),{id:"rarity"})):
+        createHtml("tr",createHtml("th",(data.color),{id:"color"})));
+      ['hp','kb','hardness','atk','dps','range','freq','speed'].map(x=>{
+        html += createHtml("tr",createHtml("td",data.Tovalue(x,lv),{id:x}))
+      });
+      html +=
+      createHtml("tr",createHtml("td",data.Aoe,{id:'multi'}))+
+      (page == 'cat'?
+      createHtml("tr",createHtml("td",data.cost,{id:'cost'}))+
+      createHtml("tr",createHtml("td",data.cd,{id:'cd'})):
+      createHtml("tr",createHtml("td",data.reward,{id:'cost'})))+
+      createHtml("tr",createHtml("td",char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"),{id:'char'}));
+      html = createHtml("div",createHtml("table",html),{
+        style:'flex:1',
+        class:'comparedata',
+        id:data.id.toString().substring(0,3)
+      });
+    return html
   }
 
 });

@@ -133,7 +133,7 @@
 #select_stage[chapter='trueStory'] button
 {background: linear-gradient(#b4d161,#91b02b)}
 #select_stage[chapter='trueStory'] button[value='1']
-{background: linear-gradient(#adc163,#768e1a)}
+{background: linear-gradient(#91a253,#4c5b14)}
 #expend_sl_chap{
   width: 100%;
   background-color: rgba(255,255,255,.7);

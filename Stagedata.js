@@ -97,7 +97,7 @@ exports.Search = function (type,query) {
               if(!buffer[id]) buffer[id] = {name:name};
               // Store chance into it, if reward exist and chance is bigger pass this
               if(buffer[id][query[pos]])
-                if(Number(reward[l].chance.split("％")[0]) < Number(buffer[id][list[pos]].split("％")[0]))
+                if(Number(reward[l].chance.split("％")[0]) < Number(buffer[id][query[pos]].split("％")[0]))
                     continue
               buffer[id][query[pos]] = reward[l].chance;
             }
@@ -113,25 +113,18 @@ exports.stageMap = function () {
   return stageMap
 }
 
-var NumberOfLevel,fetch_Url,starVar;
+var NumberOfLevel,fetch_Url,starVar,LevelArr,finalLevelPos,modify = 0;
 exports.fetch = function (chapter,id,correction) {
   var exist = false;
   id = id.split("-");
-  console.log(chapter,id);
+  // console.log(chapter,id);
   if(!chapter||!id) return;
-  try {
-    anotherShot = 0;
-    getData(chapter,"s"+id[0],id[1]?id[1]:0,correction,id[1]?true:false);
-  } catch (e) {
-    try {
-      getData(chapter,"s"+id[0],id[1]?id[1]:0,true,id[1]?true:false);
-    } catch (e) {
-      Util.__handalError(e);
-    }
-  }
+  LevelArr = [0];
+  getData(chapter,("s"+id[0]).trim(),0,false);
 }
-function getData(chapter,i,j,correction=false,single=false) {
-  fetch_Url = "https://battlecats-db.com/stage/"+i+(j?"-"+(Number(j)?Util.AddZero(j):j):"")+".html";
+function getData(chapter,i,j,correction=false) {
+  fetch_Url = "https://battlecats-db.com/stage/"+i+
+    (LevelArr[j]?"-"+(Number(LevelArr[j])?Util.AddZero(LevelArr[j]):LevelArr[j]):"")+".html";
   console.log(fetch_Url);
   request({
     url: fetch_Url,
@@ -145,9 +138,24 @@ function getData(chapter,i,j,correction=false,single=false) {
         StageData[chapter][i] = {name:StageName};
       }
       NumberOfLevel = ($("td[rowspan='2']").length)/2;
+      $("td[rowspan='2']").each(function () {
+        let x = $(this).find("a").eq(0).attr('href');
+        if (!x) return;
+        x = x.split(".")[0].split("-")[1];
+        x = Number.isNaN(Number(x))?x:Number(x);
+        LevelArr.push(x);
+      });
+      console.log(LevelArr);
+      for(let j=0;j<LevelArr.length;j++){
+        let k = j+1;
+        if(k==LevelArr.length||LevelArr[k].toString().indexOf('ex')!=-1){
+          finalLevelPos = j;
+          break;
+        }
+      }
       j++;
       getData(chapter,i,j,correction,false);
-      return
+      return;
     }
 
     var obj = {
@@ -162,26 +170,30 @@ function getData(chapter,i,j,correction=false,single=false) {
       final : "",
       star : [],
       "continue" : "",
-      id:[chapter,i,j].join("-"),
+      id:[chapter,i,LevelArr[j]].join("-"),
     };
     if(!StageData[chapter]) obj.count = 0;
     else if(!StageData[chapter][i]) obj.count = 0;
-    else if(!StageData[chapter][i][j]) obj.count = 0;
+    else if(!StageData[chapter][i][LevelArr[j]]) obj.count = 0;
+    else obj.count = StageData[chapter][i][LevelArr[j]].count;
     if(!e){
       // console.log("get data");
       $ = cheerio.load(b);
       var content = $(".maincontents table"),
-          final = Number(j) == NumberOfLevel?true:false,
+          final = Number(j) == finalLevelPos,
           thead = content.children("thead").eq(0).children("tr"),
-          tbody_1 = content.children("tbody").eq((final?1:0)+(correction?1:0)).children("tr"),
-          tbody_2 = content.children("tbody").eq((final?2:1)+(correction?1:0)).children("tr"),
+          tbody_1 = content.children("tbody").eq((final?1:0)+modify).children("tr"),
+          tbody_2 = content.children("tbody").eq((final?2:1)+modify).children("tr"),
+          tbody_3 = content.children("tbody").eq((final?3:2)+modify).children("tr"),
           star_len = $("#List").find("td").eq(0).find("a").length+1;
-          console.log(star_len);
+          modify = 0;
+      if (tbody_3.length) correction = true;
+      else correction = false;
 
       obj.final = final;
       obj.jp_name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
-      obj.name = StageData[chapter]?(StageData[chapter][i]?(StageData[chapter][i][j]?StageData[chapter][i][j].name:obj.jp_name):obj.jp_name):obj.jp_name;
-      obj.continue = thead.eq(0).children("td").eq(2).find("font").text()=="コンテニュー不可"?false:true;
+      obj.name = StageData[chapter]?(StageData[chapter][i]?(StageData[chapter][i][LevelArr[j]]?StageData[chapter][i][LevelArr[j]].name:obj.jp_name):obj.jp_name):obj.jp_name;
+      obj.continue = thead.eq(0).children("td").eq(2).find("font").text().indexOf("コンテニュー不可")!=-1?false:true;
       obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
       obj.constrain = thead.eq(0).children("td").eq(2).find("font").text().indexOf("制限")!=-1?Parser.parseConstrain(thead.eq(0).children("td").eq(2).find("font").text()):null;
       obj.energy = thead.eq(0).children("td").eq(4).text();
@@ -191,19 +203,26 @@ function getData(chapter,i,j,correction=false,single=false) {
       obj.limit_no = thead.eq(4).children("td").eq(1).text();
       obj.bg_img = thead.eq(2).children("td").eq(1).find('.bg').attr("src").split("/")[3].split(".")[0];
       obj.castle_img = thead.eq(2).children("td").eq(1).find('.castle').attr("src").split("/")[3].split(".")[0];
+
       for(let k = 0;k<tbody_1.length;k++){
         obj.reward.push({
           prize : Parser.parsePrize(tbody_1.eq(k).children("td").eq(2),tbody_1.eq(k).children("td").eq(1)),
           chance : tbody_1.eq(k).children("td").eq(3).text(),
           limit : tbody_1.eq(k).children("td").eq(4).text() == '無制限' ? "無限" : tbody_1.eq(k).children("td").eq(4).text()
         });
-        // process.stdout.write(" "+JSON.stringify(obj.reward[k].prize)+"\n");
+      }
+      if(correction){
+        for(let k = 0;k<tbody_2.length;k++){
+          obj.reward.push({
+            prize : Parser.parsePrize(tbody_2.eq(k).children("td").eq(2),tbody_2.eq(k).children("td").eq(1)),
+            chance : tbody_2.eq(k).children("td").eq(3).text(),
+            limit : tbody_2.eq(k).children("td").eq(4).text() == '無制限' ? "無限" : tbody_2.eq(k).children("td").eq(4).text()
+          });
+        }
+        tbody_2 = tbody_3;
       }
       for(let k=0;k<tbody_2.length;k++){
-        // console.log("enemy "+k);
         let ene = tbody_2.eq(k).children("td");
-        // console.log(ene.eq(1).text());
-
         obj.enemy.push({
           Boss : ene.eq(0).text() == "BOSS" ? true : false,
           id : ene.eq(2).children("a").attr("href").split("/")[2].split(".html")[0],
@@ -220,14 +239,13 @@ function getData(chapter,i,j,correction=false,single=false) {
       console.log(obj);
 
       if(star_len>1) updateStar(obj,star_len,final,correction);
-      else StageData[chapter][i][j] = obj;
+      else StageData[chapter][i][LevelArr[j]] = obj;
 
-      database.ref("/stagedata/"+chapter+"/"+i+"/"+j).update(obj);
+      database.ref("/stagedata/"+chapter+"/"+i+"/"+LevelArr[j]).update(obj);
       j++;
-      if(!final && !single) getData(chapter,i,j,correction,false);
+      if(j<LevelArr.length) getData(chapter,i,j,correction);
     }
     else {
-      // console.log("error s070"+AddZero(i)+"-0"+j);
       console.log(e);
     }
   });

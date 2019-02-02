@@ -461,10 +461,6 @@
 }
 .surveyTable .pos_holder:hover .describe{display: flex}
 @media screen and (max-width: 425px) {
-  .dataTable #title .img{ width: 50px; height: 50px; }
-  .dataTable #title .img[active='1']{ width: 90px}
-  .dataTable #title .name{ font-size: 14}
-  .dataTable #title {height: 60}
   .survey{flex-direction: column;}
   .survey:first-of-type{height: 100}
   .survey:nth-of-type(2n){height: 300}

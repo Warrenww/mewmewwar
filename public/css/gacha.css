@@ -137,6 +137,7 @@
   color: white;
   padding: 1%;
   display: none;
+  z-index: 2
 }
 #scoreboard table{color: white}
 #scoreboard h2{text-align: center;margin: 0;}
@@ -148,6 +149,18 @@
   bottom: -5px;
   left: 0;
 }
+#scoreboard #probability{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#probability div{
+  display: flex;
+  margin: 10 0;
+  width: 100%;
+}
+
 .monitor .content img{ min-width: 50%;max-width: 75%;cursor: pointer;}
 #result .card[rarity='ssr']{border-color: #f14747}
 #result .card[rarity='sr']{border-color: #e7b83f}
@@ -174,7 +187,7 @@
   .navigation{width: 250px}
 }
 @media screen and (max-width:425px) {
-  #scoreboard{width: 60%}
+  #scoreboard{width: 80%;left: 10%}
   .button_holder{height: 100px;right: 30px;}
   #toggleScore{bottom: 3px;left:30%}
   #foot{left:0}

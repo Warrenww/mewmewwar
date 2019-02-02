@@ -27,7 +27,8 @@ var database = firebase.database();
 var db = admin.firestore();
 console.log('start');
 
-database.ref("/error_log").set(null);
+// database.ref("/error_log").set(null);
+
 // db.collection('users').doc('alovelace').collection('www').doc('wwww').set({w:true});;
 // db.collection('users').get()
 //     .then((snapshot) => {

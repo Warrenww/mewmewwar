@@ -65,12 +65,12 @@ $(document).ready(function () {
       if(checkList(list.upper,current)){
         let n = checkList(list.upper,current)-1;
         $("#list_p1 .card").eq(n).attr('value',current)
-        .css('background-image','url(\"'+image_url_cat+current+".png\")");
+        .css('background-image','url(\"'+Unit.imageURL('cat',current)+"\")");
       }
       if(checkList(list.lower,current)){
         let n = checkList(list.lower,current)-1;
         $("#list_p2 .card").eq(n).attr('value',current)
-        .css('background-image','url(\"'+image_url_cat+current+".png\")");
+        .css('background-image','url(\"'+Unit.imageURL('cat',current)+"\")");
       }
     },300);
   }
@@ -101,7 +101,7 @@ $(document).ready(function () {
             pic_html +=
             '<span class="card" value="'+arr[i].cat[j]+'" '+
             'style="background-image:url('+
-            image_url_cat+arr[i].cat[j]+'.png);'+
+            Unit.imageURL('cat',arr[i].cat[j])+');'+
             (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
             +'"></span>' ;
           }
@@ -144,7 +144,7 @@ $(document).ready(function () {
       if(d) $("#list_p2 .card").eq(d-1).remove();
       if(Toomore>5&&!u) $("#list_p1 .card:last").remove();
       else if(!u) $("#list_p1 .seat:visible").first().hide();
-      $('<span class="card" value="'+arr[i]+'" detail="cost" style="background-image:url('+ image_url_cat+arr[i]+'.png)"></span>')
+      $('<span class="card" value="'+arr[i]+'" detail="cost" style="background-image:url('+ Unit.imageURL('cat',arr[i])+')"></span>')
       .prependTo($("#list_p1"));
       somethingChange()
       Toomore -- ;
@@ -347,7 +347,7 @@ $(document).ready(function () {
       if(!cat) return
       $(this).attr({
         "value":cat+"-"+bro,
-        "style":"background-image:url('"+image_url_cat+cat+"-"+bro+".png')"
+        "style":"background-image:url('"+Unit.imageURL('cat',cat+"-"+bro)+"')"
       });
     });
     somethingChange();
@@ -533,7 +533,7 @@ $(document).ready(function () {
     for(let i in list){
       html +=
       '<span class="card" value="'+list[i].id+'"'+
-      'style="background-image:url(\''+image_url_cat+list[i].id+'.png\')"'+
+      'style="background-image:url(\''+Unit.imageURL('cat',list[i].id)+'\')"'+
       'cost="'+list[i].cost+'"lv="'+list[i].lv+'"bro="'+list[i].bro+'" detail="cost"></span>';
       count++;
     }

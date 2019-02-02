@@ -80,10 +80,12 @@ function parseTime(n) {
       h = AddZero(time.getHours()),
       m = AddZero(time.getMinutes()),
       today = new Date();
-  if (dd == today.getDate()&&mm == today.getMonth()+1) return "今天 "+h+":"+m
-  else if(dd == today.getDate()-1&&mm == today.getMonth()+1) return "昨天 "+h+":"+m
-  else if(yy == today.getFullYear()) return mm+"/"+dd+" "+h+":"+m
-  else return yy+"/"+mm+"/"+dd+" "+h+":"+m
+
+  if (yy != today.getFullYear()) return yy+"/"+mm+"/"+dd+" "+h+":"+m ;
+  else if (dd == today.getDate()&&mm == today.getMonth()+1) return "今天 "+h+":"+m ;
+  else if(dd == today.getDate()-1&&mm == today.getMonth()+1) return "昨天 "+h+":"+m ;
+  else return mm+"/"+dd+" "+h+":"+m ;
+
 
 }
 function appendHistory(type) {
@@ -99,8 +101,8 @@ function appendHistory(type) {
   }
 }
 function historyPicture(type,id,stage=null) {
-  if(type == 'cat') return "<img src='"+image_url_cat+id+'-'+(stage?stage:1)+".png'>";
-  else if(type == 'enemy') return "<img src='"+image_url_enemy+id+".png'>";
+  if(type == 'cat') return "<img src='"+Unit.imageURL('cat',id+'-'+(stage?stage:1))+"'>";
+  else if(type == 'enemy') return "<img src='"+Unit.imageURL('enemy',id)+"'>";
   else if(type == 'stage') return "<button class='stageBG' bg='"+stage+"' value='0'></button>";
   else if(type == 'gacha') return "<img src='"+image_url_gacha+id+".png'>";
 }
@@ -111,9 +113,11 @@ function historyName(type,regular,bold,stage=null) {
   else if(type == 'gacha'){
     var temp =  "<ww style='display:flex;flex-direction:column;flex:2;align-items:center'>"+
                 "<span class='name'><b>"+regular+"</b></span>"+"<ww style='font-size:14px;font-weight:bold'>"+
-                "<span style='color:#18a651'>稀有 : "+(stage[2]?stage[2]:0)+"\t</span>"+
+                "<span style='color:#18a651'>稀有 : "+(stage[0]?stage[0]:0)+"\t</span>"+
                 "<span style='color:#eeb62e'>激稀有 : "+(stage[1]?stage[1]:0)+"\t</span>"+
-                "<span style='color:#8e18a6'>超激稀有 : "+(stage[0]?stage[0]:0)+"\t</span></ww></ww>";
+                "<span style='color:#8e18a6'>超激稀有 : "+(stage[2]?stage[2]:0)+"\t</span>"+
+                "<span style='color:#f95656'>傳說稀有 : "+(stage[3]?stage[3]:0)+"\t</span>"+
+                "</ww></ww>";
     return temp
   }
 }

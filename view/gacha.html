@@ -91,7 +91,6 @@
             <img id="elevent" src="./css/footage/gacha/11times.png" />
           </div>
           <img id="foot" src="./css/footage/gacha/footer.png" />
-          <span id="info">i</span>
           <span class="button" id="toggleScore" value='1'>顯示轉蛋結果</span>
           <div id="scoreboard">
             <h2>轉蛋結果</h2>
@@ -130,6 +129,30 @@
                 </tr>
               </tbody>
             </table>
+            <h3 style="text-align:center">調整機率</h3>
+            <div id="probability">
+              <div>
+                <span style='flex:1'>稀有</span>
+                <span style='flex:3' class='slider'></span>
+                <span style='flex:1;text-align:center'></span>
+              </div>
+              <div>
+                <span style='flex:1'>激稀有</span>
+                <span style='flex:3' class='slider'></span>
+                <span style='flex:1;text-align:center'></span>
+              </div>
+              <div>
+                <span style='flex:1'>超激稀有</span>
+                <span style='flex:3' class='slider'></span>
+                <span style='flex:1;text-align:center'></span>
+              </div>
+              <div>
+                <span style='flex:1'>傳說稀有</span>
+                <span style='flex:3' class='slider'></span>
+                <span style='flex:1;text-align:center'></span>
+              </div>
+              <button>重置機率</button>
+            </div>
           </div>
 
         </div>
@@ -142,17 +165,7 @@
           <i class="material-icons"> close </i>
         </div>
         <table class="dataTable">
-          <tr class="non_mobile">
-            <th style='height:80px;padding:0' class="img"></th>
-            <th colspan=5 rarity='data.rarity' class='name'></th>
-          </tr>
-          <tr class="mobile">
-            <th class="name" colspan="6"></th>
-          </tr>
-          <tr class="mobile">
-            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
-            </th>
-          </tr>
+          <tr> <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td> </tr>
           <tr>
             <th colspan='1'><span>等級</span></th>
             <td colspan=5 id='lv'>
@@ -172,9 +185,9 @@
           <tr>
             <th>攻頻</th><td id='freq'></td>
             <th>跑速</th><td id='speed'></td>
-            <td colspan='2' rowspan='3' id='aoe'></td>
+            <td colspan='2' rowspan='2' id='aoe'></td>
           </tr>
-          <tr>
+          <tr class="ForCat">
             <th>花費</th><td id='cost'></td>
             <th>再生產</th><td id='cd'></td>
           </tr>
@@ -213,6 +226,7 @@
     <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.ui.touch-punch.min.js"></script>
     <script src="./js/html2canvas.min.js"></script>
     <script src="./js/class.js"></script>
     <script src="./js/overall.js"></script>
