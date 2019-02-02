@@ -9,7 +9,7 @@ if(Storage){
   if(localStorage.userPhoto){
     $("#userPhoto").css("background-image","url("+localStorage.userPhoto+")");
   } else if(localStorage.userPhoto == "undefined"){
-    $("#userPhoto").css("background-image","url("+image_url_cat+"001-1.png)");
+    $("#userPhoto").css("background-image","url("+Unit.imageURL('cat','001-1')+")");
   }
   if(localStorage.tutorial_ != 1) $(".tutorial").attr("show",true);
   else $(".tutorial").remove();
@@ -161,7 +161,7 @@ $(document).ready(function () {
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
       let target = $(".LegendCard").eq(i);
-      target.children("img").attr("src",image_url_cat+data.legend.mostSearchCat[i].id+'-1.png');
+      target.children("img").attr("src",Unit.imageURL('cat',data.legend.mostSearchCat[i].id+"-1"));
       for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchCat[i][dataArr[j]]);
       target.attr({"id":data.legend.mostSearchCat[i].id,type:'cat'});
     }
@@ -210,15 +210,14 @@ $(document).ready(function () {
       return [s.substring(0,4),s.substring(4,6),s.substring(6,8)].join("/")
     }
     // if device is running ios OS replace iframe with text div
+    var alt_text="";
+    for(i in data.event.text_event){
+      alt_text += "<h3>"+data.event.text_event[i].title+"</h3><div>"+data.event.text_event[i].content+"</div>"
+    }
+    $("#alt_text").append(alt_text);
     if(is_ios){
-      var alt_text="";
-      for(i in data.event.text_event){
-        alt_text += "<h3>"+data.event.text_event[i].title+"</h3><div>"+data.event.text_event[i].content+"</div>"
-      }
-      $("<div id='alt_text'>"+alt_text+"</div>").insertAfter("#event_iframe");
       $("#event_iframe").prev().prop("disabled",'disabled');
-      $("#event_iframe").next().next().children().eq(0).attr("href",eventURL+last+'.html');
-      $("#event_iframe").remove();
+      $("#event_iframe").hide().next().show();
     }
     // update new event iframe
     updateNewEventIframe(last);
@@ -242,7 +241,7 @@ $(document).ready(function () {
     if(!$(this).attr("enemy")) return
     var arr = JSON.parse($(this).attr("enemy"));
     $('body').append("<div id='enemyBoard'><div></div></div>");
-    for(let i in arr) $("#enemyBoard div").append("<img src='"+image_url_enemy+arr[i]+".png'/>");
+    for(let i in arr) $("#enemyBoard div").append("<img src='"+Unit.imageURL('enemy',arr[i])+"'/>");
   });
   $(document).on('click',"#enemyBoard",function () { $(this).remove() });
 
@@ -484,4 +483,16 @@ function eventTableScroll(direction) {
 function showhideNav() {
   var active = Number($('#m_nav_menu').attr("active"));
   $("#m_nav_menu,#m_nav_panel_BG,.m_nav_panel").attr("active",(active+1)%2);
+}
+var pureText = false;
+function switchPureText() {
+    if(is_ios) return;
+    if(pureText){
+      $("#event_iframe").prev().prop("disabled",false);
+      $("#event_iframe").show().next().hide();
+    } else {
+      $("#event_iframe").prev().prop("disabled",'disabled');
+      $("#event_iframe").hide().next().show();
+    }
+    pureText = pureText?false:true;
 }

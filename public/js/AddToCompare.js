@@ -6,7 +6,7 @@ $(document).ready(function () {
     var target = $(this).parent().children(".card:visible").attr('value'),
         name = $(this).parent().children(".card:visible").attr('name');
         target = target.split("-");
-        console.log(target[0],name,target[1]);
+        // console.log(target[0],name,target[1]);
     addToCompare(target[0],name,target[1]);
   });
   $(document).on('click',"#addcart", function () {
@@ -48,7 +48,7 @@ $(document).ready(function () {
         compare.push($(this).attr("value"));
       });
       $("#compare_number").text(compare.length);
-      socket.emit("compare "+type,{id:CurrentUserID,target:compare});
+      socket.emit("Set Compare",{type:type,id:CurrentUserID,target:compare});
       $("#compare_panel_BG").fadeOut();
       $('.compare_panel').css('height',0);
     });
@@ -60,7 +60,7 @@ $(document).ready(function () {
     $(this).parent().siblings().children().html("");
     compare = [];
     $("#compare_number").text(compare.length);
-    socket.emit("compare "+type,{id:CurrentUserID,target:compare});
+    socket.emit("Set Compare",{type:type,id:CurrentUserID,target:compare});
   });
   $("#start_compare").click(function () {
     var windowName = type == 'cat'?'compareCat':'compareEnemy';
@@ -85,8 +85,8 @@ function compareTargetAddCard(target,name,stage=null) {
   $(".compareTarget").append(
       '<span class="card" value="'+target+
       '" style="background-image:url('+
-      (type == "enemy"?image_url_enemy:image_url_cat)+target+(stage?('-'+stage):'')+
-      '.png" name="'+name+'"></span>');
+      Unit.imageURL(type,target+(stage?('-'+stage):''))+
+      '" name="'+name+'"></span>');
 }
 function addToCompare(target,name='',stage=null) {
   $('.compare_panel').css('height',0);
@@ -114,7 +114,7 @@ function addToCompare(target,name='',stage=null) {
       compare.push($(this).attr("value"));
     });
     $("#compare_number").text(compare.length);
-    io.connect().emit("compare "+type,{id:CurrentUserID,target:compare});
+    socket.emit("Set Compare",{type:type,id:CurrentUserID,target:compare});
   }
 }
 function showhidecomparetarget() {

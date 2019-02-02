@@ -21,7 +21,7 @@
       <h1>歷程記錄</h1>
       <div class="window">
         <div class="title">
-          <span id='cat' value='1'>貓咪</span>
+          <span id='cat' value='0'>貓咪</span>
           <span id='enemy' value='0'>敵人</span>
           <span id='stage' value='0'>關卡</span>
           <span id='gacha' value='0'>轉蛋</span>
@@ -40,19 +40,9 @@
           <i class="material-icons"> close </i>
         </div>
         <table class="dataTable">
-          <tr class="non_mobile">
-            <th style='height:80px;padding:0' class="img"></th>
-            <th colspan=5 rarity='data.rarity' class='name'></th>
-          </tr>
-          <tr class="mobile">
-            <th class="name" colspan="6"></th>
-          </tr>
-          <tr class="mobile">
-            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
-            </th>
-          </tr>
+          <tr> <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td> </tr>
           <tr>
-            <th colspan='1'><span>等級/倍率</span></th>
+            <th colspan='1'><span>等級</span></th>
             <td colspan=5 id='lv'>
               <span style='margin:0 10px'></span>
             </td>

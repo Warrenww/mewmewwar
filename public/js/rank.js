@@ -32,7 +32,7 @@ $(document).on("click",'input',function () {$(this).select();});
 $(document).on("blur",'input',function () {
   let type = $(this).parent().attr('id'),
       val = Number($(this).val());
-  if(val>7000||val<0){
+  if(val>10000||val<0){
     alert('超出範圍');
     $(this).val("");
     return

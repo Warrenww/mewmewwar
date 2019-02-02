@@ -96,8 +96,6 @@ $(document).ready(function () {
     for (let i in data){
       if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
         $(".dataTable").find("#"+i).text(data.Tovalue(i,lv));
-      else if(i == 'name')
-        $(".dataTable").find("."+i).text(data.Name);
       else if(i == 'aoe')
         $(".dataTable").find("#"+i).text(data.Aoe);
       else if(i == 'char')
@@ -107,7 +105,9 @@ $(document).ready(function () {
       else
         $(".dataTable").find("#"+i).text(data[i]);
     }
-    $(".dataTable").find('.img').css('background-image','url("'+data.imgURL+'")');
+    $(".dataTable #title").html(
+      "<div class='img'style='background-image:url(\""+data.image+
+       "\")'active='1'></div><div class='name' active='1'>"+data.Name+"</div>");
   }
 
 });

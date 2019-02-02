@@ -1,10 +1,10 @@
 var CurrentUserID;
 var current_search = [];
+var current_enemy_data = {};
 
 $(document).ready(function () {
 
   var timer = new Date().getTime();
-  var current_enemy_data = {};
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -193,7 +193,9 @@ $(document).ready(function () {
       else
         $(".dataTable").find("#"+i).text(data[i]);
     }
-    $(".dataTable").find('.img').css('background-image','url("'+data.imgURL+'")');
+    $(".dataTable #title").html(
+      "<div class='img'style='background-image:url(\""+data.image+
+       "\")'active='1'></div><div class='name' active='1'>"+data.Name+"</div>");
     $(".dataTable").find("#level_num").children().text(lv*100+" %");
     scroll_to_class("display",0) ;
   }

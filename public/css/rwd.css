@@ -164,4 +164,9 @@ nav .mobile,
   #bulletin .main th,#bulletin .main td,#bulletin .main{font-size: 12}
   #eventTableScroll_L, #eventTableScroll_R{left:-10}
   #eventTableScroll_R { left: calc(80% - 30px); }
+  #bg_img,#castle_img{display: none;}
+  .dataTable #title .img{ width: 50px; height: 50px; }
+  .dataTable #title .img[active='1']{ width: 90px}
+  .dataTable #title .name{ font-size: 14}
+  .dataTable #title {height: 60}
 }

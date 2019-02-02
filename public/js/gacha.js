@@ -49,19 +49,13 @@ $(document).ready(function () {
       gacha:name
     });
   });
-  socket.on("gacha result",function (data) {
-    console.log(data);
-    data = data.result;
-    current_gacha_data = data;
-    $(".monitor").attr({'id':data.id,'key':data.key});
-  });
 
   $(document).on("click",".title",function () {
     $(this).next().toggle(400);
     $(this).siblings('.title').next().hide(400);
   });
 
-  $(document).on('click','#info,.monitor .content img',function () {
+  $(document).on('click','.monitor .content img',function () {
     let id = $(".monitor").attr("id");
     if(!id) {alert("尚未選擇轉蛋");showhideNav(null,0);}
     else $(".iframe_holder").fadeIn()
@@ -73,6 +67,50 @@ $(document).ready(function () {
   $(document).on('click','#once',function () {gacha(1);});
   $(document).on('click','#elevent',function () {gacha(11);});
 
+  $(".slider").slider({max:1,min:0,step:0.01});
+  $(".slider").on("slide", function(e,ui) {
+    $(this).next().text((ui.value*100).toFixed(0)+"%");
+  });
+  var originValue;
+  $(".slider").on("slidestart", function(e,ui) {
+    originValue = ui.value;
+  });
+  $(".slider").on("slidestop", function(e,ui) {
+    originValue -= ui.value;
+    let next = $(this).parent(),temp;
+    while(originValue > 1e-6 || originValue < -1e-6){
+      next = next.next("div:visible");
+      if(next.length == 0) next = $("#probability div:first");
+      temp = next.find(".slider").slider("value");
+      if(temp+originValue > 0){
+        next.find(".slider").slider("value",temp+originValue).next()
+          .text(((temp+originValue)*100).toFixed(1)+"%");
+        originValue = 0;
+      } else {
+        next.find(".slider").slider("value",0).next().text("0%");
+        originValue += temp;
+      }
+    }
+    var accu = 0;
+    for(let i=0;i<4;i++){
+      accu += $("#probability div .slider").eq(i).slider("value");
+      GachaProbability[i] = accu;
+    }
+
+  });
+  $("#probability button").click(function () {
+    if(current_gacha_data.sssr) GachaProbability = DefaultProbability.map(x=>{return x-0.003});
+    else GachaProbability = DefaultProbability.map(x=>{return x});
+    var zero = 0;
+    for(let i in GachaProbability){
+      $("#probability div .slider").eq(i).slider("value",GachaProbability[i]-zero)
+        .next().text(((GachaProbability[i]-zero)*100).toFixed(1)+"%");
+      zero = GachaProbability[i];
+    }
+    $("#probability div .slider").eq(3).slider("value",1-zero)
+      .next().text(((1-zero)*100).toFixed(1)+"%");
+  });
+  $("#scoreboard h3").click(function () { $(this).next().toggle(); })
   $("#toggleScore").click(function () {
     $("#scoreboard").toggle(400);
     if(Storage){
@@ -81,23 +119,50 @@ $(document).ready(function () {
       localStorage.gachaScoreBoard = temp;
     } else {console.log("Browser don't support localStorage");}
   });
+  const DefaultProbability = [0.7,0.95,1];
+  var GachaProbability = [0.7,0.95,1];
+  socket.on("gacha result",function (data) {
+    console.log(data);
+    data = data.result;
+    current_gacha_data = data;
+    $(".monitor").attr({'id':data.id,'key':data.key});
+    if(data.sssr) {
+      GachaProbability = DefaultProbability.map(x=>{return x-0.003});
+      $("#probability div").eq(3).show();
+    } else {
+      GachaProbability = DefaultProbability.map(x=>{return x});
+      $("#probability div").eq(3).hide();
+    }
 
+    if(data.key == "special_cat" || data.key == "super_cat"){
+      GachaProbability[0] = 0.61 ;
+      GachaProbability[1] = 0.91 ;
+    }
+    if(data.key == "platinum") GachaProbability = [-1,-1,1];
+    var zero = 0;
+    for(let i in GachaProbability){
+      $("#probability div .slider").eq(i).slider("value",GachaProbability[i]-zero)
+        .next().text(((GachaProbability[i]-zero)*100).toFixed(1)+"%");
+      zero = GachaProbability[i];
+    }
+    $("#probability div .slider").eq(3).slider("value",1-zero)
+      .next().text(((1-zero)*100).toFixed(1)+"%");
+
+  });
   function gacha(n) {
     let data=[],
-        key = $(".monitor").attr('key'),
-        c = [0.05,0.3];
-        if(current_gacha_data.sssr) c.push(0.997);
+        key = $(".monitor").attr('key');
 
     if(!key){alert("尚未選擇轉蛋");showhideNav(null,0);return}
     showhideNav(null,1);
-    if(key == "special_cat" || key == "super_cat") c = [0.09,0.39] ;
     for(let i=0;i<n;i++){
       let result = Math.random();
-      if(result<c[0]||key == "platinum") {data.push("ssr");ssr++;}
-      else if(c[0]<result&&result<c[1]) {data.push("sr");sr++;}
-      else if(c[2]&&result>c[2]){data.push("sssr");sssr++;}
-      else if(c[1]<result) {data.push("r");r++;}
+      if(result<GachaProbability[0]) {data.push("r");r++;}
+      else if(GachaProbability[0]<=result&&result<GachaProbability[1]) {data.push("sr");sr++;}
+      else if(GachaProbability[1]<=result&&result<GachaProbability[2]){data.push("ssr");ssr++;}
+      else if(GachaProbability[2]<=result) {data.push("sssr");sssr++;}
     }
+
     for(let i in data){
       let rarity = data[i],
           buffer = current_gacha_data[rarity],
@@ -105,7 +170,7 @@ $(document).ready(function () {
       $("#result").append('<span class="card cat" value="'+
       choose.id+'" rarity="'+rarity+'" '+
        'style="background-image:url('+
-       image_url_cat+choose.id+'.png);'+
+       Unit.imageURL('cat',choose.id)+');'+
        "margin:5px;transform:scale(0);"+
        '"name="'+choose.name+'"></span>');
     }
@@ -137,6 +202,7 @@ $(document).ready(function () {
       sssr,ssr,sr,r
     });
   }
+  $(".monitor,#scoreboard").click(()=>{showhideNav(null,1)})
   function showhideNav(e,n) {
     if(n == undefined)
       nav_expand = nav_expand?0:1;

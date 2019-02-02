@@ -90,7 +90,7 @@ $(document).ready(function () {
         var sid = id+"-"+j;
         if(!catName[id]) continue
         if(catName[id][j]){
-          html += "<th><img src='"+image_url_cat+sid+".png'/></th>"+
+          html += "<th><img src='../"+Unit.imageURL('cat',sid)+"'/></th>"+
                   "<th>"+sid+"</th>"+
                   "<td class='editable' type='name' path='"+
                   ["CatData",id,"data",j].join()+"'>"+
@@ -122,7 +122,7 @@ $(document).ready(function () {
     for(let i = range;i<range+50;i++){
       var id = AddZero(i,2);
       if(eneName[id]){
-        html += "<th><img src='"+image_url_enemy+id+".png'/></th>"+
+        html += "<th><img src='../"+Unit.imageURL('enemy',id)+"'/></th>"+
         "<th>"+id+"</th>"+
         "<td class='editable' type='name' path='"+
         ["enemydata",id].join()+"'>"+

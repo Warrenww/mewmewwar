@@ -167,19 +167,21 @@ exports.Search = function (data,level,showJP,variable={}) {
         level_bind = filterObj[i].lv_bind;
     // console.log(fieldName,filterType,limit,level_bind);
     for(let j in buffer){
-      var value = 0;
-      if(type == 'enemy') value = EnemyData[buffer[j]][fieldName];
+      var value = 0,id = buffer[j];
+      if(temp.indexOf(id) != -1) continue;
+
+      if(type == 'enemy') value = EnemyData[id][fieldName];
       else {
-        var catid = buffer[j],
-            catlv = variable[catid]?variable[catid].lv:level,
-            catstage = variable[catid]?variable[catid].stage:1;
-        value = CatData[buffer[j]].data[catstage?catstage:1][fieldName];
-        if(level_bind) value = Util.levelToValue(value,CatData[buffer[j]].rarity,catlv?catlv:level);
+        var catlv = variable[id]?(variable[id].lv?variable[id].lv:level):level,
+            catstage = variable[id]?(variable[id].stage?variable[id].stage:1):1;
+        value = CatData[id].data[catstage][fieldName];
+        if(level_bind) value = Util.levelToValue(value,CatData[id].rarity,catlv);
         // console.log(j,catlv,catstage,value)
       }
+
       if(filterType == 0  && value > limit) temp.push(buffer[j]);
       else if (filterType == 1 && value < limit) temp.push(buffer[j]);
-      else if (filterType == 2 && (value<limit[0] || value>limit[1])) temp.push(buffer[j]);
+      else if (filterType == 2 && value>limit[0] && value<limit[1]) temp.push(buffer[j]);
     }
   }
   buffer = flag?buffer:temp;
@@ -410,7 +412,7 @@ function getData(type,id,exist) {
           row_1.children().eq(0).find('a').each(function () {
             data.color.push(Parser.parseEnemy($(this).text()));
           });
-        else obj.rarity = Parser.parseRarity(row_1.children().eq(0).text());
+        else obj.rarity = Parser.parseRarity(row_1.children().eq(0).find("a").text());
 
         data.hp = Number(row_1.children().eq(3).children().eq(0).text().split(",").join(""));
         data.kb = Number(row_1.children().eq(5).text().split(",").join(""));

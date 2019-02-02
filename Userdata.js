@@ -36,7 +36,6 @@ exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
       else response = UserData[uid].variable[arg_0][arg_1];
     } else response = UserData[uid].variable[arg_0];
   } else response = UserData[uid].variable;
-
   return response;
 }
 exports.getHistory = function (uid,type=null) {
@@ -81,15 +80,24 @@ exports.setHistory = function (uid,type,id){
     if(UserData[uid].history['last_'+type] == id) return
 
     var user_history = UserData[uid].history[type],
-        user_variable = UserData[uid].variable[type];
+        user_variable = UserData[uid].variable[type],
+        current = type == 'cat'?id.toString().substring(0,3):id,
+        history_count = 0;
 
     if(user_history == "" || !user_history ) user_history = {};
     if(user_variable == "" || !user_variable ) user_variable = {};
     // Find same unit and clear it
+
     for(let i in user_history){
-      var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id,
-          current = type == 'cat'?id.toString().substring(0,3):id;
-      if(exist == current) delete user_history[i]
+      var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id;
+      if(exist == current) delete user_history[i];
+      else history_count ++ ;
+    }
+    // trim all kind of user history to at most 40
+    for(let i in user_history){
+      if(history_count < 40) break;
+      history_count -- ;
+      delete user_history[i];
     }
     var key = database.ref().push().key; // Generate hash key
     // Update history and write to firebase
@@ -101,8 +109,7 @@ exports.setHistory = function (uid,type,id){
     if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
     if(!user_variable[id]) user_variable[id] = {count:0};
     user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
-    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count")
-    .set(user_variable[id].count);
+    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count").set(user_variable[id].count);
   } catch(err){
     Util.__handalError(err);
   }
@@ -209,10 +216,11 @@ function arrangeUserData(userdata) {
       if (arr.length > 40){
         console.log(i+" too many "+edit[j]);
         arr = arr.slice(0,arr.length-40);
-        for(let k in arr) database.ref('/user/'+i+"/history/"+edit[j]+"/"+arr[k]).remove();
+        for(let k in arr) delete userdata[i].history[edit[j]][arr[k]];
       }
       arr = [];
     }
+    database.ref('/user/'+i+"/history").set(userdata[i].history);
     if(!userdata[i].variable) {
       console.log("user "+i+" no variable");
       database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});

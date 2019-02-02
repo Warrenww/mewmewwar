@@ -28,9 +28,6 @@
 .title span[value~='1']{
   border-bottom: 3px solid rgb(236, 155, 34);
 }
-.main_board{
-  padding: 0 5%
-}
 .main_board button{
   width: 90px;
   height: 60px
@@ -39,12 +36,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px;
-  border-bottom: 0.1px solid;
+  padding: 10 5%;
   cursor: pointer;
+  border-radius: 7px;
+  background-color: rgba(230, 230, 230,.6)
 }
+.main_board div:nth-child(2n){background-color: rgba(200, 200, 200,.6)}
 .main_board div:hover{
-  background-color: rgba(230,230,230,0.6);
+  background-color: rgba(170,170,170,0.6);
   box-shadow: 0px 1px 10px 0px;
 }
 .main_board div img{width: 120px}

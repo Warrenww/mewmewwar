@@ -1,3 +1,4 @@
+var FloatDisplayMutex = true; // handle synchronization problem
 $(document).ready(function () {
   var page = location.pathname.split('/')[1];
   $(document).on('click','.cat,.enemy',function (e) {
@@ -23,6 +24,7 @@ $(document).ready(function () {
   });
 
   socket.on("required data",(data)=>{
+    if(!FloatDisplayMutex) {FloatDisplayMutex = true;return;}
     console.log(data);
     var type = data.type,
         buffer = data.buffer[0],
@@ -34,8 +36,6 @@ $(document).ready(function () {
     for (let i in data){
       if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
         $(".floatDisplay .dataTable").find("#"+i).text(data.Tovalue(i,lv));
-      else if(i == 'name')
-        $(".floatDisplay .dataTable").find("."+i).text(data.Name);
       else if(i == 'aoe')
         $(".floatDisplay .dataTable").find("#"+i).text(data.Aoe);
       else if(i == 'char')
@@ -43,13 +43,17 @@ $(document).ready(function () {
       else
         $(".floatDisplay .dataTable").find("#"+i).text(data[i]);
     }
+    $(".floatDisplay .dataTable #title").html(
+      "<div class='img'style='background-image:url(\""+data.image+
+       "\")'active='1'></div><div class='name' active='1'>"+data.Name+"</div>");
     if(type == 'cat') $(".ForCat").show().next().hide();
     else $(".ForCat").hide().next().show();
 
     $(".floatDisplay div span").attr({"type":type,id:data.id});
 
   });
-  $(".floatDisplay_holder i").click(()=>{$(".floatDisplay_holder").fadeOut();})
+  $(".floatDisplay_holder").click(()=>{$(".floatDisplay_holder").fadeOut();})
+
   $(".floatDisplay div span").click(()=>{
     var type = $('.floatDisplay div span').attr('type'),
         id = $('.floatDisplay div span').attr('id'),

@@ -115,6 +115,7 @@ $(document).ready(function () {
     if([9,10,23,24].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01114-1'>超尖端科技</li>");
     if([11,12,25,26].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01117-1'>地獄門</li>");
     if([13,14,27,28].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01112-1'>神判日</li>");
+    if([12,13,14,15].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01177-1'>春宵苦短,少女做夢吧!</li>");
     if(dd==2||dd==22)
     $("#alldayevent ul").append("<li id='openeye-s01148-1' style='color:#d53f3f'>開眼的花盆貓襲来！(14:22~14:24開放)</li>");
   }

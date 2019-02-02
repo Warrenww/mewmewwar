@@ -126,17 +126,7 @@
           <i class="material-icons"> close </i>
         </div>
         <table class="dataTable">
-          <tr class="non_mobile">
-            <th style='height:80px;padding:0' class="img"></th>
-            <th colspan=5 rarity='data.rarity' class='name'></th>
-          </tr>
-          <tr class="mobile">
-            <th class="name" colspan="6"></th>
-          </tr>
-          <tr class="mobile">
-            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
-            </th>
-          </tr>
+          <tr> <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td> </tr>
           <tr>
             <th colspan='1'><span>等級</span></th>
             <td colspan=5 id='lv'>
@@ -156,9 +146,9 @@
           <tr>
             <th>攻頻</th><td id='freq'></td>
             <th>跑速</th><td id='speed'></td>
-            <td colspan='2' rowspan='3' id='aoe'></td>
+            <td colspan='2' rowspan='2' id='aoe'></td>
           </tr>
-          <tr>
+          <tr class="ForCat">
             <th>花費</th><td id='cost'></td>
             <th>再生產</th><td id='cd'></td>
           </tr>

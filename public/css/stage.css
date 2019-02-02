@@ -133,7 +133,7 @@
 #select_stage[chapter='trueStory'] button
 {background: linear-gradient(#b4d161,#91b02b)}
 #select_stage[chapter='trueStory'] button[value='1']
-{background: linear-gradient(#adc163,#768e1a)}
+{background: linear-gradient(#91a253,#4c5b14)}
 #expend_sl_chap{
   width: 100%;
   background-color: rgba(255,255,255,.7);
@@ -182,9 +182,7 @@
   left:125%;
   text-align: left;
 }
-#reward_head i,
-#enemy_toggle i,
-#list_toggle i{font-size: 16;transition: .4s ease-in-out}
+
 .card::after{
   padding: 2px 11px;
   position: absolute;
@@ -266,16 +264,21 @@
 }
 .enemy_head th{position: relative;}
 .enemy_head th>span{
-  width: 12;
-  height: 12;
+  width: 14;
+  height: 14;
   position: absolute;
-  top: 50%;
-  border: 6px solid gray;
-  border-bottom: 6px solid transparent;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
+  top: 45%;
+  border: 7px solid gray;
+  border-bottom: 7px solid transparent;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
   right: 20px;
-  display: none;
+  transition: .5s ease;
+}
+.enemy_head th>span[active='true']{
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid gray;
+  top: 25%;
 }
 .enemy_head th>div{
   background: rgba(0,0,0,.7);
@@ -291,10 +294,24 @@
   color: orange;
 }
 .enemy_head th div div{ border-bottom: 1px solid lightgray }
-.enemy_head th div div:hover{ background-color:rgba(225,225,225,.9) }
+.enemy_head th div div:hover{ background-color:rgba(225,225,225,.9);color: #5e2121}
+.enemy_head th div div[active='1']{ background-color:rgba(225,225,225,.9);color: #5e2121}
 .enemy_head th[reverse='increase']{border-top:5px solid #3bb8f6;}
 .enemy_head th[reverse='decrease']{border-top:5px solid #f6843b;}
-.enemy_head #point,#bufferZone{display: none;}
+.enemy_head th[reverse='filter']{background-color: rgba(244, 108, 108, 0.9)}
+.enemy_head #point{display: none;}
+#rewardTable th{min-width: 150}
+#enemy_head span{
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 0 10;
+  margin: 0 20;
+  position: absolute;
+  right: 0;
+  color: gray;
+  cursor: pointer;
+}
+#enemy_head span:hover{background-color: #ededed}
 
 #rewardSelector{
   width: 100%;
@@ -312,3 +329,21 @@
   background-blend-mode: multiply;
 }
 .card::after{display: none;}
+#name span{margin: 60}
+.display .dataTable img,#big_img img{
+  border: 3px solid white;
+  border-radius: 10px;
+  box-shadow: 1px 1px 10px 0 black;
+  transition: .3s ease-in-out;
+}
+#castle_img img{width: 100%}
+#star i{color: #a3a3a3}
+#star i[active='1']{color: #f2d018; text-shadow: 0px 0px 10px black;}
+
+@media screen and (max-width:1024px) {
+  .enemy_head th>span{display: none;}
+}
+@media screen and (max-width:768px) {
+  .display *{font-size: 14px}
+  #rewardTable th{min-width: 75px}
+}

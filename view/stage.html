@@ -53,6 +53,7 @@
           <button class="stageBG" bg='easter' id='easter' value='0'>復活節關卡</button>
           <button class="stageBG" bg='summerEvent' id='summerEvent' value='0'>夏日關卡</button>
           <button class="stageBG" bg='halloween' id='halloween' value='0'>萬聖節關卡</button>
+          <button class="stageBG" bg='Christmas' id='Christmas' value='0'>聖誕節關卡</button>
         </div>
         <span>特殊關卡</span>
         <div style="display:none">
@@ -261,61 +262,44 @@
       <div class="display">
         <table class="dataTable">
           <tr>
-            <th rowspan=2 colspan=1 id='chapter' value=''></th>
-            <th rowspan=2 colspan=1 id='stage' value=''></th>
-            <th rowspan=2 colspan=2 id="name"></th>
-            <th>接關</th><td id="continue"></td>
-            <td id="bufferZone" rowspan="6"></td>
+            <th rowspan="2" id='chapter' value=''></th>
+            <th rowspan="2" id='stage' value=''></th>
+            <th colspan='2' id="name"></th>
+            <th rowspan="2" id='bg_img'></th>
           </tr>
-          <tr><th>統帥力</th><td id="energy"></td></tr>
+          <tr>
+            <th colspan="2" id="star" style="display:none"></th>
+          </tr>
+          <tr>
+            <th rowspan="4" id="castle_img"></th>
+            <th>接關</th><td id="continue"></td>
+            <th>統帥力</th><td id="energy"></td>
+          </tr>
           <tr>
             <th>城堡體力</th><td id="castle"></td>
             <th>戰線長度</th><td id="length"></td>
+          </tr>
+          <tr>
             <th>經驗值</th><td id="exp"></td>
+            <th>敵人出擊限制</th><td id="limit_no"></td>
           </tr>
           <tr>
             <th>我方出擊限制</th><td colspan='3' id="constrain"></td>
-            <th>敵人出擊限制</th><td id="limit_no"></td>
           </tr>
-          <tr id="reward_head">
-            <th colspan=6>
-              過關獎勵
-              <i class="material-icons"value='0'>expand_more</i>
-            </th>
-          </tr>
-          <tr id="enemy_toggle">
-            <th colspan=6>
-              關卡敵人
-              <i class="material-icons"value='0'>expand_more</i>
-            </th>
-          </tr>
-          <tr class="enemy_head non_mobile">
+        </table>
+        <div id="reward_head">過關獎勵</div>
+        <table id="rewardTable"> </table>
+        <div id="enemy_head">關卡敵人 <span>切換敵人/關卡資訊</span> </div>
+        <table id="enemyTable">
+          <tr class="enemy_head">
             <th>敵人</th>
-            <th id='multiple'>倍率<div></div></th>
-            <th id='amount'>數量<div></div></th>
-            <th id='castle'>城連動<div></div></th>
-            <th id='first_show'>首次出現(s)<div></div></th>
-            <th id='next_time'>再次出現(s)<div></div></th>
-            <th id='point'>積分<div></div></th>
+            <th id='multiple'>倍率<span></span><div></div></th>
+            <th id='amount'class="orgdata">數量<span></span><div></div></th>
+            <th id='castle'class="orgdata">城連動<span></span><div></div></th>
+            <th id='first_show'class="orgdata">首次出現(s)<span></span><div></div></th>
+            <th id='next_time'class="orgdata">再次出現(s)<span></span><div></div></th>
+            <th id='point'class="orgdata">積分<span></span><div></div></th>
           </tr>
-          <tr class="enemy_head mobile" >
-            <th colspan="2">敵人</th>
-            <th colspan="2" id='amount'>數量<div></div></th>
-            <th colspan="2" id='first_show'>首次出現(s)<div></div></th>
-            <th colspan="2" id='point'>積分<div></div></th>
-          </tr>
-          <tr class="enemy_head mobile" >
-            <th colspan="2" id='multiple'>倍率<div></div></th>
-            <th colspan="2" id='castle'>城連動<div></div></th>
-            <th colspan="2" id='next_time'>再次出現(s)<div></div></th>
-          </tr>
-
-          <!-- <tr id="list_toggle">
-            <th colspan=6>
-              相關出陣列表
-              <i class="material-icons"value='0'>expand_more</i>
-            </th>
-          </tr> -->
         </table>
       </div>
     </div>
@@ -327,19 +311,9 @@
           <i class="material-icons"> close </i>
         </div>
         <table class="dataTable">
-          <tr class="non_mobile">
-            <th style='height:80px;padding:0' class="img"></th>
-            <th colspan=5 rarity='data.rarity' class='name'></th>
-          </tr>
-          <tr class="mobile">
-            <th class="name" colspan="6"></th>
-          </tr>
-          <tr class="mobile">
-            <th style='height:80px;padding:0;background-color:transparent;' colspan="6" class="img">
-            </th>
-          </tr>
+          <tr> <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td> </tr>
           <tr>
-            <th colspan='1'><span>等級/倍率</span></th>
+            <th colspan='1'><span>等級</span></th>
             <td colspan=5 id='lv'>
               <span style='margin:0 10px'></span>
             </td>

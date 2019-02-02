@@ -178,7 +178,7 @@ function mergeCombo(This,data=null) {
     if(flag) target.find(".seat:last").remove();
     $(this).css("border-color","white").clone().prependTo(target);
   });
-  target.find("i").click();
+  target.find("i").click().click();
 }
 
 function checkList(list,id) {
@@ -193,7 +193,7 @@ function comboTR(item,more=false) {
       pic_html +=
       '<span class="card cat" value="'+item.cat[j]+'" '+
       'style="background-image:url('+
-      image_url_cat+item.cat[j]+'.png);'+
+      Unit.imageURL('cat',item.cat[j])+');'+
       (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:5px")
       +'"></span>' ;
     } else  pic_html += "<span class='seat'>-</span>";

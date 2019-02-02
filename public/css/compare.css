@@ -85,5 +85,5 @@
 .panel span:hover{color: rgb(233, 138, 27);font-weight: bold;}
 .panel span span:hover{color: rgb(27, 134, 233);font-weight: bold;}
 
-.comparedatahead tr[reverse='increase'] th{border-left:5px solid #3bb8f6;}
-.comparedatahead tr[reverse='decrease'] th{border-left:5px solid #f6843b;}
+.comparedatahead tr[reverse='decrease'] th{border-left:5px solid #3bb8f6;}
+.comparedatahead tr[reverse='increase'] th{border-left:5px solid #f6843b;}

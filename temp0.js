@@ -48,18 +48,76 @@ var stdin = process.openStdin();
 //   });
 // });
 
-database.ref("/error_log").once('value',(snapshot)=>{
-  data = snapshot.val();
-  exist = [];
-  for(let i in data){
-    if(exist.indexOf(data[i].message)==-1)
-    {
-      console.log(data[i].message);
-      exist.push(data[i].message)
+var NumberOfLevel,fetch_Url,starVar,LevelArr,finalLevelPos,modify = 0;
+LevelArr = [0];
+getData('world','s03002z',0)
+function getData(chapter,i,j,correction=false) {
+  fetch_Url = "https://battlecats-db.com/stage/"+i+
+    (LevelArr[j]?"-"+(Number(LevelArr[j])?AddZero(LevelArr[j]):LevelArr[j]):"")+".html";
+  console.log(fetch_Url);
+  request({
+    url: fetch_Url,
+    method: "GET"
+  }, function(e,r,b) {
+    if(Number(j) == 0 && !e){
+      $ = cheerio.load(b);
+      NumberOfLevel = ($("td[rowspan='2']").length)/2;
+      $("td[rowspan='2']").each(function () {
+        let x = $(this).find("a").eq(0).attr('href');
+        if (!x) return;
+        x = x.split(".")[0].split("-")[1];
+        x = Number.isNaN(Number(x))?x:Number(x);
+        LevelArr.push(x);
+      });
+      console.log(LevelArr);
+      for(let j=0;j<LevelArr.length;j++){
+        let k = j+1;
+        if(k==LevelArr.length||LevelArr[k].toString().indexOf('ex')!=-1){
+          finalLevelPos = j;
+          break;
+        }
+      }
+      j++;
+      getData(chapter,i,j,correction,false);
+      return;
     }
 
-  }
-})
+    var obj = {};
+    if(!e){
+      // console.log("get data");
+      $ = cheerio.load(b);
+      var content = $(".maincontents table"),
+          final = Number(j) == finalLevelPos,
+          thead = content.children("thead").eq(0).children("tr"),
+          tbody_1 = content.children("tbody").eq((final?1:0)+modify).children("tr"),
+          tbody_2 = content.children("tbody").eq((final?2:1)+modify).children("tr"),
+          tbody_3 = content.children("tbody").eq((final?3:2)+modify).children("tr"),
+          star_len = $("#List").find("td").eq(0).find("a").length+1;
+          modify = 0;
+      if (tbody_3.length) correction = true;
+      else correction = false;
+      try {
+        obj.bg_img = thead.eq(2).children("td").eq(1).find('.bg').attr("src").split("/")[3].split(".")[0];
+        obj.castle_img = thead.eq(2).children("td").eq(1).find('.castle').attr("src").split("/")[3].split(".")[0];
+      } catch (e) {
+        obj.bg_img = thead.eq(3).children("td").eq(1).find('.bg').attr("src").split("/")[3].split(".")[0];
+        obj.castle_img = thead.eq(3).children("td").eq(1).find('.castle').attr("src").split("/")[3].split(".")[0];
+      }
+
+      console.log(obj);
+
+      database.ref("/stagedata/"+chapter+"/"+i+"/"+LevelArr[j]).update(obj);
+      j++;
+      if(j<LevelArr.length) getData(chapter,i,j,correction);
+      else setTimeout(()=>{process.exit()},500);
+    }
+    else {
+      console.log(e);
+    }
+  });
+}
+
+
 
 // database.ref('/vote').once("value",function (snapshot) {
 //   var data = snapshot.val();

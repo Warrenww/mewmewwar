@@ -339,7 +339,7 @@ function commentHtml(id,comment,photo=null,name=null) {
   let html,uid = CurrentUserID;
   html = '<tr class="comment">'+
   '<td colspan="6" style="border-left:'+
-  (comment.owner == uid?"5px solid rgb(235, 138, 38)":"0")+
+  (comment.owner == uid?"5px solid #eb8a26":"0")+
   '"><div class="comment_content">'+
   '<span class="photo" style="'+
   (photo?'background-image:url(\''+photo+'\')':'')+'")"></span>'+
@@ -444,7 +444,7 @@ $(document).ready(function () {
   });
   socket.on('return users photo',function (obj) {
     // console.log(obj);
-    var default_photo = image_url_cat+"001-1.png";
+    var default_photo = Unit.imageURL('cat','001-1');
     for(let i in obj){
       if(!obj[i]) obj[i] = {photo:default_photo,name:"使用者"};
       for(let j in commentMap[i]){

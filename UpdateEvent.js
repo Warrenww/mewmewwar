@@ -3,11 +3,12 @@ var request = require("request");
 var database = require("firebase").database();
 var Util = require("./Utility");
 var AddZero = Util.AddZero;
+var Eventdata = {};
 const predic_url = 'https://forum.gamer.com.tw/B.php?bsn=23772&subbsn=7';
 const root = 'https://forum.gamer.com.tw/';
 const event_url = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/event/tw/";
 
-exports.UpdateEvent = function (eventdata) {
+exports.UpdateEvent = function () {
   var t = new Date(),
       y = t.getFullYear(),
       m = t.getMonth()+1,
@@ -16,7 +17,7 @@ exports.UpdateEvent = function (eventdata) {
   database.ref("/event_date").once("value",(snapshot)=>{
     var temp = snapshot.val();
     for(let i in temp){
-      eventdata[i] = temp[i];
+      Eventdata[i] = temp[i];
     }
     console.log("Module load event data complete!");
 
@@ -24,31 +25,7 @@ exports.UpdateEvent = function (eventdata) {
     console.log("get event day ",y+AddZero(m)+AddZero(d));
 
     //update new event
-    if(eventdata[(y+AddZero(m)+AddZero(d))]==undefined){
-      request({
-        url: event_url+y+AddZero(m)+AddZero(d)+".html",
-        method: "GET"
-      },function (e,r,b) {
-        if(!e){
-          $ = cheerio.load(b);
-          var body = $("body").html(),
-          cc = body.indexOf("<error>") == -1;
-          console.log("event page load complete,update = ",cc);
-          eventdata[(y+AddZero(m)+AddZero(d))] = cc;
-          database.ref("/event_date/"+(y+AddZero(m)+AddZero(d))).set(cc);
-          if(cc){
-            for(let i in eventdata){
-              if(i == 'prediction' || i == 'prediction_jp') continue;
-              if(Number(i) < Number((y+AddZero(m)+AddZero(d)))-100) delete eventdata[i];
-            }
-            eventdata.text_event = simplifyTextEvent(b);
-            database.ref("/event_date").set(eventdata);
-          }
-        } else {console.log(e);}
-      });
-    } else {
-       console.log(y+AddZero(m)+AddZero(d),"exist");
-     }
+    CheckNewEvent(y,m,d);
     //update prediction
     request({
       url: predic_url,
@@ -83,10 +60,10 @@ exports.UpdateEvent = function (eventdata) {
         });
         // console.log(arr);
         for(i in arr){
-          if (arr[i].url == eventdata.prediction.source||
-            arr[i].url == eventdata.prediction_jp.source) continue
+          if (arr[i].url == Eventdata.prediction.source||
+            arr[i].url == Eventdata.prediction_jp.source) continue
             console.log('update prediction');
-            parsePrediction(arr[i],eventdata);
+            parsePrediction(arr[i],Eventdata);
           }
         }
       });
@@ -94,6 +71,41 @@ exports.UpdateEvent = function (eventdata) {
   });
 }
 
+exports.getData = function () {
+  var t = new Date(),
+      y = t.getFullYear(),
+      m = t.getMonth()+1,
+      d = t.getDate();
+  if(Eventdata[(y+AddZero(m)+AddZero(d))]==undefined)  CheckNewEvent(y,m,d);
+  return Eventdata
+};
+
+
+function CheckNewEvent(y,m,d) {
+  if(Eventdata[(y+AddZero(m)+AddZero(d))]==undefined){
+    request({
+      url: event_url+y+AddZero(m)+AddZero(d)+".html",
+      method: "GET"
+    },function (e,r,b) {
+      if(!e){
+        $ = cheerio.load(b);
+        var body = $("body").html(),
+        cc = body.indexOf("<error>") == -1;
+        console.log("event page load complete,update = ",cc);
+        Eventdata[(y+AddZero(m)+AddZero(d))] = cc;
+        database.ref("/event_date/"+(y+AddZero(m)+AddZero(d))).set(cc);
+        if(cc){
+          for(let i in Eventdata){
+            if(i == 'prediction' || i == 'prediction_jp') continue;
+            if(Number(i) < Number((y+AddZero(m)+AddZero(d)))-100) delete Eventdata[i];
+          }
+          Eventdata.text_event = simplifyTextEvent(b);
+          database.ref("/event_date").set(Eventdata);
+        }
+      } else {console.log(e);}
+    });
+  }
+}
 function parsePrediction(obj,eventdate) {
   console.log(obj.name);
   let path = "/event_date/prediction";
