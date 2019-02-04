@@ -25,7 +25,7 @@ $(".select_ability").find(".ability_icon").each(function () {
 });
 $(document).ready(function () {
   var timer = new Date().getTime();
-  
+
   auth.onAuthStateChanged(function(user) {
     if (user)  socket.emit("user connect",{user:user,page:location.pathname});
     else  {
@@ -45,14 +45,15 @@ $(document).ready(function () {
       });
     if(data.compare_c2c) {
       $(".compareTarget").empty();
-      $("#compare_number").text(data.compare_c2c.length)
+      $("#compare_number").text(data.compare_c2c.length);
+      compare = [];
       for(let i in data.compare_c2c){
         let id = data.compare_c2c[i].id,
             name = data.compare_c2c[i].name,
             stage = data.compare_c2c[i].stage;
         compareTargetAddCard(id,name,stage);
+        compare.push(id);
       }
-      compare = data.compare_c2c;
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;

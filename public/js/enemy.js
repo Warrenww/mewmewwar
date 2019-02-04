@@ -50,13 +50,14 @@ $(document).ready(function () {
     }
     if(data.compare_e2e) {
       $(".compareTarget").empty();
-      $("#compare_number").text(data.compare_e2e.length)
+      $("#compare_number").text(data.compare_e2e.length);
+      compare = [];
       for(let i in data.compare_e2e){
         let id = data.compare_e2e[i].id,
             name = new Enemy(data.compare_e2e[i]).Name;
         compareTargetAddCard(id,name)
+        compare.push(id);
       }
-      compare = data.compare_e2e;
     }
     if(!data.setting.show_enemy_id)
       $('.display').find("#id").css({'background-color':'transparent','color':'transparent'})

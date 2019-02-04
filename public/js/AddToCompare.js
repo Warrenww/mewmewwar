@@ -43,10 +43,9 @@ $(document).ready(function () {
       let target = $(".compareTarget .card[value='"+$(this).parent().attr('id')+"']");
       let r = confirm("確定要將"+target.text()+"從比較列中移除?") ;
       if(!r) return
+      for(let i in compare){if(compare[i] == target.attr('value')) compare.splice(i,1)}
       target.remove();
-      $(".compareTarget").children().each(function () {
-        compare.push($(this).attr("value"));
-      });
+      console.log(compare);
       $("#compare_number").text(compare.length);
       socket.emit("Set Compare",{type:type,id:CurrentUserID,target:compare});
       $("#compare_panel_BG").fadeOut();

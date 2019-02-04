@@ -169,4 +169,5 @@ nav .mobile,
   .dataTable #title .img[active='1']{ width: 90px}
   .dataTable #title .name{ font-size: 14}
   .dataTable #title {height: 60}
+  .compareSorce #query{display: none;}
 }
