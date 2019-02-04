@@ -136,6 +136,7 @@ nav a{cursor: pointer;}
 #bulletin .main .eventTableHolder table{width: auto;display: none;}
 #bulletin .main .eventTableHolder::-webkit-scrollbar {width: 0}
 #event_iframe,#alt_text{
+  top: 0;
   position: relative;
   right: 0;
   height: 60%;
