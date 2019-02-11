@@ -125,13 +125,13 @@ $(document).ready(function () {
     else {
       for(let j in data.query.rFilter)
         query +=  "<span>"+Cat.parseRarity(data.query.rFilter[j])+"</span>";
-      if(data.query.rFilter.length) query += "<b>|</b>";
+      if(data.query.rFilter) if(data.query.rFilter.length) query += "<b>|</b>";
       for(let j in data.query.cFilter)
         query +=  "<span>"+data.query.cFilter[j]+"</span>";
-      if(data.query.cFilter.length) query += "<b>|</b>";
+      if(data.query.cFilter) if(data.query.cFilter.length) query += "<b>|</b>";
       for(let j in data.query.aFilter)
         query +=  "<span>"+data.query.aFilter[j]+"</span>";
-      if(data.query.aFilter.length) query += "<b>|</b>";
+      if(data.query.aFilter) if(data.query.aFilter.length) query += "<b>|</b>";
       for(let j in filterObj){
         if(!filterObj[j].active) continue;
         query +=  "<span>"+Unit.propertiesName(j)+" : "+

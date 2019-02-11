@@ -13,6 +13,7 @@ $(document).ready(function () {
     var target = $(".dataTable").find("#id").text(),
         stage = Number($(".dataTable").find(".img[active='1']").attr('stage')),
         name = $(".dataTable").find(".name").eq(stage).text().split(" ")[0];
+    if(!target) return;
     stage = type == 'cat'?Number(stage)+1:null;
     addToCompare(target,name,stage);
   });

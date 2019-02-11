@@ -2,6 +2,7 @@ var database = require("firebase").database();
 var admin = require("firebase-admin");
 var Util = require("./Utility");
 var UserData = {};
+const HistoryLimit = 50;
 
 exports.load = function () {
   console.log("Module start load user data.");
@@ -87,7 +88,6 @@ exports.setHistory = function (uid,type,id){
     if(user_history == "" || !user_history ) user_history = {};
     if(user_variable == "" || !user_variable ) user_variable = {};
     // Find same unit and clear it
-
     for(let i in user_history){
       var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id;
       if(exist == current) delete user_history[i];
@@ -95,7 +95,7 @@ exports.setHistory = function (uid,type,id){
     }
     // trim all kind of user history to at most 40
     for(let i in user_history){
-      if(history_count < 40) break;
+      if(history_count < HistoryLimit) break;
       history_count -- ;
       delete user_history[i];
     }
@@ -210,17 +210,6 @@ function arrangeUserData(userdata) {
       continue
     }
     count ++ ;
-    var arr=[],edit = ['cat','enemy','combo','stage','gacha'];
-    for(let j in edit){
-      for(let k in userdata[i].history[edit[j]]) arr.push(k);
-      if (arr.length > 40){
-        console.log(i+" too many "+edit[j]);
-        arr = arr.slice(0,arr.length-40);
-        for(let k in arr) delete userdata[i].history[edit[j]][arr[k]];
-      }
-      arr = [];
-    }
-    database.ref('/user/'+i+"/history").set(userdata[i].history);
     if(!userdata[i].variable) {
       console.log("user "+i+" no variable");
       database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});

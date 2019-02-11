@@ -132,6 +132,7 @@ function getData(chapter,i,j,correction=false) {
   }, function(e,r,b) {
     if(Number(j) == 0 && !e){
       $ = cheerio.load(b);
+      if(!StageData[chapter]) StageData[chapter] = {};
       if(!StageData[chapter][i]){
         var StageName = $("h2").text();
         database.ref("/stagedata/"+chapter+"/"+i+"/name").set(StageName);

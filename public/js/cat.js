@@ -145,6 +145,7 @@ $(document).ready(function () {
 
   socket.on("required data",(data)=>{
     displayCatData(data.buffer[0]) ;
+    $(".display").css("pointer-events","auto");
   });
   function displayCatData(buffer) {
     // console.log(buffer);
