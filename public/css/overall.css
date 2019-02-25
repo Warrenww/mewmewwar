@@ -85,7 +85,7 @@ body::-webkit-scrollbar-thumb {
 }
 .stageBG[bg='maylook']{background-image: url("footage/stage/maylook_BG.png");}
 .stageBG[bg='baseball'],.stageBG[bg='lazybird'],
-.stageBG[bg='easter'],.stageBG[bg='eva'],
+.stageBG[bg='easter'],.stageBG[bg='eva'],.stageBG[bg='Fate'],
 .stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking'],
 .stageBG[bg='castleAndDragon'],.stageBG[bg='CrashFever']{
   background-size: cover;
@@ -99,6 +99,7 @@ body::-webkit-scrollbar-thumb {
   background-color: rgba(0,0,0,.1);
   font-size: 0;
 }
+.stageBG[bg='Fate']{background-image: url("footage/stage/Fate_BG.png");}
 .stageBG[bg='hard']{background-image: url("footage/stage/hard_BG.png");}
 .stageBG[bg='smallCat']{background-image: url("footage/stage/smallCat_BG.png");}
 .stageBG[bg='smallCat']:hover{background-image: url("footage/stage/smallCat_BG_alt.png");}
@@ -143,7 +144,7 @@ iframe{
   width: 250px;
   padding: 10px;
   border: 0;
-  border-radius: 5px;
+  border-radius: 15px;
 }
 button,.button,.selected_cat{
   background-color: rgb(227, 158, 73) ;
@@ -193,7 +194,8 @@ button:active{
   flex-direction: column;
   justify-content: center;
   padding: 3% 10% ;
-  width: 100%
+  width: 100%;
+  position: relative;
 }
 .content:first-of-type{padding-top: 5%}
 .display{padding: 5% }
@@ -447,6 +449,7 @@ table {
 .floatDisplay i,
 #function_tag i,
 #restoreField,
+.displayControl .control i,
 #saveField{
   margin: 10px;
   background-color: rgba(255, 255, 255, 0.71);
@@ -469,6 +472,7 @@ table {
 .functionArea i::before,
 #function_tag i::before,
 #restoreField::before,
+.displayControl .control i::before,
 #saveField::before{
   content: attr(text);
   position: absolute;
@@ -494,6 +498,7 @@ table {
 .functionArea i:hover::before,
 #function_tag i:hover::before,
 #restoreField:hover::before,
+.displayControl .control i:hover::before,
 #saveField:hover::before
 {opacity: 1;width: 100;overflow: visible;}
 /* optional : To enable border */
@@ -509,6 +514,7 @@ table {
 #analyze_area div i:hover,
 .functionArea i:hover,
 .floatDisplay i:hover,
+.displayControl .control i:hover,
 #function_tag i:hover{
   background-color: rgba(150, 150, 150, 0.88);
   color: rgb(244, 214, 43);
@@ -586,12 +592,10 @@ canvas{transition: .4s ease-in-out}
 #canvas_holder a i{font-size: 36px}
 #canvas_holder a:hover,
 #canvas_holder span:hover,
-#snapshot:hover,
 .floatbutton:hover{
   text-decoration: none;
   background-color: rgb(242, 163, 70)
 }
-#snapshot{position: fixed}
 #www{
 animation-name: blink;
 animation-duration: .5s ;
@@ -705,7 +709,30 @@ select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94
   animation-timing-function: cubic-bezier(0.64, 0, 0.32, 0.99);
   animation-iteration-count: infinite;
 }
-#combo_head,#survey_head,#comment_head,#reward_head,#enemy_head{
+
+.tableTitle::after,
+.tableTitle::before{
+  content: "";
+  width: 3;
+  background-color: gray;
+  position: absolute;
+  top: 20%;
+  height: 60%;
+  left: 20px;
+  border-radius: 1.5px;
+  transform: rotate(90deg);
+  transition: .3s ease
+}
+.tableTitle::before{
+transform: rotate(0deg);
+}
+.tableTitle[active='1']::before{
+transform: rotate(90deg);
+}
+.tableTitle[active='1']::after{
+transform: rotate(-90deg);
+}
+.tableTitle{
   width: calc(100% - 6px);
   background-color: #e9d6ad;
   font-size: 16;
@@ -715,9 +742,103 @@ select:disabled{background-color: rgba(187, 187, 187, 0.83);color:rgb(94, 94, 94
   padding: 8;
   margin-top: 10;
   position: relative;
+  cursor: pointer;
 }
 @keyframes rotate {
   0%{transform: rotate(0deg);}
   50%{transform: rotate(-180deg);}
   100%{transform: rotate(-360deg);}
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 20px;
+  margin: 0 20px;
+}
+.switch input {display:none;}
+.slider_but {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgb(129, 129, 129);
+  transition: .4s ease-in-out;
+  border-radius: 30px;
+}
+.slider_but:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: -2px;
+  bottom: -2px;
+  background-color: white;
+  transition: .4s ease-in-out;
+  border-radius: 50%;
+  box-shadow: gray 4px 0px 10px;
+}
+input:checked + .slider_but {
+  background-color: rgb(33, 150, 244);
+}
+input:checked + .slider_but:before {
+  -webkit-transform: translateX(32px);
+  -ms-transform: translateX(32px);
+  transform: translateX(32px);
+  box-shadow: gray -4px 0px 10px;
+}
+
+.displayControl{
+  position: absolute;
+  top: calc(3% - 6px);
+  width: calc(72% - 6px);
+  background-color: #e9d6ac;
+  display: flex;
+  padding: 10px;
+  z-index: 5;
+  transition: .1s ease;
+}
+.displayControl > div {display: flex;align-items: center;}
+.displayControl .data span,
+.displayControl .position span
+{
+  font-size: 16px;
+  padding: 0 5;
+  margin: 0 3;
+}
+.displayControl .position span:last-of-type{
+  border-right: 2px solid;
+}
+.displayControl .position span:hover{ color: #eb8608 }
+.displayControl .position span{
+  cursor: pointer;
+  font-weight: bold;
+  border-left: 2px solid;
+  margin: 0;
+}
+.displayControl .position
+{
+  display: none;
+  margin: 0 10;
+  flex: 1;
+  justify-content: center;
+}
+.displayControl .control
+{
+  margin: 0 10;
+  flex: 1;
+  justify-content: flex-end;
+}
+.displayControl .control i { margin: 0 10; }
+.displayControl[float='true'] .control i::before{
+  top: 140%
+}
+.displayControl[float='true']{
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background-color: white;
+  box-shadow: 0px 3px 10px 0px;
 }

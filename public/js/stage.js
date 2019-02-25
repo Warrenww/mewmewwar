@@ -255,10 +255,11 @@ $(document).ready(function () {
     // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
     $(".display .dataTable #stage").html(obj.parent).attr('value',obj.stage);
-    $("#more_option #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
+    $(".displayControl .control #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
           "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
-    $("#more_option #next").attr("query",JSON.stringify(next_stage));
-    $("#more_option #prev").attr("query",JSON.stringify(prev_stage));
+    $(".displayControl .control #next").attr("query",JSON.stringify(next_stage));
+    $(".displayControl .control #prev").attr("query",JSON.stringify(prev_stage));
+    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent}>${data.name}`);
     // append data
     for(let i in data){
       if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
@@ -280,8 +281,8 @@ $(document).ready(function () {
       }
       else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
-    $("#rewardTable").append(Addreward(data.reward,data.integral));
-    $("#enemyTable").append(Addenemy(data.enemy));
+    $(".rewardTable").append(Addreward(data.reward,data.integral));
+    $(".enemyTable").append(Addenemy(data.enemy));
     // $(Addlist(data.list)).insertAfter($("#list_toggle"));
     setTimeout(function () {
       scrollSelectArea('stage',obj.stage);
@@ -334,13 +335,15 @@ $(document).ready(function () {
         arr.push(id)
       }
     }
-    socket.emit("compare enemy",{id:CurrentUserID,target:arr});
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe('compareEnemy');
-      window.parent.changeIframe('compareEnemy');
-    } else {
-      window.open("/compareEnemy","_blank");
-    }
+    socket.emit("Set Compare",{type:"enemy",id:CurrentUserID,target:arr});
+    setTimeout(function () {
+      if(window.parent.reloadIframe){
+        window.parent.reloadIframe('compareEnemy');
+        window.parent.changeIframe('compareEnemy');
+      } else {
+        window.open("/compareEnemy","_blank");
+      }
+    },800);
   });
   // Show where this level come from
   $(".display .dataTable #chapter").click(function () {
@@ -353,7 +356,6 @@ $(document).ready(function () {
     socket.emit("required level name",{chapter:chapter,stage:stage});
   });
   // Enemy filter function
-  $("#reward_head,#enemy_head").click(function () { $(this).next("table").toggle(); });
   $(".enemy_head th>span").click(function (e) {
     e.stopPropagation();
     if($(this).attr("active") == "true")

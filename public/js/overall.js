@@ -58,6 +58,20 @@ $(document).ready(function () {
     })
   }
 
+  // table title reaction
+  $('.tableTitle').click(function () {
+    $(this).attr('active',(Number($(this).attr("active"))+1)%2).next().toggle();
+  });
+
+  // Scroll Reaction
+  $(document).on('scroll',function () {
+    var pos_y = window.scrollY,
+        display_y = $(".display").offset().top ;
+    // console.log(pos_y);
+    if(pos_y > display_y){ $(".displayControl").attr("float",true); }
+    else { $(".displayControl").attr("float",false); }
+  });
+
   //change page reaction
   $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
   $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
@@ -114,7 +128,7 @@ $(document).ready(function () {
 
   //snapshot
   $(document).on("click","#snapshot",function () {
-    let target = $(".dataTable")[0];
+    let target = $(".display")[0];
     if(!target) return
     snapshot(target);
     $(document).bind("keydown",controlByKey);
@@ -240,7 +254,6 @@ $(window).load(function () {
   $(".slider").on("slidechange", function(e,ui) {
     $(this).parent().siblings('td.value_display').html(ui.value);
   });
-
 });
 
 $("#PageGoToTop").click(function () {
@@ -300,7 +313,7 @@ function scroll_to_div(div_id){
     {scrollTop: $("#"+div_id).offset().top-100},
     600,'easeInOutCubic');
 }
-function scroll_to_class(class_name,n) {
+function scroll_to_class(class_name,n=0) {
   $('html,body').animate(
     {scrollTop: $("."+class_name).eq(n).offset().top-100},
     600,'easeInOutCubic');

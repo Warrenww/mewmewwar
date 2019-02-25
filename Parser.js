@@ -68,7 +68,7 @@ exports.parseChar = function(c,obj,type) {
           type:"使徒殺手 (攻擊力x5 受到傷害x0.2)",
         });
       }
-      else if(c[i].indexOf("無効（")!=-1){
+      else if(c[i].indexOf("無効")!=-1){
         let aa = c[i].split("（")[1].split("）")[0].split(" ");
         console.log(aa);
         for(let i in aa){
@@ -87,7 +87,7 @@ exports.parseChar = function(c,obj,type) {
       }
       else if(c[i].indexOf("連続攻撃")!=-1){
         let aa = c[i].split("連続攻撃"),
-        bb = aa[1].split("（")[1].split("）")[0].split(" "),
+        bb = aa[1].split("（")[0].trim().split(" "),
         sum = 0;
         console.log(bb);
         for(let i in bb){
@@ -166,12 +166,14 @@ exports.parseChar = function(c,obj,type) {
         });
       }
       else if(c[i].indexOf("へワープさせる")!=-1){
-        let aa = c[i].split("％");
+        let aa = c[i].split("％"),
+            bb = Number(aa[1].split('後方')[0].split('で')[1]);
+        if(Number.isNaN(bb)) bb = Number(aa[1].split('前方')[0].split('で')[1])*(-1);
         obj.tag.push("傳送");
         obj.char.push({
           type:"傳送",
           chance:Number(aa[0]),
-          dist:Number(aa[1].split('後方')[0].split('で')[1]),
+          dist:bb,
           time:Number(aa[1].split('（')[1].split('F）')[0])
         });
       }
@@ -227,7 +229,6 @@ exports.parseChar = function(c,obj,type) {
           against:ene
         });
       }
-
     }
   }
 
@@ -246,111 +247,56 @@ function parseAbility(s) {
     ww = s.split("波動")[0].split("Lv")[1]
     return "波動 "+(ww?ww:"")
   }
-  switch (s) {
-    case "のみに攻撃":
-      s = "只能攻擊";
-      break;
-    case "1度だけ生き残る":
-      s = "復活";
-      break;
-    case "ワープ":
-      s = "傳送";
-      break;
-    case "ゾンビキラー":
-      s = "不死剋星";
-      break;
-    case "ふっとばす":
-      s = "擊退";
-      break;
-    case "止める":
-      s = "暫停";
-      break;
-    case "動きを止める":
-      s = "暫停";
-      break;
-    case "遅くする":
-      s = "緩速";
-      break;
-    case "動きを遅くする":
-      s = "緩速";
-      break;
-    case "攻撃力低下":
-      s = "降攻"+(ww?" "+ww+"%":"");
-      break;
-    case "打たれ強い":
-      s = "很耐打 (受到傷害x0.25)";
-      break;
-    case "超ダメージ":
-      s = "超大傷害 (攻擊力x3)";
-      break;
-    case "めっぽう強い":
-      s = "善於攻擊 (攻擊力x1.5 受到傷害x0.5)";
-      break;
-    case "古代の呪い":
-      s = "古代詛咒";
-      break;
-    case "バリアブレイカー":
-      s = "破盾";
-      break;
-    case "バリアブレイク":
-      s = "破盾";
-      break;
-    case "超打たれ強い":
-      s = "超級耐打";
-      break;
-    case "極ダメージ":
-      s = "極度傷害";
-      break;
-    default:
-      s = s ;
-  }
+  temp = {
+    "のみに攻撃": "只能攻擊",
+    "1度だけ生き残る": "復活",
+    "生き残る": "復活",
+    "ワープ": "傳送",
+    "ゾンビキラー": "不死剋星",
+    "ふっとばす": "擊退",
+    "ふっとばし": "擊退",
+    "止める": "暫停",
+    "動きを止める": "暫停",
+    "遅くする": "緩速",
+    "動きを遅くする": "緩速",
+    "攻撃力低下": "降攻"+(ww?" "+ww+"%":""),
+    "攻撃力上昇": "增攻",
+    "打たれ強い": "很耐打 (受到傷害x0.25)",
+    "超ダメージ": "超大傷害 (攻擊力x3)",
+    "めっぽう強い": "善於攻擊 (攻擊力x1.5 受到傷害x0.5)",
+    "古代の呪い": "古代詛咒",
+    "古代の呪い無効": "古代詛咒無效",
+    "バリアブレイカー": "破盾",
+    "バリアブレイク": "破盾",
+    "クリティカル": "會心一擊",
+    "超打たれ強い": "超級耐打",
+    "極ダメージ": "極度傷害",
+    "撃破時お金x2": "2倍金錢",
+    "魔女キラー": "魔女殺手",
+    "使徒キラー": "使徒殺手",
+  }[s];
+  s = temp?temp:s;
   return s
 }
 function parseEnemy(c) {
   if(!c) return ""
   c = c.split("（")[0]
-  switch (c) {
-    case "メタルな敵":
-      c = "鋼鐵敵人"
-      break;
-    case "白い敵":
-      c = "白色敵人"
-      break;
-    case "エイリアン":
-      c = "外星敵人"
-      break;
-    case "赤い敵":
-      c = "紅色敵人"
-      break;
-    case "天使":
-      c = "天使敵人"
-      break;
-    case "全ての敵":
-      c = "全部敵人"
-      break;
-    case "ゾンビ":
-      c = "不死敵人"
-      break;
-    case "黒い敵":
-      c = "黑色敵人"
-      break;
-    case "浮いてる敵":
-      c = "漂浮敵人"
-      break;
-    default:
-      c = c
-  }
-  return c
+  temp = {
+    "メタルな敵": "鋼鐵敵人",
+    "白い敵": "白色敵人",
+    "エイリアン": "外星敵人",
+    "赤い敵": "紅色敵人",
+    "天使": "天使敵人",
+    "全ての敵": "全部敵人",
+    "ゾンビ": "不死敵人",
+    "黒い敵": "黑色敵人",
+    "浮いてる敵": "漂浮敵人",
+  }[c]
+  temp = temp?temp:c;
+  return temp
 }
-exports.parseCondition = function(row_7,row_8,obj) {
-  if(row_7.children().eq(0).text()=="開放条件"){
-    c = row_7.children().eq(1).html();
-  } else if(row_8.children().eq(0).text()=="開放条件"){
-    c = row_8.children().eq(1).html();
-  } else {
-    obj.condition = '-';
-    return
-  }
+exports.parseCondition = function(row_7,obj) {
+  c = row_7.children().eq(1).html();
   var condition ={},c_text=[];
   c = c.split("<br>");
   for(let i in c){
@@ -423,76 +369,43 @@ exports.parseCondition = function(row_7,row_8,obj) {
   return
 }
 function parseGacha (n) {
-  switch (n) {
-    case '伝説のネコルガ族':
-      return 'unknown'
-    case '2017新年':
-      return '2017_year_start'
-    case '極ネコ祭':
-      return 'special_cat'
-    case '超ネコ祭':
-      return 'super_cat'
-    case '超激レア限定プラチナ':
-      return 'platinum'
-    case '超激ダイナマイツ':
-      return 'explosion'
-    case 'レッドバスターズ':
-      return 'red_destroy'
-    case '2016忘年会':
-      return '2016_year_end'
-    case '超選抜祭':
-      return 'super_select'
-    case '2018新年':
-      return '2018_year_start'
-    case 'メタルバスターズ':
-      return 'metal_destroy'
-    case 'エアバスターズ':
-      return 'float_destroy'
-    case '戦国武神バサラーズ':
-      return 'basalasu'
-    case '電脳学園ギャラクシーギャルズ':
-      return 'galaxy_girl'
-    case '超破壊大帝ドラゴンエンペラーズ':
-      return 'dragon'
-    case 'メルクストーリア':
-      return 'maylook'
-    case '超古代勇者ウルトラソウルズ':
-      return 'ancient_hero'
-    case '逆襲の英雄ダークヒーローズ':
-      return 'dark_hero'
-    case 'メタルスラッグディフェンス':
-      return 'metal_slug_defense'
-    case 'ハロウィン':
-      return 'halloween'
-    case 'クリスマスギャルズ':
-      return 'christmas'
-    case '究極降臨ギガントゼウス':
-      return 'god'
-    case '消滅都市2':
-      return 'destroy_city'
-    case 'サマーガールズ':
-      return 'summer'
-    case '革命軍隊アイアンウォーズ':
-      return 'revolution'
-    case 'イースターカーニバル':
-      return 'easter'
-    case '絶命美少女ギャルズモンスターズ':
-      return 'monster_girl'
-    case 'ぐでたまコラボ':
-      return 'egg'
-    case '大精霊エレメンタルピクシーズ':
-      return 'elf'
-    case '2017忘年会':
-      return '2017_year_end'
-    case '実況パワフルプロ野球コラボ':
-      return 'baseball'
-    case 'エヴァンゲリオンコラボ':
-      return 'eva'
-    case 'にゃんこ':
-      return 'cat'
-    default:
-        return "no_this_gacha"
-  }
+  temp = {
+    '伝説のネコルガ族':'unknown',
+    '2017新年':'2017_year_start',
+    '極ネコ祭':'special_cat',
+    '超ネコ祭':'super_cat',
+    '超激レア限定プラチナ':'platinum',
+    '超激ダイナマイツ':'explosion',
+    'レッドバスターズ':'red_destroy',
+    '2016忘年会':'2016_year_end',
+    '超選抜祭':'super_select',
+    '2018新年':'2018_year_start',
+    'メタルバスターズ':'metal_destroy',
+    'エアバスターズ':'float_destroy',
+    '戦国武神バサラーズ':'basalasu',
+    '電脳学園ギャラクシーギャルズ':'galaxy_girl',
+    '超破壊大帝ドラゴンエンペラーズ':'dragon',
+    'メルクストーリア':'maylook',
+    '超古代勇者ウルトラソウルズ':'ancient_hero',
+    '逆襲の英雄ダークヒーローズ':'dark_hero',
+    'メタルスラッグディフェンス':'metal_slug_defense',
+    'ハロウィン':'halloween',
+    'クリスマスギャルズ':'christmas',
+    '究極降臨ギガントゼウス':'god',
+    '消滅都市2':'destroy_city',
+    'サマーガールズ':'summer',
+    '革命軍隊アイアンウォーズ':'revolution',
+    'イースターカーニバル':'easter',
+    '絶命美少女ギャルズモンスターズ':'monster_girl',
+    'ぐでたまコラボ':'egg',
+    '大精霊エレメンタルピクシーズ':'elf',
+    '2017忘年会':'2017_year_end',
+    '実況パワフルプロ野球コラボ':'baseball',
+    'エヴァンゲリオンコラボ':'eva',
+    'にゃんこ':'cat',
+  }[n];
+  temp = temp?temp:"no_this_gacha";
+  return temp;
 }
 exports.ToOriginal = function(n,r,lv) {
   var limit;
@@ -649,4 +562,113 @@ exports.FtoS = function(s) {
   let arr = s.indexOf("~") != -1 ? s.split("~") : s.split("～");
   for(let i in arr) arr[i] = (Number(arr[i])/30).toFixed(1);
   return arr.join("~")
+}
+exports.parseInstinct = function (c,obj) {
+  obj.instinct = [];
+  c = c.html().split("<hr class=\"line\">");
+  obj.tag.push("本能");
+  for(let i in c){
+    c[i] = $("<div/>").html(c[i]).text();
+    console.log(c[i]);
+    if(c[i].indexOf("基本") != -1){
+      let a = "基本"+(c[i].indexOf("体") != -1?"體":"攻擊")+"力上升";
+      obj.instinct.push({
+        ability:a,
+        maxlv:10,
+        range:[2,20],
+        np:5
+      });
+      obj.tag.push(a);
+    }
+    else if(c[i].indexOf("強化") != -1){
+      let a = parseAbility(c[i].split("」")[0].split("「")[1])+"強化",
+          b = Number(c[i].split("MaxLv")[1].split(" ")[0]),
+          d = c[i].split("）")[1].split("％")[0].split("～");
+
+      d = d.map(x => x.indexOf("F")==-1?x:x.split("F")[0]);
+      obj.instinct.push({
+        ability: a,
+        maxlv  : b,
+        range  : d,
+        np     : 5
+      });
+    }
+    else if(c[i].indexOf("追加") != -1 && c[i].indexOf("MaxLv") != -1){
+      let a = c[i].split("」")[0].split("「")[1],
+          b = Number(c[i].split("MaxLv")[1].split(" ")[0]),f=true,
+          d = c[i].split("）")[1];
+      if(a.indexOf("耐性") != -1) a = parseAbility(a.split("耐性")[0])+"抗性";
+      else {a = parseAbility(a)+"能力解放";f=false}
+
+      if(a.indexOf("增攻")!=-1){
+        d = d.substring(d.search(/\d+～\d+％/)).split("％")[0].split("～")
+        d.push(c[i].split("％")[0].split("残り体力")[1]);
+      }
+      else if((a.indexOf("緩速")!=-1||a.indexOf("暫停")!=-1)&&!f){
+        d = d.substring(d.search(/\d+～\d+F/)).split("F")[0].split("～")
+        d.push(c[i].split("％")[0].split("）")[1]);
+      }
+      else if(a.indexOf("降攻")!=-1&&!f){
+        d = d.substring(d.search(/\d+～\d+F/)).split("F")[0].split("～")
+        d.push(c[i].split("％")[0].split("）")[1]);
+        d.push(c[i].split("％")[1].split("攻撃力")[1]);
+      }
+      else d = d.split("％")[0].split("～");
+      if(a.indexOf("波動")!=-1&&!f){ d.push(c[i].split("確率でLv")[1].split("波動")[0]); }
+      // d = d.map(x => x.indexOf("F")==-1?x:x.split("F")[0]);
+      obj.instinct.push({
+        ability: a,
+        maxlv  : b,
+        range  : d,
+        np     : f?5:25
+      });
+      obj.tag.push(a);
+    }
+    else if(c[i].indexOf("追加") != -1){
+      let a = c[i].split("」")[0].split("「")[1],f=false;
+      if(c[i].indexOf("特性") != -1) a = parseAbility(a)+"能力解放";
+      else {a = "屬性新增"+parseEnemy(a);f=true;}
+
+      let d = c[i].split("追加")[1].search(/\d+～\d+％/);
+      d = d!=-1? c[i].substring(d).split('％')[0].split("～") : "";
+      obj.instinct.push({
+        ability: a,
+        maxlv  : 1,
+        range  : d,
+        np     : 25
+      });
+      obj.tag.push(a);
+    }
+    else if(c[i].indexOf("生産") != -1){
+      let a,b = Number(c[i].split("MaxLv")[1].split(" ")[0]),d = c[i].split(" ")[1];
+      if(c[i].indexOf("時間") != -1){
+        a = "生產時間減少";
+        d = d.split("F")[0].split("～");
+      } else {
+        a = "生產金額減少";
+        d = d.split("円")[0].split("～");
+      }
+      obj.instinct.push({
+        ability: a,
+        maxlv  : b,
+        range  : d,
+        np     : 5
+      });
+      obj.tag.push(a);
+    }
+    else if(c[i].indexOf("移動速度") != -1){
+      let a = "移動加快",
+          b = Number(c[i].split("MaxLv")[1].split(" ")[0]),
+          d = c[i].split(" ")[1].split("上昇")[0].split("～");
+
+      obj.instinct.push({
+        ability: a,
+        maxlv  : b,
+        range  : d,
+        np     : 5
+      });
+      obj.tag.push(a);
+    }
+
+  }
 }

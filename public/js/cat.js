@@ -67,8 +67,9 @@ $(document).ready(function () {
         for(let i in last.query)
          for(let j in last.query[i])
           $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
-        if(Number(last.colorAnd)) $(".select_color").prev().click();
-        if(Number(last.abilityAnd)) $(".select_ability").prev().click();
+        if(Number(last.colorAnd)) $("#colorAnd").click();
+        if(Number(last.abilityAnd)) $("#abilityAnd").click();
+        if(Number(last.instinct)) $("#instinct_involve").click();
       }
       var value_search = false;
       for(let i in last.filterObj){
@@ -166,10 +167,13 @@ $(document).ready(function () {
     CurrentCatID = id;
     CurrentCatStage = currentStage;
     $(".dataTable").find("#title").empty();
+    $(".instinctTable").empty();
+    $(".displayControl #rarity").empty().text(Cat.parseRarity(package.rarity));
 
-    if(own) $("#more_option #mark_own").attr({"value":1,'cat':id,'text':'我有這隻貓'}).html("&#xE8E6;");
-    else $("#more_option #mark_own").attr({"value":0,'cat':id,'text':'我沒有這隻貓'}).html("&#xE8E7;");
-    $("#more_option #out ").attr("href","http://battlecats-db.com/unit/"+id+".html");
+    if(own) $(".displayControl #mark_own").attr({"value":1,'cat':id,'text':'我有這隻貓'}).html("&#xE8E6;");
+    else $(".displayControl #mark_own").attr({"value":0,'cat':id,'text':'我沒有這隻貓'}).html("&#xE8E7;");
+    $(".displayControl #out ").attr("href","http://battlecats-db.com/unit/"+id+".html");
+    $(".displayControl #addcart ").attr("value",id);
 
     for (let cat in data){
       $(".dataTable").find("#title").append(
@@ -182,6 +186,7 @@ $(document).ready(function () {
     $(".dataTable").find("#id").text(id);
 
     $('.comboTable').html(AddCombo(buffer.combo));
+    $('.instinctTable').html(AddInstinct(data,package.rarity));
     initialSlider(data,lv);
     initial_survey();
     addSurvey(info.statistic,survey);
@@ -201,17 +206,20 @@ $(document).ready(function () {
     $("#selected").find(".card-group[value='"+CurrentCatID+"'] .card").eq(CurrentCatStage).show().siblings(".card").hide();
   });
   function updateCatData (currentStage,lv = null) {
-    for(let i in current_cat_data[currentStage]){
+    var data = current_cat_data[currentStage];
+    $(".displayControl .data #img").css("background-image",`url('${data.image}')`);
+    $(".displayControl .data #name").text(data.Name);
+    for(let i in data){
       if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
-      $(".dataTable").find("#"+i).html("<span class='editable'>"+current_cat_data[currentStage].Tovalue(i,lv)+"</span>");
+      $(".dataTable").find("#"+i).html("<span class='editable'>"+data.Tovalue(i,lv)+"</span>");
       else if(i == 'aoe')
-      $(".dataTable").find("#"+i).text(current_cat_data[currentStage].Aoe);
+      $(".dataTable").find("#"+i).text(data.Aoe);
       else if(i == 'char')
-      $(".dataTable").find("#"+i).html(current_cat_data[currentStage].CharHtml(lv));
+      $(".dataTable").find("#"+i).html(data.CharHtml(lv));
       else if(i == 'condition')
-      $(".dataTable").find("#"+i).html(current_cat_data[currentStage].CondHtml());
+      $(".dataTable").find("#"+i).html(data.CondHtml());
       else if(i!='id')
-      $(".dataTable").find("#"+i).text(current_cat_data[currentStage][i]);
+      $(".dataTable").find("#"+i).text(data[i]);
     }
     $(".dataTable").find("#title .name").eq(currentStage).attr("active",1).siblings('.name').attr("active",0);
     $(".dataTable").find("#title .img").eq(currentStage).attr("active",1).siblings('.img').attr("active",0);
@@ -245,7 +253,6 @@ $(document).ready(function () {
   }
   function updateState(level) {
     var data = current_cat_data[CurrentCatStage];
-    var rarity = data.rarity;
     var change = ['hp','hardness','atk','dps'] ;
     for(let i in change){
       let target = $('.dataTable').find('#'+change[i]) ;
@@ -262,7 +269,6 @@ $(document).ready(function () {
       .text("("+data.serialATK(level)+")");
     }
   }
-  $('#combo_head,#survey_head,#comment_head').click(function () { $(this).next().toggle(); });
 
   $(document).on("click","#mark_own",function () {
     let val = Number($(this).attr("value"))?0:1,
@@ -432,7 +438,6 @@ $(document).ready(function () {
       $('#level').slider('option','value',lv);
       $(this).parent().html(Cat.levelToValue(ori,rarity,lv));
     }
-
   }
 
 });
@@ -477,4 +482,56 @@ function AddCombo(arr) {
   }
   // console.log(html);
   return html
+}
+function AddInstinct(data,rarity) {
+  if(!data[2]) return createHtml("tr",createHtml("td","本能未開放",{colspan:6}));
+  var arr = data[2].instinct,thead="",tbody="";
+  if(!arr) return;
+  ["能力","等級上限","等級1加值/花費NP","等級2-5加值/花費NP","等級6-10加值/花費NP"].map(x=>thead += createHtml("th",x));
+  thead = createHtml("tr",thead);
+  for(let i in arr){
+    let temp = createHtml("th",addPs(arr[i]),{rowspan:2});
+    temp += createHtml("td",arr[i].maxlv,{rowspan:2});
+    temp += createHtml("td",arr[i].range[0]?(arr[i].range[0]+" "+unit(arr[i].ability)):"-");
+    if(arr[i].maxlv!=1)
+      temp += createHtml("td",
+            ((arr[i].range[1]-arr[i].range[0])/(arr[i].maxlv-1)).toFixed(0)+" "+unit(arr[i].ability));
+    else
+      temp += createHtml("td","-");
+    if(arr[i].maxlv!=1)
+      temp += createHtml("td",
+            ((arr[i].range[1]-arr[i].range[0])/(arr[i].maxlv-1)).toFixed(0)+" "+unit(arr[i].ability));
+    else
+      temp += createHtml("td","-");
+    tbody += createHtml("tr",temp);
+    temp = "";
+    if(arr[i].maxlv==1){
+      temp += createHtml("td",arr[i].np*{R:2,SR:3,SSR:4}[rarity]+" NP");
+      temp += createHtml("td","-");
+      temp += createHtml("td","-");
+    } else{
+      temp += createHtml("td",arr[i].np*{R:1,SR:2,SSR:3}[rarity]+" NP");
+      temp += createHtml("td",5*{R:1,SR:2,SSR:3}[rarity]+" NP");
+      temp += createHtml("td",10*{R:1,SR:2,SSR:3}[rarity]+" NP");
+    }
+    tbody += createHtml("tr",temp);
+
+  }
+  return thead+tbody;
+
+  function unit(s) {
+    if(s.indexOf("時間")!=-1||s.indexOf("緩速強化")!=-1||s.indexOf("降攻")!=-1)s = "F";
+    else if(s.indexOf("金額")!=-1)s = "元";
+    else if(s.indexOf("移動")!=-1)s = "";
+    else s = "%";
+    return s;
+  }
+  function addPs(s) {
+    temp = s.ability;
+    if(s.ability.indexOf("增攻")!=-1) temp += `<br>(體力低於${s.range[2]}%)`
+    if(s.ability.indexOf("波動")!=-1&&s.range[2]) temp += `<br>(Lv.${s.range[2]} 波動)`
+    if(s.ability=='緩速能力解放') temp += `<br>(${s.range[2]}% 機率緩速)`
+    if(s.ability=='降攻能力解放') temp += `<br>(${s.range[2]}% 機率降攻${s.range[3]}%)`
+    return temp;
+  }
 }

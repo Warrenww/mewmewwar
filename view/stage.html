@@ -61,6 +61,7 @@
         </div>
         <span>合作關卡</span>
         <div style="display:none">
+          <button class="stageBG" bg='Fate' id='Fate' value='0'>Fate<br />合作關卡</button>
           <button class="stageBG" bg='egg' id='egg' value='0'>蛋黃哥<br />合作關卡</button>
           <button class="stageBG" bg='pokopang' id='pokopang' value='0'>POKOPANG<br />合作關卡</button>
           <button class="stageBG" bg='eva' id='eva' value='0'>福音戰士<br />合作關卡</button>
@@ -248,13 +249,22 @@
       </div>
     </div>
     <div class="content">
-      <div id='more_option'>
-        <i class="material-icons"text='上一關'id='prev'>&#xE5C4;</i>
-        <i class="material-icons"text='下一關'id='next'>&#xE5C8;</i>
-        <a target='blank'id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-        <i class="material-icons"text='截圖'id='snapshot'>&#xe439;</i>
-        <i class="material-icons"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
-        <i class="material-icons"text='回到頂端'id='top'>&#xE25A;</i>
+      <div class="displayControl">
+        <div class="data">
+          <span id="name"></span>
+        </div>
+        <div class="position">
+          <span onclick="scroll_to_class('dataTable')">關卡資料</span>
+          <span onclick="scroll_to_class('rewardTable')">過關獎勵</span>
+          <span onclick="scroll_to_class('enemyTable')">關卡敵人</span>
+        </div>
+        <div class="control">
+          <i class="material-icons"text='上一關'id='prev'>&#xE5C4;</i>
+          <i class="material-icons"text='下一關'id='next'>&#xE5C8;</i>
+          <a target='blank'id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
+          <i class="material-icons"text='截圖'id='snapshot'>&#xe439;</i>
+          <i class="material-icons"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
+        </div>
       </div>
       <div class="display">
         <table class="dataTable">
@@ -284,10 +294,10 @@
             <th>我方出擊限制</th><td colspan='3' id="constrain"></td>
           </tr>
         </table>
-        <div id="reward_head">過關獎勵</div>
-        <table id="rewardTable"> </table>
-        <div id="enemy_head">關卡敵人 <span>切換敵人/關卡資訊</span> </div>
-        <table id="enemyTable">
+        <div id="reward_head" class="tableTitle" active='0'>過關獎勵</div>
+        <table class="rewardTable"> </table>
+        <div id="enemy_head" class="tableTitle" active='0'>關卡敵人 <span>切換敵人/關卡資訊</span> </div>
+        <table class="enemyTable">
           <tr class="enemy_head">
             <th>敵人</th>
             <th id='multiple'>倍率<span></span><div></div></th>

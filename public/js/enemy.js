@@ -178,7 +178,8 @@ $(document).ready(function () {
   function displayEnemyData(data,lv,count) {
     let html = "";
 
-    $("#more_option #out ").attr("href","http://battlecats-db.com/enemy/"+data.id+".html");
+    $(".displayControl #out ").attr("href","http://battlecats-db.com/enemy/"+data.id+".html");
+    $(".displayControl #addcart ").attr("value",data.id);
 
     for (let i in data){
       if(i=='hp'||i=='hardness'||i=='atk'||i=='dps')
@@ -223,23 +224,6 @@ $(document).ready(function () {
     });
   }
   $(".slider").slider();
-  $(document).on("click","#share",function () {
-    let id = $(this).parents("#more_option").siblings().attr("id"),
-        lv = $(this).parents("#more_option").siblings().find("#level_num").children("span").text().split(" %")[0],
-        host = location.origin;
-    $(this).append(
-      "<input type='text' value='"+
-      host+"/view/once.html?q=enemy&"+
-      id+"&"+lv+"' style='position:fixed;top:-100px'/>"
-    );
-    $(this).find("input").select();
-    document.execCommand("Copy");
-    $("#copy_alert").css("left",-10);
-    setTimeout(function () {
-      $(this).find("input").remove();
-      $("#copy_alert").css("left",-250);
-    },2600);
-  });
 
 });
 

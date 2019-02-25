@@ -169,27 +169,27 @@ console.log('start');
 //   });
 // });
 
-// var url = 'https://battlecats-db.com/unit/lot051.html'
+// var url = 'https://battlecats-db.com/unit/lot041.html'
 // request({
 //   url:url,
 //   method:'GET'
 // },function (e,r,b) {
 //   $ = cheerio.load(b);
-//   var a = ['ssr','sr','r'],id = 'R366',name = "2019歡慶新年轉蛋",
-//       obj = {
-//         id:id,name:name,
-//       },count = 0;
-//   $('.maincontents tbody').each(function () {
-//     b = a[count];
-//     count++;
-//     obj[b] = obj[b]?obj[b]:[];
-//     $(this).find('tr').each(function () {
-//       obj[b].push($(this).children().eq(0).text())
-//     });
+//   var a = ['ssr','sr','r'],id = 'R368',name = "2019歡慶新年轉蛋",
+//   obj = {
+//       id:id,name:name,
+//     },count = 0;
+//     $('.maincontents tbody').each(function () {
+//         b = a[count];
+//         count++;
+//         obj[b] = obj[b]?obj[b]:[];
+//         $(this).find('tr').each(function () {
+//             obj[b].push($(this).children().eq(0).text())
+//           });
+//         });
+//         console.log(obj);
+//         database.ref("/gachadata/Fate").update(obj);
 //   });
-//   console.log(obj);
-//   database.ref("/gachadata/2019_year_start").update(obj);
-// });
 
 // database.ref("/enemydata").once("value",function (snapshot) {
 //   let enemydata = snapshot.val();

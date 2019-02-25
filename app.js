@@ -58,7 +58,7 @@ var mostSearchCat = [],
     mostSearchStage = [];
 ReloadAllData();
 var reloadTimeOut,firstReload=true;
-function ReloadAllData() {
+function ReloadAllData(m=0) {
   clearTimeout(reloadTimeOut);
   firstReload = false;
   mostSearchCat = [];
@@ -72,7 +72,7 @@ function ReloadAllData() {
     console.log("VERSION : ",VERSION);
   });
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
-  Users.load();
+  if(!m) Users.load();
   database.ref("/legend").once("value",(snapshot)=>{
     legenddata = snapshot.val();
     var today = new Date();
@@ -977,7 +977,7 @@ io.on('connection', function(socket){
     obj[data.type] = data.val;
     database.ref("/"+path.join("/")).update(obj);
   });
-  socket.on("reloadAllData",()=>{ReloadAllData()});
+  socket.on("reloadAllData",()=>{ReloadAllData(1)});
 
 });
 

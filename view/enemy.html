@@ -29,10 +29,24 @@
       <div class="search_table">
         <table id="upper_table">
           <tr>
-            <th colspan="6" style="pointer-events:none">
+            <!-- <th colspan="6" style="pointer-events:none">
               點擊分類名稱以切換該項篩選特質為"完全符合"或"部分符合"<br />
               <b style="text-decoration:underline;margin:0 10">紅色:完全符合</b>
               <b style="text-decoration:underline;margin:0 10">橘色:部分符合(預設)</b>
+            </th> -->
+            <th colspan="6">
+              <div style="padding: 10; display: flex; justify-content: center; align-items: center;">
+                <span>屬性欄位完全符合</span>
+                <label class="switch">
+                  <input type="checkbox" id="colorAnd" value='0' >
+                  <span class="slider_but"></span>
+                </label>
+                <span>能力欄位完全符合</span>
+                <label class="switch">
+                  <input type="checkbox" id="abilityAnd" value='0' >
+                  <span class="slider_but"></span>
+                </label>
+              </div>
             </th>
           </tr>
           <tr>
@@ -128,22 +142,15 @@
 
     </div>
     <div class="content">
-      <div id='more_option'>
-        <!-- <td id='addfight'>加到對戰 &#9876;</td> -->
-        <!-- <div id='share'>
-        <i class="material-icons">&#xe80d;</i>
-        <span class="tag">分享</span>
-      </div> -->
-      <i class="material-icons"text='加到購物車'id='addcart'>&#xE8CC;</i>
-      <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-      <i class="material-icons"text='截圖'id='snapshot'>&#xe439;</i>
-    </div>
-      <div class="display" style="top:-200">
-      <table class="dataTable">
-        <tr>
-          <th>ID</th><td id="id"></td>
-          <th>查詢次數</th><td id="count"></td>
-        </tr>
+      <div class="displayControl">
+        <div class="control">
+          <i class="material-icons"id='addcart'text='加到購物車'>&#xE8CC;</i>
+          <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
+          <i class="material-icons"id='snapshot'text='截圖'>&#xe439;</i>
+        </div>
+      </div>
+      <div class="display">
+        <table class="dataTable">
         <tr> <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td> </tr>
         <tr>
           <th colspan='1'>倍率</th>
@@ -173,8 +180,8 @@
         <tr>
           <td colspan='6' id='char'></td>
         </tr>
-
       </table>
+      </div>
     </div>
 
     <div id="compareTarget_tag">

@@ -222,9 +222,6 @@
   min-width: 1000px;
   z-index: 9
 }
-.display{
-  position: relative;top:-300px
-}
 #combo_head i,#survey_head i,#comment_head i{
   font-size: 16px;
   transform: rotate(-90deg);
@@ -447,6 +444,27 @@
   border-bottom: 10px solid black;
 }
 .surveyTable .pos_holder:hover .describe{display: flex}
+
+.displayControl[float='true'] .data #img,
+.displayControl[float='true'] .data #name,
+.displayControl[float='true'] .position
+{display: flex;}
+.displayControl .data #img{
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  border-radius: 50%;
+  margin: 0 5;
+  border: 1px solid;
+}
+.displayControl .data #rarity{
+  border: 1px solid;
+  border-radius: 20px;
+}
+.displayControl .data #img,
+.displayControl .data #name
+{display: none;}
+
 @media screen and (max-width: 425px) {
   .survey{flex-direction: column;}
   .survey:first-of-type{height: 100}

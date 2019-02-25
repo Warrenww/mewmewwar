@@ -84,6 +84,7 @@ class Cat extends Unit{
     this.rarity = obj.rarity;
     this.region = obj.region;
     this.statistic = obj.statistic;
+    this.instinct = obj.instinct;
   }
 
   get Rarity(){

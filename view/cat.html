@@ -45,10 +45,29 @@
       <div class="search_table">
         <table id="upper_table">
           <tr>
-            <th colspan="6" style="pointer-events:none">
+            <!-- <th colspan="6" style="pointer-events:none">
               點擊分類名稱以切換該項篩選特質為"完全符合"或"部分符合"<br />
               <b style="text-decoration:underline;margin:0 10">紅色:完全符合</b>
               <b style="text-decoration:underline;margin:0 10">橘色:部分符合(預設)</b>
+            </th> -->
+            <th colspan="6">
+              <div style="padding: 10; display: flex; justify-content: center; align-items: center;">
+                <span>屬性欄位完全符合</span>
+                <label class="switch">
+                  <input type="checkbox" id="colorAnd" value='0' >
+                  <span class="slider_but"></span>
+                </label>
+                <span>能力欄位完全符合</span>
+                <label class="switch">
+                  <input type="checkbox" id="abilityAnd" value='0' >
+                  <span class="slider_but"></span>
+                </label>
+                <span>考慮本能</span>
+                <label class="switch">
+                  <input type="checkbox" id="instinct_involve" value='0' >
+                  <span class="slider_but"></span>
+                </label>
+              </div>
             </th>
           </tr>
           <tr>
@@ -70,7 +89,7 @@
               <span class='button' name='對漂浮' value='0' >漂浮敵人</span>
               <span class='button' name='對黑色' value='0' >黑色敵人</span>
               <span class='button' name='對鋼鐵' value='0' >鋼鐵敵人</span>
-              <span class='button' name='對天使' value='0' >天使</span>
+              <span class='button' name='對天使' value='0' >天使敵人</span>
               <span class='button' name='對外星' value='0' >異星戰士</span>
               <span class='button' name='對不死' value='0' >不死生物</span>
               <span class='button' name='對白色' value='0' >白色敵人</span>
@@ -79,8 +98,8 @@
             </td>
           </tr>
           <tr>
-            <th colspan="2" rowspan="2">能力</th>
-            <td colspan="4" rowspan="2" class="select_ability">
+            <th colspan="2">能力</th>
+            <td colspan="4" class="select_ability">
               <span class='button smallicon'name='降攻'value='0'><i id='atkdown'class="ability_icon"></i><span> 使攻擊力下降</span></span>
               <span class='button smallicon'name='增攻'value='0'><i id='atkup'class="ability_icon"></i><span> 攻擊力上升</span></span>
               <span class='button smallicon'name='免疫降攻'value='0'><i id='noatkdown'class="ability_icon"></i><span> 攻擊力下降無效</span></span>
@@ -110,6 +129,22 @@
               <span class='button smallicon'name='1次攻擊'value='0'><i id='1atk'class="ability_icon"></i><span> 一次攻擊</span></span>
               <span class='button smallicon'name='鋼鐵'value='0'><i id='metal'class="ability_icon"></i><span> 鋼鐵</span></span>
               <span class='button smallicon'name='免疫古代詛咒'value='0'><i id='nocurse'class="ability_icon"></i><span>古代的詛咒無效</span></span>
+            </td>
+          </tr>
+          <tr>
+            <th colspan="2">本能</th>
+            <td colspan="4" class="select_ability">
+              <span class='button smallicon'name='本能'value='0'><i id='instinct'class="ability_icon"></i><span>本能</span></span>
+              <span class='button smallicon'name='基本體力上升'value='0'><i id='hpup'class="ability_icon"></i><span>基本體力上升</span></span>
+              <span class='button smallicon'name='基本攻擊力上升'value='0'><i id='atkinc'class="ability_icon"></i><span>基本攻擊力上升</span></span>
+              <span class='button smallicon'name='生產金額減少'value='0'><i id='discount'class="ability_icon"></i><span>生產金額減少</span></span>
+              <span class='button smallicon'name='移動加快'value='0'><i id='speedup'class="ability_icon"></i><span>移動加快</span></span>
+              <span class='button smallicon'name='降攻抗性'value='0'><i id='weakdefend'class="ability_icon"></i><span>降攻抗性</span></span>
+              <span class='button smallicon'name='暫停抗性'value='0'><i id='stopdefend'class="ability_icon"></i><span>暫停抗性</span></span>
+              <span class='button smallicon'name='緩速抗性'value='0'><i id='slowdefend'class="ability_icon"></i><span>緩速抗性</span></span>
+              <span class='button smallicon'name='擊退抗性'value='0'><i id='pushdefend'class="ability_icon"></i><span>擊退抗性</span></span>
+              <span class='button smallicon'name='波動 抗性'value='0'><i id='wavedefend'class="ability_icon"></i><span>波動 抗性</span></span>
+              <span class='button smallicon'name='古代詛咒抗性'value='0'><i id='cursedefend'class="ability_icon"></i><span>古代詛咒抗性</span></span>
             </td>
           </tr>
         </table>
@@ -156,6 +191,7 @@
           <tr class="gacha_search">
             <th>活動轉蛋</th>
             <td>
+              <span name="Fate" class="button" value="0">Fate 合作活動</span>
               <span name="eva" class="button" value="0">EVA福音戰士</span>
               <span name="baseball" class="button" value="0">實況野球 合作活動</span>
               <span name="maylook" class="button" value="0">梅露可物語 合作活動</span>
@@ -222,19 +258,28 @@
       </div>
     </div>
     <div class="content">
-      <div id='more_option'>
+      <div class="displayControl">
+        <div class="data">
+          <span id="rarity">稀有度</span>
+          <span id="img"></span>
+          <span id="name"></span>
+        </div>
+        <div class="position non_mobile">
+          <span onclick="scroll_to_class('dataTable')">基本資料</span>
+          <span onclick="scroll_to_class('instinctTable')">本能</span>
+          <span onclick="scroll_to_class('comboTable')">發動聯組</span>
+          <span onclick="scroll_to_class('surveyTable')">統計數據</span>
+          <span onclick="scroll_to_class('commentTable')">評論</span>
+        </div>
+        <div class="control">
           <i class="material-icons"id='mark_own' value='0' text='我沒有這隻貓'>&#xE8E7;</i>
           <i class="material-icons"id='addcart'text='加到購物車'>&#xE8CC;</i>
           <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
           <i class="material-icons"id='snapshot'text='截圖'>&#xe439;</i>
-          <i class="material-icons"id='top'text='回到頂端'>&#xE25A;</i>
+        </div>
       </div>
       <div class="display" style="pointer-events:none">
         <table class="dataTable">
-          <tr>
-            <th>ID</th><td id="id"></td>
-            <th>查詢次數</th><td id="count"></td>
-          </tr>
           <tr>
             <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td>
           </tr>
@@ -266,13 +311,16 @@
             <th>再生産</th><td id='cd'></td>
           </tr>
           <tr><th>取得方法</th><td colspan='5' id='condition'></td></tr>
-          <tr><td colspan = '6' id='char'></td></tr>
+          <tr><th>特性</th><td colspan = '5' id='char'></td></tr>
         </table>
 
-        <div id="combo_head">發動聯組</div>
+        <div id="instinct_head" class="tableTitle" active='0'>本能(三階開放)</div>
+        <table class="instinctTable"></table>
+
+        <div id="combo_head" class="tableTitle" active='0'>發動聯組</div>
         <table class="comboTable"></table>
 
-        <div id="survey_head">統計數據</div>
+        <div id="survey_head" class="tableTitle" active='0'>統計數據</div>
         <div class="surveyTable">
           <div class="survey">
             <div class="th"style="padding:0 20">暱稱</div>
@@ -426,7 +474,7 @@
           </div>
         </div>
 
-        <div id="comment_head">評論</div>
+        <div id="comment_head" class="tableTitle" active='0'>評論</div>
         <table class="commentTable">
           <tr><th>
             <div class="comment_input">

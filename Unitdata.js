@@ -3,6 +3,7 @@ var Util = require("./Utility");
 var Parser = require("./Parser");
 var request = require("request");
 var cheerio = require("cheerio");
+var fs = require("fs");
 var __numberOfCat = 0;
 var __numberOfCatSearch = 0;
 var catNameMap = {};
@@ -60,6 +61,11 @@ exports.load = function (mostSearchCat) {
     console.log("most Search Cat : ",mostSearchCat);
     console.log("Number of cat search : ",__numberOfCatSearch);
     // for(let i in AbilityMap.cat) console.log(i,AbilityMap.cat[i].length);
+    // fs.appendFile('abilityMap.txt', JSON.stringify(AbilityMap),(err) =>{
+    //   if (err) throw err;
+    //   console.log('Is saved!');
+    //   // process.exit();
+    // });
   });
   database.ref("/enemydata").once("value",(snapshot)=>{
     var temp = snapshot.val();
@@ -100,6 +106,7 @@ exports.Search = function (data,level,showJP,variable={}) {
       filterObj = data.filterObj?data.filterObj:[],
       colorAnd = Number(data.colorAnd)?"and":"or",
       abilityAnd = Number(data.abilityAnd)?"and":"or",
+      instinct = Number(data.instinct),
       type = data.type,
       buffer = [],
       nameMap = type == 'cat'?catNameMap:enemyNameMap;
@@ -372,7 +379,8 @@ exports.fetch = function (type,arr) {
 }
 
 function getData(type,id,exist) {
-  var url = "https://battlecats-db.com/"+(type == 'cat'?"unit":'enemy')+"/"+Util.AddZero(id,2)+".html";
+  id = Util.AddZero(id,2);
+  var url = "https://battlecats-db.com/"+(type == 'cat'?"unit":'enemy')+"/"+id+".html";
   console.log(url);
   request({
     url: url,
@@ -401,7 +409,8 @@ function getData(type,id,exist) {
             row_3 = row_2.next(),
             row_4 = row_3.next(),
             row_5 = row_4.next(),
-            row_7 = row_5.next().next(),
+            row_6 = row_5.next(),
+            row_7 = row_6.next(),
             row_8 = row_7.next();
 
         var level = 0;
@@ -435,13 +444,17 @@ function getData(type,id,exist) {
         data.dps = data.freq!="-"?data.atk/data.freq:"-" ;
         data.hardness = data.hp/data.kb ;
         Parser.parseChar(row_5.children().eq(1),data,type);
-        if (type == 'cat'){ Parser.parseCondition(row_7,row_8,data); }
+        if (type == 'cat'){
+          if(row_6.children().eq(0).text() == "本能") Parser.parseInstinct(row_6,data);
+          if(row_7.children().eq(0).text() != "開放条件") row_7 = row_7.next();
+          Parser.parseCondition(row_7,data);
+        }
         Bgc12++;
         // console.log(data.char);
         // console.log(data);
       });
       console.log(obj);
-      database.ref("/"+(type == 'cat'?"CatData":"enemydata")+"/"+Util.AddZero(id,2)).update(obj);
+      database.ref("/"+(type == 'cat'?"CatData":"enemydata")+"/"+id).update(obj);
       if(type == 'cat') CatData[id] = obj;
       else EnemyData[id] = obj;
     }

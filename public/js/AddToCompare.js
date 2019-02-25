@@ -10,7 +10,7 @@ $(document).ready(function () {
     addToCompare(target[0],name,target[1]);
   });
   $(document).on('click',"#addcart", function () {
-    var target = $(".dataTable").find("#id").text(),
+    var target = $(this).attr('value'),
         stage = Number($(".dataTable").find(".img[active='1']").attr('stage')),
         name = $(".dataTable").find(".name").eq(stage).text().split(" ")[0];
     if(!target) return;

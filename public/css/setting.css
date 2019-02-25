@@ -42,46 +42,6 @@
 #reset_cat_lv,#reset_own_cat{
   background: linear-gradient(rgb(246, 154, 87),rgb(255, 74, 74))
 }
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 20px;
-  margin: 0 20px;
-}
-.switch input {display:none;}
-.slider_but {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgb(129, 129, 129);
-  transition: .4s ease-in-out;
-  border-radius: 30px;
-}
-.slider_but:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: -2px;
-  bottom: -2px;
-  background-color: white;
-  transition: .4s ease-in-out;
-  border-radius: 50%;
-  box-shadow: gray 4px 0px 10px;
-}
-input:checked + .slider_but {
-  background-color: rgb(33, 150, 244);
-}
-input:checked + .slider_but:before {
-  -webkit-transform: translateX(32px);
-  -ms-transform: translateX(32px);
-  transform: translateX(32px);
-  box-shadow: gray -4px 0px 10px;
-}
 #cat_history,#ene_history,#own_cat{
   font-size: 40px;
   color:gray;

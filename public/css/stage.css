@@ -152,7 +152,6 @@
   font-weight: bold;
   cursor: pointer;
 }
-.display{position: relative;top:-400px}
 .reward img{width: 30}
 #searchResult{
   width: 100%;
@@ -300,7 +299,7 @@
 .enemy_head th[reverse='decrease']{border-top:5px solid #f6843b;}
 .enemy_head th[reverse='filter']{background-color: rgba(244, 108, 108, 0.9)}
 .enemy_head #point{display: none;}
-#rewardTable th{min-width: 150}
+.rewardTable th{min-width: 150}
 #enemy_head span{
   border: 1px solid;
   border-radius: 12px;
@@ -340,10 +339,15 @@
 #star i{color: #a3a3a3}
 #star i[active='1']{color: #f2d018; text-shadow: 0px 0px 10px black;}
 
+.displayControl .data #name{ display: none;font-weight: bold;}
+.displayControl[float='true'] .data #name,
+.displayControl[float='true'] .position
+{ display: flex }
+
 @media screen and (max-width:1024px) {
   .enemy_head th>span{display: none;}
 }
 @media screen and (max-width:768px) {
   .display *{font-size: 14px}
-  #rewardTable th{min-width: 75px}
+  .rewardTable th{min-width: 75px}
 }

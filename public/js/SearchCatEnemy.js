@@ -9,9 +9,12 @@ $('.search_type .button').click(function () {
   if(type == 'normal'){
     $("#gacha_search").attr("value",0);
     $("#gacha_table").hide().siblings("#upper_table").show();
+    $("#value_search").css("pointer-events","auto");
   } else if(type == 'gacha'){
     $("#normal_search").attr("value",0);
     $("#upper_table").hide().siblings("#gacha_table").show();
+    $("#lower_table").hide(300);
+    $("#value_search").css("pointer-events","none").attr("value",0);
   } else {
     $("#lower_table").toggle(300);
     return
@@ -44,6 +47,10 @@ if(page == 'cat'){
     }
   });
 }
+
+$("#colorAnd,#abilityAnd,#instinct_involve").click(function () {
+  $(this).attr("value",(Number($(this).attr('value'))+1)%2);
+});
 // Text Search
 $('#searchBut').click(function () {
   let keyword = $(this).siblings().val();
@@ -56,13 +63,6 @@ $(document).on('keypress','#searchBox',function (e) {
     socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page});
   }
 });
-//table th reaction
-$('#upper_table th').click(function () {
-  if($(this).next().attr('class') == 'select_rarity') return
-  var andCase = Number($(this).attr("andCase"))?1:0;
-  andCase ++;
-  $(this).attr("andCase",andCase%2);
-});
 // Start a search
 $('#search_ability').click(search) ;
 function search() {
@@ -72,21 +72,28 @@ function search() {
       ability = $(".select_ability [value=1]"),
       gacha = $(".gacha_search td .button[value=1]"),
       type = $("#search_ability").attr("value"),
-      value_search = Number($("#value_search").attr("value"));
+      value_search = Number($("#value_search").attr("value")),
+      instinct = Number($("#instinct_involve").attr('value'));
   var rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
   for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
   for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
   for(let i = 0;i<ability.length;i++) aFilter.push(ability.eq(i).attr('name')) ;
   for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('name')) ;
+  if(instinct){
+    for(let i in aFilter) aFilter.push(aFilter[i]+"能力解放");
+    for(let i in cFilter) aFilter.push("屬性新增"+cFilter[i].substring(1)+"敵人");
+  }
+  console.log({rFilter,cFilter,aFilter});
   // Send query require
   socket.emit(type+" search",{
     uid:CurrentUserID,
     query:type == 'normal'?{rFilter,cFilter,aFilter}:gFilter,
     query_type:type,
-    colorAnd:$(".select_color").prev().attr("andCase"),
-    abilityAnd:$(".select_ability").prev().attr("andCase"),
+    colorAnd:$("#colorAnd").attr('value'),
+    abilityAnd:$("#abilityAnd").attr('value'),
     filterObj:value_search?filterObj:{},
-    type:page
+    type:page,
+    instinct:instinct
   });
   scroll_to_div('selected');
 }

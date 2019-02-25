@@ -302,12 +302,10 @@ function update_nickname(val,quene,org) {
 }
 var commentMap = {};
 function append_comment(comment) {
-  // console.log(comment);
   commentMap = {};
-  $(".commentTable .comment").remove();
+  $(".commentTable .comment,.commentTable .Nocomment").remove();
   if(!comment||comment == "-"){
-    $("<tr class='comment'><td colspan='6'>尚無評論</td></tr>")
-      .prepend(".commentTable");
+    $(".commentTable").prepend("<tr class='Nocomment'><td colspan='6'>尚無評論</td></tr>");
       return
   }
   let html = '';
@@ -334,6 +332,7 @@ function submitComment() {
     time:new Date().getTime()
   });
   $(".comment_input").find('textarea').val('');
+  $(".Nocomment").remove();
 }
 function commentHtml(id,comment,photo=null,name=null) {
   let html,uid = CurrentUserID;
