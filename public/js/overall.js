@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.32.1"
+const VERSION = "10.32.2"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -65,11 +65,13 @@ $(document).ready(function () {
 
   // Scroll Reaction
   $(document).on('scroll',function () {
-    var pos_y = window.scrollY,
-        display_y = $(".display").offset().top ;
+    var pos_y = window.scrollY;
     // console.log(pos_y);
-    if(pos_y > display_y){ $(".displayControl").attr("float",true); }
-    else { $(".displayControl").attr("float",false); }
+    if($(".display").length){
+      var display_y = $(".display").offset().top ;
+      if(pos_y > display_y){ $(".displayControl").attr("float",true); }
+      else { $(".displayControl").attr("float",false); }
+    }
   });
 
   //change page reaction

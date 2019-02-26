@@ -108,16 +108,25 @@ exports.parseChar = function(c,obj,type) {
           type:"對貓咪城傷害x4"
         });
       }
-      else if(c[i].indexOf("蘇生")!=-1 && type == 'enemy'){
-        let aa = c[i].split("％"),
-        times = c[i].split("（")[1].split("）")[0];
-        obj.tag.push("復活");
-        obj.char.push({
-          type:"重生",
-          hp:Number(aa[0].split("力")[1]),
-          delay:Number(c[i].split("F")[0].split("た")[1])/30,
-          times:times == '無制限'?'無限': Number(times.split("回")[0])
-        });
+      else if(c[i].indexOf("蘇生")!=-1){
+        if(type == 'enemy'){
+          let aa = c[i].split("％"),
+              times = c[i].split("（")[1].split("）")[0];
+          obj.tag.push("復活");
+          obj.char.push({
+            type:"重生",
+            hp:Number(aa[0].split("力")[1]),
+            delay:Number(c[i].split("F")[0].split("た")[1])/30,
+            times:times == '無制限'?'無限': Number(times.split("回")[0])
+          });
+        } else if(type == 'cat'){
+          obj.tag.push("不死剋星");
+          obj.tag.push("對不死");
+          obj.char.push({
+            type:"不死剋星",
+            against:['不死敵人'],
+          });
+        }
       }
       else if(c[i].indexOf("地中移動")!=-1){
         let aa = c[i].split("％"),
@@ -402,6 +411,7 @@ function parseGacha (n) {
     '2017忘年会':'2017_year_end',
     '実況パワフルプロ野球コラボ':'baseball',
     'エヴァンゲリオンコラボ':'eva',
+    '劇場版 Fate stay nightコラボ':'Fate',
     'にゃんこ':'cat',
   }[n];
   temp = temp?temp:"no_this_gacha";

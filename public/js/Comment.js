@@ -326,7 +326,7 @@ function submitComment() {
   // console.log(comment);
   if(!comment) return
   socket.emit('comment cat',{
-    cat:CurrentCatID.substring(0,3),
+    cat:CurrentCatID,
     owner:CurrentUserID,
     comment:comment,
     time:new Date().getTime()

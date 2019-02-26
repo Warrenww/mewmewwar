@@ -398,12 +398,16 @@ function getData(type,id,exist) {
       console.log("get data");
       $ = cheerio.load(b);
       var Bgc12 = 0; // cat stage
+      if($(".maincontents table").find("tr[class='bgc12']").length == 1) Bgc12 = 1;
       $(".maincontents table").find("tr[class='bgc12']").each(function () {
         if(!Bgc12){Bgc12 ++;return;}  // ignore first bgc 12
         var data = type == 'cat'?(obj.data[Bgc12]={tag:[],char:[]}):obj; // point to data to write
         data.id = id+(type == 'cat'?("-"+Bgc12):"");
         data.jp_name = $(this).children().eq(1).text();
-        data.name = catNameMap[id]?(catNameMap[id][Number(Bgc12)-1]?catNameMap[id][Number(Bgc12)-1]:""):"";
+        if(type == 'cat')
+          data.name = catNameMap[id]?(catNameMap[id][Number(Bgc12)-1]?catNameMap[id][Number(Bgc12)-1]:""):"";
+        else
+          data.name = enemyNameMap[id]?enemyNameMap[id]:"";
         var row_1 = $(this).next().next(),
             row_2 = row_1.next(),
             row_3 = row_2.next(),
