@@ -124,50 +124,58 @@ console.log('start');
 //   console.log('finfish');
 // });
 
-// var stagedata;
+var stagedata;
 // var url = "https://battlecats-db.com/stage/treasure_space01.html";
-// database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
-//   stagedata = snapshot.val();
-//   request({
-//     url: url,
-//     method: "GET"
-//   }, function(e,r,b) {
-//     if(!e){
-//       console.log("HTML loaded!");
-//       $ = cheerio.load(b);
-//       var counter = -1;
-//       var result = {};
-//       var table = $(".maincontents").find("tbody tr");
-//       table.each(function () {
-//         // console.log($(this).children('td').length);
-//         if($(this).children('td').length != 4){
-//           counter ++ ;
-//           var stage = Number($(this).children('td').eq(3).text());
-//           result[counter] = {
-//             name:$(this).children('td').eq(0).text(),
-//             effect:$(this).children('td').eq(2).text(),
-//             treasure:[{
-//               stage:stage,
-//               name:stagedata[stage].reward[0].prize.amount
-//             }]
-//           }
-//         } else {
-//           var stage = Number($(this).children('td').eq(0).text());
-//           result[counter].treasure.push({
-//             stage:stage,
-//             name:stagedata[stage].reward[0].prize.amount
-//           })
-//         }
-//       });
-//       console.log(result);
-//       fs.appendFile('treasure2.txt', JSON.stringify(result),(err) =>{
-//           if (err) throw err;
-//           console.log('Is saved!');
-//           process.exit();
-//         });
-//     }
-//   });
-// });
+database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
+  stagedata = snapshot.val();
+  for (var i in stagedata) {
+    console.log(i,stagedata[i].name,stagedata[i].reward);
+    database.ref("/stagedata/universe/s03008/"+i).update({
+      name:stagedata[i].name,
+      reward:stagedata[i].reward
+    })
+  }
+  
+  // request({
+    // url: url,
+  //   method: "GET"
+  // }, function(e,r,b) {
+  //   if(!e){
+  //     console.log("HTML loaded!");
+  //     $ = cheerio.load(b);
+  //     var counter = -1;
+  //     var result = {};
+  //     var table = $(".maincontents").find("tbody tr");
+  //     table.each(function () {
+  //       // console.log($(this).children('td').length);
+  //       if($(this).children('td').length != 4){
+  //         counter ++ ;
+  //         var stage = Number($(this).children('td').eq(3).text());
+  //         result[counter] = {
+  //           name:$(this).children('td').eq(0).text(),
+  //           effect:$(this).children('td').eq(2).text(),
+  //           treasure:[{
+  //             stage:stage,
+  //             name:stagedata[stage].reward[0].prize.amount
+  //           }]
+  //         }
+  //       } else {
+  //         var stage = Number($(this).children('td').eq(0).text());
+  //         result[counter].treasure.push({
+  //           stage:stage,
+  //           name:stagedata[stage].reward[0].prize.amount
+  //         })
+  //       }
+  //     });
+  //     console.log(result);
+  //     fs.appendFile('treasure2.txt', JSON.stringify(result),(err) =>{
+  //         if (err) throw err;
+  //         console.log('Is saved!');
+  //         process.exit();
+  //       });
+  //   }
+  // });
+});
 
 // var url = 'https://battlecats-db.com/unit/lot041.html'
 // request({

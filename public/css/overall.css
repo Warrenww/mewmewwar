@@ -183,11 +183,6 @@ button:active{
 .option{color: black;}
 .state{width: 100px;padding-left: 20px}
 
-.page_1,.page_2{
-  position: relative;
-  overflow-x: hidden;
-  background-image: url("footage/search_BG.png");
-}
 .display,.content{
   align-items: center;
   display: flex;
@@ -316,7 +311,7 @@ table {
   position: relative;
   min-height: 46px;
   top: 0;
-  z-index: 5;
+  z-index: 2;
 }
 .compareSorce .title #option{
   display: flex;
@@ -324,12 +319,10 @@ table {
   align-items: center;
 }
 .compareSorce .title #option span{display: none;}
-.compareSorce .title #option div{
-
-}
 
 .compareTarget_holder::-webkit-scrollbar,
-.comparedataholder::-webkit-scrollbar
+.comparedataholder::-webkit-scrollbar,
+.left-side-column::-webkit-scrollbar
  {
     width: 0px;
 }
@@ -339,10 +332,11 @@ table {
   margin: 10 0;
   position: absolute;
   bottom: 10;
+  width:100%;
 }
 .compareTarget .card{
   height: 80px;
-  width: 120px;
+  width: 50%;
 }
 .filter_option{
   width: 100px
@@ -541,17 +535,7 @@ table {
   transition: .6s ease-in-out;
   z-index: 10
 }
-#fight_alert{top: 180px;}
-#a_fight::after{
-  content: "BETA";
-  font-size: 10px;
-  font-weight: bold;
-  top: -12px;
-  position: relative;
-  animation-name: blink;
-  animation-duration: .5s ;
-  animation-iteration-count: infinite;
-}
+
 #canvas_holder{
   position: fixed;
   top: 0;
@@ -601,14 +585,13 @@ animation-name: blink;
 animation-duration: .5s ;
 animation-iteration-count: infinite;
 }
-#compareTarget_tag,
-#select_chap_tag,
-#nav_tag,
-#ChooseFunc_tag{
+#ChooseFunc_tag,
+.left-side-active{
   padding: 10px;
   font-size: 20px;
   font-weight: bolder;
   width: 40px;
+  padding-top: 40px;
   height: 180px;
   position: fixed;
   top: 65%;
@@ -616,11 +599,28 @@ animation-iteration-count: infinite;
   background-color: rgba(255,255,255,.64);
   z-index: 5;
   cursor: pointer;
-  transition: .8s ease-in-out;
+  transition: .6s ease-in-out;
 }
-#compareTarget_tag i,
-#select_chap_tag i,
-#nav_tag i {transition: .8s ease-in-out;}
+.left-side-active::after,.left-side-active::before{
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 3px;
+  background-color: #585858;
+  top: 20;
+  left: 15;
+  display: block;
+  border-radius: 3px;
+  transform: rotate(45deg);
+  transform-origin: right;
+  transition: .3s ease
+}
+.left-side-active::before{transform: rotate(-45deg);top: 18}
+.left-side-active[active='1']{ left: 20% }
+.left-side-active[active='1']::after,
+.left-side-active[active='1']::before
+{ transform-origin: left }
+.left-side-active[active='1']::before{top:22}
 @keyframes blink {
   0%{color: rgb(255, 93, 46)}
   50%{color: rgb(250, 204, 86)}
@@ -792,13 +792,13 @@ input:checked + .slider_but:before {
 
 .displayControl{
   position: absolute;
-  top: calc(3% - 6px);
+  top: 3vw;
   width: calc(72% - 6px);
   background-color: #e9d6ac;
   display: flex;
   padding: 10px;
-  z-index: 5;
-  transition: .1s ease;
+  z-index: 3;
+  transition: .2s ease;
 }
 .displayControl > div {display: flex;align-items: center;}
 .displayControl .data span,
@@ -842,3 +842,15 @@ input:checked + .slider_but:before {
   background-color: white;
   box-shadow: 0px 3px 10px 0px;
 }
+.left-side-column{
+  position: fixed;
+  top: 0px;
+  height: 100%;
+  width: 20%;
+  left: -20%;
+  background-color: rgba(255, 255, 255, 0.6) ;
+  z-index: 3;
+  transition: .6s ease-in-out;
+  overflow-y: scroll;
+}
+.left-side-column[active='1']{ left: 0; }

@@ -55,23 +55,11 @@
   transition: .2s ease-in-out
 }
 .compareTarget_child:hover{color:rgb(232, 84, 84)}
-.compareTarget_holder{
-  position: fixed;
-  top: 0px;
-  left:-180;
-  width: 180px;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.64) ;
-  padding: 10px;
-  z-index: 6;
-  transition: .8s ease-in-out;
-  overflow-y: scroll;
-  padding-top: 60px
-}
 .compareTarget{
   flex-direction: column;
   display: flex;
-  min-height: 100%
+  min-height: 100%;
+  align-items: center;
 }
 #compare_panel_BG{
   width: 100%;

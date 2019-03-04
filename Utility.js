@@ -66,6 +66,7 @@ exports.__handalError = function (e) {
     message:e.message?e.message:"undefine",
     stack:e.stack?e.stack:"undefine"
   });
+  return e.message.toString()+"\n"+e.stack.toString();
 }
 
 exports.MergeArray = function (Arr1,Arr2,type = 'or') {

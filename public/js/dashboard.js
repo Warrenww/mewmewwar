@@ -1,28 +1,33 @@
 $(document).ready(function () {
   UpdateData();
-  setInterval(function () {
-    UpdateData();
-  }, 60000);
-  socket.on('dashboard',(data)=>{
-    console.log(data);
-    for(let i in data){
-      $("#"+i).text(data[i]);
-    }
-  });
+  // socket.on('dashboard',(data)=>{
+  //   console.log(data);
+  //   for(let i in data){
+  //     $("#"+i).text(data[i]);
+  //   }
+  // });
   $("#fetchUnit input").on('keypress',(e)=>{
     if(e.keyCode == 13){
       fetchUnitdata();
     }
   });
-
-  var stageName;
-  socket.on("loadStage",(data)=>{
-    console.log(data);
-    stageName = data;
-    $(".signal").attr("ok",'ok');
-    for(let i in data)
-      $("#renameStageSelec").append("<option>"+i+"</option>");
-  });
+  var catName,stageName,eneName;
+  socket.on("dashboard load",(data)=>{
+    switch (data.type) {
+      case 'stage':
+        stageName = data.obj;
+        for(let i in data.obj) $("#renameStageSelec").append("<option>"+i+"</option>");
+      break;
+      case 'cat':
+        catName = data.obj
+      break;
+      case 'enemy':
+        eneName = data.obj
+      break;
+      default:
+        return;
+    }
+  })
   $("#renameStageSelec").on("change",()=>{
     var chapter = $("#renameStageSelec :selected").val();
     $(".renameStagetable").empty();
@@ -35,10 +40,8 @@ $(document).ready(function () {
       for(let j in stageName[chapter][i]){
         if(j == 'name') continue
         html += "<td class='editable' type='name' path='"+
-                ["stagedata",chapter,i,j].join()+
-                "'reward='"+JSON.stringify(stageName[chapter][i][j].reward)+"'>"+
-                stageName[chapter][i][j].name+
-                "<span class='reward'></span></td>"
+                ["stagedata",chapter,i,j].join()+"'>"+
+                stageName[chapter][i][j].name+"</td>"
         count++;
         if(count%8 == 0) html += "</tr><tr>";
       }
@@ -46,13 +49,6 @@ $(document).ready(function () {
     }
     $(".renameStagetable").append(html);
   });
-  $(document).on("click",".editable .reward",function(e){
-    var reward = $(this).parent().attr('reward'),
-        path = $(this).parent().attr('path'),
-        html = "";
-    if(reward) reward = JSON.parse(reward);
-    e.stopPropagation() ;
-   });
   var input_org ;
   $(document).on('click',".editable",function () {
     input_org = $(this).text();
@@ -75,8 +71,11 @@ $(document).ready(function () {
     socket.emit("DashboardUpdateData",{path:path,type:type,val:val});
     return
   });
-  var catName;
-  socket.on("loadCat",(data)=>{ catName = data;$(".signal").attr("ok",'ok');});
+  $(document).on("keyup",".editable input",function (e) {
+    if(e.keyCode == 27){
+      $(this).val(input_org).parent().unbind('click',noclick);
+    }
+  });
   $("#renameCatSelec").on("change",()=>{
     var range = Number($("#renameCatSelec :selected").val().split("~")[0]);
     $(".renameCattable").empty();
@@ -113,8 +112,6 @@ $(document).ready(function () {
     });
     $(this).text(text);
   });
-  var eneName;
-  socket.on("loadEnemy",(data)=>{ eneName = data;$(".signal").attr("ok",'ok');});
   $("#renameEneSelec").on("change",()=>{
     var range = Number($("#renameEneSelec :selected").val().split("~")[0]);
     $(".renameEnetable").empty();
@@ -135,6 +132,9 @@ $(document).ready(function () {
     }
     $(".renameEnetable").append(html);
   });
+  socket.on("console",(buffer)=>{
+    $("#result").append(`<div>${buffer}</div>`);
+  })
 });
 
 function UpdateData() { socket.emit("dashboard"); }
@@ -161,7 +161,7 @@ function fetchStagedata() {
       correction = $("#fetchStage input").eq(2).prop('checked');
   socket.emit("fetch data",{type:'stage',chapter,id,correction});
 }
-function loadData(type) { socket.emit("load"+type); $(".signal").attr("ok",'wait');}
+function loadData(type) { socket.emit("dashboard load",{type:type});}
 function reloadAllData() { socket.emit("reloadAllData"); }
 var noclick=function (e) {
   return false

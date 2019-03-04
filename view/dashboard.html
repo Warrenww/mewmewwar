@@ -39,6 +39,14 @@
         animation-iteration-count: infinite;
       }
       .signal[ok='ok']{background-color:#8bf477 }
+      #result{
+        width: 100%;
+        padding: 20;
+        background-color: black;
+        font-family: Consolas;
+        color: #5cfcb0;
+        max-height: 50%
+      }
       @keyframes scale {
         0%{width: 20;height: 20}
         50%{width: 25;height: 25}
@@ -49,13 +57,21 @@
     <i class="material-icons" id="PageGoToTop">expand_less</i>
 
     <div class="content">
+      <h1>Console</h1>
+      <!-- <textarea name="name" rows="8" cols="80"></textarea>
+      <button id="codeSubmit" name="button">submit</button> -->
+      <div id="result">
+        <div>Console:</div>
+      </div>
+    </div>
+    <!-- <div class="content">
       <h1>Information(update every minute)</h1>
       <table>
         <tr>
           <th>Total Cat Search</th><td id="catSearchCount"></td>
         </tr>
       </table>
-    </div>
+    </div> -->
     <div class="content">
       <h1>Update data</h1>
       <div style="width:100%" id="fetchUnit">
@@ -85,7 +101,7 @@
       <button onclick="reloadAllData()">reloadAllData</button>
     </div>
     <div class="content">
-      <span class="signal"></span>
+      <!-- <span class="signal"></span> -->
       <h1>Rename</h1>
       <div id="renameStage" style="width:100%">
         <button onclick="loadData('stage')">Load Stage</button>
@@ -128,10 +144,6 @@
         </select>
         <table class="renameEnetable"></table>
       </div>
-    </div>
-
-    <div id="canvas_holder">
-      <div class="picture"></div>
     </div>
 
 

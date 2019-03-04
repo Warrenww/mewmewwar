@@ -30,9 +30,6 @@ $(document).ready(function () {
       $(".tag[name='"+data.last_gacha+"']").click();
   });
 
-  var nav_expand = 1 ;
-  $(document).on('click','#nav_tag',showhideNav);
-
   var expand = 0 ;
   $(document).on("click",'.tag',function () {
     let name = $(this).attr("name"),
@@ -57,7 +54,7 @@ $(document).ready(function () {
 
   $(document).on('click','.monitor .content img',function () {
     let id = $(".monitor").attr("id");
-    if(!id) {alert("尚未選擇轉蛋");showhideNav(null,0);}
+    if(!id) {alert("尚未選擇轉蛋");toggle_side_column(null,1,0);}
     else $(".iframe_holder").fadeIn()
             .append("<iframe src='"+gacha_url+id+".html'>")
             .css("display",'flex');
@@ -153,8 +150,7 @@ $(document).ready(function () {
     let data=[],
         key = $(".monitor").attr('key');
 
-    if(!key){alert("尚未選擇轉蛋");showhideNav(null,0);return}
-    showhideNav(null,1);
+    if(!key){alert("尚未選擇轉蛋");toggle_side_column(null,1,0);return}
     for(let i=0;i<n;i++){
       let result = Math.random();
       if(result<GachaProbability[0]) {data.push("r");r++;}
@@ -202,24 +198,7 @@ $(document).ready(function () {
       sssr,ssr,sr,r
     });
   }
-  $(".monitor,#scoreboard").click(()=>{showhideNav(null,1)})
-  function showhideNav(e,n) {
-    if(n == undefined)
-      nav_expand = nav_expand?0:1;
-    else nav_expand = n ;
-    let dist = screen.width>768?350:250;
-    $(".navigation").css("left",function () {
-      if(nav_expand) return -dist
-      else return 0
-    });
-    $("#nav_tag").css('left',function () {
-      if(nav_expand) return 0
-      else return dist
-    }).children("i").css('transform',function(){
-      if(nav_expand) return 'rotate(0deg)'
-      else return 'rotate(-180deg)'
-    });
-  }
+
   $("#scoreboard tbody tr").click(function () {
     let id = $(this).attr("id"),val = Number($(this).attr("val"));
     if(!id) return
@@ -236,16 +215,5 @@ $(document).ready(function () {
     $(this).attr("val",val).siblings().attr("val",!val);
   });
 
-  $(document).on('click','#nav_tag',showhideselectchap);
-  function showhideselectchap() {
-    let dist = screen.width>768?350:250;
-    if(!nav_expand){
-      $('.select_chapter_holder').css('left',0);
-      $('#nav_tag').css('left',dist).children('i').css({"transform":"rotate(180deg)"});
-    } else {
-      $('.select_chapter_holder').css('left',-dist);
-      $('#nav_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
-    }
-  }
 
 });

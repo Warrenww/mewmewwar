@@ -18,8 +18,6 @@ $(document).ready(function () {
     addToCompare(target,name,stage);
   });
   //compare tag for cat and enemy
-  $(document).on('click','#compareTarget_tag',showhidecomparetarget);
-
   $(document).on('click','.compareTarget .card',function (e) {
     let pos_y = (e.clientY/10).toFixed(0)*10,pos_x = 100 ;
     $('.compare_panel').remove();
@@ -36,7 +34,7 @@ $(document).ready(function () {
         record:true,
         uid:CurrentUserID
       });
-      showhidecomparetarget();
+      toggle_side_column();
       $("#compare_panel_BG").fadeOut();
       $('.compare_panel').css('height',0);
     });
@@ -56,7 +54,7 @@ $(document).ready(function () {
   $("#clear_compare").click(function () {
     let r = confirm("確定要全部移除?!");
     if(!r)return
-    showhidecomparetarget();
+    toggle_side_column();
     $(this).parent().siblings().children().html("");
     compare = [];
     $("#compare_number").text(compare.length);
@@ -90,7 +88,7 @@ function compareTargetAddCard(target,name,stage=null) {
 }
 function addToCompare(target,name='',stage=null) {
   $('.compare_panel').css('height',0);
-  if(showcomparetarget) showhidecomparetarget();
+  toggle_side_column(null,1,0);
   compare = []
   $(".compareTarget").children().each(function () {
     compare.push($(this).attr("value"));
@@ -116,15 +114,4 @@ function addToCompare(target,name='',stage=null) {
     $("#compare_number").text(compare.length);
     socket.emit("Set Compare",{type:type,id:CurrentUserID,target:compare});
   }
-}
-function showhidecomparetarget() {
-  $('.compare_panel').css('height',0);
-  if(showcomparetarget){
-    $('.compareTarget_holder').css('left',0);
-    $('#compareTarget_tag').css('left',180).children('i').css({"transform":"rotate(180deg)"});
-  } else {
-    $('.compareTarget_holder').css('left',-180);
-    $('#compareTarget_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
-  }
-  showcomparetarget = showcomparetarget ? 0 : 1 ;
 }

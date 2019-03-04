@@ -324,7 +324,7 @@ function submitComment() {
   ga('send', 'event', 'comment', 'cat',CurrentCatID);
   let comment = $(".comment_input").find('textarea').val();
   // console.log(comment);
-  if(!comment) return
+  if(!comment||!comment.trim()) return
   socket.emit('comment cat',{
     cat:CurrentCatID,
     owner:CurrentUserID,

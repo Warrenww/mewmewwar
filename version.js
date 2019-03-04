@@ -10,14 +10,21 @@ var config = {
   firebase.initializeApp(config);
   var database = firebase.database();
   var stdin = process.openStdin();
-  stdin.addListener("data", function(d) {
-      // note:  d is an object, and when converted to a string it will
-      // end with a linefeed.  so we (rather crudely) account for that
-      // with toString() and then trim()
-      let version = d.toString().trim();
-      database.ref("/version").set(version);
-      database.ref("/error_log").set(null);
-      setTimeout(function () {
-        process.exit();
-      },5000);
-    });
+
+  // stdin.addListener("data", function(d) {
+  //     // note:  d is an object, and when converted to a string it will
+  //     // end with a linefeed.  so we (rather crudely) account for that
+  //     // with toString() and then trim()
+  //     let version = d.toString().trim();
+  //   });
+  if(process.argv[2]){
+    database.ref("/version").set(process.argv[2]);
+    database.ref("/error_log").set(null);
+    setTimeout(function () {
+      console.log("version update!!");
+      process.exit();
+    },5000);
+  } else {
+    console.log("undefine version!!");
+    process.exit();
+  }

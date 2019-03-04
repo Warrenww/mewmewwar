@@ -186,8 +186,8 @@ function getData(chapter,i,j,correction=false) {
           tbody_1 = content.children("tbody").eq((final?1:0)+modify).children("tr"),
           tbody_2 = content.children("tbody").eq((final?2:1)+modify).children("tr"),
           tbody_3 = content.children("tbody").eq((final?3:2)+modify).children("tr"),
-          star_len = $("#List").find("td").eq(0).find("a").length+1;
-          modify = 0;
+          star_len = $("#List").find("td").eq(0).find("a").length+1,
+          constrain_bias = 0;
       if (tbody_3.length) correction = true;
       else correction = false;
 
@@ -196,14 +196,17 @@ function getData(chapter,i,j,correction=false) {
       obj.name = StageData[chapter]?(StageData[chapter][i]?(StageData[chapter][i][LevelArr[j]]?StageData[chapter][i][LevelArr[j]].name:obj.jp_name):obj.jp_name):obj.jp_name;
       obj.continue = thead.eq(0).children("td").eq(2).find("font").text().indexOf("コンテニュー不可")!=-1?false:true;
       obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
-      obj.constrain = thead.eq(0).children("td").eq(2).find("font").text().indexOf("制限")!=-1?Parser.parseConstrain(thead.eq(0).children("td").eq(2).find("font").text()):null;
+      if(thead.eq(2).children("td").eq(1).text().indexOf("制限")!=-1){
+        obj.constrain = Parser.parseConstrain(thead.eq(2).children("td").eq(1).text())
+        constrain_bias = 1;
+      }
       obj.energy = thead.eq(0).children("td").eq(4).text();
       obj.exp = thead.eq(1).children("td").eq(1).text().split("XP+")[1];
-      obj.castle = thead.eq(2).children("td").eq(3).text();
-      obj.length = thead.eq(3).children("td").eq(1).text();
-      obj.limit_no = thead.eq(4).children("td").eq(1).text();
-      obj.bg_img = thead.eq(2).children("td").eq(1).find('.bg').attr("src").split("/")[3].split(".")[0];
-      obj.castle_img = thead.eq(2).children("td").eq(1).find('.castle').attr("src").split("/")[3].split(".")[0];
+      obj.castle = thead.eq(2+constrain_bias).children("td").eq(3).text();
+      obj.length = thead.eq(3+constrain_bias).children("td").eq(1).text();
+      obj.limit_no = thead.eq(4+constrain_bias).children("td").eq(1).text();
+      obj.bg_img = thead.eq(2+constrain_bias).children("td").eq(1).find('.bg').attr("src").split("/")[3].split(".")[0];
+      obj.castle_img = thead.eq(2+constrain_bias).children("td").eq(1).find('.castle').attr("src").split("/")[3].split(".")[0];
 
       for(let k = 0;k<tbody_1.length;k++){
         obj.reward.push({
@@ -231,7 +234,8 @@ function getData(chapter,i,j,correction=false) {
           amount : ene.eq(4).text(),
           castle : ene.eq(5).text(),
           first_show : (Number(ene.eq(6).text())/30).toFixed(1),
-          next_time : Parser.FtoS(ene.eq(7).text())
+          next_time : Parser.FtoS(ene.eq(7).text()),
+          // point : ene.eq(8).text()
         });
         if(k==0){
           for(let l=0;l<star_len;l++) obj.star.push(Number(ene.eq(3).text().split('％')[0]));

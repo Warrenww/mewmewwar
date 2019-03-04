@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.32.2"
+const VERSION = "10.32.3"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -62,6 +62,9 @@ $(document).ready(function () {
   $('.tableTitle').click(function () {
     $(this).attr('active',(Number($(this).attr("active"))+1)%2).next().toggle();
   });
+
+  // left side column action
+  $(".left-side-active").click(toggle_side_column);
 
   // Scroll Reaction
   $(document).on('scroll',function () {
@@ -329,6 +332,25 @@ function AddZero(n,e=1) {
     else return s
   }
   return s
+}
+function toggle_side_column(e = null,toggle = null,bind = 1) {
+  var temp = Number($(".left-side-active").attr('active'));
+  // if(Number.isNaN(temp)) temp = 0;
+  temp = (temp+1)%2;
+  if(toggle != null) temp = toggle;
+  console.log(temp);
+  $(".left-side-column").attr('active',temp);
+  $(".left-side-active").attr("active",temp);
+  if(temp&&bind) setTimeout(function () {
+    $("body").append("<div class='side-column-bg'></div>");
+    $(".side-column-bg").css({position:"fixed",width:"100%",height:"100%",top:0,"z-index":2})
+    .bind('click',hide_side_column);
+  },100)
+}
+var hide_side_column = function (e) {
+  $(".left-side-column,.left-side-active").attr("active",0);
+  $(".side-column-bg").remove();
+  return false;
 }
 
 function filterSlider(target) {

@@ -66,6 +66,8 @@ nav .mobile,
   #bulletin .main>div{flex-direction: column;align-items: center;}
   #Version_display{align-items: flex-start !important;}
   .displayControl{top:calc(3% - 12px)}
+  .left-side-active[active='1']{ left: 25% }
+  .left-side-column{width: 25%;left: -25%}
 }
 @media screen and (max-width: 768px) {
   nav{height: 40px;justify-content: space-between;}
@@ -150,6 +152,9 @@ nav .mobile,
   #eventTableScroll_R { left: calc(90% - 50px); }
   .displayControl{width: calc(100% - 6px); top: 6%;}
   .displayControl[float='true']{top: 0%;}
+  .left-side-active[active='1']{ left: 30% }
+  .left-side-column{width: 30%;left: -30%}
+
 }
 @media screen and (max-width: 426px) {
   .select,
@@ -176,4 +181,6 @@ nav .mobile,
   .displayControl{width: calc(100% - 6px); top: 4%;}
   .displayControl[float='true']{top: 0%;}
   .displayControl[float='true'] .data #name{display: none;}
+  .left-side-active[active='1']{ left: 60% }
+  .left-side-column{width: 60%;left: -60%}
 }

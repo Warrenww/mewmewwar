@@ -29,6 +29,7 @@ var Combodata = require("./Combodata");
 
 var CoinhiveAPI = require('coinhiveapi');
 var coinhive = new CoinhiveAPI('kyoXowX7ige3k8BcMVZcnhOwaZi3lEIv');
+var dashboardID;
 var Apiai = require("apiai");
 var Ai = Apiai("03cfa1877067410c82e545e9883f5d48");
 
@@ -69,6 +70,7 @@ function ReloadAllData(m=0) {
   Combodata.load(combodata);
   database.ref("/version").once("value",(snapshot)=>{
     VERSION = snapshot.val();
+    if(dashboardID) io.to(dashboardID).emit("console",`VERSION : ${VERSION}`);
     console.log("VERSION : ",VERSION);
   });
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
@@ -163,7 +165,7 @@ io.on('connection', function(socket){
       }
       socket.emit("required data",{buffer,type});
     } catch (e) {
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   // Store cat level or enemy multiple
@@ -196,7 +198,7 @@ io.on('connection', function(socket){
           id = data.target;
       SetHistory(uid,type,id);
     } catch (e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   function SetHistory(uid,type,id) {
@@ -229,7 +231,7 @@ io.on('connection', function(socket){
 
       socket.emit("search result",{result:buffer,query:data.query,query_type:data.query_type,type:'cat'});
     }catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("normal search",function (data) {
@@ -261,7 +263,7 @@ io.on('connection', function(socket){
 
       socket.emit("search result",{result:buffer,query:data.query,query_type:'text',type:data.type});
     } catch(e) {
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on('text search stage',(text) => {socket.emit('text search stage',Stagedata.Search('text',text));});
@@ -411,7 +413,7 @@ io.on('connection', function(socket){
       socket.emit("current_user_data",CurrentUserData);
       console.log('user data send');
     }catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on('disconnect', function () {
@@ -451,7 +453,7 @@ io.on('connection', function(socket){
       if(uid) SetHistory(uid,'combo',arr);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   }) ;
   socket.on("more combo",function (arr) {
@@ -473,7 +475,7 @@ io.on('connection', function(socket){
       socket.emit("more combo",buffer);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -484,7 +486,7 @@ io.on('connection', function(socket){
       Users.setCompare(data.id,data.type,data.target);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -518,7 +520,7 @@ io.on('connection', function(socket){
       arr = arr.length ? arr : 0 ;
       Users.setFolder(data.uid,'owned',arr);
     }catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -538,7 +540,7 @@ io.on('connection', function(socket){
       });
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("Set Setting",function (data) {
@@ -556,12 +558,12 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/variable/cat").update(data);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("reset owned cat",function (uid) {
-    console.log("reset all "+uid+"'s cat owned state");
     try{
+      console.log("reset all "+uid+"'s cat owned state");
       var data = Users.getVariable(uid,'cat');
       for(let i in data){
         data[i].own = false;
@@ -570,7 +572,7 @@ io.on('connection', function(socket){
       Users.setFolder(udi,'owned','0');
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("change setting",function (data) {
@@ -587,7 +589,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("user photo",function (data) {
@@ -601,7 +603,7 @@ io.on('connection', function(socket){
       Users.setSetting(data.uid,'photo',photo);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("required users photo",function (arr) {
@@ -648,7 +650,7 @@ io.on('connection', function(socket){
       }
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -676,7 +678,7 @@ io.on('connection', function(socket){
       socket.emit("gacha result",{ result:result});
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on("gacha history",function (data) {
@@ -700,7 +702,7 @@ io.on('connection', function(socket){
       database.ref("/user/"+uid+"/history/gacha/"+key).set(gachaHistory[key]);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -715,7 +717,7 @@ io.on('connection', function(socket){
       Users.setSetting(data.uid,'show_miner',true);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -739,7 +741,7 @@ io.on('connection', function(socket){
       socket.emit("owned data",arr);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
 
@@ -775,7 +777,7 @@ io.on('connection', function(socket){
       Unitdata.updateStatistic(cat,type,data.all);
     }
     catch(e){
-      Util.__handalError(e);
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   });
   socket.on('comment cat',function (data) {
@@ -816,7 +818,7 @@ io.on('connection', function(socket){
         if(find) SetHistory(uid, 'stage', location);
         socket.emit('cat to stage',{find,stage});
       }catch(e){
-        Util.__handalError(e);
+        if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
       }
     });
 
@@ -893,7 +895,7 @@ io.on('connection', function(socket){
   //     }
   //   }
   //   catch(e){
-  //     Util.__handalError(e);
+  //     if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
   //   }
   // });
   socket.on("Game Picture",function () {
@@ -909,69 +911,80 @@ io.on('connection', function(socket){
     });
     socket.emit("Game Picture",buffer);
   });
-
-  // socket.on("dashboard",()=>{
-  //   socket.emit("dashboard",{
-  //     catSearchCount:Unitdata.SearchCount('cat')
-  //   })
-  // });
-  socket.on("fetch data",(data)=>{
-    if(data.type == "cat") Unitdata.fetch('cat',data.arr);
-    if(data.type == "enemy") Unitdata.fetch('enemy',data.arr);
-    if(data.type == "stage") Stagedata.fetch(data.chapter,data.id,data.correction);
+  socket.on("dashboard",()=>{
+    // console.log(socket.id);
+    dashboardID = socket.id;
+    if(dashboardID) io.to(dashboardID).emit("console","connect to dashboard console");
   });
-  socket.on("loadstage",()=>{
-    var obj={};
-    database.ref("/stagedata").once('value',(snapshot)=>{
-      var temp = snapshot.val();
-      for(let i in temp){
-        obj[i] = {};
-        for (let j in temp[i]){
-          obj[i][j]={};
-          for(let k in temp[i][j]){
-            obj[i][j][k] =
-              typeof(temp[i][j][k]) == "object"?
-                {name:temp[i][j][k].name,reward:temp[i][j][k].reward}:
-                  {name:temp[i][j][k]};
+  socket.on("fetch data",(data)=>{
+    try {
+      if(dashboardID) io.to(dashboardID).emit("console",`fatch ${data.type} : ${data.arr}`);
+      if(data.type == "cat") Unitdata.fetch('cat',data.arr);
+      if(data.type == "enemy") Unitdata.fetch('enemy',data.arr);
+      if(data.type == "stage") Stagedata.fetch(data.chapter,data.id,data.correction);
+    } catch (e) {
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+    }
+  });
+  socket.on("dashboard load",(data)=>{
+    var type = data.type;
+    if(dashboardID) io.to(dashboardID).emit("console",`loading ${type} ...`);
+    var obj = {};
+    if(type == 'stage'){
+      database.ref("/stagedata").once('value',(snapshot)=>{
+        var temp = snapshot.val();
+        for(let i in temp){
+          obj[i] = {};
+          for (let j in temp[i]){
+            obj[i][j]={};
+            for(let k in temp[i][j]){
+              obj[i][j][k] =
+                typeof(temp[i][j][k]) == "object"?
+                  {name:temp[i][j][k].name,reward:temp[i][j][k].reward}:
+                    {name:temp[i][j][k]};
+            }
           }
         }
-      }
-      socket.emit("loadStage",obj);
-    });
-  });
-  socket.on("loadcat",()=>{
-    var obj={};
-    database.ref("/CatData").once('value',(snapshot)=>{
-      var temp = snapshot.val();
-      for(let i in temp){
-        for(let j in temp[i].data){
-          if(!obj[i]) obj[i] = {};
-          obj[i][j] = {
-            name : temp[i].data[j].name,
-            jp_name : temp[i].data[j].jp_name,
-            region : temp[i].region,
-            rarity : temp[i].rarity
+        if(dashboardID) io.to(dashboardID).emit("console",`${type} data load complete`);
+        socket.emit("dashboard load",{type,obj});
+      });
+    }
+    else if(type == 'cat'){
+      database.ref("/CatData").once('value',(snapshot)=>{
+        var temp = snapshot.val();
+        for(let i in temp){
+          for(let j in temp[i].data){
+            if(!obj[i]) obj[i] = {};
+            obj[i][j] = {
+              name : temp[i].data[j].name,
+              jp_name : temp[i].data[j].jp_name,
+              region : temp[i].region,
+              rarity : temp[i].rarity
+            };
+          }
+        }
+        if(dashboardID) io.to(dashboardID).emit("console",`${type} data load complete`);
+        socket.emit("dashboard load",{type,obj});
+      });
+    }
+    else if(type == 'enemy'){
+      database.ref("/enemydata").once('value',(snapshot)=>{
+        var temp = snapshot.val();
+        for(let i in temp){
+          obj[i] = {
+            name : temp[i].name,
+            jp_name : temp[i].jp_name
           };
         }
-      }
-      socket.emit("loadCat",obj);
-    });
-  });
-  socket.on("loadenemy",()=>{
-    var obj={};
-    database.ref("/enemydata").once('value',(snapshot)=>{
-      var temp = snapshot.val();
-      for(let i in temp){
-        obj[i] = {
-          name : temp[i].name,
-          jp_name : temp[i].jp_name
-        };
-      }
-      socket.emit("loadEnemy",obj);
-    });
-  });
+        if(dashboardID) io.to(dashboardID).emit("console",`${type} data load complete`);
+        socket.emit("loadEnemy",obj);
+      });
+    }
+  })
+
   socket.on("DashboardUpdateData",(data)=>{
     console.log('update',data);
+    if(dashboardID) io.to(dashboardID).emit("console",`update : ${data.path}->${data.type} <= ${data.val}`);
     var path = data.path.split(",");
     var obj = {},target;
     obj[data.type] = data.val;

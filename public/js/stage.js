@@ -144,18 +144,6 @@ $(document).ready(function () {
   $(document).on("click",".select_chapter span",function () {
     $(this).next().toggle(400).siblings("div").hide(400)
   });
-  var expend_sl_chap = 1 ;
-  $(document).on('click','#select_chap_tag',showhideselectchap);
-  function showhideselectchap() {
-    if(expend_sl_chap){
-      $('.select_chapter_holder').css('left',0);
-      $('#select_chap_tag').css('left',250).children('i').css({"transform":"rotate(180deg)"});
-    } else {
-      $('.select_chapter_holder').css('left',-250);
-      $('#select_chap_tag').css('left',0).children('i').css({"transform":"rotate(0deg)"});
-    }
-    expend_sl_chap = expend_sl_chap ? 0 : 1 ;
-  }
 
   var loadingTimeOut;
   $(document).on("click",".select_chapter button",function () {
