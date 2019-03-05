@@ -334,9 +334,7 @@ io.on('connection', function(socket){
         }
       }
       else if(page == 'combo'){CurrentUserData.last_combo = history.last_combo;}
-      else if(page == 'compareCat' || page == 'compareEnemy'){
-        CurrentUserData.compare = {cat:arr,enemy:brr};
-      }
+      else if(page == 'compareCat' || page == 'compareEnemy'){ CurrentUserData.compare = {cat:arr,enemy:brr}; }
       else if(page == 'history'){
         obj = {cat:{},enemy:{},stage:{},gacha:{}};
         for(i in history.cat){

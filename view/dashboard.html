@@ -24,35 +24,16 @@
         border-bottom: 1px solid gray;
       }
       th img{width: 120}
-      .signal{
-        display: flex;
-        width: 20;
-        height:20;
-        border-radius: 50%;
-        background-color:#e25959;
-        box-shadow: 1px 1px 10px 0px black;
-      }
-      .signal[ok='wait']{
-        background-color:#ffb538;
-        animation-name: scale;
-        animation-duration: 1.5s;
-        animation-iteration-count: infinite;
-      }
-      .signal[ok='ok']{background-color:#8bf477 }
       #result{
         width: 100%;
         padding: 20;
         background-color: black;
         font-family: Consolas;
         color: #5cfcb0;
-        max-height: 50%
+        max-height: 50%;
+        overflow-y: scroll;
       }
-      @keyframes scale {
-        0%{width: 20;height: 20}
-        50%{width: 25;height: 25}
-        100%{width: 20;height: 20}
-      }
-      .editable .reward{display: flex;width: 15;height: 15;border-radius: 50%;background-color: gray}
+      #result div{margin-bottom: 20}
     </style>
     <i class="material-icons" id="PageGoToTop">expand_less</i>
 
