@@ -321,10 +321,9 @@ table {
 
 .compareTarget_holder::-webkit-scrollbar,
 .comparedataholder::-webkit-scrollbar,
-.left-side-column::-webkit-scrollbar
- {
-    width: 0px;
-}
+.left-side-column::-webkit-scrollbar,
+#result::-webkit-scrollbar
+{ width: 0px; }
 .functionArea{
   display: flex;
   justify-content: space-around;
@@ -848,7 +847,7 @@ input:checked + .slider_but:before {
   width: 20%;
   left: -20%;
   background-color: rgba(255, 255, 255, 0.6) ;
-  z-index: 3;
+  z-index: 5;
   transition: .6s ease-in-out;
   overflow-y: scroll;
 }
