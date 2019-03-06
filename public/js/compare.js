@@ -13,7 +13,7 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    // console.log(data);
+    console.log(data);
     CurrentUserID = data.uid;
     var _compare = data.compare[page];
     if(_compare) {

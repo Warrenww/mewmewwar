@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.32.3"
+const VERSION = "10.33.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
