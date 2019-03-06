@@ -1,6 +1,7 @@
 var CurrentUserID;
 var current_compare = {};
 var rowCatData = {};
+var RowData = {cat:{},enemy:{}};
 var page = location.pathname.split("/compare")[1].toLowerCase();
 $(document).ready(function () {
   var compare = [] ;
@@ -13,52 +14,49 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    console.log(data);
+    // console.log(data);
     CurrentUserID = data.uid;
     var _compare = data.compare[page];
-    if(_compare) {
-      let buffer = [] ;
-      for(let i in _compare){
-        let id = _compare[i].id ;
-        buffer.push(id);
-      }
+    for(let type in data.compare){
+      var temp = [];
+      for(let j in data.compare[type]) temp.push(data.compare[type][j].id);
       socket.emit("required data",{
         uid:data.uid,
-        type:page,
-        target:buffer,
+        type:type,
+        target:temp,
         record:false
       });
     }
-
   });
   socket.on("required data",(data)=>{
     // console.log(data);
-    if(data.buffer.length > 1){
-      $(".comparedatabody").empty();
-      for(let i in data.buffer){
-        var _data,
-            lv = data.buffer[i].lv,
-            stage = Number(data.buffer[i].currentStage)-1,
-            rarity = data.buffer[i].data.rarity
-            id = data.buffer[i].data.id;
-        if(page == 'cat'){
-          _data = [];
-          for(let j in data.buffer[i].data.data){
-            if(!data.buffer[i].data.data[j]) continue;
-            _data.push(new Cat(data.buffer[i].data.data[j]));
-          }
-        } else _data = new Enemy(data.buffer[i].data);
-        // console.log(id,_data);
-        if(page == 'cat'){
-          rowCatData[id] = _data;
-          rowCatData[id].rarity = rarity;
-          _data = _data[stage];
-        }
-        current_compare[id] = _data;
-        $(".comparedatabody").append(AddCompareData(_data,lv,rarity));
-      }
-    }
-    highlightTheBest();
+    RowData[data.type] = data.buffer;
+    // if(data.buffer.length > 1){
+    //   $(".comparedatabody").empty();
+    //   for(let i in data.buffer){
+    //     var _data,
+    //         lv = data.buffer[i].lv,
+    //         stage = Number(data.buffer[i].currentStage)-1,
+    //         rarity = data.buffer[i].data.rarity
+    //         id = data.buffer[i].data.id;
+    //     if(page == 'cat'){
+    //       _data = [];
+    //       for(let j in data.buffer[i].data.data){
+    //         if(!data.buffer[i].data.data[j]) continue;
+    //         _data.push(new Cat(data.buffer[i].data.data[j]));
+    //       }
+    //     } else _data = new Enemy(data.buffer[i].data);
+    //     // console.log(id,_data);
+    //     if(page == 'cat'){
+    //       rowCatData[id] = _data;
+    //       rowCatData[id].rarity = rarity;
+    //       _data = _data[stage];
+    //     }
+    //     current_compare[id] = _data;
+    //     $(".comparedatabody").append(AddCompareData(_data,lv,rarity));
+    //   }
+    // }
+    // highlightTheBest();
   });
   $(document).on('click',"#level i",function () {
     let width = $(this).parent()[0].offsetWidth,
