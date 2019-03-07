@@ -16,27 +16,44 @@
   <body>
     <div class="content" style="padding:0">
       <div class="control">
-
-      </div>
-      <div class="display">
-        <div class="header">
-          <div class="cell"><div>Level</div></div>
-          <div class="cell" id="picture"><div>Picture</div></div>
-          <div class="cell" id='name'><div>全名</div></div>
-          <div class="cell" id='rarity'><div>稀有度</div></div>
-          <div class="cell" id='hp'><div>體力</div></div>
-          <div class="cell" id='kb'><div>KB</div></div>
-          <div class="cell" id='hardness'><div>硬度</div></div>
-          <div class="cell" id='atk'><div>攻擊力</div></div>
-          <div class="cell" id='dps'><div>DPS</div></div>
-          <div class="cell" id='range'><div>射程</div></div>
-          <div class="cell" id='freq'><div>攻頻</div></div>
-          <div class="cell" id='speed'><div>跑速</div></div>
-          <div class="cell" id='multi'><div>範圍</div></div>
-          <div class="cell" id='cost'><div>花費</div></div>
-          <div class="cell" id='cd'><div>再生産</div></div>
-          <div class="cell" id='char'><div>特性</div></div>
+        <div class="">
+          <div class="swapper">
+            <div class="icon"style="background-image: url('css/footage/tab_icon.png')" active='1'></div>
+            <div class="icon"style="background-image: url('css/footage/tab_icon_enemy.png')"active='0'></div>
+            <h1>
+              <span>貓咪</span><span style="display:none">敵人</span>比較器
+            </h1>
+          </div>
         </div>
+      </div>
+      <div class="display" displayType='cat'>
+        <table>
+          <thead>
+            <tr>
+              <th><div>Level</div></th>
+              <th id="picture"><div>Picture</div></th>
+              <th id='name'><div>全名</div></th>
+              <th id='color' enemyonly><div>屬性</div></th>
+              <th id='rarity' catonly><div>稀有度</div></th>
+              <th id='hp'><div>體力</div></th>
+              <th id='kb'><div>KB</div></th>
+              <th id='hardness'><div>硬度</div></th>
+              <th id='atk'><div>攻擊力</div></th>
+              <th id='dps'><div>DPS</div></th>
+              <th id='range'><div>射程</div></th>
+              <th id='freq'><div>攻頻</div></th>
+              <th id='speed'><div>跑速</div></th>
+              <th id='multi'><div>範圍</div></th>
+              <th id='cost' catonly><div>花費</div></th>
+              <th id='cd' catonly><div>再生産</div></th>
+              <th id='reward' enemyonly><div>獲得金錢</div></th>
+              <th id='char'><div>特性</div></th>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -47,13 +64,13 @@
       <span id="own">我有這隻貓</span>
     </div>
 
-    <div class="side_bar">
+    <!-- <div class="side_bar">
       <div id='nav_zoom_in' class="floatbutton"><i class="material-icons">&#xe145;</i></div>
       <div id='nav_zoom_out' class="floatbutton"><i class="material-icons">&#xe15b;</i></div>
       <div id='nav_org' class="floatbutton"><i class="material-icons">&#xe5d1;</i></div>
       <div id='showall' class="floatbutton"><i class="material-icons">&#xe417;</i></div>
       <div id='snapshot' class="floatbutton"><i class="material-icons">&#xe439;</i></div>
-    </div>
+    </div> -->
 
     <div id="canvas_holder">
       <div class="picture"></div>

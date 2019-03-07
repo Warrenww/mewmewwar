@@ -1,10 +1,11 @@
 var CurrentUserID;
 var current_compare = {};
-var rowCatData = {};
 var RowData = {cat:{},enemy:{}};
-var page = location.pathname.split("/compare")[1].toLowerCase();
+var displayType = 'cat';
 $(document).ready(function () {
-  var compare = [] ;
+  // initial swapper
+  if(Storage) if(localStorage.compareType == 'enemy') swapType();
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
@@ -16,7 +17,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     // console.log(data);
     CurrentUserID = data.uid;
-    var _compare = data.compare[page];
+    current_compare = data.compare;
     for(let type in data.compare){
       var temp = [];
       for(let j in data.compare[type]) temp.push(data.compare[type][j].id);
@@ -29,8 +30,12 @@ $(document).ready(function () {
     }
   });
   socket.on("required data",(data)=>{
-    // console.log(data);
     RowData[data.type] = data.buffer;
+    if(displayType == data.type){
+      for(let i in RowData[data.type]){
+        appendData(RowData[data.type][i],data.type);
+      }
+    }
     // if(data.buffer.length > 1){
     //   $(".comparedatabody").empty();
     //   for(let i in data.buffer){
@@ -58,6 +63,29 @@ $(document).ready(function () {
     // }
     // highlightTheBest();
   });
+  function appendData(data,type) {
+    var _data,
+        lv = data.lv,
+        stage = Number(data.currentStage),
+        rarity = data.data.rarity
+        id = data.data.id;
+    if(type == 'cat') { _data = new Cat(data.data.data[stage]); }
+    else { _data = new Enemy(data.data); }
+    $(".display .table_body").append(AddCompareData(_data,lv,rarity));
+  }
+  // switch display type
+  $(".swapper").click(swapType);
+  function swapType() {
+    $(".swapper").find('h1 span').toggle();
+    $(".swapper").find(".icon").each(function () {
+      let temp = Number($(this).attr("active"));
+      $(this).attr("active",(temp+1)%2);
+    });
+    displayType = displayType=='cat'?'enemy':'cat';
+    $(".display").attr("displayType",displayType);
+    if(Storage) localStorage.compareType = displayType;
+  }
+
   $(document).on('click',"#level i",function () {
     let width = $(this).parent()[0].offsetWidth,
         top = $(this).parent().offset().top+$(this).parent()[0].offsetHeight,
@@ -310,31 +338,28 @@ $(document).ready(function () {
     // console.log(data);
     var html;
     html =
-      createHtml("tr",
-        createHtml("th",
-          createHtml("span",(page == 'cat'?lv:lv*100+"%"))+
-          createHtml("i","arrow_drop_down",{class:'material-icons'}),
-        {id:'level'}))+
-      createHtml("tr",
-        createHtml("th",
-          createHtml('img',null,{src:data.image,style:"height:100%"}),
-        {style:'height:80px;padding:0'}))+
-      createHtml("tr",createHtml("th",data.Name,{id:'name'}))+
-      (page == 'cat'?
-        createHtml("tr",createHtml("th",(Cat.parseRarity(rarity)),{id:"rarity"})):
-        createHtml("tr",createHtml("th",(data.color),{id:"color"})));
+      createHtml("div",
+        createHtml("span",(displayType == 'cat'?lv:lv*100+"%"))+
+        createHtml("i","arrow_drop_down",{class:'material-icons'}),
+      {id:'level',class:'cell'})+
+      createHtml("div",
+        createHtml('img',null,{src:data.image,style:"height:100%"}),
+      {style:'height:80px;padding:0',class:'cell picture'})+
+      createHtml("div",data.Name,{id:'name',class:'cell'})+
+      (displayType == 'cat'?
+        createHtml("div",(Cat.parseRarity(rarity)),{id:"rarity",class:'cell'}):
+        createHtml("div",(data.color),{id:"color",class:'cell'}));
       ['hp','kb','hardness','atk','dps','range','freq','speed'].map(x=>{
-        html += createHtml("tr",createHtml("td",data.Tovalue(x,lv),{id:x}))
+        html += createHtml("div",data.Tovalue(x,lv),{id:x,class:'cell'})
       });
       html +=
-      createHtml("tr",createHtml("td",data.Aoe,{id:'multi'}))+
-      (page == 'cat'?
-      createHtml("tr",createHtml("td",data.cost,{id:'cost'}))+
-      createHtml("tr",createHtml("td",data.cd,{id:'cd'})):
-      createHtml("tr",createHtml("td",data.reward,{id:'cost'})))+
-      createHtml("tr",createHtml("td",char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"),{id:'char'}));
-      html = createHtml("div",createHtml("table",html),{
-        style:'flex:1',
+      createHtml("div",data.Aoe,{id:'multi',class:'cell'})+
+      (displayType == 'cat'?
+      createHtml("div",data.cost,{id:'cost',class:'cell'})+
+      createHtml("div",data.cd,{id:'cd',class:'cell'}):
+      createHtml("div",data.reward,{id:'cost',class:'cell'}))+
+      createHtml("div",char_detail?data.CharHtml(lv):(data.tag?data.tag.join("/"):"無"),{id:'char',class:'cell'});
+      html = createHtml("div",html,{
         class:'comparedata',
         id:data.id.toString().substring(0,3)
       });
@@ -358,6 +383,6 @@ $(document).on("keydown",function (e) {
 function validationLevel(lv) {
   lv = Number(lv)
   if (!lv || lv <0) return false
-  if (page == 'cat' && lv > 100) return false
+  if (displayType == 'cat' && lv > 100) return false
   return true
 }
