@@ -16,118 +16,242 @@
   <body>
     <div class="content" style="padding:0">
       <div class="control">
-        <div class="">
-          <div class="swapper">
+        <div class="swapper">
             <div class="icon"style="background-image: url('css/footage/tab_icon.png')" active='1'></div>
             <div class="icon"style="background-image: url('css/footage/tab_icon_enemy.png')"active='0'></div>
             <h1>
               <span>貓咪</span><span style="display:none">敵人</span>比較器
             </h1>
           </div>
+        <div class="functionArea">
+          <i class=" material-icons toggle_next" text="欄位顯示設定">table_chart</i>
+          <div class="panel" active='0'>
+            <div class="field_toggle">
+              <label class="checkbox" name="picture">
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              圖片
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='color'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              屬性
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='rarity'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              稀有度
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='hp'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              體力
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='kb'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              KB
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='hardness'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              硬度
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='atk'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              攻擊力
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='dps'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              DPS
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='range'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              攻擊距離
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='freq'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              攻擊頻率
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='speed'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              跑速
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='multi'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              範圍
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='cost'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              價格
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='cd'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              再生產
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='reward'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              獲得金錢
+            </div>
+            <div class="field_toggle">
+              <label class="checkbox" name='char'>
+                <input type="checkbox" checked="checked">
+                <span class="checkmark"></span>
+              </label>
+              特性
+            </div>
+          </div>
+          <i class="material-icons" onclick="showAll()" text="全部顯示">visibility</i>
+          <i class="material-icons" onclick="" text="條件格式設定"data-toggle="modal" data-target="#custom_format">format_color_fill</i>
+          <i class="material-icons" onclick="snapshot('.display table:last')" text="截圖">add_a_photo</i>
         </div>
       </div>
-      <div class="display" displayType='cat'>
-        <table>
+      <div class="display" displayType='cat' style="padding:0">
+        <table class="float_thead">
           <thead>
             <tr>
-              <th><div>Level</div></th>
-              <th id="picture"><div>Picture</div></th>
-              <th id='name'><div>全名</div></th>
-              <th id='color' enemyonly><div>屬性</div></th>
-              <th id='rarity' catonly><div>稀有度</div></th>
-              <th id='hp'><div>體力</div></th>
-              <th id='kb'><div>KB</div></th>
-              <th id='hardness'><div>硬度</div></th>
-              <th id='atk'><div>攻擊力</div></th>
-              <th id='dps'><div>DPS</div></th>
-              <th id='range'><div>射程</div></th>
-              <th id='freq'><div>攻頻</div></th>
-              <th id='speed'><div>跑速</div></th>
-              <th id='multi'><div>範圍</div></th>
-              <th id='cost' catonly><div>花費</div></th>
-              <th id='cd' catonly><div>再生産</div></th>
-              <th id='reward' enemyonly><div>獲得金錢</div></th>
-              <th id='char'><div>特性</div></th>
+              <th><div style="min-width:20px"></div></th>
+              <th class="picture"><div>圖片</div></th>
+              <th class='name'><div>全名</div></th>
+              <th class='color' enemyonly><div>屬性</div></th>
+              <th class='rarity' catonly><div>稀有度</div></th>
+              <th class='hp'><div>體力</div></th>
+              <th class='kb'><div>KB</div></th>
+              <th class='hardness'><div>硬度</div></th>
+              <th class='atk'><div>攻擊力</div></th>
+              <th class='dps'><div>DPS</div></th>
+              <th class='range'><div>攻擊距離</div></th>
+              <th class='freq'><div>攻擊頻率</div></th>
+              <th class='speed'><div>跑速</div></th>
+              <th class='multi'><div>範圍</div></th>
+              <th class='cost' catonly><div>價格</div></th>
+              <th class='cd' catonly><div>再生產</div></th>
+              <th class='reward' enemyonly><div>獲得金錢</div></th>
+              <th class='char'><div style="width:160">特性</div></th>
             </tr>
           </thead>
-          <tbody>
-
-          </tbody>
+        </table>
+        <table style="position:absolute">
+          <thead>
+            <tr>
+              <th><div style="min-width:20px"></div></th>
+              <th class="picture"><div>圖片</div></th>
+              <th class='name'><div>全名</div></th>
+              <th class='color' enemyonly><div>屬性</div></th>
+              <th class='rarity' catonly><div>稀有度</div></th>
+              <th class='hp'><div>體力</div></th>
+              <th class='kb'><div>KB</div></th>
+              <th class='hardness'><div>硬度</div></th>
+              <th class='atk'><div>攻擊力</div></th>
+              <th class='dps'><div>DPS</div></th>
+              <th class='range'><div>攻擊距離</div></th>
+              <th class='freq'><div>攻擊頻率</div></th>
+              <th class='speed'><div>跑速</div></th>
+              <th class='multi'><div>範圍</div></th>
+              <th class='cost' catonly><div>價格</div></th>
+              <th class='cd' catonly><div>再生產</div></th>
+              <th class='reward' enemyonly><div>獲得金錢</div></th>
+              <th class='char'><div style="width:160">特性</div></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
         </table>
       </div>
     </div>
-
-    <div class='panel' value='0'>
-      <span id="del">移除</span>
-      <span id="hide">隱藏</span>
-      <span id="switch">切換階級</span>
-      <span id="own">我有這隻貓</span>
-    </div>
-
-    <!-- <div class="side_bar">
-      <div id='nav_zoom_in' class="floatbutton"><i class="material-icons">&#xe145;</i></div>
-      <div id='nav_zoom_out' class="floatbutton"><i class="material-icons">&#xe15b;</i></div>
-      <div id='nav_org' class="floatbutton"><i class="material-icons">&#xe5d1;</i></div>
-      <div id='showall' class="floatbutton"><i class="material-icons">&#xe417;</i></div>
-      <div id='snapshot' class="floatbutton"><i class="material-icons">&#xe439;</i></div>
-    </div> -->
 
     <div id="canvas_holder">
       <div class="picture"></div>
     </div>
 
-    <div class="tutorial">
-      <div class="article">
-        <h1 style="text-align:center">比較器用法</h1>
-        <h2>開始使用</h2>
-        <p>
-          在<span>貓咪資料庫</span>中，點選搜尋到的貓咪旁邊的購物車按鈕
-          <i class="material-icons" style="border:1px solid;border-radius:50%;padding:4">&#xE8CC;</i>
-          ，即可將該貓咪加入比較器，也可以從查詢結果的功能列中批次加入貓咪。
-        </p>
-        <h2>微調</h2>
-        <ul>
-          <li><span style="text-decoration:underline">調整比較等級</span> :
-            在加入購物車前先調整等級，或是在本頁面每隻貓的上方修改 </li>
-          <li><span style="text-decoration:underline">調整比較階級</span> :
-            先切換好階級再點選加入購物車按鈕，
-            或是叫出每隻貓的等級右方的更多選項中的切換階級 </li>
-          <li><span style="text-decoration:underline">移除</span> :
-            在貓咪資料庫的比較序列中，點選欲移除的貓咪，並在彈出的選單中刪除，
-            或是叫出每隻貓的等級右方的更多選項中的刪除</li>
-        </ul>
-        <h2>其他功能</h2>
-        <ul>
-          <li>
-            將滑鼠懸浮至頁面右方，可以叫出選單。選單中的各項功能分別是:
-            <ul>
-              <li>放大內容</li>
-              <li>縮小內容</li>
-              <li>恢復原始比例</li>
-              <li>顯示所有貓</li>
-              <li>截圖</li>
-            </ul>
-          </li>
-          <li>
-            每隻貓的等級右方的更多選項中，可以<span>隱藏</span>該隻貓，
-            不同於刪除，隱藏並不會將貓咪移出比較序列，可以在上述的選單中
-            以"顯示所有貓"來重新顯示，若是刪除，只能從資料庫重新加回該貓。
-          </li>
-          <li>
-            <span>點擊個橫列最前面的名稱</span>，可以以該項資料排序比較中的貓咪，
-            而點"特性"則可以切換是否顯示詳細的特性敘述
-          </li>
-          <li>
-            當比較數量超過顯示器顯示大小時:
-            <ul>
-              <li>在<span>可觸控</span>裝置上，可直接左右滑動來瀏覽超過顯示範圍之貓咪</li>
-              <li>在有<span>精確觸控板</span>之電腦上，可左右滑動觸控板來瀏覽</li>
-              <li>在以上功能皆無之傳統電腦，則可以<span>方向鍵左右</span>移動瀏覽範圍</li>
-            </ul>
-          </li>
-        </ul>
+    <div class="modal fade" id="custom_format" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class='title'>條件格式設定</h2>
+          </div>
+          <div class="modal-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>套用欄位</th>
+                  <th>格式設定</th>
+                  <th>條件設定</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td type='add_column'>新增套用欄位</td>
+                  <td type='add_format'>新增格式</td>
+                  <td type='add_query'>新增條件</td>
+                  <td type='del'> <i class="material-icons">delete</i> </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" onclick="add_row()"> <i class="material-icons">add_circle</i> </td>
+                </tr>
+              </tfoot>
+            </table>
+            <datalist id="col_list">
+              <option value='體力'></option>
+              <option value='KB'></option>
+              <option value='硬度'></option>
+              <option value='攻擊力'></option>
+              <option value='DPS'></option>
+              <option value='攻擊距離'></option>
+              <option value='攻擊頻率'></option>
+              <option value='跑速'></option>
+              <option value='價格'></option>
+              <option value='再生產'></option>
+              <option value='獲得金錢'></option>
+            </datalist>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" onclick="commit_customFormat()" name="button">保存</button>
+            <button type="clear" onclick="clear_customFormat()" data-dismiss="modal" name="button">清除</button>
+            <button type="close" name="button" data-dismiss="modal">取消</button>
+          </div>
+        </div>
       </div>
-      <button action='known'>我知道了</button>
     </div>
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
@@ -137,6 +261,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="./js/html2canvas.min.js"></script>
+    <script src="./js/jscolor.js"></script>
     <script src="./js/class.js"></script>
     <script src="./js/overall.js"></script>
     <script src="./js/compare.js"></script>

@@ -7,6 +7,7 @@ var fs = require("fs");
 var __numberOfCat = 0;
 var __numberOfCatSearch = 0;
 var catNameMap = {};
+var nicknameMap = {};
 var enemyNameMap = {};
 var rarityMap = {};
 var AbilityMap;
@@ -29,6 +30,7 @@ exports.load = function (mostSearchCat) {
       CatData[i] = temp[i];
       AbilityMap.cat.all.push(i);
       catNameMap[i] = [];
+      nicknameMap[i] = [];
       if(rarityMap[temp[i].rarity]) rarityMap[temp[i].rarity].push(i);
       else rarityMap[temp[i].rarity] = [i];
       for(let j in temp[i].data){
@@ -40,6 +42,10 @@ exports.load = function (mostSearchCat) {
           else AbilityMap.cat[tag[k]] = [i];
         }
       }
+      if(temp[i].statistic)
+        for(let j in temp[i].statistic.nickname)
+          nicknameMap[i].push(temp[i].statistic.nickname[j].nickname);
+      if(nicknameMap[i].length == 0) delete nicknameMap[i];
       __numberOfCat ++ ;
       __numberOfCatSearch += Number(temp[i].count)?Number(temp[i].count):0;
       buffer.push({id:i,count:temp[i].count});
@@ -61,7 +67,7 @@ exports.load = function (mostSearchCat) {
     console.log("most Search Cat : ",mostSearchCat);
     console.log("Number of cat search : ",__numberOfCatSearch);
     // for(let i in AbilityMap.cat) console.log(i,AbilityMap.cat[i].length);
-    // fs.appendFile('abilityMap.txt', JSON.stringify(AbilityMap),(err) =>{
+    // fs.appendFile('nicknameMap.txt', JSON.stringify(nicknameMap),(err) =>{
     //   if (err) throw err;
     //   console.log('Is saved!');
     //   // process.exit();
@@ -164,14 +170,15 @@ exports.Search = function (data,level,showJP,variable={}) {
   } else { buffer = Util.MergeArray(buffer,abilityMap.all); }
 
   // Next, filte the FilterObj
-  var flag = true,temp = [];
+  var flag = true,arr = buffer;
   for(let i in filterObj){
     if (!filterObj[i].active) continue
     flag = false;
     var fieldName = i,
         filterType = filterObj[i].type ,
         limit = filterObj[i].value ,
-        level_bind = filterObj[i].lv_bind;
+        level_bind = filterObj[i].lv_bind,
+        temp = [];
     // console.log(fieldName,filterType,limit,level_bind);
     for(let j in buffer){
       var value = 0,id = buffer[j];
@@ -190,8 +197,9 @@ exports.Search = function (data,level,showJP,variable={}) {
       else if (filterType == 1 && value < limit) temp.push(buffer[j]);
       else if (filterType == 2 && value>limit[0] && value<limit[1]) temp.push(buffer[j]);
     }
+    arr = Util.MergeArray(arr,temp,"and");
   }
-  buffer = flag?buffer:temp;
+  buffer = flag?buffer:arr;
   // console.log(buffer);
 
   if(type == 'cat' && !showJP){
@@ -213,34 +221,43 @@ exports.Search = function (data,level,showJP,variable={}) {
   buffer = Util.Sort(buffer,'id')
   return buffer
 }
-exports.TextSearch = function (type,keyword) {
-  keyword = keyword.indexOf(":")==-1?[null,keyword]:keyword.split(":");
-  var func = keyword[0],load_data,nameMap,buffer = [];
-  keyword = keyword[1];
+exports.TextSearch = function (type,keyword,option='text') {
+  var load_data,nameMap,result = [];
   load_data = type == 'cat'? CatData : EnemyData;
   nameMap = type == 'cat'?catNameMap:enemyNameMap;
-  console.log(func,keyword);
-  if(func == 'id') {
+  console.log(option,keyword);
+  if(option == 'id') {
     keyword = keyword.split(",");
     keyword.forEach(function (element,index,array) {
-      if(Number(element)) buffer.push(Number(Util.AddZero(element,2)));
+      if(Number(element)) result.push(Number(Util.AddZero(element,2)));
     });
-  } else {
+  }
+  else if(option == 'nickname'){
+    for(let i in nicknameMap){
+      for (let j in nicknameMap[i]){
+        if(nicknameMap[i][j] == keyword){
+          result.push(i);
+          break;
+        }
+      }
+    }
+  }
+  else {
     if(type == 'cat'){
       for(let i in nameMap)
         for (var j in nameMap[i])
-          if(nameMap[i][j].indexOf(keyword)!=-1) {buffer.push(i);break;}
+          if(nameMap[i][j].indexOf(keyword)!=-1) {result.push(i);break;}
     }
     else
       for(let i in nameMap)
-        if(nameMap[i].indexOf(keyword)!=-1) {buffer.push(i);}
+        if(nameMap[i].indexOf(keyword)!=-1) {result.push(i);}
   }
-  console.log(buffer.length);
-  buffer.forEach(function (id,i,arr) {
+  console.log(result.length);
+  result.forEach(function (id,i,arr) {
     arr[i] = {id:id,name:nameMap[id]};
   });
 
-  return buffer;
+  return result;
 }
 exports.CreateResultQueue = function (type,array) {
   var load_data,buffer = [];

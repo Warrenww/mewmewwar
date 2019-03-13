@@ -49,7 +49,7 @@ class Unit{
     if(!unitType || !id) return "";
     else return `css/footage/${unitType}/${unitType=='cat'?'u':'e'}${AddZero(id,2)}.png`
   }
-  static propertiesName(s){
+  static propertiesName(s,reverse=false){
     var Map = {
       'aoe':'範圍攻擊',
       'atk':'攻擊力',
@@ -57,19 +57,26 @@ class Unit{
       'char':'特性',
       'color':'屬性',
       'dps':'DPS',
+      'kb':'KB',
       'freq':'攻擊頻率',
       'hardness':'硬度',
-      'hp':'血量',
+      'hp':'體力',
       'name':'名稱',
-      'range':'攻擊範圍',
+      'range':'攻擊距離',
       'reward':'獲得金錢',
       'speed':'跑速',
       'tag':'特性',
       'cost' : '價格',
-      'cd' : '在生產'
+      'reward' : '獲得金錢',
+      'cd' : '再生產'
     };
-    s = s.toLowerCase();
-    return Map[s];
+    if(reverse){
+      for(let i in Map) if(Map[i] == s) return i;
+      return null;
+    } else {
+      s = s.toLowerCase();
+      return Map[s];
+    }
   }
 }
 

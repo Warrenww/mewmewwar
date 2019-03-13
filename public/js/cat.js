@@ -86,14 +86,6 @@ $(document).ready(function () {
         $(".select_ability").children(".button").each(function () {
           $(this).removeClass("smallicon");
         });
-    if(!data.setting.show_cat_id)
-      $('.display').find("#id").css({'background-color':'transparent','color':'transparent'})
-        .prev().css({'background-color':'transparent','color':'transparent'});
-    if(!data.setting.show_cat_count)
-      $('.display').find("#count").css({'background-color':'transparent','color':'transparent'})
-        .prev().css({'background-color':'transparent','color':'transparent'});
-
-    setTimeout(function () { $("#loading").fadeOut(); },2500);
   });
   if(screen.width<=768) $("#level_num").parent().attr("colspan",5);
 
@@ -261,7 +253,7 @@ $(document).ready(function () {
       data.Tovalue(change[i],level)+
       "</span>").css('background-color',' rgba(242, 213, 167, 0.93)');
       setTimeout(function () {
-        target.css('background-color','rgba(255, 255, 255, .9)');
+        target.removeAttr("style");
       },500);
     }
     if(data.serial){

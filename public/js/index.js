@@ -1,5 +1,4 @@
-const monro_api_key = 'XXcJNZiaSWshUe3H2NuXzBrLj3kW2wvP';
-var miner_count = 0 ;
+var CurrentUserId;
 var userPhoto;
 
 if(Storage){
@@ -18,7 +17,6 @@ else {
   console.log("Browser don't support local storage!!");
 }
 
-var CurrentUserId;
 $(document).ready(function () {
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var google_provider = new firebase.auth.GoogleAuthProvider();
@@ -156,7 +154,7 @@ $(document).ready(function () {
         },100000);
       }
     }
-    console.log(data);
+    // console.log(data);
     dataArr = ['name','hp','atk','count'];
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
@@ -228,14 +226,9 @@ $(document).ready(function () {
   });
   function updateNewEventIframe(date) {
     var url = eventURL+date+'.html';
-    $("#event_iframe").attr("src",url)
+    $("#event_iframe").attr("src",url).next()
         .next().children().eq(0).attr("href",url);
   }
-  $("#expandContent").click(function () {
-    $('#bulletin').animate(
-      {scrollTop: $(".main").eq(2).offset().top},
-      600,'easeInOutCubic');
-  });
 
   $(".LegendCard span").click(function () {
     if(!$(this).attr("enemy")) return
@@ -248,7 +241,7 @@ $(document).ready(function () {
   $("nav a,.m_nav_panel a").click(function () {
     if(!openInNew&&!is_ios)  $('#iframe_holder').attr("active",true);
     let target = $(this).attr("id");
-    if(target == 'compareCat'||target == 'compareEnemy') reloadIframe(target,false);
+    if(target == 'compare') reloadIframe(target,false);
     changeIframe(target);
 
     $(".m_nav_panel,#m_nav_panel_BG").attr("active",function () {
@@ -317,12 +310,13 @@ $(document).ready(function () {
         $("#iframe_holder iframe").each(function () {
           if($(this).attr('active') == 'true') active_index = _index;
           // console.log(_index,-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
-          $(this).css("top",-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
+          // $(this).css("top",-(0.25*doc_h-150+_index*(0.5*doc_h-50)));
+          $(this).attr("style",`top:calc(-${25+50*_index}% + ${30*(_index+1)}px)`);
           _index += 1;
         });
         // Scroll iframe to active iframe
         setTimeout(function () {
-          $("#iframe_holder iframe").css("top","-="+active_index*doc_h/2+"px");
+          $("#iframe_holder iframe").css("top","-="+active_index*(doc_h/2-30)+"px");
         },_index*200);
         // Bind it to scrollHolder function
         $("#iframe_holder").bind("mousewheel",scrollHolder);
@@ -388,21 +382,17 @@ $(document).ready(function () {
     $("#iframe_holder .nameHolder").remove(); // remove iframe name holder
   }
 
-  var iframeName = {
-    "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
-    "gacha":"轉蛋模擬器", "compareCat":"貓咪比較器", "compareEnemy":"敵人比較器",
-    "book":"我的貓咪圖鑑", "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
-    "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表",
-    "game":"釣魚小遊戲","expCalculator":"經驗計算機"
-  }
   function parse_iframe_name(str) {
-    return iframeName[str]
+    return {
+      "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
+      "gacha":"轉蛋模擬器", "compare":"比較器", "book":"我的貓咪圖鑑",
+      "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
+      "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表",
+      "game":"釣魚小遊戲","expCalculator":"經驗計算機"
+    }[str]
   }
 
-
-  socket.on("online user change",(onLineUser)=>{
-    $("#onLineUser span").text(onLineUser);
-  });
+  socket.on("online user change",(onLineUser)=>{ $("#onLineUser span").text(onLineUser); });
 
   $(".searchMore").click(function () {
     let id = $(this).parent().attr("id"),

@@ -325,11 +325,12 @@ $(document).ready(function () {
     }
     socket.emit("Set Compare",{type:"enemy",id:CurrentUserID,target:arr});
     setTimeout(function () {
+      if(Storage) localStorage.compareType = 'enemy'
       if(window.parent.reloadIframe){
-        window.parent.reloadIframe('compareEnemy');
-        window.parent.changeIframe('compareEnemy');
+        window.parent.reloadIframe('compare');
+        window.parent.changeIframe('compare');
       } else {
-        window.open("/compareEnemy","_blank");
+        window.open("/compare","_blank");
       }
     },800);
   });
@@ -387,8 +388,7 @@ $(document).ready(function () {
     });
   });
   // Switch level/enemy data
-  $("#enemy_head span").click(function (e) {
-    e.stopPropagation();
+  $("#swapdata").click(function (e) {
     if(current_enemy_data){
       $('.moredata').toggle().siblings("*[class='orgdata']").toggle();
       if(!current_level_data.data.enemy[0].point) $(" .enemy_head #point").hide();

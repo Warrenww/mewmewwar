@@ -35,9 +35,14 @@
     <div class="content">
       <div class="search_type">
         <span class="button" value='1' id="normal_search">一般篩選</span>
-        <span class="button" value='0' id="gacha_search">轉蛋/合作活動</span>
+        <span class="button" value='0' id="gacha_search">活動篩選</span>
         <span class="button" value='0' id="value_search">數值篩選</span>
         <div class="search" >
+          <select class="" name="">
+            <option value="text">名字</option>
+            <option value="nickname">暱稱</option>
+            <option value="id">ID</option>
+          </select>
           <input type="text" id="searchBox" placeholder="Search for Cats...">
           <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
         </div>
@@ -45,11 +50,6 @@
       <div class="search_table">
         <table id="upper_table">
           <tr>
-            <!-- <th colspan="6" style="pointer-events:none">
-              點擊分類名稱以切換該項篩選特質為"完全符合"或"部分符合"<br />
-              <b style="text-decoration:underline;margin:0 10">紅色:完全符合</b>
-              <b style="text-decoration:underline;margin:0 10">橘色:部分符合(預設)</b>
-            </th> -->
             <th colspan="6">
               <div style="padding: 10; display: flex; justify-content: center; align-items: center;">
                 <span>屬性欄位完全符合</span>
@@ -241,7 +241,7 @@
           <span>搜尋篩選結果</span>
           <div id="option">
             <i class="material-icons"id="result_expand" text='展開'>&#xe240;</i>
-            <i class="material-icons"id="result_snapshot" text='截圖'>&#xe439;</i>
+            <i class="material-icons"onclick="snapshot('#selected')" text='截圖'>add_a_photo</i>
             <i class="material-icons"id="batch_own" text='批次加入我的貓咪圖鑑'>&#xe7f0;</i>
             <i class="material-icons"id="batch_compare" text='批次加入比較序列'>&#xE8CC;</i>
             <i class="material-icons"id="Gogacha" text='去轉蛋' style="display:none">&#xE332;</i>
@@ -275,7 +275,7 @@
           <i class="material-icons"id='mark_own' value='0' text='我沒有這隻貓'>&#xE8E7;</i>
           <i class="material-icons"id='addcart'text='加到購物車'>&#xE8CC;</i>
           <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons"id='snapshot'text='截圖'>&#xe439;</i>
+          <i class="material-icons"onclick="snapshot()"text='截圖'>&#xe439;</i>
         </div>
       </div>
       <div class="display" style="pointer-events:none">

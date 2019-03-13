@@ -35,8 +35,7 @@
         </div>
         <span class="show_panel" value='0'>更多功能</span>
         <div class="nav_panel">
-          <a  id="compareCat">貓咪比較器</a>
-          <a  id="compareEnemy">敵人比較器</a>
+          <a  id="compare">比較器</a>
           <a  id="expCalculator">經驗計算機</a>
           <a  id="book">我的貓咪圖鑑</a>
         </div>
@@ -81,8 +80,7 @@
         </div>
         <span class="show_panel" value='0'>更多功能</span>
         <div class="nav_panel">
-          <a  id="compareCat">貓咪比較器</a>
-          <a  id="compareEnemy">敵人比較器</a>
+          <a  id="compare">比較器</a>
           <a  id="expCalculator">經驗計算機</a>
           <a  id="book">我的貓咪圖鑑</a>
         </div>
@@ -116,16 +114,16 @@
               目前版本 : <span>0.0.0</span>
             </div>
           </div>
-          <div id="expandContent">
+          <div id="expandContent" onclick="scroll_to_div('2','#bulletin')">
             <i class="material-icons" style="font-size:100px"> expand_less </i>
           </div>
         </div>
         <div class="main"style="padding:10 0">
           <div style="width:100%;justify-content: center">
             <span style="margin:0 10">
-              問卷預計統計結果， 已經公布在
-              <a href="https://www.facebook.com/BattleCatStation/" target="_blank">粉絲團</a>
-              囉!!並不定期會回答一些大家在問卷上提出的問題，有興趣的人請隨時關注動態噢><
+              比較器更新囉 ! 想了解更新功能的話，請關注
+              <a href="https://www.facebook.com/BattleCatStation/" target="_blank">粉絲團</a>~
+              另外，贊助功能上線了~給辛苦的作者 <a onclick="scroll_to_div('7','#bulletin')">一杯咖啡</a> 吧XD
             </span>
           </div>
         </div>
@@ -294,7 +292,7 @@
             </div>
           </div>
           </div>
-        <div class="main">
+        <div id="7"class="main">
           <h2>聯絡我們</h2>
           <div style="justify-content:center">
             <a class="contact_block"target="_blank"href="https://www.facebook.com/BattleCatStation/">
@@ -306,12 +304,34 @@
               </span>
             </a>
             <a class="contact_block"target="_blank"href="https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform">
-              <img src='/css/footage/googleSheet .png'/>
+              <img src='/css/footage/googleSheet.png'/>
               <span>
                 <b>意見表單</b></br>
                 如果有Bug或是希望我們改進、加強的功能</br>
                 抑或是有任何的建議與指教，歡迎填寫此google表單回報給我們知道
               </span>
+            </a>
+            <a class="contact_block" target="_blank" >
+              <img src='/css/footage/paypal.png'/>
+              <span>
+                <b>贊助我們</b><br>
+                如果我們架設的網站有幫助到你的話，
+                請不吝嗇給我們一點鼓勵，十分的感謝你~~<br>
+                <b>選擇斗內金額:</b>
+              </span>
+              <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank"style="display:flex;justify-content:center;align-items:center;">
+                <!-- <input type="image" style="width:60%;margin:10px 20%" src="https://www.paypalobjects.com/zh_TW/TW/i/btn/btn_buynowCC_LG_wCUP.gif" border="0" name="submit" alt="PayPal － 更安全、更簡單的線上付款方式！"> -->
+                <img alt="" border="0"style="display:none" src="https://www.paypalobjects.com/zh_TW/i/scr/pixel.gif" width="1" height="1">
+                <input type="hidden" name="cmd" value="_s-xclick">
+                <input type="hidden" name="hosted_button_id" value="R8LMUVKC7U5WU">
+                <select name="os0">
+                  <option style="color:black"value="70">一個便當 NT$70 TWD</option>
+                  <option style="color:black"value="30">一杯咖啡 NT$30 TWD</option>
+                  <option style="color:black"value="10">小斗怡情 NT$10 TWD</option>
+                </select>
+                <input type="hidden" name="currency_code" value="TWD">
+                <input type="submit" name="submit" value="斗內"style="width:80">
+              </form>
             </a>
           </div>
         </div>

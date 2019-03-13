@@ -134,6 +134,11 @@ $(document).ready(function () {
   });
   socket.on("console",(buffer)=>{
     $("#result").append(`<div>${buffer}</div>`);
+    var y1 = $("#result").offset().top,
+        h1 = $("#result").innerHeight(),
+        y2 = $("#result div:last").offset().top,
+        h2 = $("#result div:last").innerHeight();
+    $("#result").scrollTop($("#result").scrollTop()+(y2-y1-h1+h2+20));
   })
 });
 
@@ -165,4 +170,7 @@ function loadData(type) { socket.emit("dashboard load",{type:type});}
 function reloadAllData() { socket.emit("reloadAllData"); }
 var noclick=function (e) {
   return false
+}
+function fetch(type) {
+  socket.emit("fetch variable",{type:type});
 }

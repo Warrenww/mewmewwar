@@ -52,17 +52,15 @@ $("#colorAnd,#abilityAnd,#instinct_involve").click(function () {
   $(this).attr("value",(Number($(this).attr('value'))+1)%2);
 });
 // Text Search
-$('#searchBut').click(function () {
-  let keyword = $(this).siblings().val();
-  socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page});
-});
+$('#searchBut').click(textSearch);
 $(document).on('keypress','#searchBox',function (e) {
-  let code = (e.keyCode ? e.keyCode : e.which);
-  if (code == 13) {
-    let keyword = $(this).val();
-    socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page});
-  }
+  if ((e.keyCode ? e.keyCode : e.which) == 13) textSearch();
 });
+function textSearch() {
+  var keyword = $("#searchBox").val(),opt = $("#searchBox").prev("select").val();
+  if(keyword.trim()=="") return;
+  socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page,option:opt});
+}
 // Start a search
 $('#search_ability').click(search) ;
 function search() {
@@ -81,7 +79,7 @@ function search() {
   for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('name')) ;
   if(instinct){
     for(let i in aFilter) aFilter.push(aFilter[i]+"能力解放");
-    for(let i in cFilter) aFilter.push("屬性新增"+cFilter[i].substring(1)+"敵人");
+    for(let i in cFilter) cFilter.push("屬性新增"+cFilter[i].substring(1)+"敵人");
   }
   console.log({rFilter,cFilter,aFilter});
   // Send query require
@@ -202,15 +200,7 @@ function condenseEnemyName(data) {
 var result_expand = 0,originHeight;
 $(document).on('click','.compareSorce .title #option i',function () {
   let type = $(this).attr("id");
-  if(type == 'result_snapshot'){
-    let target = $("#selected")[0];
-    if(!result_expand) {
-      $("#result_expand").click();
-      setTimeout(function () { snapshot(target); },500)
-      setTimeout(function () { $("#result_expand").click(); },500)
-    } else snapshot(target);
-  }
-  else if(type == 'result_expand'){
+  if(type == 'result_expand'){
     let trueHeight = $("#selected")[0].scrollHeight;
     if(!result_expand){
       originHeight = $("#selected")[0].offsetHeight;

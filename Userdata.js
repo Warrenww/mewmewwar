@@ -2,6 +2,7 @@ var database = require("firebase").database();
 var admin = require("firebase-admin");
 var Util = require("./Utility");
 var UserData = {};
+var ModifiedTable = {};
 const HistoryLimit = 50;
 
 exports.load = function () {
@@ -9,13 +10,47 @@ exports.load = function () {
 
   database.ref("/user").once("value",(snapshot)=>{
     temp = snapshot.val();
-    for(let i in temp) UserData[i] = temp[i];
+    // for(let i in temp) UserData[i] = temp[i];
     console.log("Module load user data complete!");
     // arrangeUserData(userdata);
-    arrangeUserData(UserData);
+    arrangeUserData(temp);
   });
 }
 
+exports.updateLastLogin = function (uid,time) {
+  // console.log(`${uid} last login ${time}`);
+  return new Promise(function(resolve, reject) {
+    try {
+      if(UserData[uid]){
+        console.log("cache hit");
+        UserData[uid].last_login = time;
+        ModifiedTable[uid] = true;
+        resolve(UserData[uid]);
+      } else {
+        console.log("cache miss");
+        database.ref("/user/"+uid).once("value",(snapshot)=>{
+          console.log("data fetch complete");
+          var temp = snapshot.val();
+          if(temp != null){
+            UserData[uid] = temp;
+            UserData[uid].last_login = time;
+            ModifiedTable[uid] = true;
+            resolve(UserData[uid]);
+          } else {
+            reject("user not found!");
+          }
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+exports.writeBack = function (uid) {
+  if(ModifiedTable[uid]){
+    database.ref("/user/"+uid).update(UserData[uid]);
+  }
+}
 exports.getSetting = function (uid,subtype=null) {
   if(!UserData[uid]) return null
   if(!subtype) return UserData[uid].setting
@@ -24,7 +59,8 @@ exports.getSetting = function (uid,subtype=null) {
 exports.setSetting = function (uid,attr,data) {
   if(!UserData[uid]) return null
   UserData[uid].setting[attr] = data;
-  database.ref("/user/"+uid+"/setting/"+attr).set(data);
+  ModifiedTable[uid] = true;
+  // database.ref("/user/"+uid+"/setting/"+attr).set(data);
 }
 exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
   if(!UserData[uid]) return null
@@ -39,12 +75,6 @@ exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
   } else response = UserData[uid].variable;
   return response;
 }
-exports.getHistory = function (uid,type=null) {
-  if(!UserData[uid]) return null
-  if(!type) return UserData[uid].history;
-  if(UserData[uid].history[type] == "" ) UserData[uid].history[type] = {};
-  return UserData[uid].history[type];
-}
 exports.getCompare = function (uid,type) {
   if(!UserData[uid]) return null
   return UserData[uid].compare[type+"2"+type];
@@ -52,20 +82,23 @@ exports.getCompare = function (uid,type) {
 exports.setCompare = function (uid,type,array) {
   if(!UserData[uid]) return null
   UserData[uid].compare[type+"2"+type] = array;
-  database.ref('/user/'+uid+"/compare/"+type+"2"+type).set(array);
+  ModifiedTable[uid] = true;
+  // database.ref('/user/'+uid+"/compare/"+type+"2"+type).set(array);
 }
 exports.getFolder = function (uid) {
   if(!UserData[uid]) return null
   if(!UserData[uid].folder){
     UserData[uid].folder = {};
-    database.ref('/user/'+uid+"/folder").set({own:""});
+    ModifiedTable[uid] = true;
+    // database.ref('/user/'+uid+"/folder").set({own:""});
   }
   return UserData[uid].folder
 }
 exports.setFolder = function (uid,folder,data) {
   if(!UserData[uid]) return null
   UserData[uid].folder[folder] = data ;
-  database.ref("/user/"+data.uid+"/folder/"+folder).set(data);
+  ModifiedTable[uid] = true;
+  // database.ref("/user/"+data.uid+"/folder/"+folder).set(data);
 }
 exports.getAttr = function (uid,attr) {
   if(!UserData[uid]) return null
@@ -74,6 +107,12 @@ exports.getAttr = function (uid,attr) {
 exports.getList = function (uid) {
   if(!UserData[uid]) return null
   return UserData[uid].list
+}
+exports.getHistory = function (uid,type=null) {
+  if(!UserData[uid]) return null
+  if(!type) return UserData[uid].history;
+  if(UserData[uid].history[type] == "" ) UserData[uid].history[type] = {};
+  return UserData[uid].history[type];
 }
 exports.setHistory = function (uid,type,id){
   try{
@@ -102,21 +141,23 @@ exports.setHistory = function (uid,type,id){
     var key = database.ref().push().key; // Generate hash key
     // Update history and write to firebase
     user_history[key] = {type : type,id : id,time:new Date().getTime()};
-    database.ref("/user/"+uid+"/history/"+type).set(user_history);
+    // database.ref("/user/"+uid+"/history/"+type).set(user_history);
     UserData[uid].history["last_"+type] = id;
-    database.ref("/user/"+uid+"/history/last_"+type).set(id);
+    // database.ref("/user/"+uid+"/history/last_"+type).set(id);
+    ModifiedTable[uid] = true;
 
     if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
     if(!user_variable[id]) user_variable[id] = {count:0};
     user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
-    database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count").set(user_variable[id].count);
+    // database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count").set(user_variable[id].count);
   } catch(err){
     Util.__handalError(err);
   }
 }
 exports.SearchHistory = function (uid,type,data) {
   if(!UserData[uid]) return null
-  database.ref("/user/"+uid+"/history/last_"+type+"_search").set(data);
+  // database.ref("/user/"+uid+"/history/last_"+type+"_search").set(data);
+  ModifiedTable[uid] = true;
   UserData[uid].history["last_"+type+"_search"] = data;
 }
 
@@ -129,7 +170,8 @@ exports.StoreLevel = function(uid,id,type,lv){
     buffer = buffer?buffer:{lv:1,count:0}; // handal of not exist data
     // set level and store to firebase
     buffer.lv = lv;
-    database.ref("/user/"+uid+"/variable/"+type+"/"+id).update({lv:lv});
+    // database.ref("/user/"+uid+"/variable/"+type+"/"+id).update({lv:lv});
+    ModifiedTable[uid] = true;
   }catch(e){
     Util.__handalError(e);
   }
@@ -144,7 +186,8 @@ exports.StoreStage = function(uid,id,stage){
     buffer = buffer?buffer:{lv:1,count:0,stage:1}; // handal of not exist data
     // set level and store to firebase
     buffer.stage = stage;
-    database.ref("/user/"+uid+"/variable/cat/"+id).update({stage:stage});
+    // database.ref("/user/"+uid+"/variable/cat/"+id).update({stage:stage});
+    ModifiedTable[uid] = true;
   }catch(e){
     Util.__handalError(e);
   }
@@ -152,21 +195,31 @@ exports.StoreStage = function(uid,id,stage){
 
 exports.Login = function (user) {
   try{
-    var exist = false;
     var timer = new Date().getTime();
     var data;
     console.log('login time : '+timer);
 
-    if(UserData[user.uid]){
-      console.log("find same user");
-      exist = true;
-      data = UserData[user.uid];
-      database.ref('/user/'+user.uid).update({"last_login" : timer});
-    } else {
-      console.log('new user');
-      data = Util.GenerateUser(user,UserData);
-    }
-    return {user,"nickname":data.nickname}
+    return new Promise(function(resolve, reject) {
+      if(user.uid in ModifiedTable){
+        console.log("user exist");
+        if(UserData[user.uid]){
+          UserData[user.uid].last_login = timer;
+          ModifiedTable[uid] = true;
+          resolve({user,nickname:UserData[user.uid].nickname});
+        } else {
+          database.ref("/user/"+User.uid).once("value",(snapshot)=>{
+            UserData[user.uid] = snapshot.val();
+            UserData[user.uid].last_login = timer;
+            ModifiedTable[uid] = true;
+            resolve({user,nickname:UserData[user.uid].nickname});
+          });
+        }
+      } else {
+        console.log('new user');
+        data = Util.GenerateUser(user,UserData);
+        resolve({user,nickname:UserData[user.uid].nickname});
+      }
+    });
   }
   catch(e){
     Util.__handalError(e);
@@ -175,7 +228,8 @@ exports.Login = function (user) {
 exports.Rename = function (uid,name) {
   try{
     UserData[uid].nickname = name;
-    database.ref("/user/"+uid+"/nickname").set(name);
+    // database.ref("/user/"+uid+"/nickname").set(name);
+    ModifiedTable[uid] = true;
   }catch(e){
     Util.__handalError(e);
   }
@@ -206,14 +260,23 @@ function arrangeUserData(userdata) {
     if(userdata[i].first_login == undefined){
       console.log(i+" unknown first login");
       var user = {uid:i,isAnonymous:true};
-      Util.GenerateUser(user,userdata);
-      continue
+      Util.GenerateUser(user,UserData);
     }
     count ++ ;
     if(!userdata[i].variable) {
       console.log("user "+i+" no variable");
       database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
-      userdata[i].variable = {cat:"",enemy:"",stage:""};
+      // userdata[i].variable = {cat:"",enemy:"",stage:""};
+    }
+    if((timer - userdata[i].last_login) < 86400000) UserData[i] = userdata[i];
+    if(ModifiedTable[i]){ database.ref("/user/"+i).update(UserData[i]); }
+    ModifiedTable[i] = false;
+    if(process){
+      if(process.stdout){
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
+        process.stdout.write(`${(count/userdata.length).toFixed(2)*100}%`);
+      }
     }
   }
   console.log("there are "+count+" users!!");

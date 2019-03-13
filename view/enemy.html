@@ -17,23 +17,20 @@
   <body>
     <style>
     .glyphicon-shopping-cart {right: -164px;}
-    /* #more_option{position: absolute;left:95%}
-    @media screen and (max-width:768px) { #more_option{left:0;top:20%} } */
     </style>
 
     <div class="content">
       <div class="search" style="width:100%;margin-bottom:20px">
+        <select class="" name="">
+          <option value="text">文字</option>
+          <option value="id">ID</option>
+        </select>
         <input type="text" id="searchBox" placeholder="Search for enemies...">
         <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
       </div>
       <div class="search_table">
         <table id="upper_table">
           <tr>
-            <!-- <th colspan="6" style="pointer-events:none">
-              點擊分類名稱以切換該項篩選特質為"完全符合"或"部分符合"<br />
-              <b style="text-decoration:underline;margin:0 10">紅色:完全符合</b>
-              <b style="text-decoration:underline;margin:0 10">橘色:部分符合(預設)</b>
-            </th> -->
             <th colspan="6">
               <div style="padding: 10; display: flex; justify-content: center; align-items: center;">
                 <span>屬性欄位完全符合</span>
@@ -125,7 +122,7 @@
           <span>搜尋篩選結果</span>
           <div id="option">
             <i class="material-icons"text='展開/收合'id="result_expand">&#xe240;</i>
-            <i class="material-icons"text='截圖'id="result_snapshot">&#xe439;</i>
+            <i class="material-icons"text='截圖'onclick="snapshot('#selected')">add_a_photo</i>
             <i class="material-icons"text='批次加入比較序列'id="batch_compare">&#xE8CC;</i>
           </div>
           <span id="result_count">共<span></span>筆結果</span>
@@ -146,7 +143,7 @@
         <div class="control">
           <i class="material-icons"id='addcart'text='加到購物車'>&#xE8CC;</i>
           <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons"id='snapshot'text='截圖'>&#xe439;</i>
+          <i class="material-icons"onclick='snapshot()'text='截圖'>add_a_photo</i>
         </div>
       </div>
       <div class="display">

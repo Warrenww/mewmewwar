@@ -1,73 +1,8 @@
-.compareTable{display: flex;}
 .best{
   color:rgb(247, 175, 67);
   font-weight: bolder;
 }
-.compareDisplay{
-  display: flex;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  padding-top: 70px;
-  overflow: scroll;
-}
-.compareDisplay::-webkit-scrollbar {width: 0}
-.compareTable{
-  transform-origin: 0% 0%;
-  transition: .4s ease-in-out;
-}
-.comparedataholder{
-  display: flex;
-  flex: 3;
-  width: 90%;
-}
-.side_bar{
-  position: fixed;
-  right: 0;
-  top: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  justify-content: space-around;
-  align-items: center;
-}
-.floatbutton {
-  position: relative;
-  width: 48px;
-  height: 48px;
-  right: -100;
-  top: 0;
-}
 #snapshot{position: relative;right: -100}
-.comparedatahead{padding-top: 2px;position: sticky;left: 0}
-#level{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 37px;
-}
-#level span{flex: 3}
-#level i{transition: .6s ease-in-out;cursor: pointer;}
-#level i:hover{
-  background-color: rgba(200,200,200,.7);
-  border-radius: 50%
-}
-.panel{
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 0;
-  font-size: 18px;
-  text-align: center;
-  background-color: rgba(0,0,0,.7);
-  padding: 0px 10px;
-  transition: .4s ease-in-out;
-  color: white;
-  overflow: hidden;
-  justify-content: space-around;
-  border: 0;
-}
 #tutorial{
   position: fixed;
   top: 0;
@@ -80,12 +15,6 @@
   display: none;
 }
 #tutorial p,#tutorial li{font-size: 16;font-weight: bold;}
-.panel span{cursor: pointer;display: flex;justify-content: space-around;}
-.panel span:hover{color: rgb(233, 138, 27);font-weight: bold;}
-.panel span span:hover{color: rgb(27, 134, 233);font-weight: bold;}
-
-.comparedatahead tr[reverse='decrease'] th{border-left:5px solid #3bb8f6;}
-.comparedatahead tr[reverse='increase'] th{border-left:5px solid #f6843b;}
 .table_head{
   position: sticky;
   top: 30;
@@ -93,44 +22,107 @@
   width: 100%;
   flex-direction: column;
 }
-.display::-webkit-scrollbar { width: 8px; }
-.display::-webkit-scrollbar-track { background-color: rgba(255,255,255,.3)}
-.display::-webkit-scrollbar-thumb {
+.display::-webkit-scrollbar,.panel::-webkit-scrollbar { width: 8px; }
+.modal-body::-webkit-scrollbar{ width: 0; }
+.display::-webkit-scrollbar-track,.panel::-webkit-scrollbar-track
+{ background-color: rgba(255,255,255,.3)}
+.display::-webkit-scrollbar-thumb,.panel::-webkit-scrollbar-thumb {
   background-color: gray;
   outline: 1px solid slategrey;
   border-radius: 4px;
 }
 .display{
-  padding: 0;
-  padding-top: 10;
   width: 100%;
   overflow: scroll;
   background-color: rgba(255,255,255,.5);
-  height: calc(100% - 150px);
+  height: calc(100% - 80px);
   justify-content: flex-start;
   align-items: flex-start;
 }
 .display table{min-width: 100%;width: auto;}
 .display thead div{min-width: 80px}
 .display thead {position: sticky;top: 0}
+.display tbody tr:nth-child(2n) td{background-color: #eeeeee}
+.display tbody tr:nth-child(2n) th,.comparedata .changed{background-color: #eccb98}
+.display tbody tr th:nth-child(1) {
+  position: sticky;
+  left: 0;
+  max-width: 20;
+  padding: 0;
+}
+.func{
+  background-color: #eccb98;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 90;
+  transition: .3s ease;
+}
+.functionArea{
+  position: relative;
+  bottom: 0;
+  width: auto;
+}
+.functionArea i{margin: 0 5;font-style: normal;width: 36}
+.functionArea i::before{top:-60%}
+.control .functionArea i::before{top:115%}
+.display[offsetX='true'] tbody tr th:nth-child(1){background-color: transparent;}
+.display[offsetX='true'] .func,
+.func[active='1']{
+  box-shadow: 5px 0px 10px;
+  border-radius: 0 20px 20px 0;
+  border: 3px solid white;
+  border-left: 0;
+  justify-content: flex-end;
+}
+.func span{display: none;}
+.func[active='1']{ width: 225px; }
+.func[active='1'] span{ display: flex; }
+.func[active='1']>i{ transform: rotate(180deg);}
+.display[offsetX='true'] .func .functionArea,
+.display .func .dataArea
+{display: none;}
+.display[offsetX='true'] .func .dataArea{display: flex;align-items: center;}
+.func .dataArea .img{
+  width: 50px;
+  height: 50;
+  background-size: cover;
+  margin: 0 10;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+.float_thead{
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  opacity: 0;
+  transition: .3s ease;
+  background-color: white;
+  box-shadow: 0px 5px 15px 0 grey;
+}
 .control{
   background-color: rgba(255,255,255,.8);
   box-shadow: 0px 1px 10px 0px gray;
   width: 100%;
-  height: 150;
+  height: 80;
+  display: flex;
+  align-items: center;
 }
 .swapper{
   cursor: pointer;
   padding: 20 10 10 10;
   display: flex;
   position: relative;
+  width: 225;
 }
-.control h1{font-size: 30;margin: 0 50}
+.control h1{font-size: 30;margin: 0;margin-left: 50}
+.control>div{display: flex;height: 100%;align-items: center;}
 .control .swapper .icon{
   width: 20;
   height: 20;
   position: absolute;
-  bottom: 10;
+  bottom: 20;
   box-shadow: 1px 1px 10px;
   background-size: 70%;
   background-repeat: no-repeat;
@@ -154,7 +146,113 @@
   position: sticky;
   top: 0;
 }
-.display .picture,.display #picture{min-width: 120px}
+.display .picture{min-width: 120px}
+.display tbody .picture{border-radius: 10px;background-size: cover;height: 90}
 .display[displayType='cat'] *[enemyonly],
 .display[displayType='enemy'] *[catonly]
 {display: none ;}
+.display thead th{position: relative;}
+.display thead th::after{
+  content: "";
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: calc(50% - 2.5px);
+  right: 10;
+  border: 5px solid #51bd7e;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  transform-origin: 50% 25%;
+  transition: .3s ease;
+  opacity: 0;
+}
+.display thead th[reverse='increase']::after,
+.display thead th[reverse='decrease']::after
+{opacity: 1}
+.display thead th[reverse='decrease']::after{transform: rotate(180deg);}
+.control>div>span{
+  font-size: 16;
+  padding: 3 10;
+  border-color: gray;
+  border-right: 2px solid;
+  cursor: pointer;
+  transition: .3s ease;
+}
+.control>div>span:hover{background-color: #ccc}
+.panel{top: 80}
+.panel div{
+  padding: 15px 20 15px 0;
+  border-bottom: 0.5px solid gray;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+#custom_format th{background-color: #eccb98;cursor: auto;}
+#custom_format td{
+  border-bottom: 1px solid lightgray;
+  cursor: pointer;
+  min-width: 150px;
+  max-width: 150px;
+}
+#custom_format td:last-of-type {
+  min-width: 30px;
+  border-radius: 50px;
+  border: 0;
+}
+#custom_format td:hover{background-color: #ddd}
+#custom_format td[type='format'] span {
+  margin: 0 3;
+  border: 1px solid;
+  border-radius: 50%;
+  width: 30;
+  height: 30;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: .3s ease;
+  position: relative;
+}
+#custom_format td[type='format'] span i{
+  font-size: 16;
+  transition: .3s ease;
+}
+#custom_format td[type='format'] span:hover{border: 2px #ff6765 solid;}
+#custom_format td[type='format'] span[size='0'] i{font-size: 12px;}
+#custom_format td[type='format'] span[size='2'] i{font-size: 20px;}
+#custom_format td[type='format'] span[weight='1'] i{font-weight: bold;}
+#custom_format td[type='format'] span[weight='2'] i{font-weight: lighter;color: gray}
+#custom_format td[type='query']:before{
+  content: "\2264";
+  margin-right: 5;
+  font-weight: bold;
+}
+#custom_format td[relation='1']:before{
+  content: "\2265";
+}
+#custom_format td[type='query'] span,
+#custom_format td[relation='2']::before,
+#custom_format td[type='query'] input:last-of-type
+{margin: 0 5;display: none;}
+#custom_format td[relation='2'] span,
+#custom_format td[relation='2'] input:last-of-type
+{display: inline-block;;}
+#custom_format .jscolor{
+  width: 100%;
+  position: absolute;
+  height: 100%;
+  border-radius: 50%;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.modal-footer button[type='submit']{background: linear-gradient(#b5e696,#4b7d66);}
+.modal-footer button[type='submit']:active{background: linear-gradient(#4b7d66,#b5e696);}
+.modal-footer button[type='clear']{background: linear-gradient(#f48b8b,#fc6c52);}
+.modal-footer button[type='clear']:active{background: linear-gradient(#fc6c52,#f48b8b);}
+.modal-body{overflow-x: scroll;}
+@media screen and (max-width:426px) {
+  .control>div>span{font-size: 14}
+  .swapper{padding-top: 30;width: 190}
+  .swapper h1{font-size: 24}
+}

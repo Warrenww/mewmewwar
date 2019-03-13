@@ -1,14 +1,3 @@
-.page_2{height: 100%;overflow-y: scroll;}
-.page_2::-webkit-scrollbar{width: 0}
-.animate_cat{
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  top: 0;
-  z-index: 10;
-  display: none;
-  align-items: flex-end;
-}
 .glyphicon-refresh,
 .glyphicon-shopping-cart{
   top: 140px;
@@ -250,7 +239,7 @@
 }
 .comment_content .photo{
   background-image: url('/public/css/footage/cat/u001-1.png');
-  width: 75px;
+  min-width: 75px;
   height: 75px;
   background-size: cover;
   border-radius: 50%;

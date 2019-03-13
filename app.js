@@ -254,13 +254,12 @@ io.on('connection', function(socket){
   });
   socket.on("text search",function (data) {
     try{
-      console.log("Text Search : "+data.type+"_"+data.key);
+      console.log(data);
       var variable = Users.getVariable(data.uid,'cat');
-      var buffer = Unitdata.TextSearch(data.type,data.key);
+      var buffer = Unitdata.TextSearch(data.type,data.key,data.option);
       if(data.type == 'cat')
-      for(let i in buffer)
-        buffer[i].stage = variable[buffer[i].id]?variable[buffer[i].id].stage:null;
-
+        for(let i in buffer)
+          buffer[i].stage = variable[buffer[i].id]?variable[buffer[i].id].stage:null;
       socket.emit("search result",{result:buffer,query:data.query,query_type:'text',type:data.type});
     } catch(e) {
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
@@ -271,8 +270,9 @@ io.on('connection', function(socket){
 
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
-     var data = Users.Login(user);
-     socket.emit("login complete",{user:data.user,name:data.nickname});
+     Users.Login(user).then((data)=>{
+       socket.emit("login complete",{user:data.user,name:data.nickname});
+     });
    });
   socket.on("user connect",function (data){
     try{
@@ -281,24 +281,24 @@ io.on('connection', function(socket){
           CurrentUserData = {uid : user.uid},
           page = data.page.split("/")[1];
       console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
-      database.ref('/user/'+user.uid).update({"last_login" : timer});
-      var history = Users.getHistory(user.uid),
-          setting = Users.getSetting(user.uid),
-          variable = Users.getVariable(user.uid);
-      var compareCat = Users.getCompare(user.uid,'cat'),
-          compareEnemy = Users.getCompare(user.uid,'enemy');
-      let obj , arr = [] , brr = [];
-      for(let i in compareCat){
-        obj = {};
-        var catname = Unitdata.catName(compareCat[i]),
-            catid = compareCat[i].toString().substring(0,3);
-        if(!catname) continue
-        var stage = variable.cat[catid];
-        stage = Number(stage?(stage.stage?stage.stage:1):1);
-        obj = {id:catid,name:catname[stage-1],stage:stage};
-        arr.push(obj);
-      }
-      for(let i in compareEnemy){
+      Users.updateLastLogin(user.uid,timer).then((userdata)=>{
+        var history = Users.getHistory(user.uid),
+        setting = Users.getSetting(user.uid),
+        variable = Users.getVariable(user.uid);
+        var compareCat = Users.getCompare(user.uid,'cat'),
+        compareEnemy = Users.getCompare(user.uid,'enemy');
+        let obj , arr = [] , brr = [];
+        for(let i in compareCat){
+          obj = {};
+          var catname = Unitdata.catName(compareCat[i]),
+          catid = compareCat[i].toString().substring(0,3);
+          if(!catname) continue
+          var stage = variable.cat[catid];
+          stage = Number(stage?(stage.stage?stage.stage:1):1);
+          obj = {id:catid,name:catname[stage-1],stage:stage};
+          arr.push(obj);
+        }
+        for(let i in compareEnemy){
         obj = {};
         var enemyname = Unitdata.enemyName(compareEnemy[i]);;
 
@@ -306,112 +306,114 @@ io.on('connection', function(socket){
         obj = {id:compareEnemy[i],name:enemyname};
         brr.push(obj);
       }
-
-      if(page == 'book'){
-        CurrentUserData.folder = {owned:Users.getFolder(user.uid).owned};
-        CurrentUserData.setting = {show_more_option:setting.show_more_option}
-      }
-      else if(page == 'cat'){
-        CurrentUserData.last_cat = history.last_cat;
-        CurrentUserData.compare_c2c = arr;
-        CurrentUserData.last_cat_search = history.last_cat_search;
-        CurrentUserData.setting = {
-          show_more_option:setting.show_more_option,
-          show_ability_text:setting.show_ability_text,
-          default_cat_lv:setting.default_cat_lv,
-          show_cat_id:setting.show_cat_id,
-          show_cat_count:setting.show_cat_count
+        if(page == 'book'){
+          CurrentUserData.folder = {owned:Users.getFolder(user.uid).owned};
+          CurrentUserData.setting = {show_more_option:setting.show_more_option}
         }
-      }
-      else if(page == 'enemy'){
-        CurrentUserData.last_enemy = history.last_enemy;
-        CurrentUserData.compare_e2e = brr;
-        CurrentUserData.last_enemy_search = history.last_enemy_search;
-        CurrentUserData.setting = {
-          show_more_option:setting.show_more_option,
-          show_enemy_id:setting.show_enemy_id,
-          show_enemy_count:setting.show_enemy_count
+        else if(page == 'cat'){
+          CurrentUserData.last_cat = history.last_cat;
+          CurrentUserData.compare_c2c = arr;
+          CurrentUserData.last_cat_search = history.last_cat_search;
+          CurrentUserData.setting = {
+            show_more_option:setting.show_more_option,
+            show_ability_text:setting.show_ability_text,
+            default_cat_lv:setting.default_cat_lv,
+            show_cat_id:setting.show_cat_id,
+            show_cat_count:setting.show_cat_count
+          }
         }
-      }
-      else if(page == 'combo'){CurrentUserData.last_combo = history.last_combo;}
-      else if(page == 'compareCat' || page == 'compareEnemy' || page == 'compare'){
-        CurrentUserData.compare = {cat:arr,enemy:brr};
-      }
-      else if(page == 'history'){
-        obj = {cat:{},enemy:{},stage:{},gacha:{}};
-        for(i in history.cat){
-          var id = history.cat[i].id.toString().substring(0,3),
-              name = Unitdata.catName(id),
-              lv = variable.cat[id].lv,
-              stage = variable.cat[id].stage;
-          if(!name || name.length == 0) continue;
-          obj.cat[i] = {id:id,time:history.cat[i].time,name:name,lv:lv,stage:stage?stage:1}
+        else if(page == 'enemy'){
+          CurrentUserData.last_enemy = history.last_enemy;
+          CurrentUserData.compare_e2e = brr;
+          CurrentUserData.last_enemy_search = history.last_enemy_search;
+          CurrentUserData.setting = {
+            show_more_option:setting.show_more_option,
+            show_enemy_id:setting.show_enemy_id,
+            show_enemy_count:setting.show_enemy_count
+          }
         }
-        for(i in history.enemy){
-          var id = history.enemy[i].id,
-              name = Unitdata.enemyName(id),
-              lv = variable.enemy[id]?variable.enemy[id].lv:null;
-          if(!name) continue;
-          obj.enemy[i] = {id:id,time:history.enemy[i].time,name:name,lv:lv?lv:1}
+        else if(page == 'combo'){CurrentUserData.last_combo = history.last_combo;}
+        else if(page == 'compareCat' || page == 'compareEnemy' || page == 'compare'){
+          CurrentUserData.compare = {cat:arr,enemy:brr};
         }
-        for(i in history.stage){
-          let id = history.stage[i].id.split("-"),
-          chapter = id[0],stage,level
-          stageArr = Stagedata.GetNameArr(chapter),
-          levelArr = Stagedata.GetNameArr(chapter,id[1]);
-          for (var j in stageArr)
+        else if(page == 'history'){
+          obj = {cat:{},enemy:{},stage:{},gacha:{}};
+          for(i in history.cat){
+            var id = history.cat[i].id.toString().substring(0,3),
+            name = Unitdata.catName(id),
+            lv = variable.cat[id].lv,
+            stage = variable.cat[id].stage;
+            if(!name || name.length == 0) continue;
+            obj.cat[i] = {id:id,time:history.cat[i].time,name:name,lv:lv,stage:stage?stage:1}
+          }
+          for(i in history.enemy){
+            var id = history.enemy[i].id,
+            name = Unitdata.enemyName(id),
+            lv = variable.enemy[id]?variable.enemy[id].lv:null;
+            if(!name) continue;
+            obj.enemy[i] = {id:id,time:history.enemy[i].time,name:name,lv:lv?lv:1}
+          }
+          for(i in history.stage){
+            let id = history.stage[i].id.split("-"),
+            chapter = id[0],stage,level
+            stageArr = Stagedata.GetNameArr(chapter),
+            levelArr = Stagedata.GetNameArr(chapter,id[1]);
+            for (var j in stageArr)
             if (stageArr[j].id == id[1])
-              stage = stageArr[j].name;
-          for (var j in levelArr)
+            stage = stageArr[j].name;
+            for (var j in levelArr)
             if (levelArr[j].id == id[2])
-              level = levelArr[j].name;
-          obj.stage[i] = {
-            id:id.join("-"),
-            time:history.stage[i].time,
-            stage:chapter,name:[level,stage]
+            level = levelArr[j].name;
+            obj.stage[i] = {
+              id:id.join("-"),
+              time:history.stage[i].time,
+              stage:chapter,name:[level,stage]
+            }
           }
-        }
-        for(i in history.gacha){
-          var id = history.gacha[i].id,
-              name = gachadata[id].name;
-          if(!gachadata[id]) continue;
-          obj.gacha[i] = {
-            id:id,
-            time:history.gacha[i].time,
-            name:name,
-            stage:[history.gacha[i].r,history.gacha[i].sr,history.gacha[i].ssr,history.gacha[i].sssr]
+          for(i in history.gacha){
+            var id = history.gacha[i].id,
+            name = gachadata[id].name;
+            if(!gachadata[id]) continue;
+            obj.gacha[i] = {
+              id:id,
+              time:history.gacha[i].time,
+              name:name,
+              stage:[history.gacha[i].r,history.gacha[i].sr,history.gacha[i].ssr,history.gacha[i].sssr]
+            }
           }
+          CurrentUserData.history = obj;
         }
-        CurrentUserData.history = obj;
-      }
-      else if(page == 'stage'){
-        CurrentUserData.last_stage = history.last_stage;
-        CurrentUserData.setting = {
-          show_more_option:setting.show_more_option,
-          MoreDataField : setting.MoreDataField
-        };
-      }
-      else if(page == 'setting'){
-        CurrentUserData.setting = setting;
-        CurrentUserData.name = Users.getAttr(user.uid,'nickname');
-        CurrentUserData.setting = {show_more_option:setting.show_more_option}
-      }
-      else if(page == 'gacha'){CurrentUserData.last_gacha = history.last_gacha;}
-      else if (page == 'list'){
-        CurrentUserData.last_cat_search = history.last_cat_search;
-        CurrentUserData.list = Users.getList(user.uid);
-      }
-      else {
-        CurrentUserData.name = Users.getAttr(user.uid,'nickname');
-        CurrentUserData.first_login = Users.getAttr(user.uid,'first_login');
-        CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert,user_photo:setting.photo};
-        CurrentUserData.legend = {mostSearchCat,mostSearchStage};
-        CurrentUserData.event = Activity.getData();
-        // console.log(CurrentUserData.event.text_event.length);
-      }
-      countOnlineUser(socket.id,user.uid,true);
-      socket.emit("current_user_data",CurrentUserData);
-      console.log('user data send');
+        else if(page == 'stage'){
+          CurrentUserData.last_stage = history.last_stage;
+          CurrentUserData.setting = {
+            show_more_option:setting.show_more_option,
+            MoreDataField : setting.MoreDataField
+          };
+        }
+        else if(page == 'setting'){
+          CurrentUserData.setting = setting;
+          CurrentUserData.name = Users.getAttr(user.uid,'nickname');
+          CurrentUserData.setting = {show_more_option:setting.show_more_option}
+        }
+        else if(page == 'gacha'){CurrentUserData.last_gacha = history.last_gacha;}
+        else if (page == 'list'){
+          CurrentUserData.last_cat_search = history.last_cat_search;
+          CurrentUserData.list = Users.getList(user.uid);
+        }
+        else {
+          CurrentUserData.name = Users.getAttr(user.uid,'nickname');
+          CurrentUserData.first_login = Users.getAttr(user.uid,'first_login');
+          CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert,user_photo:setting.photo};
+          CurrentUserData.legend = {mostSearchCat,mostSearchStage};
+          CurrentUserData.event = Activity.getData();
+          // console.log(CurrentUserData.event.text_event.length);
+        }
+        countOnlineUser(socket.id,user.uid,true);
+        socket.emit("current_user_data",CurrentUserData);
+        console.log('user data send');
+      }).catch((e)=>{
+        if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      });
     }catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
@@ -430,6 +432,7 @@ io.on('connection', function(socket){
         onLineUser[i].splice(onLineUser[i].indexOf(sid),1);
         if(onLineUser[i].length == 0){
           delete onLineUser[i];
+          Users.writeBack(i);
           continue
         }
       }
@@ -527,17 +530,17 @@ io.on('connection', function(socket){
   socket.on("require setting",function (id) {
     console.log("require "+id+"'s setting");
     try{
-      coinhive.balance(id,res => {
-        console.log(res);
-        res = JSON.parse(res);
-        if(res.success){
-          console.log(id,res.total,'hash');
-          let hash = res.total;
-          database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
-        }
-        console.log("hash count complete");
-        socket.emit("user setting",Users.getSetting(id));
-      });
+      // coinhive.balance(id,res => {
+      //   console.log(res);
+      //   res = JSON.parse(res);
+      //   if(res.success){
+      //     console.log(id,res.total,'hash');
+      //     let hash = res.total;
+      //     database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
+      //   }
+      //   console.log("hash count complete");
+      // });
+      socket.emit("user setting",Users.getSetting(id));
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
@@ -981,7 +984,9 @@ io.on('connection', function(socket){
       });
     }
   })
-
+  socket.on("fetch variable",(data)=>{
+    if(data.type == 'onLineUser') io.to(dashboardID).emit("console",JSON.stringify(onLineUser));
+  })
   socket.on("DashboardUpdateData",(data)=>{
     console.log('update',data);
     if(dashboardID) io.to(dashboardID).emit("console",`update : ${data.path}->${data.type} <= ${data.val}`);

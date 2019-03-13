@@ -61,16 +61,16 @@ $(document).ready(function () {
     socket.emit("Set Compare",{type:type,id:CurrentUserID,target:compare});
   });
   $("#start_compare").click(function () {
-    var windowName = type == 'cat'?'compareCat':'compareEnemy';
     if(compare.length == 0){
       alert("購物車中沒有東西!!!!");
       return
     }
+    if(Storage) localStorage.compareType = type;
     if(window.parent.reloadIframe){
-      window.parent.reloadIframe(windowName);
-      window.parent.changeIframe(windowName);
+      window.parent.reloadIframe("compare");
+      window.parent.changeIframe("compare");
     } else {
-      window.open("/"+windowName,"_blank");
+      window.open("/compare","_blank");
     }
   });
   $('body').append("<div id='compare_panel_BG'></div>");

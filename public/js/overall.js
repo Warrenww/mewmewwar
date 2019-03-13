@@ -63,8 +63,22 @@ $(document).ready(function () {
     $(this).attr('active',(Number($(this).attr("active"))+1)%2).next().toggle();
   });
 
-  // left side column action
+  // left side column reaction
   $(".left-side-active").click(toggle_side_column);
+
+  // panel toggle reaction
+  $(".toggle_next").click(function () {
+    var temp = Number($(this).next().attr("active"));
+    if(Number.isNaN(temp)) temp = 0;
+    temp = (temp+1)%2;
+    $(this).next().attr("active",temp);
+    $(this).next().css("left",$(this).offset().left);
+    if(temp) $("body").append("<div id='panelBG'></div>");
+  });
+  $(document).on("click","#panelBG",function () {
+    $(".panel").attr("active",0);
+    $(this).remove();
+  });
 
   // Scroll Reaction
   $(document).on('scroll',function () {
@@ -131,37 +145,6 @@ $(document).ready(function () {
     // $(this).attr('active',true).siblings().attr('active',false);
   });
 
-  //snapshot
-  $(document).on("click","#snapshot",function () {
-    let target = $(".display")[0];
-    if(!target) return
-    snapshot(target);
-    $(document).bind("keydown",controlByKey);
-  });
-  $("#canvas_holder").click(function () {
-    $(this).fadeOut().children(".picture").empty();
-    $(document).unbind("keydown",controlByKey);
-  });
-  var controlByKey = function (e) {
-    var pic = $("#canvas_holder .picture");
-    // console.log(pic.css("transform"));
-    if(e.keyCode == 38){
-      $("#canvas_holder canvas").css("transform",function () {
-        var matrix = $("#canvas_holder canvas").css('transform');
-        matrix = matrix.split("(")[1].split(")")[0].split(",");
-        matrix[5] = Number(matrix[5])+100;
-        return "matrix("+matrix.toString()+")"
-      });
-    } else if(e.keyCode == 40){
-      $("#canvas_holder canvas").css("transform",function () {
-        var matrix = $("#canvas_holder canvas").css('transform');
-        matrix = matrix.split("(")[1].split(")")[0].split(",");
-        matrix[5] = Number(matrix[5])-100;
-        return "matrix("+matrix.toString()+")"
-      });
-    }
-    return false
-  }
   if(typeof(Storage)){
     var page = location.pathname.split("/")[1],
         ver = localStorage["tutorial_"+page];
@@ -272,29 +255,42 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'UA-111466284-1');
 
-function snapshot(target) {
+var snapshotMutex = true;
+function snapshot(selector) {
+  if(!snapshotMutex) return;
+  snapshotMutex = false;
+  var target = $(selector);
+  if(target.length == 0) target = $(".display")[0];
+  else target = target[0];
 
   html2canvas(target,{
     backgroundColor:"#60e6f9",
     allowTaint:true
   }).then(function(canvas) {
+    snapshotMutex = true;
     $('#canvas_holder').css("display",'flex');
     $('#canvas_holder .picture').append(canvas);
     $("#canvas_holder .picture canvas").css("transform",'scale(0,0)');
     setTimeout(function () {
       $("#canvas_holder canvas").css("transform",'matrix(0.75,0,0,0.75,0,0)');
     },100);
-    $('#canvas_holder .picture').append("<a><i class='material-icons'>&#xe2c0;</i></a>")
-    $('#canvas_holder .picture').append("<span id='zoom_in'><i class='material-icons'>&#xe145;</i></span>")
-    $('#canvas_holder .picture').append("<span id='zoom_out'><i class='material-icons'>&#xe15b;</i></span>")
-    let link = canvas.toDataURL('image/jpg');
-    $('#canvas_holder .pacture a').attr({'href':link,'download':'screenshot.jpg'});
-    if(link.length>1e6){
-      $('#canvas_holder a').bind("click",function () {
-        alert("圖片過大，請用右鍵>另存圖片");
-        return false
-      });
-    }
+    $('#canvas_holder .picture').append("<a><i class='material-icons'>cloud_download</i></a>")
+    $('#canvas_holder .picture').append("<span id='zoom_in'><i class='material-icons'>zoom_in</i></span>")
+    $('#canvas_holder .picture').append("<span id='zoom_out'><i class='material-icons'>zoom_out</i></span>")
+    $('#canvas_holder a').bind("click",function () {
+      try {
+        canvas.toBlob(blob => {
+          console.log(blob);
+          var a = document.createElement('a');
+          a.download = 'download.png';
+          a.href = URL.createObjectURL(blob);
+          console.log(a.href);
+          a.click();
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    });
     var scale = .75 ;
     $('#canvas_holder span').bind("click",function (e) {
       e.stopPropagation();
@@ -307,15 +303,17 @@ function snapshot(target) {
         return "matrix("+matrix.toString()+")"
       });
     });
-    $('#canvas_holder canvas').bind("click",function (e) {e.stopPropagation();});
   });
-
-
-
 }
-function scroll_to_div(div_id){
-  $('html,body').animate(
-    {scrollTop: $("#"+div_id).offset().top-100},
+$("#canvas_holder").click(function () {
+  $(this).hide();
+  $(this).children(".picture").empty();
+});
+function scroll_to_div(div_id,container=null){
+  if($(container).length == 0) container = $('html,body');
+  else container = $(container);
+  container.animate(
+    {scrollTop: container.scrollTop()+$("#"+div_id).offset().top},
     600,'easeInOutCubic');
 }
 function scroll_to_class(class_name,n=0) {
@@ -345,7 +343,8 @@ function toggle_side_column(e = null,toggle = null,bind = 1) {
     $("body").append("<div class='side-column-bg'></div>");
     $(".side-column-bg").css({position:"fixed",width:"100%",height:"100%",top:0,"z-index":2})
     .bind('click',hide_side_column);
-  },100)
+  },100);
+  else $(".side-column-bg").remove();
 }
 var hide_side_column = function (e) {
   $(".left-side-column,.left-side-active").attr("active",0);
@@ -427,24 +426,6 @@ function quickSort(list,target=null) {
   bigger = quickSort(bigger,target);
 
   return smaller.concat([list[pivot_index]]).concat(bigger)
-}
-
-const ChineseNumber = ["一","二","三","四","五","六","七","八","九"];
-const ChineseNumber_10 = ["十","百","千"];
-const ChineseNumber_10_alt = ["萬","億","兆"];
-function ToChineseNumber(n,m=0) {
-  if(n == 0) return ""
-  if(n < 10) return ChineseNumber[n-1]
-  var org = n;
-  if(n<1e4){
-    n = Math.floor(n/10);
-    m ++;
-    return ToChineseNumber(n,m)+ChineseNumber_10[m-1]+ToChineseNumber(org%10)
-  } else {
-    n = Math.floor(n/1e4);
-    m ++;
-    return ToChineseNumber(n,m)+ChineseNumber_10_alt[m-1]+ToChineseNumber(org%1e4)
-  }
 }
 
 function createHtml(tag,content=null,attr=null) {

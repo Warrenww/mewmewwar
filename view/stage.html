@@ -260,8 +260,9 @@
           <i class="material-icons"text='上一關'id='prev'>&#xE5C4;</i>
           <i class="material-icons"text='下一關'id='next'>&#xE5C8;</i>
           <a target='blank'id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons"text='截圖'id='snapshot'>&#xe439;</i>
+          <i class="material-icons"text='截圖'onclick='snapshot()'>add_a_photo</i>
           <i class="material-icons"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
+          <i class="material-icons"text='切換敵人資訊'id='swapdata'>swap_vert</i>
         </div>
       </div>
       <div class="display">
@@ -294,7 +295,7 @@
         </table>
         <div id="reward_head" class="tableTitle" active='0'>過關獎勵</div>
         <table class="rewardTable"> </table>
-        <div id="enemy_head" class="tableTitle" active='0'>關卡敵人 <span>切換敵人/關卡資訊</span> </div>
+        <div id="enemy_head" class="tableTitle" active='0'>關卡敵人</div>
         <table class="enemyTable">
           <tr class="enemy_head">
             <th>敵人</th>
