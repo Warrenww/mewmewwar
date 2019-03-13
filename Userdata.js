@@ -271,13 +271,6 @@ function arrangeUserData(userdata) {
     if((timer - userdata[i].last_login) < 86400000) UserData[i] = userdata[i];
     if(ModifiedTable[i]){ database.ref("/user/"+i).update(UserData[i]); }
     ModifiedTable[i] = false;
-    if(process){
-      if(process.stdout){
-        process.stdout.clearLine();
-        process.stdout.cursorTo(0);
-        process.stdout.write(`${(count/userdata.length).toFixed(2)*100}%`);
-      }
-    }
   }
   console.log("there are "+count+" users!!");
 }
