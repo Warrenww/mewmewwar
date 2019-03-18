@@ -13,6 +13,7 @@ $(document).ready(function () {
   });
   var catName,stageName,eneName;
   socket.on("dashboard load",(data)=>{
+    console.log(data);
     switch (data.type) {
       case 'stage':
         stageName = data.obj;

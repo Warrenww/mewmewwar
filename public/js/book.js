@@ -1,8 +1,9 @@
 var CurrentUserID;
+var own_data = [],
+    current_page = 0,
+    total_entry = 0,
+    page_size = 50;
 $(document).ready(function () {
-
-  var own_data = [];
-
   auth.onAuthStateChanged(function(user) {
     if (user) {
       socket.emit("user connect",{user:user,page:location.pathname});
@@ -11,7 +12,6 @@ $(document).ready(function () {
       console.log('did not sign in');
     }
   });
-
   socket.on("current_user_data",function (data) {
     CurrentUserID = data.uid ;
     if(data.folder.owned)
@@ -19,203 +19,157 @@ $(document).ready(function () {
   });
   socket.on("owned data",function (data) {
     own_data = data ;
-    // console.log(data);
-    let arrange = {};
-    for(let i in data){
-      let rarity = data[i].rarity;
-      if(!arrange[rarity]){
-        arrange[rarity] = {name:Cat.parseRarity(rarity),arr:[data[i]]}
-      } else {
-        arrange[rarity].arr.push(data[i]);
-      }
-    }
-    // console.log(arrange);
-    appendArrange(arrange);
+    own_data = quickSort(own_data,'id');
+    // console.log(own_data);
+    appendArrange(own_data);
+    pageTurn();
   });
-  $(document).on("click",".section_snapshot",function () {
-    let target = $(this).parent()[0];
-    snapshot(target);
+  $("select[name='page_size']").on('change',function () {
+    var temp = Number($(this).val());
+    current_page = Math.ceil(current_page * page_size / temp);
+    page_size = temp;
+    pageTurn();
   });
 
-  $(document).on("click",'.select .button',function () {
-    $(this).attr('value',1).siblings().attr("value",0);
-    $(".action").fadeOut();
-    let type = $(this).attr("id"),
-        arrange = {},buffer = {};
-    for(let i in own_data){
-      if(type == 'rarity'){
-        let rarity = own_data[i].rarity;
-        if(!arrange[rarity]){
-          arrange[rarity] = {name:Cat.parseRarity(rarity),arr:[own_data[i]]}
-        } else {
-          arrange[rarity].arr.push(own_data[i]);
-        }
-      } else if(type == 'id'){
-        let id = Number(own_data[i].id.toString().substring(0,3));
-        buffer[id] = own_data[i];
-      } else {
-        let flag = true ,exist = [];
-        for(let j in own_data[i].tag){
-          let tag = own_data[i].tag[j];
-          if(!tag) continue
-          else if(type == 'color'&&tag.indexOf("對") == -1) continue
-          else if(type == 'ability'&&tag.indexOf("對") != -1) continue
-          else if(exist.indexOf(tag)!=-1) continue
-          flag = false;
-          exist.push(tag);
-          if(!arrange[tag]){
-            arrange[tag] = {name:tag,arr:[own_data[i]]}
-          } else {
-            arrange[tag].arr.push(own_data[i]);
-          }
-        }
-        if(flag) buffer[i] = own_data[i];
-      }
-    }
-    if(type == 'id'){
-      arrange = {0:{name:"",arr:[]}};
-      arrange[0].name = '依ID排序';
-      for(let i in buffer) arrange[0].arr.push(buffer[i]);
-    } else if(type != 'rarity'){
-      arrange[0] = {name:"",arr:[]};
-      arrange[0].name = '無';
-      for(let i in buffer) arrange[0].arr.push(buffer[i]);
-    }
-    // console.log(arrange);
-    appendArrange(arrange);
-  });
-  $(document).on("click",'.name',function () {
-    var name = $(this).text();
-    $(".subclass span").attr("active",0);
-    $(this).attr("active",1);
-    $('.section[id="'+name+'"]').show().siblings().hide();
-  });
-
-  $(document).on('click','#searchBut',function () {
-    let keyword = $(this).siblings().val();
-    if(keyword) textSearch(keyword);
-  });
-  $(document).on('keypress','#searchBox',function (e) {
-    let code = (e.keyCode ? e.keyCode : e.which);
-    if (code == 13) {
-      let keyword = $(this).val();
-      if(keyword) textSearch(keyword);
-    }
-  });
-  var position = [],pos = 0;
-  function textSearch(k) {
-    let result = [];
-    position = [];
-    pos = 0 ;
-    $(".dataScetion").find(".card").removeClass('blink');
-    $("#id").click();
-    for(let i in own_data){
-      var name = own_data[i].name;
-      for(let j in name)
-        if(name[j].indexOf(k)!=-1) result.push(own_data[i].id);
-    }
-    // console.log(result);
-    for(let i in result){
-        let target = $(".dataScetion").find(".card[value='"+result[i]+"']");
-        target.addClass('blink');
-        for(let j=0;j<target.length;j++){
-          position.push(target[j].offsetTop);
-        }
-    }
-    for(let i=0;i<position.length;i++){
-      for(let j=i+1;j<position.length;j++){
-        let r = '';
-        if(position[j] == position[i])
-          position.splice(j,1);
-        if(position[j]<position[i]){
-          r = position[j];
-          position[j] = position[i];
-          position[i] = r ;
-        }
-      }
-    }
-    console.log(position);
-    $(".action").fadeIn();
-    gotoPos();
-  }
-  $(document).on("click","#left,#right",function () {
-    if($(this).attr("id")=='right') pos ++;
-    else pos -- ;
-    gotoPos();
-  });
-  $(document).on("click","#clear",function () {
-    $("#searchBox").val("");
-    $(".action").fadeOut();
-    $(".dataScetion").find(".card").removeClass('blink');
-  });
-  function gotoPos() {
-    if(pos<0) pos = position.length-1;
-    if(pos>position.length-1) pos = 0;
-    $("body").animate({
-      scrollTop : position[pos]-screen.height/4
-    },600);
-  }
-
-  var editOn = 0 ;
-  $("#edit").click(function () {
-    editOn = Number($("#edit").attr("value"));
-    if(!editOn) {
-      // $(this).css("position",'fixed');
-      $("body").find(".card").each(function () {
-        $(this).addClass("edit")
-      });
+  $(".toggle_next").click(function (e) {
+    if(e.target == $(".panel[target='view']").prev()[0]){
+      setTimeout(()=>{$("#panelBG").css("z-index",2);},100);
     } else {
-      // $(this).css("position",'absolute');
-      $("body").find(".card").each(function () {
-        $(this).removeClass("edit");
-      });
+      $(this).css("transform","rotate(180deg)");
     }
   });
-  $(document).on("click",'.card',function (e) {
-    editOn = Number($("#edit").attr("value"));
-    if(editOn){
-      let name = $(this).text(),
-          cat = $(this).attr("value").substring(0,3),
-          r = confirm("確定要將"+name+"從'我擁有的貓咪'中移除?");
-      if(r){
-        $(this).remove();
-        socket.emit("mark own",{
-          uid:CurrentUserID,
-          cat:cat,
-          mark:false
-        });
-      }
-    }
-    e.stopPropagation();
-    return false;
-  });
+  $(document).on("click","#panelBG",function () { $(".toggle_next").removeAttr("style"); });
+  $(document).on("click",".panel span",function () {
+    var target = $(this).parent().attr("target"),
+        text = $(this).text();
+    $(".blink").removeClass("blink");
+    switch (target) {
+      case "rarity":
+          $(".display tbody tr").each(function () {
+            var rarity = $(this).children().eq(1).text();
+            if(rarity == text) $(this).removeAttr("hidden");
+            else $(this).attr('hidden','');
+          });
+          break;
+      case "ability":
+          $(".display tbody tr").each(function () {
+            var flag = false;
+            $(this).children().eq(5).find('span').each(function(){
+              if(!flag){
+                if($(this).text() == text) {
+                  flag =true;
+                  $(this).addClass("blink");
+                }
+              }
+            });
+            if(flag) $(this).removeAttr("hidden");
+            else $(this).attr('hidden','');
+          });
+          break;
+      case "delete":
+          var targetID = $(this).parent().siblings("div").text(),
+              r = confirm("確定從「我的貓咪圖鑑」中刪除?");
+          if(r){
+            $(this).parents("tr").remove();
+            socket.emit("mark own",{
+              uid:CurrentUserID,
+              cat:targetID,
+              mark:false
+            });
+          }
+          break;
+      case "view":
+          console.log(text.search("圖示"));
+          if(text.search("圖示") == -1){
+            $(".display").removeAttr("imgV");
+          } else {
+            $(".display").attr({"imgV":"","size":text.split("圖示")[0]});
+          }
+          break;
+      default:
 
-});
-function appendArrange(obj) {
-  var section = '', subclass = '<div>',subclassCount = 0,limit = is_mobile?4:6;
-  for(let i in obj){
-    if(subclassCount >= limit){
-      subclass += "</div><div><span class='name' active='0'>"+obj[i].name+"</span>";
-      subclassCount = 0;
-    } else subclass += "<span class='name' active='0'>"+obj[i].name+"</span>";
-    subclassCount ++;
-    section += "<div class='section'id='"+obj[i].name+"'><div class='item'>";
-    for(let j in obj[i].arr){
-      if(!obj[i].arr[j].name)continue;
-      var id = obj[i].arr[j].id,
-          stage = obj[i].arr[j].stage?obj[i].arr[j].stage:1,
-          name = obj[i].arr[j].name[stage-1]
-      section += '<span class="card cat" type="cat" value="'+id+'" '+
-      'style="background-image:url('+
-      Unit.imageURL('cat',id+"-"+stage)+
-      ');" name="'+name+'"></span>';
     }
-    section += "</span></div></div>";
+    $("#panelBG").click();
+  });
+  var orgValue;
+  $(document).on("click",".editable",function () {
+    orgValue = Number($(this).text());
+    $(this).html(createHtml("input","",{type:'number',max:100,min:1,value:orgValue}));
+    $(this).find("input").focus();
+  });
+  $(document).on("blur",".editable input",function () {
+    var val = Number($(this).val()),
+        id = $(this).parent().parent().siblings("th").children().eq(0).text();
+    if(Number.isNaN(val)||val<1||val>100) {$(this).parent().html(orgValue);return}
+    $(this).parent().html(val);
+    console.log(id);
+    socket.emit("store level",{
+      uid : CurrentUserID,
+      id : id,
+      lv :val,
+      type : 'cat'
+    });
+  });
+});
+function appendArrange(arr) {
+  var html='',abilityPanel=[],colorPanel=[],panel='',pic_html='';
+  total_entry = 0;
+  for(let i in arr){
+    let temp = arr[i],s = temp.stage?temp.stage:1,tagtext='';
+    for (let j in temp.tag) {
+      let tag = temp.tag[j];
+      if(!tag) continue;
+      else if(tag.search('對') == -1 && abilityPanel.indexOf(tag) == -1) abilityPanel.push(tag);
+      else if(tag.search('對') != -1 && colorPanel.indexOf(tag) == -1) colorPanel.push(tag);
+      tagtext += createHtml('span',tag);
+    }
+    html +=
+      `<tr index="${total_entry}">
+        <th>
+          <div>${temp.id}</div>
+          <span class='toggle_next'pos='right'offsetY='10'></span>
+          <div class='panel' target='delete'><span style='color:var(--red)'><i class='material-icons'>delete</i>刪除</span></div>
+        </th>
+        <td>${Cat.parseRarity(temp.rarity)}</td>
+        <td style="padding:0;overflow:hidden">
+          <span class='card cat' value='${temp.id}' style='background-image:url("${Unit.imageURL('cat',temp.id+"-"+s)}")'></span>
+        </td>
+        <td>${temp.name[s-1]}</td>
+        <td><div class='editable'>${temp.lv}</div></td>
+        <td><div class='flex'>${tagtext}</div></td>
+      </tr>`;
+    pic_html += `<span class='card cat'value='${temp.id}'name='${temp.name[s-1]}'style='background-image:url("${Unit.imageURL('cat',temp.id+"-"+s)}")'></span>`;
+    total_entry ++;
   }
-  // section += "</div>";
-  // subclass += "<span class='section_snapshot'><i class='material-icons'>&#xe439;</i></span></div>";
-  subclass += "</div>";
-  $(".display .dataScetion").empty().append(section);
-  $(".display .subclass").empty().append(subclass);
-  $(".display .subclass span:first").click();
+
+  for(let i in colorPanel){ panel += `<span>${colorPanel[i]}</span>` }
+  for(let i in abilityPanel){ panel += `<span>${abilityPanel[i]}</span>` }
+
+  $(".display tbody").empty().append(html);
+  $(".display .imageView").empty().append(pic_html);
+  $("thead th:last .panel").empty().append(panel);
+}
+function pageTurn(t = null) {
+  var limit = [],temp;
+  $(".blink").removeClass("blink");
+  if(t > 0){
+    temp = (current_page + 1) * page_size;
+    if(temp > total_entry) return;
+    limit = [temp, temp + page_size];
+    current_page ++;
+  } else if(t < 0){
+    temp = (current_page - 1) * page_size;
+    if(temp < 0) return;
+    limit = [temp, temp + page_size];
+    current_page --;
+  } else {
+    temp = current_page * page_size;
+    if(temp < 0 || temp > total_entry) return;
+    limit = [temp, temp + page_size];
+  }
+  $(".display tbody tr").each(function () {
+    var index = $(this).attr('index');
+    if(index < limit[0] || index >= limit[1]) $(this).attr("hidden",'');
+    else $(this).removeAttr("hidden");
+  });
 }

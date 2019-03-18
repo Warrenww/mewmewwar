@@ -20,7 +20,7 @@
     </style>
 
     <div class="content">
-      <div class="search" style="width:100%;margin-bottom:20px">
+      <div class="search flex" style="width:100%;margin-bottom:20px">
         <select class="" name="">
           <option value="text">文字</option>
           <option value="id">ID</option>
@@ -117,7 +117,7 @@
       </table>
       </div>
       <button id="search_ability" value="normal">GO</button>
-      <div class="compareSorce">
+      <div class="compareSorce flex_col">
         <div class="title">
           <span>搜尋篩選結果</span>
           <div id="option">
@@ -128,11 +128,11 @@
           <span id="result_count">共<span></span>筆結果</span>
         </div>
         <div id="query"></div>
-        <div id="selected" class="sortable">
+        <div id="selected" class="flex">
         </div>
-        <div class="button_group" style="margin-top:10px" >
+        <div class="button_group flex" style="margin-top:10px" >
           <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
-          <span id="page_dot"></span>
+          <span id="page_dot" class="flex"></span>
           <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
         </div>
       </div>
@@ -148,7 +148,7 @@
       </div>
       <div class="display">
         <table class="dataTable">
-        <tr> <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td> </tr>
+        <tr> <td style="background:#f2d5a7;"colspan='6'><div id="title"></div></td> </tr>
         <tr>
           <th colspan='1'>倍率</th>
           <td colspan=5 id='level_num'>

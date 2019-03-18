@@ -124,18 +124,18 @@ console.log('start');
 //   console.log('finfish');
 // });
 
-var stagedata;
-// var url = "https://battlecats-db.com/stage/treasure_space01.html";
-database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
-  stagedata = snapshot.val();
-  for (var i in stagedata) {
-    console.log(i,stagedata[i].name,stagedata[i].reward);
-    database.ref("/stagedata/universe/s03008/"+i).update({
-      name:stagedata[i].name,
-      reward:stagedata[i].reward
-    })
-  }
-  
+// var stagedata;
+// // var url = "https://battlecats-db.com/stage/treasure_space01.html";
+// database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
+//   stagedata = snapshot.val();
+//   for (var i in stagedata) {
+//     console.log(i,stagedata[i].name,stagedata[i].reward);
+//     database.ref("/stagedata/universe/s03008/"+i).update({
+//       name:stagedata[i].name,
+//       reward:stagedata[i].reward
+//     })
+//   }
+
   // request({
     // url: url,
   //   method: "GET"
@@ -175,53 +175,43 @@ database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
   //       });
   //   }
   // });
-});
-
-// var url = 'https://battlecats-db.com/unit/lot041.html'
-// request({
-//   url:url,
-//   method:'GET'
-// },function (e,r,b) {
-//   $ = cheerio.load(b);
-//   var a = ['ssr','sr','r'],id = 'R368',name = "2019歡慶新年轉蛋",
-//   obj = {
-//       id:id,name:name,
-//     },count = 0;
-//     $('.maincontents tbody').each(function () {
-//         b = a[count];
-//         count++;
-//         obj[b] = obj[b]?obj[b]:[];
-//         $(this).find('tr').each(function () {
-//             obj[b].push($(this).children().eq(0).text())
-//           });
-//         });
-//         console.log(obj);
-//         database.ref("/gachadata/Fate").update(obj);
-//   });
-
-// database.ref("/enemydata").once("value",function (snapshot) {
-//   let enemydata = snapshot.val();
-//   let count = 0;
-//     for(let i in enemydata){
-//       count ++;
-//       // process.stdout.clearLine();
-//       // process.stdout.cursorTo(0);
-//       // process.stdout.write("update enemy "+i+"---");
-//       // process.stdout.write((count/382*100).toFixed(2).toString());
-//       // process.stdout.write("%");
-//
-//       // if(enemydata[i].全名) {
-//         // console.log(enemydata[i].全名,enemydata[i].name);
-//         // database.ref("/enemydata/"+i).update({multi:null});
-//       // }
-//       // database.ref("/catdata/"+i+"/攻撃力").remove();
-//       // database.ref("/catdata/"+i+"/體力").remove();
-//     }
-//     setTimeout(function () {
-//       process.exit()
-//     },2000)
 // });
 
+var url = 'https://battlecats-db.com/unit/lot011.html'
+request({
+  url:url,
+  method:'GET'
+},function (e,r,b) {
+  $ = cheerio.load(b);
+  var a = {'超激レア':'ssr','激レア':'sr','レア':'r'},id = 'R376',name = "「活下去！曼波魚！」 稀有轉蛋活動",
+  obj = {
+      id:id,name:name,ssr:[],sr:[],r:[]
+    },count = 0;
+    $('.maincontents tbody').each(function () {
+        $(this).find('tr').each(function () {
+            obj[a[$(this).children().eq(1).text()]].push($(this).children().eq(0).text())
+          });
+        });
+        console.log(obj);
+        database.ref("/gachadata/Fish").update(obj);
+        fs.appendFile('gacha.json', JSON.stringify(obj),(err) =>{
+          if (err) throw err;
+          console.log('Is saved!');
+        });
+  });
+
+// for(let i=0;i<400;i++){
+//   var url = `https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R${AddZero(i)}.html`
+//   request({
+//     url:url,
+//     method:'GET'
+//   },function (e,r,b) {
+//     $ = cheerio.load(b);
+//     if($("h2").length){
+//       console.log(AddZero(i),$("h2").eq(0).text());
+//     }
+//   })
+// }
 
 // database.ref("/user").once('value',function (snapshot) {
 //   let userdata = snapshot.val(),survey;
@@ -231,7 +221,7 @@ database.ref("/stagedata/universe/s03006").once("value",(snapshot)=>{
 // geteventDay()
 
 function AddZero(n) {
-  return n<10 ? "0"+n : n
+  return n<100 ? (n<10 ? "00"+n : "0"+n ): n
 }
 var target = '41xMMgmvgqSFlGbH7oKgF97490w2';
 // listAllUsers();

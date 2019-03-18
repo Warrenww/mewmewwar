@@ -37,8 +37,8 @@
         <span class="button" value='1' id="normal_search">一般篩選</span>
         <span class="button" value='0' id="gacha_search">活動篩選</span>
         <span class="button" value='0' id="value_search">數值篩選</span>
-        <div class="search" >
-          <select class="" name="">
+        <div class="search flex" >
+          <select>
             <option value="text">名字</option>
             <option value="nickname">暱稱</option>
             <option value="id">ID</option>
@@ -191,6 +191,7 @@
           <tr class="gacha_search">
             <th>活動轉蛋</th>
             <td>
+              <span name="Fish" class="button" value="0">曼波魚 合作活動</span>
               <span name="Fate" class="button" value="0">Fate 合作活動</span>
               <span name="eva" class="button" value="0">EVA福音戰士</span>
               <span name="baseball" class="button" value="0">實況野球 合作活動</span>
@@ -236,7 +237,7 @@
         </table>
       </div>
       <button id="search_ability" value='normal'>GO</button>
-      <div class="compareSorce">
+      <div class="compareSorce flex_col">
         <div class="title">
           <span>搜尋篩選結果</span>
           <div id="option">
@@ -249,10 +250,10 @@
           <span id="result_count">共<span></span>筆結果</span>
         </div>
         <div id="query"></div>
-        <div id="selected"></div>
-        <div class="button_group" style="margin-top:10px" >
+        <div id="selected" class="flex"></div>
+        <div class="button_group flex" style="margin-top:10px" >
           <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
-          <span id="page_dot"></span>
+          <span id="page_dot" class="flex"></span>
           <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
         </div>
       </div>
@@ -281,7 +282,7 @@
       <div class="display" style="pointer-events:none">
         <table class="dataTable">
           <tr>
-            <td style="background:#e9d6ad;"colspan='6'><div id="title"></div></td>
+            <td style="background:#f2d5a7;"colspan='6'><div id="title"></div></td>
           </tr>
           <tr>
             <th colspan='1'>等級</th>

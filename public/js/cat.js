@@ -87,7 +87,6 @@ $(document).ready(function () {
           $(this).removeClass("smallicon");
         });
   });
-  if(screen.width<=768) $("#level_num").parent().attr("colspan",5);
 
   $(document).on('click','.card',function (e) {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
@@ -448,29 +447,18 @@ function AddCombo(arr) {
         pic_html +=
         '<span class="card" value="'+arr[i].cat[j]+'" '+
         'style="background-image:url('+
-        Unit.imageURL('cat',arr[i].cat[j])+');'+
-        (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
-        +'"></span>' ;
+        Unit.imageURL('cat',arr[i].cat[j])+');"></span>' ;
+      } else {
+        pic_html += "<span class='card' style='background-color: lightgray;pointer-events: none;'></span>";
       }
     }
     pic_html += "</div>" ;
-    html += screen.width > 768 ?
-            ("<tr class='combo'>"+
-            "<th val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
+    html += "<tr class='combo'>"+
+            "<th val='"+arr[i].id.substring(0,2)+"'style='min-width:120'>"+arr[i].catagory+"</th>"+
             "<td>"+arr[i].name+"</td>"+
-            "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
+            "<td class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
             "</tr><tr class='combo'>"+
-            "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
-            ("</tr><tr class='combo'>"+
-            "<th colspan=2 val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-            "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
-            "</tr><tr class='combo'>"+
-            "<td colspan=2 >"+arr[i].name+"</td>"+
-            "</tr><tr class='combo'>"+
-            "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
-            "</tr>"
-          );
-
+            "<td colspan=3 class='comboPic'>"+pic_html+"</td></tr>";
   }
   // console.log(html);
   return html

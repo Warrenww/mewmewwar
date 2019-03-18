@@ -16,41 +16,74 @@
     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
   </head>
 
-    <div class="page_1">
-      <div class="content">
-        <span class="button" value='0' id='edit'>編輯模式</span>
-        <div class="select" style="width:100%">
-          <div class="search" style="margin-top:20px">
-            <input type="text" id="searchBox" placeholder="Search for Cats...">
-            <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
-          </div>
-          <table>
-            <tr>
-              <th>排序</th>
-              <td>
-                <span class="button" value='1' id='rarity'>稀有度</span>
-                <span class="button" value='0' id="id">ID</span>
-                <span class="button" value='0' id="color">屬性</span>
-                <span class="button" value='0' id="ability">能力</span>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <div class="display">
-          <div class="subclass">
-
-          </div>
-          <div class="dataScetion">
-
-          </div>
-        </div>
+  <div class="content">
+    <!-- <div class="select" style="width:100%">
+      <div class="search flex" style="margin-top:20px">
+        <input type="text" id="searchBox" placeholder="Search for Cats...">
+        <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
       </div>
-      <div class="action">
+    </div> -->
+  </div>
+  <div class="content">
+    <div class="displayControl" float='false'>
+      <div class="">
+        每頁顯示
+        <select class="" name="page_size">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+        </select>
+        筆資料
+      </div>
+      <div class="control">
+        <i class="material-icons toggle_next"text='切換檢視模式'offsetY='45'>view_comfy</i>
+        <div class="panel" target='view'>
+          <span>詳細資料</span>
+          <span>小圖示</span>
+          <span>中圖示</span>
+          <span>大圖示</span>
+        </div>
+        <i class="material-icons"text='上一頁'onclick='pageTurn(-1)'>keyboard_arrow_left</i>
+        <i class="material-icons"text='下一頁'onclick='pageTurn(+1)'>keyboard_arrow_right</i>
+        <i class="material-icons"text='截圖'onclick='snapshot()'>add_a_photo</i>
+      </div>
+    </div>
+    <div class="display">
+      <table>
+        <thead>
+          <th> id </th>
+          <th>
+            稀有度
+            <span class="toggle_next" offsetY="20" pos="right"></span>
+            <div class="panel"target="rarity">
+              <span>基本</span>
+              <span>EX</span>
+              <span>稀有</span>
+              <span>激稀有</span>
+              <span>激稀有狂亂</span>
+              <span>超激稀有</span>
+            </div>
+          </th>
+          <th>圖片</th>
+          <th>名稱</th>
+          <th>等級</th>
+          <th>能力
+            <span class="toggle_next" offsetY="20" pos="right"></span>
+            <div class="panel"target="ability"> </div>
+          </th>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <div class="imageView flex"> </div>
+    </div>
+  </div>
+  <div class="action">
         <span id="left"></span>
         <span id="right"></span>
         <span id="clear"><i class="material-icons">&#xe14c;</i></span>
       </div>
-    </div>
 
     <div class="floatDisplay_holder">
       <div class="floatDisplay">
@@ -113,11 +146,10 @@
         </div>
       </div>
     </div>
-
     <div id="canvas_holder">
       <div class="picture"></div>
     </div>
-
+    <i class="material-icons" id="PageGoToTop">expand_less</i>
 
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>

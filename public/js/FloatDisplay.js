@@ -4,7 +4,7 @@ $(document).ready(function () {
   $(document).on('click','.cat,.enemy',function (e) {
     e.stopPropagation();
     var id, multiple, type;
-    // console.log(CurrentUserID);
+    console.log(CurrentUserID);
     if (page == 'stage' || page == 'history'){
       id = $(this).attr("id"),
       multiple = (is_mobile?$(this).parent().next().children().first():$(this).next()).text().split("％")[0],

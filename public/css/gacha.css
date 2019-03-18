@@ -5,6 +5,7 @@
   height: 100%
 }
 .page_1{overflow-y: hidden;}
+#scoreboard th,#scoreboard td{background-color: transparent}
 .monitor{
   width: 100%;
   background: linear-gradient(rgb(51, 1, 82),rgb(159, 108, 195))

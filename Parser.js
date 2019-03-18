@@ -413,6 +413,7 @@ function parseGacha (n) {
     'エヴァンゲリオンコラボ':'eva',
     '劇場版 Fate stay nightコラボ':'Fate',
     'にゃんこ':'cat',
+    '生きろ！マンボウ！コラボ':'Fish',
   }[n];
   temp = temp?temp:"no_this_gacha";
   return temp;

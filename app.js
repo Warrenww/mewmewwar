@@ -727,17 +727,20 @@ io.on('connection', function(socket){
   socket.on("required owned",function (data) {
     console.log(data.uid,"owned",data.owned.length,"cat");
     try{
-      var arr = [],variable = Users.getVariable(data.uid,'cat');
+      var arr = [],
+          variable = Users.getVariable(data.uid,'cat'),
+          setting = Users.getSetting(data.uid);
       if (data.owned == "0") return
       for(let i in data.owned){
         var cat = Unitdata.getData('cat',data.owned[i]),tag=[],obj;
-        for(let j in cat.data) tag = tag.concat(cat.data[j].tag);
+        for(let j in cat.data) tag = Util.MergeArray(tag,cat.data[j].tag);
         obj = {
           id:cat.id,
           name:Unitdata.catName(cat.id),
           tag:tag,
           rarity:cat.rarity,
-          stage:variable[cat.id]?variable[cat.id].stage:1
+          stage:variable[cat.id]?(variable[cat.id].stage?variable[cat.id].stage:1):1,
+          lv:variable[cat.id]?(variable[cat.id].lv?variable[cat.id].lv:setting.default_cat_lv):setting.default_cat_lv
         };
         arr.push(obj);
       }
@@ -980,7 +983,7 @@ io.on('connection', function(socket){
           };
         }
         if(dashboardID) io.to(dashboardID).emit("console",`${type} data load complete`);
-        socket.emit("loadEnemy",obj);
+        socket.emit("dashboard load",{type,obj});
       });
     }
   })

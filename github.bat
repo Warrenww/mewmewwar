@@ -1,6 +1,7 @@
 git add .
-set /p var= Please enter commit :
-git commit -m '%var%'
+set /p commit= Please enter commit :
+git commit -m "%commit%"
 git push
-node version.js
-
+set /p version= Please enter version :
+node version.js %version%
+git checkout beta

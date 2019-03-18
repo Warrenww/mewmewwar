@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.33.1"
+const VERSION = "10.34.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -67,17 +67,50 @@ $(document).ready(function () {
   $(".left-side-active").click(toggle_side_column);
 
   // panel toggle reaction
-  $(".toggle_next").click(function () {
-    var temp = Number($(this).next().attr("active"));
+  $(document).on("click",".toggle_next",function () {
+    var temp = Number($(this).next().attr("active")),
+        pos = $(this).attr("pos"),
+        offsetY = Number($(this).attr("offsetY"));
     if(Number.isNaN(temp)) temp = 0;
+    if(Number.isNaN(offsetY)) offsetY = 0;
     temp = (temp+1)%2;
     $(this).next().attr("active",temp);
-    $(this).next().css("left",$(this).offset().left);
-    if(temp) $("body").append("<div id='panelBG'></div>");
+    $(this).next().css("top",($(this).offset().top - $(document).scrollTop() + offsetY));
+    if(pos == "right") $(this).next().css("right",window.innerWidth - $(this).offset().left - 20) ;
+    else $(this).next().css("left",$(this).offset().left) ;
+
+    if(temp){
+      $("body").append("<div id='panelBG'></div>");
+      $(document).bind("wheel",noWheel);
+    } else {
+      $("#panelBG").remove();
+      $(document).unbind("wheel",noWheel);       
+    }
+
   });
+  var noWheel = function (e) {
+    var isUp = e.originalEvent.deltaY < 0;
+    if(e.target == $("#panelBG")[0]){
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    } else {
+      let element = $(".panel[active='1']")[0];
+      if((element.scrollHeight - element.scrollTop === element.clientHeight) && (!isUp)){
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      } else if(element.scrollTop == 0 && isUp){
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    }
+  }
   $(document).on("click","#panelBG",function () {
     $(".panel").attr("active",0);
     $(this).remove();
+    $(document).unbind("wheel",noWheel);
   });
 
   // Scroll Reaction
@@ -178,7 +211,7 @@ $(document).ready(function () {
             '但本頁面還停留在<span id="version_old">'+VERSION+'</span>版,'+
             '為避免非預期錯誤，請重新整理網頁。<br />'+
             '(5秒後將自動重新整理)'+
-            '<span id="countDown">5<span>'+
+            '<span id="countDown" class="flex">5<span>'+
           '</div>'+
           '<span>'+
             '<button id="ok">立即重新整理</button>'+
@@ -274,9 +307,9 @@ function snapshot(selector) {
     setTimeout(function () {
       $("#canvas_holder canvas").css("transform",'matrix(0.75,0,0,0.75,0,0)');
     },100);
-    $('#canvas_holder .picture').append("<a><i class='material-icons'>cloud_download</i></a>")
-    $('#canvas_holder .picture').append("<span id='zoom_in'><i class='material-icons'>zoom_in</i></span>")
-    $('#canvas_holder .picture').append("<span id='zoom_out'><i class='material-icons'>zoom_out</i></span>")
+    $('#canvas_holder .picture').append("<a class='flex'><i class='material-icons'>cloud_download</i></a>")
+    $('#canvas_holder .picture').append("<span id='zoom_in' class='flex'><i class='material-icons'>zoom_in</i></span>")
+    $('#canvas_holder .picture').append("<span id='zoom_out' class='flex'><i class='material-icons'>zoom_out</i></span>")
     $('#canvas_holder a').bind("click",function () {
       try {
         canvas.toBlob(blob => {
@@ -410,7 +443,7 @@ function quickSort(list,target=null) {
   var length = list.length;
   if (length <= 1) return list
 
-  var pivot_index = Math.ceil(length/2),
+  var pivot_index = 1,
       pivot = list[pivot_index],
       pivot_value = target?pivot[target]:pivot,
       smaller=[],

@@ -61,6 +61,7 @@
         </div>
         <span>合作關卡</span>
         <div style="display:none">
+          <button class="stageBG" bg='Fish' id='Fish' value='0'>曼波魚<br />合作關卡</button>
           <button class="stageBG" bg='Fate' id='Fate' value='0'>Fate<br />合作關卡</button>
           <button class="stageBG" bg='egg' id='egg' value='0'>蛋黃哥<br />合作關卡</button>
           <button class="stageBG" bg='pokopang' id='pokopang' value='0'>POKOPANG<br />合作關卡</button>
@@ -78,7 +79,7 @@
     <div class="content" id="selector">
       <div class="search_type" style="display:flex;width:100%">
         <span class="button" value='0' id="toggleSearch">獎勵篩選器</span>
-        <div class="search">
+        <div class="search flex">
           <input type="text" id="searchBox" placeholder="搜尋關卡...">
           <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
         </div>
@@ -257,8 +258,8 @@
           <span onclick="scroll_to_class('enemyTable')">關卡敵人</span>
         </div>
         <div class="control">
-          <i class="material-icons"text='上一關'id='prev'>&#xE5C4;</i>
-          <i class="material-icons"text='下一關'id='next'>&#xE5C8;</i>
+          <i class="material-icons"text='上一關'id='prev'>keyboard_arrow_left</i>
+          <i class="material-icons"text='下一關'id='next'>keyboard_arrow_right</i>
           <a target='blank'id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
           <i class="material-icons"text='截圖'onclick='snapshot()'>add_a_photo</i>
           <i class="material-icons"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
