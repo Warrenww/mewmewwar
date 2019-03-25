@@ -28,11 +28,12 @@
             <input type="text" id="userName"/>
           </div>
           <div class="setting_item">
-            <span>在新分頁開啟頁面(本地設定)</span>
-            <label class="switch">
-              <input type="checkbox" id="openInNewWindow" >
-              <span class="slider_but"></span>
-            </label>
+            <span>視窗開啟方式</span>
+            <select name="openMethod"style="border:1px dashed gray">
+              <option value="iframe" selected>內嵌式(預設)</option>
+              <option value="_blank">新分頁</option>
+              <option value="_parent">原分頁</option>
+            </select>
           </div>
           <div class="setting_item">
             <span>重設我擁有的貓咪</span>
@@ -128,17 +129,6 @@
 
         <h4>其他設定</h4>
         <div class="setting_element">
-          <div class="setting_item">
-            <span>暫停/開始支持本網站(將重新整理)</span>
-            <label class="switch">
-              <input type="checkbox" id="show_miner" >
-              <span class="slider_but"></span>
-            </label>
-          </div>
-          <div class="setting_item">
-            <span>你的累計支持度</span>
-            <h3 id="total_hash" style="margin:0"></h3>
-          </div>
           <a class="setting_item" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLScz-YlVxBGPGsxWKSMqdBzpRZiDm3BOrmNihRnWZJlHlpGxag/viewform">
             <span>前往客服表單</span>
             <i class="material-icons">&#xe895;</i>

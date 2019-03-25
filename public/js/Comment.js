@@ -305,7 +305,7 @@ function append_comment(comment) {
   commentMap = {};
   $(".commentTable .comment,.commentTable .Nocomment").remove();
   if(!comment||comment == "-"){
-    $(".commentTable").prepend("<tr class='Nocomment'><td colspan='6'>尚無評論</td></tr>");
+    $(".commentTable").append("<tr class='Nocomment'><td colspan='6'>尚無評論</td></tr>");
       return
   }
   let html = '';
@@ -317,7 +317,7 @@ function append_comment(comment) {
       commentMap[comment[i].owner].push(i);
     }
   }
-  $(".commentTable").prepend(html);
+  $(".commentTable").append(html);
   commentPhoto(commentMap);
 }
 function submitComment() {
@@ -437,9 +437,7 @@ function editComment() {
 $(document).ready(function () {
   socket.on('cat comment push',function (data) {
     // console.log(data);
-    let last = $('.comment').last();
-    $(commentHtml(data.key,data,data.photo,data.name)).insertBefore(last);
-    // $(".content").eq(1).animate({scrollTop:$('.comment').last()[0].offsetTop},800);
+    $(".commentTable tbody").append(commentHtml(data.key,data,data.photo,data.name));
   });
   socket.on('return users photo',function (obj) {
     // console.log(obj);

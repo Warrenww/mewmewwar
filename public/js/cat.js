@@ -127,12 +127,7 @@ $(document).ready(function () {
       uid:CurrentUserID,
       id:[$(this).attr('val')]
     }) ;
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe('combo');
-      window.parent.changeIframe('combo');
-    } else {
-      window.open("/combo","_blank");
-    }
+    switchIframe("combo");
   }) ;
 
   socket.on("required data",(data)=>{
@@ -343,16 +338,8 @@ $(document).ready(function () {
   });
   socket.on("cat to stage",function (data) {
     // console.log(data);
-    if(data.find) {
-      if(window.parent.reloadIframe){
-        window.parent.reloadIframe('stage');
-        window.parent.changeIframe('stage');
-      } else {
-        window.open("/stage","_blank");
-      }
-    }
-    else
-      window.open('https://battlecats-db.com/stage/'+data.stage+'.html',"_blank");
+    if(data.find) switchIframe("stage");
+    else window.open('https://battlecats-db.com/stage/'+data.stage+'.html',"_blank");
   });
 
   $(".slider").slider();

@@ -127,12 +127,7 @@ $(document).ready(function () {
       stage:arr[1],
       level:arr[2]
     });
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe('stage');
-      window.parent.changeIframe('stage');
-    } else {
-      window.open("/stage","_blank");
-    }
+    switchIframe("stage");
   });
   $(".calendar").click(function () {
     updateEvent();

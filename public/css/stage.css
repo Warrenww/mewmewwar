@@ -137,7 +137,7 @@
   font-weight: bold;
   cursor: pointer;
 }
-.reward img{width: 30}
+.rewardTable img{width: 30}
 #searchResult{
   width: 100%;
   background-color: rgba(255,255,255,.8);
@@ -252,10 +252,8 @@
   height: 14;
   position: absolute;
   top: 45%;
-  border: 7px solid gray;
-  border-bottom: 7px solid transparent;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
+  border: 7px solid transparent;
+  border-top: 7px solid gray;
   right: 20px;
   transition: .5s ease;
 }
@@ -264,38 +262,23 @@
   border-bottom: 7px solid gray;
   top: 25%;
 }
-.enemy_head th>div{
-  background: rgba(0,0,0,.7);
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: .3s;
-  height: 0;
-  color: orange;
+.panel{ width: 120; }
+.panel span{
+  text-align: center;
+  padding: 3 5;
+  width: 90%;
+  margin: 0 5%;
+  border-bottom: .5px solid gray;
 }
-.enemy_head th div div{ border-bottom: 1px solid lightgray }
-.enemy_head th div div:hover{ background-color:rgba(225,225,225,.9);color: #5e2121}
-.enemy_head th div div[active='1']{ background-color:rgba(225,225,225,.9);color: #5e2121}
+.panel span:last-of-type{border: 0}
+.panel span:hover,.panel span[active='1']{
+  background-color: lightgray;
+}
 .enemy_head th[reverse='increase']{border-top:5px solid #3bb8f6;}
 .enemy_head th[reverse='decrease']{border-top:5px solid #f6843b;}
-.enemy_head th[reverse='filter']{background-color: rgba(244, 108, 108, 0.9)}
+.enemy_head th[reverse='filter']{background-color: var(--lightred)}
 .enemy_head #point{display: none;}
 .rewardTable th{min-width: 150}
-#enemy_head span{
-  border: 1px solid;
-  border-radius: 12px;
-  padding: 0 10;
-  margin: 0 20;
-  position: absolute;
-  right: 0;
-  color: gray;
-  cursor: pointer;
-}
-#enemy_head span:hover{background-color: #ededed}
 
 #rewardSelector{
   width: 100%;

@@ -49,6 +49,7 @@
   left: 0;
   max-width: 20;
   padding: 0;
+  z-index: 2
 }
 .func{
   background-color: #eccb98;
@@ -65,8 +66,6 @@
   width: auto;
 }
 .functionArea i{margin: 0 5;font-style: normal;width: 36}
-.functionArea i::before{top:-60%}
-.control .functionArea i::before{top:115%}
 .display[offsetX='true'] tbody tr th:nth-child(1){background-color: transparent;}
 .display[offsetX='true'] .func,
 .func[active='1']{
@@ -94,7 +93,7 @@
 }
 .float_thead{
   position: sticky;
-  z-index: 2;
+  z-index: 3;
   top: 0;
   opacity: 0;
   transition: .3s ease;
@@ -251,6 +250,7 @@
 .modal-footer button[type='clear']{background: linear-gradient(#f48b8b,#fc6c52);}
 .modal-footer button[type='clear']:active{background: linear-gradient(#fc6c52,#f48b8b);}
 .modal-body{overflow-x: scroll;}
+table .cir_but::before{ top: calc(-100% - 10px) }
 @media screen and (max-width:426px) {
   .control>div>span{font-size: 14}
   .swapper{padding-top: 30;width: 190}

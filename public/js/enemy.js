@@ -98,12 +98,7 @@ $(document).ready(function () {
         type:"cat",
         value:0
       });
-      if(window.parent.reloadIframe){
-        window.parent.reloadIframe('cat');
-        window.parent.changeIframe('cat');
-      } else {
-        window.open("/cat","_blank");
-      }
+      switchIframe("cat");
     }
   });
   function ReverseType(c) {

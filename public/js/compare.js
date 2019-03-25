@@ -158,12 +158,7 @@ $(document).ready(function () {
       target:id,
       uid:CurrentUserID
     });
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe(displayType);
-      window.parent.changeIframe(displayType);
-    } else {
-      window.open("/"+displayType,"_blank");
-    }
+    switchIframe(displayType);
   });
 
   function changeCompareLevel(level,id) {
@@ -237,10 +232,10 @@ $(document).ready(function () {
       createHtml("th",
         createHtml("div",
           createHtml("span",
-            createHtml("i",(displayType == 'cat'?"Lv":"倍"),{id:"lv",text:(displayType == 'cat'?"Lv."+lv:lv*100+"%")})+
-            createHtml("i","delete",{class:"material-icons",id:"del",text:"刪除"})+
-            createHtml("i","desktop_access_disabled",{class:"material-icons",id:"hide",text:"隱藏"})+
-            createHtml("i","swap_vert",{class:"material-icons",id:"swap",text:"切換階級",catonly:""}),
+            createHtml("i",(displayType == 'cat'?"Lv":"倍"),{id:"lv",class:"cir_but",text:(displayType == 'cat'?"Lv."+lv:lv*100+"%")})+
+            createHtml("i","delete",{class:"material-icons cir_but",id:"del",text:"刪除"})+
+            createHtml("i","desktop_access_disabled",{class:"material-icons cir_but",id:"hide",text:"隱藏"})+
+            createHtml("i","swap_vert",{class:"material-icons cir_but",id:"swap",text:"切換階級",catonly:""}),
           {class:"functionArea"})+
           createHtml("span",
           createHtml("span","",{class:"img",style:`background-image:url('${data.image}')`})+

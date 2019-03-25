@@ -258,12 +258,12 @@
           <span onclick="scroll_to_class('enemyTable')">關卡敵人</span>
         </div>
         <div class="control">
-          <i class="material-icons"text='上一關'id='prev'>keyboard_arrow_left</i>
-          <i class="material-icons"text='下一關'id='next'>keyboard_arrow_right</i>
-          <a target='blank'id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons"text='截圖'onclick='snapshot()'>add_a_photo</i>
-          <i class="material-icons"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
-          <i class="material-icons"text='切換敵人資訊'id='swapdata'>swap_vert</i>
+          <i class="material-icons cir_but"text='上一關'id='prev'>keyboard_arrow_left</i>
+          <i class="material-icons cir_but"text='下一關'id='next'>keyboard_arrow_right</i>
+          <a target='blank'id="out"><i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i></a>
+          <i class="material-icons cir_but"text='截圖'onclick='snapshot()'>add_a_photo</i>
+          <i class="material-icons cir_but"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
+          <i class="material-icons cir_but"text='切換敵人資訊'id='swapdata'>swap_vert</i>
         </div>
       </div>
       <div class="display">
@@ -295,18 +295,23 @@
           </tr>
         </table>
         <div id="reward_head" class="tableTitle" active='0'>過關獎勵</div>
-        <table class="rewardTable"> </table>
+        <table class="rewardTable">
+          <tbody> </tbody>
+        </table>
         <div id="enemy_head" class="tableTitle" active='0'>關卡敵人</div>
         <table class="enemyTable">
-          <tr class="enemy_head">
-            <th>敵人</th>
-            <th id='multiple'>倍率<span></span><div></div></th>
-            <th id='amount'class="orgdata">數量<span></span><div></div></th>
-            <th id='castle'class="orgdata">城連動<span></span><div></div></th>
-            <th id='first_show'class="orgdata">首次出現(s)<span></span><div></div></th>
-            <th id='next_time'class="orgdata">再次出現(s)<span></span><div></div></th>
-            <th id='point'class="orgdata">積分<span></span><div></div></th>
-          </tr>
+          <thead>
+            <tr class="enemy_head">
+              <th>敵人</th>
+              <th id='multiple'>倍率<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"></div></th>
+              <th id='amount'class="orgdata">數量<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"></div></th>
+              <th id='castle'class="orgdata">城連動<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"></div></th>
+              <th id='first_show'class="orgdata">首次出現(s)<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"></div></th>
+              <th id='next_time'class="orgdata">再次出現(s)<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"></div></th>
+              <th id='point'class="orgdata">積分<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"></div></th>
+            </tr>
+          </thead>
+          <tbody> </tbody>
         </table>
       </div>
     </div>

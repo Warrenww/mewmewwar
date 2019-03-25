@@ -1,11 +1,10 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.34.1"
+const VERSION = "10.34.2"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
-var openInNew = localStorage.openInNewWindow == "true";
 console.log("mobile : ",is_mobile);
 console.log("ios : ",is_ios);
 var showcomparetarget = 1 ;
@@ -22,10 +21,6 @@ $(document).ready(function () {
   socket = io.connect();
   var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
-
-  $(document).on('click','#more_option #top',function () { scroll_to_class("content",1); });
-
-
   var today = new Date();
 
   if(screen.width <= 768){
@@ -67,7 +62,7 @@ $(document).ready(function () {
   $(".left-side-active").click(toggle_side_column);
 
   // panel toggle reaction
-  $(document).on("click",".toggle_next",function () {
+  $(document).on("click",".toggle_next",function (e) {
     var temp = Number($(this).next().attr("active")),
         pos = $(this).attr("pos"),
         offsetY = Number($(this).attr("offsetY"));
@@ -84,9 +79,9 @@ $(document).ready(function () {
       $(document).bind("wheel",noWheel);
     } else {
       $("#panelBG").remove();
-      $(document).unbind("wheel",noWheel);       
+      $(document).unbind("wheel",noWheel);
     }
-
+    e.stopPropagation();
   });
   var noWheel = function (e) {
     var isUp = e.originalEvent.deltaY < 0;
@@ -178,6 +173,7 @@ $(document).ready(function () {
     // $(this).attr('active',true).siblings().attr('active',false);
   });
 
+  // tutorial
   if(typeof(Storage)){
     var page = location.pathname.split("/")[1],
         ver = localStorage["tutorial_"+page];
@@ -193,6 +189,8 @@ $(document).ready(function () {
     var page = location.pathname.split("/")[1];
     localStorage["tutorial_"+page] = tutorial_version[page];
   });
+
+  // version check
   checkVersion();
   function checkVersion(){
     socket.emit("check version");
@@ -200,7 +198,7 @@ $(document).ready(function () {
   }
   var countDown = 5;
   socket.on("check version",(version)=>{
-    console.log(version,VERSION);
+    // console.log(version,VERSION);
     $("#Version_display span").text(version);
     if(invalidVersion(version)) {
       $("body").append(
@@ -242,6 +240,7 @@ $(document).ready(function () {
   }
   $("#version_alert #ok").click(function () { location.reload(); });
 });
+
 $(window).load(function () {
   $('#slider_holder').children('.active').click(function () {
     let target = $("#"+filter_name+".filter_option");
@@ -282,6 +281,7 @@ $("#PageGoToTop").click(function () {
     scrollTop :0
   },500);
 });
+
 //google Analytics
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
@@ -342,6 +342,22 @@ $("#canvas_holder").click(function () {
   $(this).hide();
   $(this).children(".picture").empty();
 });
+
+function switchIframe(target) {
+  if(!target) return;
+  var openMethod = "iframe";
+  if(Storage){ if(localStorage.openMethod) openMethod = localStorage.openMethod; }
+  if(is_ios && openMethod == 'iframe'|| window.parent.reloadIframe == undefined) openMethod='_blank';
+  if(openMethod == "iframe"){
+    window.parent.reloadIframe(target);
+    window.parent.changeIframe(target);
+    return true;
+  } else {
+    window.open("/"+target,openMethod);
+    return false;
+  }
+}
+
 function scroll_to_div(div_id,container=null){
   if($(container).length == 0) container = $('html,body');
   else container = $(container);
@@ -369,7 +385,6 @@ function toggle_side_column(e = null,toggle = null,bind = 1) {
   // if(Number.isNaN(temp)) temp = 0;
   temp = (temp+1)%2;
   if(toggle != null) temp = toggle;
-  console.log(temp);
   $(".left-side-column").attr('active',temp);
   $(".left-side-active").attr("active",temp);
   if(temp&&bind) setTimeout(function () {
@@ -412,6 +427,7 @@ function filterSlider(target) {
     lv_bind:target.attr('lv-bind')=='true'
   }
 }
+
 function sum(list) {
   let sum = 0 ;
   for(let i in list) sum += Number(list[i])?Number(list[i]):0;

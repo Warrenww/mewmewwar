@@ -173,7 +173,6 @@
   #toggleScore{bottom: 0px}
   .iframe_holder iframe{width: 100%}
   .navigation .tag{font-size: 15px}
-  .navigation{width: 250px}
 }
 @media screen and (max-width:425px) {
   #scoreboard{width: 80%;left: 10%}

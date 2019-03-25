@@ -51,7 +51,7 @@
 
 
 @media screen and (max-width:768px) {
-  .window{width: 90%;font-size: 18px}
+  .window{font-size: 18px}
   .window div img{width: 100px}
 }
 @media screen and (max-width:425px) {

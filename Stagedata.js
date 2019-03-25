@@ -3,28 +3,27 @@ var Util = require("./Utility");
 var Parser = require("./Parser");
 var request = require("request");
 var cheerio = require("cheerio");
-var StageData={},stageMap={};
-exports.load = function (stagedata,mostSearchStage) {
+var StageData={},stageMap={},modified = [];
+exports.load = function (mostSearchStage) {
   console.log("Module start loading stage data.");
 
   database.ref("/stagedata").once("value",(snapshot)=>{
     temp = snapshot.val();
     var buffer = [];
     for(let i in temp){
-      stagedata[i] = temp[i];
       StageData[i] = temp[i];
-      for(let j in stagedata[i]){
-        for(let k in stagedata[i][j]){
+      for(let j in temp[i]){
+        for(let k in temp[i][j]){
           if(k == 'name') continue
           buffer.push({
-            id:stagedata[i][j][k].id,
-            count:stagedata[i][j][k].count,
-            energy:stagedata[i][j][k].energy,
-            name:stagedata[i][j][k].name,
-            enemy:stagedata[i][j][k].enemy
+            id:temp[i][j][k].id,
+            count:temp[i][j][k].count,
+            energy:temp[i][j][k].energy,
+            name:temp[i][j][k].name,
+            enemy:temp[i][j][k].enemy
           });
         }
-        stageMap[j] = stagedata[i][j];
+        stageMap[j] = temp[i][j];
       }
     }
     buffer = Util.Sort(buffer,'count',true);
@@ -36,7 +35,6 @@ exports.load = function (stagedata,mostSearchStage) {
     // console.log("most Search Stage : ",mostSearchStage);
   });
 }
-
 exports.GetNameArr = function (chapter,level=null) {
   var target = StageData[chapter],
       response = [];
@@ -49,12 +47,37 @@ exports.GetNameArr = function (chapter,level=null) {
   }
   return response
 }
-
 exports.setHistory = function (id) {
+  modified.push(id);
   id = id.split("-");
   StageData[id[0]][id[1]][id[2]].count =
     StageData[id[0]][id[1]][id[2]].count?StageData[id[0]][id[1]][id[2]].count+1:1;
-  database.ref("/stagedata/"+id.join("/")+"/count").set(StageData[id[0]][id[1]][id[2]].count);
+  // database.ref("/stagedata/"+id.join("/")+"/count").set(StageData[id[0]][id[1]][id[2]].count);
+}
+exports.writeBack = function () {
+  var obj = {};
+  for (var i in modified) {
+    var id = modified[i].split("-");
+    if(!(id[0] in obj)) obj[id[0]] = {};
+    if(!(id[1] in obj)) obj[id[0]][id[1]] = {};
+    if(!(id[2] in obj)) obj[id[0]][id[1]][id[2]] = {};
+    obj[id[0]][id[1]][id[2]].count = StageData[id[0]][id[1]][id[2]].count;
+  }
+  database.ref("/stagedata").update(obj);
+}
+exports.getData = function (chapter=null,stage=null,level=null) {
+  try {
+    if(chapter in StageData){
+      if(stage in StageData[chapter]){
+        if(level in StageData[chapter][stage]) return StageData[chapter][stage][level];
+        else return StageData[chapter][stage];
+      }
+      return StageData[chapter];
+    }
+    return StageData;
+  } catch (e) {
+    Util.__handalError(e);
+  }
 }
 
 exports.Search = function (type,query) {

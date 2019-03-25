@@ -294,6 +294,7 @@ function parseEnemy(c) {
     "メタルな敵": "鋼鐵敵人",
     "白い敵": "白色敵人",
     "エイリアン": "外星敵人",
+    "スター": "外星敵人(星)",
     "赤い敵": "紅色敵人",
     "天使": "天使敵人",
     "全ての敵": "全部敵人",
@@ -548,22 +549,21 @@ exports.parsePrize = function(p,img) {
 }
 exports.parseConstrain = function(c) {
   // process.stdout.write("\n");
-  c = c.split(" ")[1];
   // console.log(c);
-  if(c.indexOf("コスト")!=-1){
-    c = "生產成本:"+c.split("コスト")[1].split("円").join("元");
+  if(c.search("円")!=-1){
+    c = "生產成本:"+c.split(" ")[1].replace("円","元");
   }
-  else if(c.indexOf("最大キャラ数")!=-1){
-    c = "最大出擊數量:"+c.split("最大キャラ数")[1].split("体")[0];
+  else if(c.search("出撃数")!=-1){
+    c = "最大出擊數量:"+c.split(" ")[1].split("体")[0];
   }
-  else if(c.indexOf("スロット1ページ目のみ")!=-1){
+  else if(c.search("編成ページ数制限")!=-1){
     c = "出陣列表:僅限第一頁";
   }
-  else if(c.indexOf("一回クリアのみ")!=-1){
+  else if(c.search("一回クリアのみ")!=-1){
     c = "僅限通關一次";
   }
-  else {
-    c = c.split("レア").join("稀有");
+  else if(c.search("レア")!=-1){
+    c = c.replace("レア","稀有").split(" ").splice(0,1).join("・");
   }
   // console.log(c);
   return c

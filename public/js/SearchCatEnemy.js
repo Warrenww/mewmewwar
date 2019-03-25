@@ -256,11 +256,6 @@ $(document).on('click','.compareSorce .title #option i',function () {
       uid:CurrentUserID,
       gacha:$(this).attr('value')
     });
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe("gacha");
-      window.parent.changeIframe("gacha");
-    } else {
-      window.open("/gacha","_blank");
-    }
+    switchIframe("gacha");
   }
 });

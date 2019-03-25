@@ -1,12 +1,5 @@
 <html>
   <head>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-1854846319781914",
-        enable_page_level_ads: true
-      });
-    </script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -38,7 +31,7 @@
         <span class="button" value='0' id="gacha_search">活動篩選</span>
         <span class="button" value='0' id="value_search">數值篩選</span>
         <div class="search flex" >
-          <select>
+          <select style="width:80">
             <option value="text">名字</option>
             <option value="nickname">暱稱</option>
             <option value="id">ID</option>
@@ -241,11 +234,11 @@
         <div class="title">
           <span>搜尋篩選結果</span>
           <div id="option">
-            <i class="material-icons"id="result_expand" text='展開'>&#xe240;</i>
-            <i class="material-icons"onclick="snapshot('#selected')" text='截圖'>add_a_photo</i>
-            <i class="material-icons"id="batch_own" text='批次加入我的貓咪圖鑑'>&#xe7f0;</i>
-            <i class="material-icons"id="batch_compare" text='批次加入比較序列'>&#xE8CC;</i>
-            <i class="material-icons"id="Gogacha" text='去轉蛋' style="display:none">&#xE332;</i>
+            <i class="material-icons cir_but"id="result_expand" text='展開'>&#xe240;</i>
+            <i class="material-icons cir_but"onclick="snapshot('#selected')" text='截圖'>add_a_photo</i>
+            <i class="material-icons cir_but"id="batch_own" text='批次加入我的貓咪圖鑑'>&#xe7f0;</i>
+            <i class="material-icons cir_but"id="batch_compare" text='批次加入比較序列'>&#xE8CC;</i>
+            <i class="material-icons cir_but"id="Gogacha" text='去轉蛋' style="display:none">&#xE332;</i>
           </div>
           <span id="result_count">共<span></span>筆結果</span>
         </div>
@@ -273,10 +266,10 @@
           <span onclick="scroll_to_class('commentTable')">評論</span>
         </div>
         <div class="control">
-          <i class="material-icons"id='mark_own' value='0' text='我沒有這隻貓'>&#xE8E7;</i>
-          <i class="material-icons"id='addcart'text='加到購物車'>&#xE8CC;</i>
-          <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons"onclick="snapshot()"text='截圖'>&#xe439;</i>
+          <i class="material-icons cir_but"id='mark_own' value='0' text='我沒有這隻貓'>&#xE8E7;</i>
+          <i class="material-icons cir_but"id='addcart'text='加到購物車'>&#xE8CC;</i>
+          <a target='blank' id="out"><i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i></a>
+          <i class="material-icons cir_but"onclick="snapshot()"text='截圖'>&#xe439;</i>
         </div>
       </div>
       <div class="display" style="pointer-events:none">
@@ -477,33 +470,35 @@
 
         <div id="comment_head" class="tableTitle" active='0'>評論</div>
         <table class="commentTable">
-          <tr><th>
-            <div class="comment_input">
-              <textarea rows='1' maxlength='100' placeholder="想說什麼呢..."></textarea>
-              <i class="material-icons" id="comment_submit">&#xe163;</i>
-            </div>
-          </th></tr>
+          <tbody> </tbody>
+          <tfoot>
+            <tr><th>
+              <div class="comment_input">
+                <textarea rows='1' maxlength='100' placeholder="想說什麼呢..."></textarea>
+                <i class="material-icons" id="comment_submit">&#xe163;</i>
+              </div>
+            </th></tr>
+          </tfoot>
         </table>
       </div>
 
     </div>
 
 
+    <div class="compareTarget_holder left-side-column flex_col" active='0' width='narrow'>
+      <div class="functionArea">
+        <i class="material-icons cir_but" id="clear_compare" text='全部清除'> clear_all </i>
+        <i class="material-icons cir_but" id="start_compare" text='開始比較'> forward </i>
+      </div>
+      <div class="compareTarget_holder" style="overflow:scroll">
+        <div class="compareTarget"></div>
+      </div>
+    </div>
     <div id="compareTarget_tag" class="left-side-active" style="height:200" active='0'>
       貓咪購物車
       <span id="compare_number">0</span>
     </div>
-    <div class="compareTarget_holder left-side-column" active='0'>
-      <div class="compareTarget_holder" style="height:calc(100% - 100px);overflow:scroll">
-        <div class="compareTarget"></div>
-      </div>
-      <div class="functionArea">
-        <i class="material-icons" id="clear_compare" text='全部清除'> clear_all </i>
-        <i class="material-icons" id="start_compare" text='開始比較'> forward </i>
-      </div>
-    </div>
 
-    <div id="TOOLTIP">This is a tool tip</div>
     <div id="batch_alert">已加入圖鑑 <i class="material-icons">&#xe877;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>

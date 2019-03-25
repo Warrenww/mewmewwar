@@ -14,7 +14,7 @@ nav .mobile,
   flex-direction: column;
   position: fixed;
   right: -180px;
-  height: 100%;
+  height: calc(100% - 40px);
   width: 180px;
   background-color: rgba(0,0,0,.8);
   z-index: 20;
@@ -66,8 +66,6 @@ nav .mobile,
   #bulletin .main>div{flex-direction: column;align-items: center;}
   #Version_display{align-items: flex-start !important;}
   .displayControl{top:1vw}
-  .left-side-active[active='1']{ left: 25% }
-  .left-side-column{width: 25%;left: -25%}
 }
 @media screen and (max-width: 768px) {
   nav{height: 40px;justify-content: space-between;}
@@ -151,9 +149,8 @@ nav .mobile,
   #eventTableScroll_R { left: calc(90% - 50px); }
   .displayControl{width: calc(100% - 6px); top: 13vw;}
   .displayControl[float='true']{top: 0%;}
-  .left-side-active[active='1']{ left: 30% }
-  .left-side-column{width: 30%;left: -30%}
-
+  .left-side-active{opacity:.2}
+  .left-side-active:hover,.left-side-active[active='1']{opacity:1}
 }
 @media screen and (max-width: 426px) {
   .select,
@@ -180,6 +177,4 @@ nav .mobile,
   .displayControl{width: calc(100% - 6px); top: 16vw;}
   .displayControl[float='true']{top: 0%;}
   .displayControl[float='true'] .data #name{display: none;}
-  .left-side-active[active='1']{ left: 60% }
-  .left-side-column{width: 60%;left: -60%}
 }

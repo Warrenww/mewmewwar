@@ -62,12 +62,7 @@ $(document).ready(function () {
       uid:CurrentUserID,
       target:id
     });
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe(type);
-      window.parent.changeIframe(type);
-    } else {
-      window.open("/"+type,"_blank");
-    }
+    switchIframe(type);
   });
 
 });

@@ -222,11 +222,8 @@ $(document).ready(function () {
   $(document).on('click',"#enemyBoard",function () { $(this).remove() });
 
   $("nav a,.m_nav_panel a").click(function () {
-    if(!openInNew&&!is_ios)  $('#iframe_holder').attr("active",true);
-    let target = $(this).attr("id");
-    if(target == 'compare') reloadIframe(target,false);
-    changeIframe(target);
-
+    var target = $(this).attr("id");
+    if(switchIframe(target))  $('#iframe_holder').attr("active",true);
     $(".m_nav_panel,#m_nav_panel_BG").attr("active",function () {
       return (Number($(this).attr("active"))+1)%2
     });
@@ -357,6 +354,7 @@ $(document).ready(function () {
   // return to normal view
   $("#iframe_holder").click(iframeNormalize);
   function iframeNormalize () {
+    var openInNew = Storage?(localStorage.openMethod!='iframe'||false):false;
     if(openInNew||is_ios) return
     $("#iframe_holder").attr("active",true); // Turn iframe to normal view
     $("#iframe_holder").children().attr('style',""); // Restore all iframes' top
@@ -385,8 +383,7 @@ $(document).ready(function () {
       target:id,
       uid:CurrentUserId
     });
-    window.parent.reloadIframe(type);
-    window.parent.changeIframe(type);
+    switchIframe(type);
   });
   $("#event_tw_but,#event_jp_but").click(function () {
     var target = $(this).attr('id').split("_but")[0];
@@ -412,24 +409,17 @@ $(document).ready(function () {
 
 function changeIframe(target,record = true) {
   if(!target) return
-  if(is_ios||openInNew){
-    window.open("/"+target,"_blank");
-    return
-  }
   $("#iframe_holder").attr("active",true);
-  let arr = [];
-  $("#iframe_holder").children().each(function () {
-    arr.push($(this).attr("id"));
-  });
-  if(arr.indexOf(target)==-1&&target){
+  if($("#iframe_holder #"+target).length)
+    $("#iframe_holder").find("#"+target).attr("active",true) .siblings().attr("active",false);
+  else
+  {
     $("#iframe_holder").append(
       "<iframe id='"+target+"' src='"+target+"'></iframe>"
     );
     $("#iframe_holder").find("#"+target).attr("active",true)
     .siblings().attr("active",false);
-  } else
-  $("#iframe_holder").find("#"+target).attr("active",true)
-  .siblings().attr("active",false);
+  }
 }
 function reloadIframe(target,record = true) {
   if(!$("#iframe_holder").find("#"+target)[0]) {

@@ -234,12 +234,12 @@ $(document).ready(function () {
         prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
         next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
     // Initialization
-    $(".display .dataTable td").empty();
-    $(".reward,.moredata,.enemy_row").remove();
+    $(".display .dataTable td,.display .enemyTable tbody,.display .rewardTable tbody").empty();
+    $(".moredata").remove();
     $(".display .dataTable img").remove();
     $(".display #star").hide();
     $("*[class='orgdata']").show();
-    $(".enemy_head th").attr("reverse","");
+    $(".enemyTable thead th").attr("reverse","");
     // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
     $(".display .dataTable #stage").html(obj.parent).attr('value',obj.stage);
@@ -269,8 +269,8 @@ $(document).ready(function () {
       }
       else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
-    $(".rewardTable").append(Addreward(data.reward,data.integral));
-    $(".enemyTable").append(Addenemy(data.enemy));
+    $(".rewardTable tbody").append(Addreward(data.reward,data.integral));
+    $(".enemyTable tbody").append(Addenemy(data.enemy));
     // $(Addlist(data.list)).insertAfter($("#list_toggle"));
     setTimeout(function () {
       scrollSelectArea('stage',obj.stage);
@@ -326,12 +326,7 @@ $(document).ready(function () {
     socket.emit("Set Compare",{type:"enemy",id:CurrentUserID,target:arr});
     setTimeout(function () {
       if(Storage) localStorage.compareType = 'enemy'
-      if(window.parent.reloadIframe){
-        window.parent.reloadIframe('compare');
-        window.parent.changeIframe('compare');
-      } else {
-        window.open("/compare","_blank");
-      }
+      switchIframe("compare");
     },800);
   });
   // Show where this level come from
@@ -344,54 +339,35 @@ $(document).ready(function () {
         stage = $(this).attr('value');
     socket.emit("required level name",{chapter:chapter,stage:stage});
   });
-  // Enemy filter function
-  $(".enemy_head th>span").click(function (e) {
+
+  $(document).on("click",".enemyTable thead .panel span",function (e) {
+    var target = $(this).text(),
+    name = $(this).parent().parent().attr('id');;
+    // console.log(target,name);
+    if(target == "無篩選") {
+      $(".enemy_row").show();
+      $(".enemyTable thead").find("th div span").attr("active",0);
+      $(".enemyTable thead").find("th").attr("reverse",'');
+    }
+    else{
+      $(".enemy_row").each(function () {
+        let val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
+        val = Number.isNaN(val) ? 1e20 : val;
+        if(val!=target) $(this).hide();
+        else $(this).show();
+      });
+      $(".enemyTable thead").find("th div span").attr("active",0);
+      $(".enemyTable thead").find("th").attr("reverse",'');
+      $(this).attr("active",1).parent().parent().attr("reverse",'filter');
+    }
+    $("#panelBG").click();
     e.stopPropagation();
-    if($(this).attr("active") == "true")
-      $(this).attr('active',false).next().css("height",0);
-    else
-      $(this).attr('active',true).next().css("height","auto")
-        .parent().siblings().each(function () {
-          $(this).find('span').attr('active',false).next().css("height",0);
-        });
-    $(document).bind('click',closePanel);
-  });
-  var closePanel = function () {
-    $(".enemy_head").find('span').attr('active',false).next().css("height",0);
-    $(document).unbind('click',closePanel);
-  }
-  $(".enemy_head th>div").click(function (e) {
-    e.stopPropagation();
-    $(this).children().click(function (e) {
-      var target = $(this).text(),
-          name = $(this).parent().parent().attr('id');;
-      // console.log(target,name);
-      if(target == "無篩選") {
-        $(".enemy_row").show();
-        $(".enemy_head").find("th div div").attr("active",0);
-        $(".enemy_head").find("th").attr("reverse",'');
-        $(this).parent().css('height',0).prev().attr("active",false);
-      }
-      else{
-        $(".enemy_row").each(function () {
-          let val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
-          val = !val ? (val==0?0:1e20) : val;
-          if(val!=target) $(this).hide();
-          else $(this).show();
-        });
-        $(".enemy_head").find("th div div").attr("active",0);
-        $(".enemy_head").find("th").attr("reverse",'');
-        $(this).attr("active",1)
-        .parent().css('height',0).prev().attr("active",false)
-        .parent().attr("reverse",'filter');
-      }
-    });
   });
   // Switch level/enemy data
   $("#swapdata").click(function (e) {
     if(current_enemy_data){
       $('.moredata').toggle().siblings("*[class='orgdata']").toggle();
-      if(!current_level_data.data.enemy[0].point) $(" .enemy_head #point").hide();
+      if(!current_level_data.data.enemy[0].point) $(" .enemyTable thead #point").hide();
     } else {
       var enemy = current_level_data.data.enemy,
           arr = [];
@@ -421,7 +397,7 @@ $(document).ready(function () {
     if(current_user_setting.MoreDataField) showlist = current_user_setting.MoreDataField;
     $(".orgdata").hide();
     for(let i in showlist){
-      $(".enemy_head").append(createHtml("th",Unit.propertiesName(showlist[i]),{id:showlist[i],class:'moredata'}));
+      $(".enemyTable thead tr").append(createHtml("th",Unit.propertiesName(showlist[i]),{id:showlist[i],class:'moredata'}));
       $(".enemy_row").each(function () {
         var id = $(this).children().eq(0).attr('id').toString(),
             lv = Number($(this).children().eq(1).text().split("％")[0])/100,
@@ -453,7 +429,7 @@ $(document).ready(function () {
     // console.log(arr);
     let html ="";
     for(let i in arr){
-      html += "<tr class='reward'><th>"+prize(arr[i].prize.name)+"</th>"+
+      html += "<tr><th>"+prize(arr[i].prize.name)+"</th>"+
                 "<td>"+arr[i].prize.amount+"</td>";
       html += "<th>"+(b?((arr[i].chance.indexOf("%")!=-1||arr[i].chance.indexOf("％")!=-1)?
                   "取得機率":"累計積分"):"取得機率")+
@@ -472,13 +448,13 @@ $(document).ready(function () {
           first_show:[],
           next_time:[]
         };
-    if(arr[0].point) $(".enemy_head #point").show();
-    else $(".enemy_head #point").hide();
+    if(arr[0].point) $(".enemyTable thead tr #point").show();
+    else $(".enemyTable thead tr #point").hide();
     for(let i in arr){
       if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
       "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
-      (arr[i].Boss?'border:5px solid rgb(244, 89, 89)':'')+
+      (arr[i].Boss?'border:5px solid var(--red)':'')+
       "'  colspan='1'><img src='"+Unit.imageURL('enemy',arr[i].id)+
       "' style='width:100%'/></td>" ;
       html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
@@ -496,11 +472,11 @@ $(document).ready(function () {
     }
     for(let j in range){
       range[j] = quickSort(range[j]);
-      $(".enemy_head").find("#"+j).children("div").empty().append("<div>無篩選</div>");
+      $(".enemyTable thead tr").find("#"+j).children(".panel").empty().append("<span>無篩選</span>");
       for(let k in range[j])
         if(!Number.isNaN(range[j][k]))
-          $(".enemy_head").find("#"+j).children("div")
-            .append("<div>"+range[j][k]+"</div>");
+          $(".enemyTable thead tr").find("#"+j).children(".panel")
+            .append("<span>"+range[j][k]+"</span>");
     }
     // console.log(range);
     return html
@@ -586,7 +562,7 @@ $(document).ready(function () {
     });
     return html
   }
-  $(document).on('click','.enemy_head th',sortStageEnemy);
+  $(document).on('click','.enemyTable thead tr th',sortStageEnemy);
   function sortStageEnemy() {
     var name = $(this).attr('id'),
         arr = [],
@@ -596,22 +572,20 @@ $(document).ready(function () {
           val = Number($(this).find("#"+name).text().split("％")[0].split("~")[0]);
       obj = {
         id:$(this).attr('id'),
-        item: !val ? (val==0?0:1e20) : val
+        item: Number.isNaN(val) ? 1e20 : val
       }
       arr.push(obj);
     });
     arr = quickSort(arr,'item');
     // console.log(arr);
     if(flag != 'increase'){
-      for(let i=arr.length-1;i>=0;i--) $(".enemy_head:visible:last").after($(".enemy_row[id='"+arr[i].id+"']"));
+      for(let i=arr.length-1;i>=0;i--) $(".enemyTable tbody").append($(".enemy_row[id='"+arr[i].id+"']"));
       $(this).attr('reverse','increase').siblings().attr('reverse','');
     } else {
-      for(let i=0;i<arr.length;i++) $(".enemy_head:visible:last").after($(".enemy_row[id='"+arr[i].id+"']"));
+      for(let i=0;i<arr.length;i++) $(".enemyTable tbody").append($(".enemy_row[id='"+arr[i].id+"']"));
       $(this).attr('reverse','decrease').siblings().attr('reverse','');
     }
-    $(".enemy_head").find("span").attr("active",false).next().css("height",0);
-    $(".enemy_head").find("th div div").attr("active",0);
-    $(".enemy_row").show();
+    $(".enemyTable tbody tr").show()
   }
 
   var tip_fadeOut;

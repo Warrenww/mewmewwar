@@ -3,8 +3,13 @@ $(document).ready(function () {
   var current_user_data = {};
   var user_photo_url = false;
   if(Storage){
-    if(localStorage.openInNewWindow == "true"){
-      $("#openInNewWindow").click();
+    if(localStorage.openMethod){
+      let temp = localStorage.openMethod;
+      if($("select[name='openMethod'] option[value='"+temp+"']").length == 0){
+        temp = "iframe";
+        localStorage.openMethod = temp;
+``      }
+      $("select[name='openMethod'] option[value='"+temp+"']").prop("selected",true);
     }
   }
   auth.onAuthStateChanged(function(user) {
@@ -55,19 +60,18 @@ $(document).ready(function () {
       // An error happened.
     });
   });
+  $("select[name='openMethod']").change(function () {
+    if(Storage){
+      var val = $("select[name='openMethod']").val();
+      console.log(val);
+      localStorage.openMethod = val;
+    } else {
+      alert("您的瀏覽器無法儲存變更");
+    }
+    window.parent.location.assign("/");
+  });
   $(document).on("click","input[type='checkbox']",function () {
     var type = $(this).attr("id");
-    if(type == "openInNewWindow"){
-      if(Storage){
-        var temp = localStorage.openInNewWindow;
-        temp = temp == "true"?false:true;
-        localStorage.openInNewWindow = temp;
-      } else {
-        alert("您的瀏覽器不支援此功能");
-      }
-      window.parent.location.assign("/");
-      return
-    }
     type = type.split("show_")[1];
     socket.emit("change setting",{
       type:type,

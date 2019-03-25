@@ -66,12 +66,7 @@ $(document).ready(function () {
       return
     }
     if(Storage) localStorage.compareType = type;
-    if(window.parent.reloadIframe){
-      window.parent.reloadIframe("compare");
-      window.parent.changeIframe("compare");
-    } else {
-      window.open("/compare","_blank");
-    }
+    switchIframe("compare");
   });
   $('body').append("<div id='compare_panel_BG'></div>");
   $(document).on('click','#compare_panel_BG',function () {

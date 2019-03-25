@@ -121,9 +121,9 @@
         <div class="title">
           <span>搜尋篩選結果</span>
           <div id="option">
-            <i class="material-icons"text='展開/收合'id="result_expand">&#xe240;</i>
-            <i class="material-icons"text='截圖'onclick="snapshot('#selected')">add_a_photo</i>
-            <i class="material-icons"text='批次加入比較序列'id="batch_compare">&#xE8CC;</i>
+            <i class="material-icons cir_but"text='展開/收合'id="result_expand">&#xe240;</i>
+            <i class="material-icons cir_but"text='截圖'onclick="snapshot('#selected')">add_a_photo</i>
+            <i class="material-icons cir_but"text='批次加入比較序列'id="batch_compare">&#xE8CC;</i>
           </div>
           <span id="result_count">共<span></span>筆結果</span>
         </div>
@@ -141,9 +141,9 @@
     <div class="content">
       <div class="displayControl">
         <div class="control">
-          <i class="material-icons"id='addcart'text='加到購物車'>&#xE8CC;</i>
-          <a target='blank' id="out"><i class="material-icons"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons"onclick='snapshot()'text='截圖'>add_a_photo</i>
+          <i class="material-icons cir_but"id='addcart'text='加到購物車'>&#xE8CC;</i>
+          <a target='blank' id="out"><i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i></a>
+          <i class="material-icons cir_but"onclick='snapshot()'text='截圖'>add_a_photo</i>
         </div>
       </div>
       <div class="display">
@@ -181,22 +181,21 @@
       </div>
     </div>
 
-    <div id="compareTarget_tag" class="left-side-active" style="height:200px" active='0'>
-      敵人購物車
-      <span id="compare_number">0</span>
+  </div>
+  <div class="compareTarget_holder left-side-column flex_col" active='0'width='narrow'>
+    <div class="functionArea">
+      <i class="material-icons cir_but" id="clear_compare" text='全部清除'> clear_all </i>
+      <i class="material-icons cir_but" id="start_compare" text='開始比較'> forward </i>
     </div>
-    <div class="compareTarget_holder left-side-column" active='0'>
-      <div class="compareTarget_holder" style="height:calc(100% - 100px);overflow:scroll">
-        <div class="compareTarget"></div>
-      </div>
-      <div class="functionArea">
-        <i class="material-icons" id="clear_compare" text='全部清除'> clear_all </i>
-        <i class="material-icons" id="start_compare" text='開始比較'> forward </i>
-      </div>
+    <div class="compareTarget_holder" style="overflow:scroll">
+      <div class="compareTarget"></div>
     </div>
   </div>
+  <div id="compareTarget_tag" class="left-side-active" style="height:200px" active='0'>
+    敵人購物車
+    <span id="compare_number">0</span>
+  </div>
 
-    <div id="TOOLTIP">This is a tool tip</div>
     <div id="copy_alert">已複製到剪貼簿 <i class="material-icons">&#xe877;</i></div>
     <div id="canvas_holder">
       <div class="picture"></div>

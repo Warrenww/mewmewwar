@@ -51,22 +51,20 @@ var quickSort = Util.Sort;
 var levelToValue = Util.levelToValue;
 
 var combodata = {},
-    stagedata = {},
     gachadata = {},
     legenddata,
     VERSION ;
 var mostSearchCat = [],
     mostSearchStage = [];
-ReloadAllData();
 var reloadTimeOut,firstReload=true;
+ReloadAllData();
 function ReloadAllData(m=0) {
   clearTimeout(reloadTimeOut);
-  firstReload = false;
   mostSearchCat = [];
   mostSearchStage = [];
   Activity.UpdateEvent();
   Unitdata.load(mostSearchCat);
-  Stagedata.load(stagedata,mostSearchStage);
+  Stagedata.load(mostSearchStage);
   Combodata.load(combodata);
   database.ref("/version").once("value",(snapshot)=>{
     VERSION = snapshot.val();
@@ -75,38 +73,34 @@ function ReloadAllData(m=0) {
   });
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
   if(!m) Users.load();
-  database.ref("/legend").once("value",(snapshot)=>{
-    legenddata = snapshot.val();
+  if(firstReload){
+    database.ref("/legend").once("value",(snapshot)=>{ legenddata = snapshot.val(); });
+  } else {
+    database.ref("/legend/stage/thisWeek").update(legenddata.stage.thisWeek);
+    Stagedata.writeBack();
     var today = new Date();
-    // If today is Sunday and lastweek data is not update yet,
     // replace lastweek data with thisweek and empty thisWeek data.
-    if(!today.getDay()){
-      // total day of previous month
-      var MaxDayInMonth = Util.MaxDayInMonth(today.getMonth());
-      var tempD = today.getDate();
-      for(let i in legenddata){
-        if(tempD - Number(legenddata[i].lastWeek.date) < 0) tempD += MaxDayInMonth;
-        if(tempD - Number(legenddata[i].lastWeek.date) >= 7){
-            legenddata[i].thisWeek.date = Number(legenddata[i].thisWeek.date)+1;
-            database.ref("/legend/"+i+"/lastWeek").set(legenddata[i].thisWeek);
-            legenddata[i].thisWeek = {date:tempD};
-            database.ref("/legend/"+i+"/thisWeek").set(legenddata[i].thisWeek);
-        }
+    var tempD = Math.floor(today.getTime()/86400000)*86400000;
+    for(let i in legenddata){
+      if(tempD - Number(legenddata[i].thisWeek.date) > 0){
+        database.ref("/legend/"+i+"/lastWeek").set(legenddata[i].thisWeek);
+        legenddata[i].thisWeek = {date:tempD + 86400000*6};
+        database.ref("/legend/"+i+"/thisWeek").set(legenddata[i].thisWeek);
       }
     }
     // mostSearchStage = {};
     // for(let i in legenddata.stage.lastWeek){
-    //   if (i == "date") continue
-    //   var id = i.split("-");
-    //   id.pop();
-    //   id.join("-");
-    //   if(mostSearchStage[id]) mostSearchStage[id] += Number(legenddata.stage.lastWeek[i]);
-    //   else mostSearchStage[id] = Number(legenddata.stage.lastWeek[i]);
-    // }
-    // Util.Sort(mostSearchStage);
-
-  });
+      //   if (i == "date") continue
+      //   var id = i.split("-");
+      //   id.pop();
+      //   id.join("-");
+      //   if(mostSearchStage[id]) mostSearchStage[id] += Number(legenddata.stage.lastWeek[i]);
+      //   else mostSearchStage[id] = Number(legenddata.stage.lastWeek[i]);
+      // }
+      // Util.Sort(mostSearchStage);
+  }
   reloadTimeOut = setTimeout(ReloadAllData,6*3600*1000);
+  firstReload = false;
 }
 
 var onLineUser = {};
@@ -299,13 +293,13 @@ io.on('connection', function(socket){
           arr.push(obj);
         }
         for(let i in compareEnemy){
-        obj = {};
-        var enemyname = Unitdata.enemyName(compareEnemy[i]);;
+          obj = {};
+          var enemyname = Unitdata.enemyName(compareEnemy[i]);;
 
-        if(!enemyname) continue
-        obj = {id:compareEnemy[i],name:enemyname};
-        brr.push(obj);
-      }
+          if(!enemyname) continue
+          obj = {id:compareEnemy[i],name:enemyname};
+          brr.push(obj);
+        }
         if(page == 'book'){
           CurrentUserData.folder = {owned:Users.getFolder(user.uid).owned};
           CurrentUserData.setting = {show_more_option:setting.show_more_option}
@@ -529,22 +523,7 @@ io.on('connection', function(socket){
 
   socket.on("require setting",function (id) {
     console.log("require "+id+"'s setting");
-    try{
-      // coinhive.balance(id,res => {
-      //   console.log(res);
-      //   res = JSON.parse(res);
-      //   if(res.success){
-      //     console.log(id,res.total,'hash');
-      //     let hash = res.total;
-      //     database.ref('/user/'+id+"/setting/mine_alert/count").set(hash);
-      //   }
-      //   console.log("hash count complete");
-      // });
-      socket.emit("user setting",Users.getSetting(id));
-    }
-    catch(e){
-      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
-    }
+    socket.emit("user setting",Users.getSetting(id));
   });
   socket.on("Set Setting",function (data) {
     console.log("set "+data.uid+"'s "+data.target+" "+data.value);
@@ -625,12 +604,12 @@ io.on('connection', function(socket){
     console.log(data);
     try{
       var chapter = data.chapter,
-      stage = data.stage,
-      level = data.level,
-      id = chapter+"-"+stage+"-"+level,
-      uid = data.uid,
-      parent = stagedata[chapter][stage],
-      prev=null,next=null,flag=false;
+          stage = data.stage,
+          level = data.level,
+          id = [chapter,stage,level].join("-"),
+          uid = data.uid,
+          parent = Stagedata.getData(chapter,stage),
+          prev=null,next=null,flag=false;
       for(let i in parent){
         if(flag) {next = i;break}
         if(i != level) prev = i ;
@@ -639,9 +618,8 @@ io.on('connection', function(socket){
       var tempID = [chapter,stage].join("-");
       if(legenddata.stage.thisWeek[tempID]) legenddata.stage.thisWeek[tempID] ++;
       else legenddata.stage.thisWeek[tempID] = 1;
-      database.ref("/legend/stage/thisWeek/"+tempID).set(legenddata.stage.thisWeek[tempID]);
       socket.emit("level data",{
-        data:stagedata[chapter][stage][level],
+        data:Stagedata.getData(chapter,stage,level),
         parent:parent.name,
         chapter:chapter,
         stage:stage,
@@ -803,16 +781,16 @@ io.on('connection', function(socket){
     console.log("cat to stage");
     console.log(data);
     try{
-      var uid = data.uid, stage = data.stage,find = false,location;
-      for(let i in stagedata){
+      var uid = data.uid, stage = data.stage,find = false,location,data = Stagedata.getData();
+      for(let i in data){
         if(find) break
-        for(let j in stagedata[i]){
+        for(let j in data[i]){
           if(find) break
           if(j == stage){
             find = true;
             location = i+"-"+j+"-1";
           }
-          for(let k in stagedata[i][j]){
+          for(let k in data[i][j]){
             if(find) break
             if((j+"-"+k) == stage){
               find = true;
@@ -998,7 +976,8 @@ io.on('connection', function(socket){
     obj[data.type] = data.val;
     database.ref("/"+path.join("/")).update(obj);
   });
-  socket.on("reloadAllData",()=>{ReloadAllData(1)});
+  socket.on("reloadAllData",()=>{ReloadAllData(1);});
+  socket.on("writeBackAllData",()=>{Stagedata.writeBack();});
 
 });
 
@@ -1025,13 +1004,12 @@ app.get('/:page',function (req,res) {
     res.sendFile(__dirname + "/view/"+req.params.page+".html");
   }
   else {
-    res.sendFile(__dirname + '/view/index.html');
+    // res.sendFile(__dirname + '/view/index.html');
+    res.send("<script>window.parent.location.assign('/');</script>");
   }
 });
 app.use(express.static(path.join(__dirname, '/public')));// to import css and javascript
 
-//
-//
 // var bodyParser = require('body-parser'),
 //       crypto = require('crypto');
 //
