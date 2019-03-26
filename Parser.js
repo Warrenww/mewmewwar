@@ -45,7 +45,6 @@ exports.parseChar = function(c,obj,type) {
   }
   else {
     for(let i in c){
-      let type = ""
       if(c[i].indexOf("遠方")!=-1){
         obj.tag.push("遠方攻擊");
         obj.char.push({
@@ -89,7 +88,6 @@ exports.parseChar = function(c,obj,type) {
         let aa = c[i].split("連続攻撃"),
         bb = aa[1].split("（")[0].trim().split(" "),
         sum = 0;
-        console.log(bb);
         for(let i in bb){
           bb[i] = Number(bb[i].split(",").join(""));
           sum += bb[i];

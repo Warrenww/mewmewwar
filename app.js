@@ -997,6 +997,11 @@ app.get("/dashboard/:uid",function (req,res) {
   }
 });
 app.get('/:page',function (req,res) {
+  // TEMP:
+  if(req.params.page == 'stage'){
+    res.send("<img src='/css/Artboard 1.png' style='height:90%'/>")
+  }
+
   if(req.params.page == "dashboard"){
     res.send("<Error>Invalid Auth</Error>");
   }
