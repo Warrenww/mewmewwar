@@ -4,7 +4,7 @@ var Parser = require("./Parser");
 var request = require("request");
 var cheerio = require("cheerio");
 var StageData={},stageMap={},modified = [];
-exports.load = function (mostSearchStage) {
+exports.load = function () {
   console.log("Module start loading stage data.");
 
   database.ref("/stagedata").once("value",(snapshot)=>{
@@ -15,37 +15,42 @@ exports.load = function (mostSearchStage) {
       for(let j in temp[i]){
         for(let k in temp[i][j]){
           if(k == 'name') continue
-          buffer.push({
-            id:temp[i][j][k].id,
-            count:temp[i][j][k].count,
-            energy:temp[i][j][k].energy,
-            name:temp[i][j][k].name,
-            enemy:temp[i][j][k].enemy
-          });
+          // buffer.push({
+          //   id:temp[i][j][k].id,
+          //   count:temp[i][j][k].count,
+          //   energy:temp[i][j][k].energy,
+          //   name:temp[i][j][k].name,
+          //   enemy:temp[i][j][k].enemy
+          // });
         }
         stageMap[j] = temp[i][j];
       }
     }
-    buffer = Util.Sort(buffer,'count',true);
-    for(let i=0; i<3; i++){
-      mostSearchStage.push(buffer[i]);
-    }
-    buffer = [];
+    // buffer = Util.Sort(buffer,'count',true);
+    // for(let i=0; i<3; i++){
+    //   mostSearchStage.push(buffer[i]);
+    // }
+    // buffer = [];
     console.log("Module load stage data complete!");
     // console.log("most Search Stage : ",mostSearchStage);
   });
 }
 exports.GetNameArr = function (chapter,level=null) {
-  var target = StageData[chapter],
-      response = [];
-  if(level) target = target[level];
-  for(let i in target) {
-    if (i == 'name') continue;
-    var temp = {id:i,name:target[i].name};
-    if(level) temp.bg = target[i].bg_img;
-    response.push(temp);
+  try {
+    var target = StageData[chapter],
+    response = [];
+    if(level) target = target[level];
+    for(let i in target) {
+      if (i == 'name') continue;
+      var temp = {id:i,name:target[i].name};
+      if(level) temp.bg = target[i].bg_img;
+      response.push(temp);
+    }
+    return response
+  } catch (e) {
+    Util.__handalError(e);
+    return [];
   }
-  return response
 }
 exports.setHistory = function (id) {
   modified.push(id);
@@ -54,16 +59,33 @@ exports.setHistory = function (id) {
     StageData[id[0]][id[1]][id[2]].count?StageData[id[0]][id[1]][id[2]].count+1:1;
   // database.ref("/stagedata/"+id.join("/")+"/count").set(StageData[id[0]][id[1]][id[2]].count);
 }
-exports.writeBack = function () {
-  var obj = {};
-  for (var i in modified) {
-    var id = modified[i].split("-");
-    if(!(id[0] in obj)) obj[id[0]] = {};
-    if(!(id[1] in obj)) obj[id[0]][id[1]] = {};
-    if(!(id[2] in obj)) obj[id[0]][id[1]][id[2]] = {};
-    obj[id[0]][id[1]][id[2]].count = StageData[id[0]][id[1]][id[2]].count;
+exports.writeBack = function () {  }
+exports.Rename = function (id,name) {
+  id = id.split("-");
+  if(id.length < 2) return false;
+  var ptr = StageData;
+  for(let i in id){
+    if(id[i] in ptr) ptr = ptr[id[i]];
+    else return false;
   }
-  database.ref("/stagedata").update(obj);
+  if((id[0] == 'world'||id[0] == 'future'||id[0] == 'universe') && id[2]){
+    var base = Math.floor(id[1].substring(5,6)/3)*3;
+    for(let i = base;i<base+3;i++){
+      let temp = id[1].substring(0,5)+i;
+      StageData[id[0]][temp][id[2]].name = name;
+      database.ref(`/stagedata/${id[0]}/${temp}/${id[2]}/name`).set(name);
+      temp += "z";
+      if(temp in StageData[id[0]]){
+        StageData[id[0]][temp][id[2]].name = name;
+        database.ref(`/stagedata/${id[0]}/${temp}/${id[2]}/name`).set(name);
+      }
+    }
+  }
+  else {
+    ptr.name = name;
+    database.ref("/stagedata/"+id.join("/")+"/name").set(name);
+  }
+  return true;
 }
 exports.getData = function (chapter=null,stage=null,level=null) {
   try {
@@ -142,6 +164,8 @@ exports.fetch = function (chapter,id,correction) {
   id = id.split("-");
   // console.log(chapter,id);
   if(!chapter||!id) return;
+  if(id[0].substring(0,3) == '110') modify = -1;
+  else modify = 0;
   LevelArr = [0];
   getData(chapter,("s"+id[0]).trim(),0,false);
 }
@@ -203,9 +227,11 @@ function getData(chapter,i,j,correction=false) {
     if(!e){
       // console.log("get data");
       $ = cheerio.load(b);
+
       var content = $(".maincontents table"),
-          final = Number(j) == finalLevelPos,
-          thead = content.children("thead").eq(0).children("tr"),
+          final = Number(j) == finalLevelPos;
+          if(i.indexOf("030") != -1 && final){ modify = -1;}
+      var thead = content.children("thead").eq(0).children("tr"),
           tbody_1 = content.children("tbody").eq((final?1:0)+modify).children("tr"),
           tbody_2 = content.children("tbody").eq((final?2:1)+modify).children("tr"),
           tbody_3 = content.children("tbody").eq((final?3:2)+modify).children("tr"),
@@ -213,10 +239,14 @@ function getData(chapter,i,j,correction=false) {
           constrain_bias = 0;
       if (tbody_3.length) correction = true;
       else correction = false;
+      console.log(`final:${final},correction:${correction},modify:${modify}`);
 
       obj.final = final;
       obj.jp_name = thead.eq(0).children("td").eq(2).text().split(" ")[0];
-      obj.name = StageData[chapter]?(StageData[chapter][i]?(StageData[chapter][i][LevelArr[j]]?StageData[chapter][i][LevelArr[j]].name:obj.jp_name):obj.jp_name):obj.jp_name;
+      obj.name = StageData[chapter]?
+        (StageData[chapter][i]?
+          (StageData[chapter][i][LevelArr[j]]?
+            (StageData[chapter][i][LevelArr[j]].name?StageData[chapter][i][LevelArr[j]].name:""):obj.jp_name):obj.jp_name):obj.jp_name;
       obj.continue = thead.eq(0).children("td").eq(2).find("font").text().indexOf("コンテニュー不可")!=-1?false:true;
       obj.integral = thead.eq(0).children("td").eq(2).find("font").text()=="採点報酬"?true:false;
       if(thead.eq(2).children("td").eq(1).text().indexOf("制限")!=-1){
@@ -250,16 +280,17 @@ function getData(chapter,i,j,correction=false) {
       }
       for(let k=0;k<tbody_2.length;k++){
         let ene = tbody_2.eq(k).children("td");
-        obj.enemy.push({
-          Boss : ene.eq(0).text() == "BOSS" ? true : false,
-          id : ene.eq(2).children("a").attr("href").split("/")[2].split(".html")[0],
-          multiple : ene.eq(3).text(),
-          amount : ene.eq(4).text(),
-          castle : ene.eq(5).text(),
-          first_show : (Number(ene.eq(6).text())/30).toFixed(1),
-          next_time : Parser.FtoS(ene.eq(7).text()),
-          // point : ene.eq(8).text()
-        });
+        let temp = {
+              Boss : ene.eq(0).text() == "BOSS" ? true : false,
+              id : ene.eq(2).children("a").attr("href").split("/")[2].split(".html")[0],
+              multiple : ene.eq(3).text(),
+              amount : ene.eq(4).text(),
+              castle : ene.eq(5).text(),
+              first_show : (Number(ene.eq(6).text())/30).toFixed(1),
+              next_time : Parser.FtoS(ene.eq(7).text())
+            };
+        if(modify == -1) temp.point = ene.eq(8).text();
+        obj.enemy.push(temp);
         if(k==0){
           for(let l=0;l<star_len;l++) obj.star.push(Number(ene.eq(3).text().split('％')[0]));
         }
@@ -280,7 +311,7 @@ function getData(chapter,i,j,correction=false) {
 }
 function updateStar(obj,n,final,correction) {
   var id = obj.id.split("-"),
-      fetch_Url = "https://battlecats-db.com/stage/"+id[1]+"-"+Util.AddZero(id[2])+".html?s"+n;
+      fetch_Url = "https://battlecats-db.com/stage/"+id[1]+"-"+Util.AddZero(id[2])+".html?star="+n;
   console.log(fetch_Url,final);
   request({
     url: fetch_Url,

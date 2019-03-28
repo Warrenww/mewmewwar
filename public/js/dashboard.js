@@ -36,7 +36,7 @@ $(document).ready(function () {
     for(let i in stageName[chapter]){
       html += "<tr><th class='editable' type='name' path='"+
               ["stagedata",chapter,i].join()+"'colspan='8'>"+
-              stageName[chapter][i].name.name+"</th></tr><tr>";
+              (stageName[chapter][i].name?stageName[chapter][i].name.name:"")+"</th></tr><tr>";
       count = 0;
       for(let j in stageName[chapter][i]){
         if(j == 'name') continue

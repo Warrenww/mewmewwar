@@ -137,7 +137,7 @@ $(document).ready(function () {
       }
     }
     let timer = new Date().getTime(),setting = data.setting;
-    // console.log(data);
+    console.log(data);
     dataArr = ['name','hp','atk','count'];
     dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchCat){
@@ -146,16 +146,28 @@ $(document).ready(function () {
       for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchCat[i][dataArr[j]]);
       target.attr({"id":data.legend.mostSearchCat[i].id,type:'cat'});
     }
-    dataCrr = ['name','energy','count'];
-    dataDrr = ['','消耗統帥力 : ','查詢次數 : '];
     for(let i in data.legend.mostSearchStage){
-      let target = $(".LegendCard").eq(Number(i)+3),enemy=[];
+      let target = $(".LegendCard").eq(Number(i)+3),level=[],
+          temp = data.legend.mostSearchStage[i],
+          id = temp.id.split("-");
       target.children("div").attr("bg",data.legend.mostSearchStage[i].id.split("-")[0]);
-      for(let j in dataCrr) target.children("span").eq(j).text(dataDrr[j]+data.legend.mostSearchStage[i][dataCrr[j]]);
-      for(let j in data.legend.mostSearchStage[i].enemy) enemy.push(data.legend.mostSearchStage[i].enemy[j].id)
-      target.children("span").eq(3).attr("enemy",JSON.stringify(enemy));
-      target.attr({"id":data.legend.mostSearchStage[i].id,type:'stage'});
+      for(let j in temp.name) if(temp.name[j].id == id[1]) target.children("span").eq(0).text(temp.name[j].name);
+      target.children("span").eq(1).text("子關卡數 : "+temp.data.length);
+      target.children("span").eq(2).text("平均查詢數 : "+Math.round(temp.count));
+      target.children("span").eq(3).attr("level",JSON.stringify(temp.data));
+      target.attr({"id":temp.id,type:'stage'});
     }
+    $(".LegendCard span").click(function () {
+      if(!$(this).attr("level")) return;
+      var arr = JSON.parse($(this).attr("level"));
+      $('body').append("<div id='levelBoard'><div></div></div>");
+      for(let i in arr)
+        $("#levelBoard div")
+          .append("<span class='card' name='"+arr[i].name+
+                  "' style='background-size:cover;background:url(\""+image_url_stage+arr[i].bg+".png\")'/>");
+    });
+    $(document).on('click',"#levelBoard",function () { $(this).remove() });
+
 
     // Update Event
     $("#event_tw,#event_jp").empty(); // Initial area
@@ -212,14 +224,6 @@ $(document).ready(function () {
     $("#event_iframe").attr("src",url).next()
         .next().children().eq(0).attr("href",url);
   }
-
-  $(".LegendCard span").click(function () {
-    if(!$(this).attr("enemy")) return
-    var arr = JSON.parse($(this).attr("enemy"));
-    $('body').append("<div id='enemyBoard'><div></div></div>");
-    for(let i in arr) $("#enemyBoard div").append("<img src='"+Unit.imageURL('enemy',arr[i])+"'/>");
-  });
-  $(document).on('click',"#enemyBoard",function () { $(this).remove() });
 
   $("nav a,.m_nav_panel a").click(function () {
     var target = $(this).attr("id");

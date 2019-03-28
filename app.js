@@ -30,6 +30,7 @@ var Combodata = require("./Combodata");
 var CoinhiveAPI = require('coinhiveapi');
 var coinhive = new CoinhiveAPI('kyoXowX7ige3k8BcMVZcnhOwaZi3lEIv');
 var dashboardID;
+var editingTable = {}; // for rename stage
 var Apiai = require("apiai");
 var Ai = Apiai("03cfa1877067410c82e545e9883f5d48");
 
@@ -74,10 +75,10 @@ function ReloadAllData(m=0) {
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
   if(!m) Users.load();
   if(firstReload){
-    database.ref("/legend").once("value",(snapshot)=>{ legenddata = snapshot.val(); });
+    database.ref("/legend").once("value",(snapshot)=>{ legenddata = snapshot.val(); Stagelegend();});
   } else {
     database.ref("/legend/stage/thisWeek").update(legenddata.stage.thisWeek);
-    Stagedata.writeBack();
+    // Stagedata.writeBack();
     var today = new Date();
     // replace lastweek data with thisweek and empty thisWeek data.
     var tempD = Math.floor(today.getTime()/86400000)*86400000;
@@ -88,16 +89,32 @@ function ReloadAllData(m=0) {
         database.ref("/legend/"+i+"/thisWeek").set(legenddata[i].thisWeek);
       }
     }
-    // mostSearchStage = {};
-    // for(let i in legenddata.stage.lastWeek){
-      //   if (i == "date") continue
-      //   var id = i.split("-");
-      //   id.pop();
-      //   id.join("-");
-      //   if(mostSearchStage[id]) mostSearchStage[id] += Number(legenddata.stage.lastWeek[i]);
-      //   else mostSearchStage[id] = Number(legenddata.stage.lastWeek[i]);
-      // }
-      // Util.Sort(mostSearchStage);
+    Stagelegend();
+  }
+  function Stagelegend(){
+    mostSearchStage = [];
+    let buffer=[],counter = 0;
+    for(let i in legenddata.stage.lastWeek){
+      let temp = i.split("-"),
+          x = legenddata.stage.lastWeek[i]/Stagedata.GetNameArr(temp[0],temp[1]).length;
+          // console.log(temp,Number(x));
+      if(i == "date" || Number.isNaN(Number(x)) || !Number.isFinite(x)) continue;
+      buffer.push({id:i,count:x});
+     }
+    buffer = Util.Sort(buffer,"count",true);
+    // console.log(buffer);
+    for(let i in buffer){
+      if(counter >= 3) break;
+      let temp = buffer[i].id.split("-");
+      // console.log(temp);
+      mostSearchStage.push({
+        id:buffer[i].id,
+        name: Stagedata.GetNameArr(temp[0]),
+        data: Stagedata.GetNameArr(temp[0],temp[1]),
+        count:buffer[i].count
+      });
+      counter ++;
+    }
   }
   reloadTimeOut = setTimeout(ReloadAllData,6*3600*1000);
   firstReload = false;
@@ -979,6 +996,36 @@ io.on('connection', function(socket){
   socket.on("reloadAllData",()=>{ReloadAllData(1);});
   socket.on("writeBackAllData",()=>{Stagedata.writeBack();});
 
+  socket.on("user rename stage",(data)=>{
+    console.log("rename stage",data);
+    switch (data.status) {
+      case "edit":
+        if(editingTable[data.id]) socket.emit("user rename stage",{status:"fail",reason:"其他使用者編輯中"});
+        else {
+          socket.broadcast.emit("user rename stage",{status:"editing",id:data.id});
+          editingTable[data.id] = true;
+        }
+        break;
+      case "commit":
+        if(Stagedata.Rename(data.id,data.name)){
+          io.emit("user rename stage",{status:"finish",id:data.id,name:data.name})
+        } else {
+          socket.emit("user rename stage",{status:"fail",reason:"寫入失敗"});
+          io.emit("user rename stage",{status:"release",id:data.id})
+        }
+        editingTable[data.id] = false;
+        break;
+      case "abort":
+        io.emit("user rename stage",{status:"release",id:data.id})
+        editingTable[data.id] = false;
+        break;
+      default:
+        socket.emit("user rename stage",{status:"fail",reason:"未知原因"});
+        io.emit("user rename stage",{status:"release",id:data.id})
+        editingTable[data.id] = false;
+    }
+  });
+
 });
 
 const port = 8000 ;
@@ -997,11 +1044,6 @@ app.get("/dashboard/:uid",function (req,res) {
   }
 });
 app.get('/:page',function (req,res) {
-  // TEMP:
-  if(req.params.page == 'stage'){
-    res.send("<img src='/css/Artboard 1.png' style='height:90%'/>")
-  }
-
   if(req.params.page == "dashboard"){
     res.send("<Error>Invalid Auth</Error>");
   }

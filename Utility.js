@@ -100,7 +100,7 @@ function quickSort(list,target=null,reverse=false) {
     var length = list.length;
     if (length <= 1) return list
 
-    var pivot_index = Math.ceil(length/2),
+    var pivot_index = 0,
         pivot = list[pivot_index],
         pivot_value = target?pivot[target]:pivot,
         smaller=[],

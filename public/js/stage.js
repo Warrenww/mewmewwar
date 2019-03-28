@@ -149,11 +149,8 @@ $(document).ready(function () {
   $(document).on("click",".select_chapter button",function () {
     let chapter = $(this).attr('id');
     $(this).attr("value",'1');
-    setTimeout(function () {
-      $(".select_chapter button[value=1]").attr("value",0);
-      expend_sl_chap = 0;
-      showhideselectchap();
-    },1000);
+    $(".select_chapter button[value=1]").attr("value",0);
+
     $("#select_stage").empty();
     $("#select_level").empty();
     // console.log(chapter);
@@ -172,7 +169,7 @@ $(document).ready(function () {
     for( let i in data )
       $("#select_stage").append(
         "<button value='0' style='width:180px;height:"+
-        (data[i].name.length>9?80:40)+"px;margin:5px' id='"+
+        (data[i].name?(data[i].name.length>9?80:40):40)+"px;margin:5px' id='"+
         data[i].id+"'>"+data[i].name+"</button>"
       );
   });
@@ -242,7 +239,7 @@ $(document).ready(function () {
     $(".enemyTable thead th").attr("reverse","");
     // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
-    $(".display .dataTable #stage").html(obj.parent).attr('value',obj.stage);
+    $(".display .dataTable #stage").html(`${(obj.parent?obj.parent:"")}<i class='material-icons'>create</i>`).attr('value',obj.stage);
     $(".displayControl .control #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
           "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
     $(".displayControl .control #next").attr("query",JSON.stringify(next_stage));
@@ -267,6 +264,7 @@ $(document).ready(function () {
           $(".display .dataTable").find("#"+i).html(starhtml);
         }
       }
+      else if(i == 'name') $(".display .dataTable").find("#"+i).html(`${data[i]?data[i]:data.jp_name}<i class='material-icons'>create</i>`);
       else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
     $(".rewardTable tbody").append(Addreward(data.reward,data.integral));
@@ -601,8 +599,103 @@ $(document).ready(function () {
     }
   });
 
-});
+  var renameTimer;
+  $(document).on("click",".dataTable #stage i,.dataTable #name i",function () {
+    if($(this).is(".noedit")) return;
+    var id = current_level_data.data.id.split("-"),
+        stage = $(this).parent().is("#stage"),
+        orgText = $(this).parent().html().split("<")[0];
 
+    renameTimer = setTimeout(TimeOut,20000);
+    function TimeOut() {
+      $(".dataTable").find("input").parent().html(`${orgText}<i class='material-icons'>create</i>`);
+      alert(`因為閒置過久所以取消編輯`);
+      socket.emit("user rename stage",{status:"abort",id:id});
+    }
+
+    if(stage) id.pop();
+    id = id.join("-");
+    socket.emit("user rename stage",{status:"edit",id:id});
+
+    $(this).parent().html(`<input type='text' value='${orgText}' id='${id}'/>`)
+    .find("input").focus().select().bind("keydown",function (e) {
+      clearTimeout(renameTimer);
+      renameTimer = setTimeout(TimeOut,20000);
+      if(e.key=='Escape'||e.keyCode===27){
+        $(this).parent().html(`${orgText}<i class='material-icons'>create</i>`);
+        clearTimeout(renameTimer);
+        socket.emit("user rename stage",{status:"abort",id:id});
+      }
+      if(e.keyCode == 13){
+        if(e.shiftKey) $(this).val($(this).val()+"<br>").focus();
+        else {
+          var val = $(this).val(),
+          r = confirm(`確定將關卡名稱改為${val}?`);
+          clearTimeout(renameTimer);
+          if(r && (val.trim() != "")){
+            socket.emit("user rename stage",{status:"commit",id:id,name:val});
+          } else {
+            $(this).parent().html(`${orgText}<i class='material-icons'>create</i>`);
+            socket.emit("user rename stage",{status:"abort",id:id});
+          }
+        }
+      }
+    });
+  });
+  socket.on("user rename stage",(data)=>{
+    clearTimeout(renameTimer);
+    switch (data.status) {
+      case "editing":
+        var id_editing = data.id.split("-"),
+            id_current = current_level_data.data.id.split("-");
+        if(id_editing[0] != id_current[0]) break;
+        if(id_editing[1] != id_current[1]) break;
+        if(!id_editing[2]){
+          $(".dataTable #stage i").addClass("noedit");
+        } else if(id_editing[2] == id_current[2]){
+          $(".dataTable #name i").addClass("noedit");
+        }
+      break;
+      case "fail":
+        var orgText = $(".dataTable").find("input").attr("value");
+        $(".dataTable").find("input").parent().html(`${orgText}<i class='material-icons'>create</i>`);
+        alert(`因為${data.reason}所以無法編輯/更新關卡名稱，請重新整理或稍後在試`);
+        break;
+      case "finish":
+        var id_editing = data.id.split("-"),
+            id_current = current_level_data.data.id.split("-");
+        if(id_editing[0] != id_current[0]) break;
+        if(id_editing[1] != id_current[1]) break;
+        if(!id_editing[2]){
+          $(".dataTable #stage").html(`${data.name}<i class='material-icons'>create</i>`);
+          $("#select_stage").find("#"+id_editing[1]).html(data.name);
+        } else if(id_editing[2] == id_current[2]){
+          $(".dataTable #name ").html(`${data.name}<i class='material-icons'>create</i>`);
+          $("#select_level .card[value='1']").html(data.name);
+        }
+        break;
+      case "release":
+        var id_editing = data.id.split("-"),
+            id_current = current_level_data.data.id.split("-");
+        if(id_editing[0] != id_current[0]) break;
+        if(id_editing[1] != id_current[1]) break;
+        if(!id_editing[2]){
+          $(".dataTable #stage i").removeClass("noedit");
+        } else if(id_editing[2] == id_current[2]){
+          $(".dataTable #name i").removeClass("noedit");
+        }
+        break;
+      default:
+    }
+  });
+
+});
+$(window).unload(function () {
+  var id = current_level_data.data.id.split("-");
+  socket.emit("user rename stage",{status:"abort",id:id.join("-")});
+  id.pop();
+  socket.emit("user rename stage",{status:"abort",id:id.join("-")});
+});
 function scrollSelectArea(area,target) {
   // console.log(area,target);
   var This = $("#select_"+area),

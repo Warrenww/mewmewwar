@@ -539,6 +539,7 @@ exports.parsePrize = function(p,img) {
     obj.name = img.children("img").attr("src").split("/")[3].split(".png")[0];
     var catName = Unit.catName(obj.name.split("-")[0].split("u")[1]);
     obj.amount = catName?catName[Number(obj.name.split("-")[1])-1]:"";
+    if(obj.amount == undefined) obj.amount = "";
   } else {
     obj.name = s;
   }
@@ -551,6 +552,9 @@ exports.parseConstrain = function(c) {
   if(c.search("円")!=-1){
     c = "生產成本:"+c.split(" ")[1].replace("円","元");
   }
+  else if(c.search("レア")!=-1){
+    c = c.split("レア").join("稀有").split(" ").splice(1).join("・");
+  }
   else if(c.search("出撃数")!=-1){
     c = "最大出擊數量:"+c.split(" ")[1].split("体")[0];
   }
@@ -559,9 +563,6 @@ exports.parseConstrain = function(c) {
   }
   else if(c.search("一回クリアのみ")!=-1){
     c = "僅限通關一次";
-  }
-  else if(c.search("レア")!=-1){
-    c = c.replace("レア","稀有").split(" ").splice(0,1).join("・");
   }
   // console.log(c);
   return c

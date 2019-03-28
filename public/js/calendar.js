@@ -111,13 +111,17 @@ $(document).ready(function () {
     $("#alldayevent ul").append(
       "<li id='hard-s01158-1'>吉娃娃伯爵降臨</li>"+
       "<li id='hard-s01111-1'>禍不單行</li>");
-    if([7,8,21,22].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01095-1'>斷罪天使海蝶降臨</li>");
+    if([7,8,21,22].indexOf(dd)!=-1)
+      $("#alldayevent ul").append(
+          "<li id='hard-s01095-1'>斷罪天使海蝶降臨</li>"+
+          "<li id='hard-s01196-1'>絕・斷罪天使海蝶降臨</li>"
+        );
     if([9,10,23,24].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01114-1'>超尖端科技</li>");
     if([11,12,25,26].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01117-1'>地獄門</li>");
     if([13,14,27,28].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01112-1'>神判日</li>");
     if([12,13,14,15].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01177-1'>春宵苦短,少女做夢吧!</li>");
     if(dd==2||dd==22)
-    $("#alldayevent ul").append("<li id='openeye-s01148-1' style='color:#d53f3f'>開眼的花盆貓襲来！(14:22~14:24開放)</li>");
+    $("#alldayevent ul").append("<li id='openeye-s01148-1' style='color:var(--red)'>開眼的花盆貓襲来！(14:22~14:24開放)</li>");
   }
   $(document).on("click",'#alldayevent li,#ticket-s01078-1,#dataTable span,#nightEvent .stage',function () {
     var arr = $(this).attr('id').split("-");
@@ -136,7 +140,4 @@ $(document).ready(function () {
 
 
 });
-function parseWeek(n) {
-  var arr = ["Mon.","Tue.","Wed.","Thu.","Fri.","Sat.","Sun"];
-  return arr[n-1]
-}
+function parseWeek(n) { return ["Mon.","Tue.","Wed.","Thu.","Fri.","Sat.","Sun"][n-1] }
