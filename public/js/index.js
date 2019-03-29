@@ -164,7 +164,7 @@ $(document).ready(function () {
       for(let i in arr)
         $("#levelBoard div")
           .append("<span class='card' name='"+arr[i].name+
-                  "' style='background-size:cover;background:url(\""+image_url_stage+arr[i].bg+".png\")'/>");
+                  "' style='background:url(\""+image_url_stage+arr[i].bg+".png\");background-size: cover;'/>");
     });
     $(document).on('click',"#levelBoard",function () { $(this).remove() });
 

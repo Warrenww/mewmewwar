@@ -63,7 +63,7 @@ exports.setSetting = function (uid,attr,data) {
   // database.ref("/user/"+uid+"/setting/"+attr).set(data);
 }
 exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
-  if(!UserData[uid]) return null
+  if(!UserData[uid]) return {}
   var response;
   if(arg_0){
     if(UserData[uid].variable[arg_0]==''||!UserData[uid].variable[arg_0])

@@ -110,15 +110,16 @@ exports.Search = function (type,query) {
     buffer = [];
     for(let i in StageData){
       for(let j in StageData[i]){
-        if(StageData[i][j].name.indexOf(query)!=-1)
-        buffer.push({id:i+"-"+j,name:StageData[i][j].name});
+        if(StageData[i][j].name)
+          if(StageData[i][j].name.indexOf(query)!=-1)
+            buffer.push({id:i+"-"+j,name:StageData[i][j].name});
         for(let k in StageData[i][j]){
-          if (k=='name') continue
+          if (k=='name' || !StageData[i][j][k].name) continue
           if(StageData[i][j][k].name.indexOf(query)!=-1)
-          buffer.push({
-            id:i+"-"+j+"-"+k,
-            name:StageData[i][j].name+"/"+StageData[i][j][k].name
-          });
+            buffer.push({
+              id:i+"-"+j+"-"+k,
+              name:StageData[i][j].name+"/"+StageData[i][j][k].name
+            });
         }
       }
     }
