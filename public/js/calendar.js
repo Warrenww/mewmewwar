@@ -20,7 +20,7 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    // console.log(data);
+    console.log(data);
     current_user_id = data.uid;
   });
 
@@ -43,13 +43,13 @@ $(document).ready(function () {
   });
 
   function updateEvent(today=new Date()) {
-    console.log(today);
+    // console.log(today);
     var mm = today.getMonth()+1,
         dd = today.getDate(),
         ww = today.getDay(),
         hh = today.getHours();
     ww = ww?ww:7;
-    console.log(ww,dd,hh);
+    // console.log(ww,dd,hh);
     if(hh>6)
     $("#dataTable tr").eq(hh-6).addClass("border")
     .siblings().removeClass("border");

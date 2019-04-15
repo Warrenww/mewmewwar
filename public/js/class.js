@@ -106,26 +106,27 @@ class Cat extends Unit{
 
   CharHtml(lv){
     let html = '',char = this.char;
-    if(!this.tag||this.char=='無') html = '無'
+    if(!this.tag||this.char=='無'||!this.char) html = '-'
     else{
       for(let k in char){
+        html += "<div>";
         if(char[k].type=='波動'){
           html+=char[k].chance+"%的機率 發出Lv"+
           char[k].percent+"的<span id ='type'>"+char[k].type+"</span> (射程:"+
           (132.5+200*char[k].percent)+")</br>"
         }else{
           html +=
-          (char[k].against?"對<span id='color'>"+char[k].against+"</span>":"")+
+          (char[k].against?`對<span id='color'>${char[k].against}${this.smallIcon(char[k].against)}</span>`:"")+
           (char[k].chance?char[k].chance+"%的機率":"")+
           (char[k].lower?"體力小於"+char[k].lower+"%時":"")+
-          "<span id='type'>"+char[k].type+"</span>"+
+          `<span id='type'>${char[k].type}${this.smallIcon(char[k].type)}</span>`+
           (char[k].percent?char[k].percent+"%":"")+
           (char[k].range?" "+char[k].range.join("~"):"")+
-          (char[k].period?+char[k].period.toFixed(1)+"秒":"");
+          (char[k].period?"持續"+char[k].period.toFixed(1)+"秒":"");
           if(char[k].arr){
             html += "<span id='serial'>("+this.serialATK(lv)+")</span>"
           }
-          html += "</br>";
+          html += "</div>";
         }
       }
     }
@@ -182,6 +183,20 @@ class Cat extends Unit{
       +"_icon0"+(Number(i)+1)+".png'/>x"+fruit[i].number
     }
     return html
+  }
+  smallIcon(name){
+    var html = "";
+    if(typeof(name) == "string") name = [name.split(" ")[0]];
+    for(let i in name){
+      let temp = {
+        '降攻':'atkdown', '增攻':'atkup', '免疫降攻':'noatkdown', '善於攻擊':'goodat', '很耐打':'morehp', '超級耐打':'morehp_ex', '超大傷害':'bighurt', '極度傷害':'bighurt_ex', '只能攻擊':'only_atk', '會心一擊':'criticalhit',
+        '擊退':'goaway', '免疫擊退':'nogoaway', '3段連續攻擊':'serialatk','2段連續攻擊':'serialatk', '不死剋星':'killdeath', '緩速':'slow', '免疫緩速':'noslow', '暫停':'stop', '免疫暫停':'nostop', '遠方攻擊':'faratk', '復活':'surive',
+        '波動':'wave', '免疫波動':'nowave', '抵銷波動':'stopwave', '擊倒敵人時，獲得2倍金錢':'2money', '對敵城傷害x4':'castle', '免疫傳送':'notrans', '破盾':'breakshell', '一次攻擊':'1atk', '鋼鐵':'metal', '免疫古代詛咒':'nocurse',
+        "紅色敵人":"red_enemy","漂浮敵人":"float_enemy","黑色敵人":"black_enemy","鋼鐵敵人":"metal_enemy","天使敵人":"angle_enemy","外星敵人":"alien_enemy","不死敵人":"death_enemy","古代種":"ancient_enemy",
+      }[name[i]];
+      if(temp != null) html += `<img src='/css/footage/gameIcon/${temp}.png'/>`;
+    }
+    return html;
   }
 
   static parseRarity(s) {

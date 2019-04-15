@@ -251,6 +251,7 @@
 .modal-footer button[type='clear']:active{background: linear-gradient(#fc6c52,#f48b8b);}
 .modal-body{overflow-x: scroll;}
 table .cir_but::before{ top: calc(-100% - 10px) }
+.char img{width: 20; margin: 0 3; }
 @media screen and (max-width:426px) {
   .control>div>span{font-size: 14}
   .swapper{padding-top: 30;width: 190}

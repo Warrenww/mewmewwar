@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.34.4"
+const VERSION = "10.35.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -55,7 +55,10 @@ $(document).ready(function () {
 
   // table title reaction
   $('.tableTitle').click(function () {
-    $(this).attr('active',(Number($(this).attr("active"))+1)%2).next().toggle();
+    let temp = Number($(this).attr("active"));
+    if(Number.isNaN(temp)) temp= 0;
+    temp = (temp+1)%2;
+    $(this).attr('active',temp).next().toggle();
   });
 
   // left side column reaction
@@ -76,30 +79,31 @@ $(document).ready(function () {
 
     if(temp){
       $("body").append("<div id='panelBG'></div>");
-      $(document).bind("wheel",noWheel);
+      $("#panelBG").bind("wheel",noWheel);
     } else {
       $("#panelBG").remove();
-      $(document).unbind("wheel",noWheel);
+      $("#panelBG").unbind("wheel",noWheel);
     }
     e.stopPropagation();
   });
   var noWheel = function (e) {
     var isUp = e.originalEvent.deltaY < 0;
+    var element = e.target;
+    // var element = $(".panel[active='1']")[0];
+    // console.log(element.scrollHeight,element.scrollTop,element.clientHeight,isUp);
+    // if((element.scrollHeight - element.scrollTop === element.clientHeight) && (!isUp)){
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    //   return false;
+    // } else if(element.scrollTop == 0 && isUp){
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    //   return false;
+    // }
     if(e.target == $("#panelBG")[0]){
       e.preventDefault();
       e.stopPropagation();
       return false;
-    } else {
-      let element = $(".panel[active='1']")[0];
-      if((element.scrollHeight - element.scrollTop === element.clientHeight) && (!isUp)){
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      } else if(element.scrollTop == 0 && isUp){
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
     }
   }
   $(document).on("click","#panelBG",function () {
@@ -313,7 +317,7 @@ function snapshot(selector) {
     $('#canvas_holder a').bind("click",function () {
       try {
         canvas.toBlob(blob => {
-          console.log(blob);
+          // console.log(blob);
           var a = document.createElement('a');
           a.download = 'download.png';
           a.href = URL.createObjectURL(blob);
@@ -347,7 +351,7 @@ function switchIframe(target) {
   if(!target) return;
   var openMethod = "iframe";
   if(Storage){ if(localStorage.openMethod) openMethod = localStorage.openMethod; }
-  if(is_ios && openMethod == 'iframe'|| window.parent.reloadIframe == undefined) openMethod='_blank';
+  if((is_ios && openMethod == 'iframe')|| (openMethod == 'iframe' && window.parent.reloadIframe == undefined)) openMethod='_blank';
   if(openMethod == "iframe"){
     window.parent.reloadIframe(target);
     window.parent.changeIframe(target);
@@ -358,11 +362,11 @@ function switchIframe(target) {
   }
 }
 
-function scroll_to_div(div_id,container=null){
+function scroll_to_div(div_id,container=null,offset=0){
   if($(container).length == 0) container = $('html,body');
   else container = $(container);
   container.animate(
-    {scrollTop: container.scrollTop()+$("#"+div_id).offset().top},
+    {scrollTop: container.scrollTop()+$("#"+div_id).offset().top+offset},
     600,'easeInOutCubic');
 }
 function scroll_to_class(class_name,n=0) {
@@ -382,14 +386,14 @@ function AddZero(n,e=1) {
 }
 function toggle_side_column(e = null,toggle = null,bind = 1) {
   var temp = Number($(".left-side-active").attr('active'));
-  // if(Number.isNaN(temp)) temp = 0;
+  if(Number.isNaN(temp)) temp = 0;
   temp = (temp+1)%2;
   if(toggle != null) temp = toggle;
   $(".left-side-column").attr('active',temp);
   $(".left-side-active").attr("active",temp);
   if(temp&&bind) setTimeout(function () {
-    $("body").append("<div class='side-column-bg'></div>");
-    $(".side-column-bg").css({position:"fixed",width:"100%",height:"100%",top:0,"z-index":2})
+    $(".left-side-active").parent().append("<div class='side-column-bg'></div>");
+    $(".side-column-bg").css({position:"fixed",width:"100%",height:"100%",left:0,top:0,"z-index":2})
     .bind('click',hide_side_column);
   },100);
   else $(".side-column-bg").remove();

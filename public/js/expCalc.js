@@ -22,7 +22,7 @@ xmlhttp.onreadystatechange = function(){
     $("#select_rarity span[id='"+active+"']").click();
   }
 }
-var RarityName = {'R':'稀有貓','SR':'激稀有貓','SSR':'超激稀有貓'}
+var RarityName = {'R':'稀有角色','SR':'激稀有','SSR':'超激稀有',"EX":"EX角色"}
 function changeDataTable(active) {
   var target = $("#select_rarity span[id='"+active+"']");
   target.siblings().attr("value",0);

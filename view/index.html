@@ -2,7 +2,7 @@
   <head>
     <meta charset='utf-8' />
     <title>貓咪大戰中文資料站</title>
-    <link rel="Shortcut Icon" type="image" href="/css/footage/logo.svg">
+    <link rel="Shortcut icon" type="image" href="./css/footage/logo.svg">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -12,86 +12,54 @@
     <link rel="stylesheet" href="./css/index.css" />
     <link rel="stylesheet" href="./css/navBar.css" />
     <link rel="stylesheet" href="./css/rwd.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
     <nav>
-      <img src="./css/footage/logo_text.png"/>
-      <div class="navLinkBox">
-        <span class="show_panel" value='0'>資料查詢</span>
-        <div class="nav_panel">
-          <a  id="cat">貓咪資料</a>
-          <a  id="enemy">敵人資料</a>
-          <a  id="combo">查詢聯組</a>
-          <a  id="stage">關卡資訊</a>
-          <a  id="rank">等級排行</a>
-        </div>
-        <span class="show_panel" value='0'>更多功能</span>
-        <div class="nav_panel">
-          <a  id="compare">比較器</a>
-          <a  id="expCalculator">經驗計算機</a>
-          <a  id="book">我的貓咪圖鑑</a>
-        </div>
-        <span class="show_panel" value='0'>打發時間</span>
-        <div class="nav_panel">
-          <a  id="gacha">轉蛋模擬器</a>
-          <a  id="game">釣魚小遊戲</a>
-        </div>
-        <a  id="calendar">活動日程</a>
+      <div class="menu left-side-active">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
+      <img src="./css/footage/logo_text.png"/>
       <div class="navBox">
         <i class="material-icons" id="carousel">view_carousel</i>
         <i class="material-icons" id="reload">refresh</i>
       </div>
       <div class="settingBox">
         <i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>
-        <div class="show_panel" style="display:flex;">
+        <div style="display:flex;">
           <span id="userPhoto"></span>
           <span class="current_user_name flex"></span>
         </div>
-        <div class="nav_panel">
-          <a id="setting"><i class="material-icons" style="font-size:20">settings</i>設定</a>
-          <a id="history"><i class="material-icons" style="font-size:20">history</i>歷程記錄</a>
-        </div>
       </div>
-      <div class="mobile">
-        <i class="material-icons" id="m_nav_menu" onclick="showhideNav()" active='0'>menu</i>
-      </div>
-    </nav>
-
-    <div id="m_nav_panel_BG"onclick="showhideNav()"></div>
-    <div class="m_nav_panel">
-      <div class="m_navLinkBox">
+      <div class="left-side-column" width='narrow'>
+      <div class="navLinkBox">
         <span class="show_panel" value='0'>資料庫</span>
-        <div class="nav_panel">
+        <div class="nav_panel" value='0'>
           <a  id="cat">貓咪資料</a>
           <a  id="enemy">敵人資料</a>
           <a  id="combo">查詢聯組</a>
           <a  id="stage">關卡資訊</a>
           <a  id="rank">等級排行</a>
+          <a  id="treasure">寶物圖鑑</a>
         </div>
         <span class="show_panel" value='0'>更多功能</span>
-        <div class="nav_panel">
+        <div class="nav_panel" value='0'>
           <a  id="compare">比較器</a>
           <a  id="expCalculator">經驗計算機</a>
           <a  id="book">我的貓咪圖鑑</a>
         </div>
         <span class="show_panel" value='0'>打發時間</span>
-        <div class="nav_panel">
+        <div class="nav_panel" value='0'>
           <a  id="gacha">轉蛋模擬器</a>
           <a  id="game">釣魚小遊戲</a>
         </div>
         <a  id="calendar">活動日程</a>
-      </div>
-      <div class="m_settingBox">
-        <a class="current_user_name"></a>
-        <div style="display:flex;justify-content:center">
-          <i class="material-icons" data-toggle="modal" data-target="#helpModal">info</i>
-          <a id="setting"><i class="material-icons">settings</i></a>
-          <a id="history"><i class="material-icons">history</i></a>
-        </div>
+        <a id="setting"><i class="material-icons" style="font-size:20">settings</i> <span>設定</span> </a>
+        <a id="history"><i class="material-icons" style="font-size:20">history</i> <span>歷程記錄</span> </a>
       </div>
     </div>
+    </nav>
 
     <div class="head">
       <div id="bulletin">
@@ -315,9 +283,9 @@
                 <input type="hidden" name="cmd" value="_s-xclick">
                 <input type="hidden" name="hosted_button_id" value="R8LMUVKC7U5WU">
                 <select name="os0">
+                  <option style="color:black"value="100">便當+咖啡 NT$100 TWD</option>
                   <option style="color:black"value="70">一個便當 NT$70 TWD</option>
                   <option style="color:black"value="30">一杯咖啡 NT$30 TWD</option>
-                  <option style="color:black"value="10">小斗怡情 NT$10 TWD</option>
                 </select>
                 <input type="hidden" name="currency_code" value="TWD">
                 <input type="submit" name="submit" value="斗內"style="width:80">

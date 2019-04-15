@@ -95,12 +95,16 @@
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 3px;
-  text-align: center;width: 100;
+  justify-content: center;
   font-size: 14px;
+  height: 0;
+  overflow: hidden;
   color: white;
-  display: none;
+  display: flex;
+  transition: height .3s ease;
 }
-#photo span:hover{color: rgb(240, 147, 52)}
+#photo:hover span{height: 24px;}
+#photo span:hover{color: var(--orange);font-weight: bold;}
 #photo_chooser{
   position: fixed;
   top: 0;

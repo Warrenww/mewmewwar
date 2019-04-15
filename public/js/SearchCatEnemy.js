@@ -100,7 +100,7 @@ $(document).ready(function () {
   socket.on("search result",function (data) {
     if(data.type != page) return;
     console.log("recive search result");
-    // console.log(data);
+    console.log(data);
     current_search = [];
     number_page = 0 ; // # of page of search result
     page_factor = 1 ; // 1 dot represent how many pages
@@ -252,9 +252,10 @@ $(document).on('click','.compareSorce .title #option i',function () {
     else alert("超過15隻!!!");
   }
   else if (type == 'Gogacha') {
-    socket.emit("record gacha",{
+    socket.emit("set history",{
       uid:CurrentUserID,
-      gacha:$(this).attr('value')
+      type:'gacha',
+      target:$(this).attr('value')
     });
     switchIframe("gacha");
   }

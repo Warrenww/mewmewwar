@@ -225,48 +225,23 @@ $(document).ready(function () {
         .next().children().eq(0).attr("href",url);
   }
 
-  $("nav a,.m_nav_panel a").click(function () {
+  $("nav a,.left-side-column a").click(function () {
     var target = $(this).attr("id");
     if(switchIframe(target))  $('#iframe_holder').attr("active",true);
     $(".m_nav_panel,#m_nav_panel_BG").attr("active",function () {
       return (Number($(this).attr("active"))+1)%2
     });
+    $(".side-column-bg").click();
     iframeNormalize();
   });
   $("nav img").click(function () { $("#iframe_holder").attr("active",false); });
 
-  var nav_panel_timeout,close_nav_panel,panel_height;
   $(".show_panel").click(function () {
-    let nav_panel = Number($(this).attr('value'));
-    let target = $(this).next('.nav_panel'),
-        x = $(this).offset().left;
-    panel_height = target[0].scrollHeight;
-    if(screen.width>768) target.css('left',x-10);
-    if(nav_panel){
-      $(this).attr('value',0);
-      target.animate({"height":0},400);
-      return
-    }
-    nav_panel_timeout = setTimeout(function () {
-      target.prev('.show_panel').attr('value',1).siblings(".show_panel").attr("value",0);
-      target.animate({"height":panel_height},200)
-          .siblings('.nav_panel').animate({"height":0},200);
-      clearTimeout(close_nav_panel);
-      close_nav_panel = setTimeout(function () {
-        target.animate({"height":0},400);
-        target.prev('.show_panel').attr('value',0);
-      },2000);
-    },200);
-  }) ;
-
-  $(".nav_panel").hover(function () {
-    clearTimeout(close_nav_panel);
-  },function () {
-    var target = $(this);
-    close_nav_panel = setTimeout(function () {
-      target.animate({"height":0},400);
-      target.prev('.show_panel').attr('value',0);
-    },800);
+    let temp = Number($(this).attr('value'));
+    if(Number.isNaN(temp)) temp = 0;
+    temp = (temp+1)%2;
+    $(this).attr("value",temp);
+    $(this).next('.nav_panel').attr("value",temp);
   }) ;
 
   $('.navBox i').click(function () {
@@ -313,7 +288,7 @@ $(document).ready(function () {
   var scrollHolder = function (e,d=null) {
     // prevent successively trigger event
     $('#iframe_holder').unbind('mousewheel', scrollHolder);
-    $(window).bind('mousewheel', false);
+    // $(window).bind('mousewheel', false);
 
     var wheelDelta = e.originalEvent ? e.originalEvent.wheelDelta : 0, // handle input type
         doc_h = $(document).height(), // get document height
@@ -373,7 +348,7 @@ $(document).ready(function () {
       "gacha":"轉蛋模擬器", "compare":"比較器", "book":"我的貓咪圖鑑",
       "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
       "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表",
-      "game":"釣魚小遊戲","expCalculator":"經驗計算機"
+      "game":"釣魚小遊戲","expCalculator":"經驗計算機","treasure":"寶物圖鑑"
     }[str]
   }
 
@@ -408,30 +383,29 @@ $(document).ready(function () {
       $("#helpModal").find(".modal-body").html(update_dialog);
     }
   }
-
 });
 
 function changeIframe(target,record = true) {
   if(!target) return
   $("#iframe_holder").attr("active",true);
-  if($("#iframe_holder #"+target).length)
-    $("#iframe_holder").find("#"+target).attr("active",true) .siblings().attr("active",false);
+  if($("#iframe_holder #"+target.split("?")[0]).length)
+    $("#iframe_holder").find("#"+target.split("?")[0]).attr("active",true) .siblings().attr("active",false);
   else
   {
     $("#iframe_holder").append(
-      "<iframe id='"+target+"' src='"+target+"'></iframe>"
+      "<iframe id='"+target.split("?")[0]+"' src='"+target+"'></iframe>"
     );
-    $("#iframe_holder").find("#"+target).attr("active",true)
+    $("#iframe_holder").find("#"+target.split("?")[0]).attr("active",true)
     .siblings().attr("active",false);
   }
 }
 function reloadIframe(target,record = true) {
-  if(!$("#iframe_holder").find("#"+target)[0]) {
+  if(!$("#iframe_holder").find("#"+target.split("?")[0])[0]) {
     changeIframe(target,record);
   }
   else{
-    let src = $("#iframe_holder").find("#"+target).attr("src");
-    $("#iframe_holder").find("#"+target).attr('src',src);
+    // let src = $("#iframe_holder").find("#"+target.split("?")[0]).attr("src");
+    $("#iframe_holder").find("#"+target.split("?")[0]).attr('src',target);
   }
 }
 

@@ -463,6 +463,8 @@
 .displayControl .data #name
 {display: none;}
 
+#char img{ width: 20; margin: 0 5;}
+
 @media screen and (max-width: 425px) {
   .survey{flex-direction: column;}
   .survey:first-of-type{height: 100}

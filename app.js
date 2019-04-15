@@ -73,12 +73,11 @@ function ReloadAllData(m=0) {
     console.log("VERSION : ",VERSION);
   });
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
-  if(!m) Users.load();
+  if(!m && app.settings.env != 'development') Users.load();
   if(firstReload){
     database.ref("/legend").once("value",(snapshot)=>{ legenddata = snapshot.val(); Stagelegend();});
   } else {
     database.ref("/legend/stage/thisWeek").update(legenddata.stage.thisWeek);
-    // Stagedata.writeBack();
     var today = new Date();
     // replace lastweek data with thisweek and empty thisWeek data.
     var tempD = Math.floor(today.getTime()/86400000)*86400000;
@@ -96,8 +95,11 @@ function ReloadAllData(m=0) {
     let buffer=[],counter = 0;
     for(let i in legenddata.stage.lastWeek){
       let temp = i.split("-"),
-          x = legenddata.stage.lastWeek[i]/Stagedata.GetNameArr(temp[0],temp[1]).length;
+          x = legenddata.stage.lastWeek[i],
+          y = legenddata.stage.thisWeek[i];
           // console.log(temp,Number(x));
+      if(y == null || Number.isNaN(Number(y)) || !Number.isFinite(y)) y = 0;
+      x = (x+y)/Stagedata.GetNameArr(temp[0],temp[1]).length;
       if(i == "date" || Number.isNaN(Number(x)) || !Number.isFinite(x)) continue;
       buffer.push({id:i,count:x});
      }
@@ -156,7 +158,7 @@ io.on('connection', function(socket){
             stage = target[i].split("-")[1],
             lv = data.lv;
         // record history
-        if (data.record) SetHistory(uid,type,id);
+        if (data.record) SetHistory({uid:uid,type:type,target:id});
         if(Number(stage)){
           if(!user_variable[id]) user_variable[id] = {count:0,stage:1};
           user_variable[id].stage = stage;
@@ -202,24 +204,22 @@ io.on('connection', function(socket){
   //   target:id,
   //   uid: user id
   // }
-  socket.on("set history",function (data) {
-    try{
+  socket.on("set history",function (data) { SetHistory(data); });
+  function SetHistory(data) {
+    try {
       var uid = data.uid,
           type = data.type,
-          id = data.target;
-      SetHistory(uid,type,id);
-    } catch (e){
-      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
-    }
-  });
-  function SetHistory(uid,type,id) {
-    console.log("record data");
-    console.log(uid,type,id);
+          id = data.target,
+          opt = data.option;
+      console.log("record data");
+      console.log(data);
 
-    Users.setHistory(uid,type,id);
-    if(type=='cat'||type=='enemy'||type=='stage'){
-      if(type == 'stage') Stagedata.setHistory(id);
-      else Unitdata.setHistory(type,id);
+      Users.setHistory(uid,type,id,opt);
+      if(type=='cat'||type=='enemy'){
+        Unitdata.setHistory(type,id);
+      }
+    } catch (e) {
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
     }
   }
 
@@ -294,10 +294,10 @@ io.on('connection', function(socket){
       console.log("user ",user.uid," connect ","\x1b[32m",page,"\x1b[37m");
       Users.updateLastLogin(user.uid,timer).then((userdata)=>{
         var history = Users.getHistory(user.uid),
-        setting = Users.getSetting(user.uid),
-        variable = Users.getVariable(user.uid);
+            setting = Users.getSetting(user.uid),
+            variable = Users.getVariable(user.uid);
         var compareCat = Users.getCompare(user.uid,'cat'),
-        compareEnemy = Users.getCompare(user.uid,'enemy');
+            compareEnemy = Users.getCompare(user.uid,'enemy');
         let obj , arr = [] , brr = [];
         for(let i in compareCat){
           obj = {};
@@ -311,8 +311,7 @@ io.on('connection', function(socket){
         }
         for(let i in compareEnemy){
           obj = {};
-          var enemyname = Unitdata.enemyName(compareEnemy[i]);;
-
+          var enemyname = Unitdata.enemyName(compareEnemy[i]);
           if(!enemyname) continue
           obj = {id:compareEnemy[i],name:enemyname};
           brr.push(obj);
@@ -344,9 +343,7 @@ io.on('connection', function(socket){
           }
         }
         else if(page == 'combo'){CurrentUserData.last_combo = history.last_combo;}
-        else if(page == 'compareCat' || page == 'compareEnemy' || page == 'compare'){
-          CurrentUserData.compare = {cat:arr,enemy:brr};
-        }
+        else if(page == 'compare'){ CurrentUserData.compare = {cat:arr,enemy:brr}; }
         else if(page == 'history'){
           obj = {cat:{},enemy:{},stage:{},gacha:{}};
           for(i in history.cat){
@@ -411,6 +408,13 @@ io.on('connection', function(socket){
           CurrentUserData.last_cat_search = history.last_cat_search;
           CurrentUserData.list = Users.getList(user.uid);
         }
+        else if (page == 'treasure'){
+          CurrentUserData.data = {
+            world : Stagedata.GetNameArr('world','s03000'),
+            future : Stagedata.GetNameArr('future','s03003'),
+            universe : Stagedata.GetNameArr('universe','s03006'),
+          };
+        }
         else {
           CurrentUserData.name = Users.getAttr(user.uid,'nickname');
           CurrentUserData.first_login = Users.getAttr(user.uid,'first_login');
@@ -464,7 +468,7 @@ io.on('connection', function(socket){
         }
       }
       socket.emit("combo result",buffer) ;
-      if(uid) SetHistory(uid,'combo',arr);
+      if(uid) SetHistory({uid:uid,type:'combo',target:arr});
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
@@ -644,7 +648,7 @@ io.on('connection', function(socket){
         next:next
       });
       if(uid){
-        SetHistory(uid,'stage',id);
+        SetHistory({uid:uid,type:'stage',target:id});
       }
     }
     catch(e){
@@ -656,13 +660,12 @@ io.on('connection', function(socket){
 
   socket.on("record gacha",function (data) {
     try{
-      console.log("user",uid,"select gacha",gacha);
       var uid = data.uid,
           gacha = data.gacha,
           result = JSON.parse(JSON.stringify(gachadata[gacha]));
+      console.log("user",uid,"select gacha",gacha);
       if(!uid||!gacha) return
       result.key = gacha;
-      SetHistory(uid,'gacha',gacha);
       for(let i in result){
         if (i=='id'||i=='name'||i=='key') continue
         for(let j in result[i]){
@@ -674,45 +677,6 @@ io.on('connection', function(socket){
         }
       }
       socket.emit("gacha result",{ result:result});
-    }
-    catch(e){
-      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
-    }
-  });
-  socket.on("gacha history",function (data) {
-    try{
-      var uid = data.uid,
-          gacha = data.gacha,
-          gachaHistory = Users.getHistory(uid,"gacha");
-      if(!uid||!gacha) return
-      let key = database.ref().push().key;
-      if(!gachaHistory) gachaHistory = {}
-      var last={key:"",id:""}
-      for(let i in gachaHistory){
-        last.key = i ;
-        last.id = gachaHistory[i].id;
-      }
-      if(last.id == gacha) key = last.key;
-      gachaHistory[key] = {
-        id:gacha,ssr:data.ssr,sr:data.sr,r:data.r,
-        time:new Date().getTime()
-      }
-      database.ref("/user/"+uid+"/history/gacha/"+key).set(gachaHistory[key]);
-    }
-    catch(e){
-      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
-    }
-  });
-
-  socket.on("notice mine",function (data) {
-    let timer = new Date().getTime();
-    try{
-      Users.setSetting(data.uid,'mine_alert',{
-        time : timer,
-        state : true,
-        accept : data.accept
-      });
-      Users.setSetting(data.uid,'show_miner',true);
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
@@ -816,7 +780,7 @@ io.on('connection', function(socket){
           }
         }
       }
-        if(find) SetHistory(uid, 'stage', location);
+        if(find) SetHistory({uid:uid,type:'stage',target:location});
         socket.emit('cat to stage',{find,stage});
       }catch(e){
         if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
@@ -994,7 +958,7 @@ io.on('connection', function(socket){
     database.ref("/"+path.join("/")).update(obj);
   });
   socket.on("reloadAllData",()=>{ReloadAllData(1);});
-  socket.on("writeBackAllData",()=>{Stagedata.writeBack();});
+  socket.on("writeBackAllData",()=>{Users.writeBack();});
 
   socket.on("user rename stage",(data)=>{
     console.log("rename stage",data);

@@ -192,10 +192,11 @@ $(document).ready(function () {
     else if(africa>0.06 && sssr == 0) $("#www").text("歐洲人");
     else $("#www").text("普通人");
 
-    socket.emit("gacha history",{
+    socket.emit("set history",{
       uid:CurrentUserID,
-      gacha:current_gacha_data.key,
-      sssr,ssr,sr,r
+      type:'gacha',
+      target:current_gacha_data.key,
+      option:{sssr,ssr,sr,r}
     });
   }
 

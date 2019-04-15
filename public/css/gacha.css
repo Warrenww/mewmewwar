@@ -133,10 +133,11 @@
 #scoreboard tbody tr{cursor: pointer;}
 #scoreboard tbody tr:hover{color:rgb(241, 165, 37)}
 #toggleScore{
+  padding: 10px;
   position: fixed;
   z-index: 4;
-  bottom: -5px;
-  left: 0;
+  top: 50px;
+  left: calc(100% - 90px);
 }
 #scoreboard #probability{
   width: 100%;

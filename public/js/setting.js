@@ -83,11 +83,6 @@ $(document).ready(function () {
     if(type.indexOf("enemy")!=-1)
       if(window.parent.reloadIframe) window.parent.reloadIframe('enemy');
   });
-  $(document).on('click',"#show_miner",function () {
-    setTimeout(function () {
-      window.parent.location.assign("/");
-    },1000);
-  });
 
   socket.on("current_user_data",function (data) {
     // console.log(data);
@@ -100,13 +95,6 @@ $(document).ready(function () {
     for(let i in data){
       if(i == "default_cat_lv"){
         $("#default_cat_lv").attr('value',data.default_cat_lv);
-      }
-      else if(i == 'mine_alert'){
-        console.log(data[i].count);
-        let count = data[i].count,ww;
-        ww = count>1e5?count/1e6:count/1e3 ;
-        exp += count;
-        $("#total_hash").text(ww.toFixed(2)+(count>1e5?"MH":"kH"))
       }
       else if(i == 'cat_survey_count') {
         $("#total_survey").text(data[i]);
@@ -128,11 +116,7 @@ $(document).ready(function () {
 
   });
 
-  $("#photo").hover(function () {
-    $(this).children().show(400);
-  },function () {
-    $(this).children().hide(400);
-  });
+
   $("#photo span").click(function () { $('#photo_chooser').css('display','flex'); });
   $("#photo_chooser").click(function () { $('#photo_chooser').fadeOut(400); });
   $("#photo_chooser div div span").click(function (e) {

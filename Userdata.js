@@ -114,10 +114,10 @@ exports.getHistory = function (uid,type=null) {
   if(UserData[uid].history[type] == "" ) UserData[uid].history[type] = {};
   return UserData[uid].history[type];
 }
-exports.setHistory = function (uid,type,id){
+exports.setHistory = function (uid,type,id,opt={}){
   try{
     // Check if it is last search
-    if(UserData[uid].history['last_'+type] == id) return
+    if(UserData[uid].history['last_'+type] == id && type != 'gacha') return;
 
     var user_history = UserData[uid].history[type],
         user_variable = UserData[uid].variable[type],
@@ -141,15 +141,13 @@ exports.setHistory = function (uid,type,id){
     var key = database.ref().push().key; // Generate hash key
     // Update history and write to firebase
     user_history[key] = {type : type,id : id,time:new Date().getTime()};
-    // database.ref("/user/"+uid+"/history/"+type).set(user_history);
+    for(let i in opt){ user_history[key][i] = opt[i]; }
     UserData[uid].history["last_"+type] = id;
-    // database.ref("/user/"+uid+"/history/last_"+type).set(id);
     ModifiedTable[uid] = true;
 
     if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
     if(!user_variable[id]) user_variable[id] = {count:0};
     user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
-    // database.ref("/user/"+uid+"/variable/"+type+"/"+id+"/count").set(user_variable[id].count);
   } catch(err){
     Util.__handalError(err);
   }

@@ -57,6 +57,7 @@ $(document).ready(function () {
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;
+      console.log(last);
       if(last.query)
         socket.emit(last.query_type+" search",last);
       if(last.query_type=='gacha'){

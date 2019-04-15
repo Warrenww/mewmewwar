@@ -13,8 +13,6 @@ var current_level_data = {},
     current_user_setting = {};
 $(document).ready(function () {
   var timer = new Date().getTime();
-  var filter_name = '' ;
-
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -240,11 +238,11 @@ $(document).ready(function () {
     // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
     $(".display .dataTable #stage").html(`${(obj.parent?obj.parent:"")}<i class='material-icons'>create</i>`).attr('value',obj.stage);
-    $(".displayControl .control #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
+    if(data.id) $(".displayControl .control #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
           "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
     $(".displayControl .control #next").attr("query",JSON.stringify(next_stage));
     $(".displayControl .control #prev").attr("query",JSON.stringify(prev_stage));
-    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent}>${data.name}`);
+    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent.replace("<br>"," ")}>${data.name}`);
     // append data
     for(let i in data){
       if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
@@ -428,7 +426,8 @@ $(document).ready(function () {
     let html ="";
     for(let i in arr){
       html += "<tr><th>"+prize(arr[i].prize.name)+"</th>"+
-                "<td>"+arr[i].prize.amount+"</td>";
+                (arr[i].prize.name=="寶物"?`<td onclick='toTreasure("${arr[i].prize.amount}")'>`:"<td>")+
+                arr[i].prize.amount+"</td>";
       html += "<th>"+(b?((arr[i].chance.indexOf("%")!=-1||arr[i].chance.indexOf("％")!=-1)?
                   "取得機率":"累計積分"):"取得機率")+
               "</th>"+"<td>"+arr[i].chance+"</td>"+
@@ -717,4 +716,8 @@ function scrollSelectArea(area,target) {
   This.animate({
     scrollTop: scrollTop + TargetOffsetTop - ThisOffsetTop - ThisHeight + TargetHeight
   },400);
+}
+function toTreasure(s) {
+  if(!s) return;
+  switchIframe("treasure?"+s);
 }

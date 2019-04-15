@@ -52,14 +52,7 @@ exports.GetNameArr = function (chapter,level=null) {
     return [];
   }
 }
-exports.setHistory = function (id) {
-  modified.push(id);
-  id = id.split("-");
-  StageData[id[0]][id[1]][id[2]].count =
-    StageData[id[0]][id[1]][id[2]].count?StageData[id[0]][id[1]][id[2]].count+1:1;
-  // database.ref("/stagedata/"+id.join("/")+"/count").set(StageData[id[0]][id[1]][id[2]].count);
-}
-exports.writeBack = function () {  }
+
 exports.Rename = function (id,name) {
   id = id.split("-");
   if(id.length < 2) return false;

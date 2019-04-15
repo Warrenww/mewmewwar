@@ -67,6 +67,14 @@ exports.parseChar = function(c,obj,type) {
           type:"使徒殺手 (攻擊力x5 受到傷害x0.2)",
         });
       }
+      else if(c[i].indexOf("蘇生無効")!=-1){
+        obj.tag.push("不死剋星");
+        obj.tag.push("對不死");
+        obj.char.push({
+          against:["不死敵人"],
+          type:"不死剋星",
+        });
+      }
       else if(c[i].indexOf("無効")!=-1){
         let aa = c[i].split("（")[1].split("）")[0].split(" ");
         console.log(aa);
@@ -136,7 +144,7 @@ exports.parseChar = function(c,obj,type) {
           times:times == '無制限'?'無限': Number(times.split("回")[0])
         });
       }
-      else if(c[i].indexOf("波動打ち消し")!=-1){
+      else if(c[i].indexOf("波動ストッパー")!=-1){
         obj.tag.push("免疫波動");
         obj.tag.push("抵銷波動");
         obj.char.push({
@@ -223,7 +231,7 @@ exports.parseChar = function(c,obj,type) {
       else {
         c[i] = c[i].split(" ※")[0];
         let bb = c[i].split("（"),
-        aa = bb.length<3&&c[i].indexOf("除く）")==-1 ? bb[0].split(" "):["",bb[0].split(" ")[1],bb[1].split(" ")[4]],
+        aa = bb.length<3&&c[i].indexOf("除く）")==-1 ? bb[0].split(" "):["",bb[0].split(" ")[1],bb[1].split("除く）")[1]],
         ene = aa.length == 3 ? [parseEnemy(aa[1])]:[parseEnemy(aa[1]),parseEnemy(aa[2])],
         abi = parseAbility(aa[aa.length-1]);
         for(let j in ene){
@@ -254,6 +262,7 @@ function parseAbility(s) {
     ww = s.split("波動")[0].split("Lv")[1]
     return "波動 "+(ww?ww:"")
   }
+  s = s.trim();
   temp = {
     "のみに攻撃": "只能攻擊",
     "1度だけ生き残る": "復活",
@@ -459,8 +468,14 @@ exports.parsePrize = function(p,img) {
         case '虹':
           arr[0] = '彩虹'
           break;
+        case '古代':
+          arr[0] = '古代'
+          break;
+        case '黄':
+          arr[0] = '黃色'
+          break;
         default:
-          arr[0] = arr[0]+"色"
+          arr[0] = arr[0]
       }
       arr[1] = arr[1] ? "種子" : "";
       obj.name = arr.join("貓薄荷");

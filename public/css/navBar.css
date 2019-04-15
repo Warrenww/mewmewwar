@@ -1,60 +1,79 @@
 nav{
     display: flex;
     height: 40px ;
-    background-color: rgba(0,0,0);
+    background-color: black;
     width: 100%;
     z-index: 999;
     position: relative;
 }
+.menu{
+  min-width: 40px;
+  height: 40px;
+  position: relative;
+  padding: 0;
+  top: 0;
+  background: transparent;
+  left: 0 !important;
+  opacity: 1 !important;
+}
+.menu::after,.menu::before{display: none;}
+.menu span{
+  width: 80%; height: 3px; margin: 0 10%;
+  background-color: white; display: block;
+  position: absolute; top: 25%; transition: .3s ease;
+  border-radius: 5px;
+}
+.menu span:nth-of-type(2){top: 50%}
+.menu span:last-of-type{top: 75%}
+.menu[active='1'] span{top: 50%;opacity: 0;transform-origin: center;}
+.menu[active='1'] span:nth-of-type(2){opacity: 1;transform: rotate(45deg);}
+.menu[active='1'] span:last-of-type{opacity: 1;transform: rotate(-45deg);}
 nav img{
   height: 35px;
   margin: 2px 0 10 20;
   cursor: pointer;
 }
-.show_panel{
-  cursor: pointer;
-}
-.navLinkBox{
-  flex:3;
-  height: 100% ;
+nav .left-side-active{z-index: 4}
+nav .left-side-column,nav .side-column-bg{ background-color: black;z-index: 3}
+nav .side-column-bg{opacity: .3;}
+.navLinkBox {
   display: flex;
-  align-items: center;
-  padding-left: 20px
+  flex-direction: column;
+  padding-top: 40px;
 }
-nav a,
-.navLinkBox a,
-.nav_panel a,
-.navLinkBox span{
+nav a, .navLinkBox a, .nav_panel a, .navLinkBox span{
   font-size: 20px;
   color: white ;
-  padding:10px
+  padding: 5 10;
+  cursor: pointer;
+  text-decoration: none;
+  width: 100%;
 }
-.settingBox,
-.m_settingBox{
+nav a:hover,.navLinkBox a:hover,.nav_panel a:hover,.navLinkBox span:hover{background-color: gray}
+.nav_panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-left: 20;
+  overflow: hidden;
+  max-height: 0;
+  transition: .3s ease-in-out;
+}
+.nav_panel a{border-left: 1px solid;}
+.nav_panel[value = "1"]{max-height: 300px}
+nav .panel{background: black;border-radius: 0;box-shadow: none}
+.settingBox{
   flex:1;
   display:flex;
   align-items:center;
   justify-content: flex-end;
 }
-.settingBox i,
-.m_settingBox i{
+.settingBox i{
   font-size:32px;
   color:white;
   margin-right:10px ;
   cursor: pointer;
   transition: .4s ease-in-out
-}
-.nav_panel {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 40px;
-    background-color: rgba(0,0,0,.7);
-    min-width: 150px;
-    text-align: center;
-    height: 0;
-    overflow: hidden;
-    transition: .4s ease-in-out
 }
 .navBox{
   flex:1;
@@ -103,9 +122,4 @@ nav a,
   background-position: left;
   border-radius: 50%;
   cursor: pointer;
-}
-@media screen and (max-width:1024px) {
-  .navLinkBox{flex:5}
-  .settingBox{flex:2}
-  .navBox i{margin: 0 5px}
 }
