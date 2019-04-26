@@ -177,28 +177,28 @@ console.log('start');
   // });
 // });
 
-var url = 'https://battlecats-db.com/unit/lot011.html'
-request({
-  url:url,
-  method:'GET'
-},function (e,r,b) {
-  $ = cheerio.load(b);
-  var a = {'超激レア':'ssr','激レア':'sr','レア':'r'},id = 'R376',name = "「活下去！曼波魚！」 稀有轉蛋活動",
-  obj = {
-      id:id,name:name,ssr:[],sr:[],r:[]
-    },count = 0;
-    $('.maincontents tbody').each(function () {
-        $(this).find('tr').each(function () {
-            obj[a[$(this).children().eq(1).text()]].push($(this).children().eq(0).text())
-          });
-        });
-        console.log(obj);
-        database.ref("/gachadata/Fish").update(obj);
-        fs.appendFile('gacha.json', JSON.stringify(obj),(err) =>{
-          if (err) throw err;
-          console.log('Is saved!');
-        });
-  });
+// var url = 'https://battlecats-db.com/unit/lot011.html'
+// request({
+//   url:url,
+//   method:'GET'
+// },function (e,r,b) {
+//   $ = cheerio.load(b);
+//   var a = {'超激レア':'ssr','激レア':'sr','レア':'r'},id = 'R376',name = "「活下去！曼波魚！」 稀有轉蛋活動",
+//   obj = {
+//       id:id,name:name,ssr:[],sr:[],r:[]
+//     },count = 0;
+//     $('.maincontents tbody').each(function () {
+//         $(this).find('tr').each(function () {
+//             obj[a[$(this).children().eq(1).text()]].push($(this).children().eq(0).text())
+//           });
+//         });
+//         console.log(obj);
+//         database.ref("/gachadata/Fish").update(obj);
+//         fs.appendFile('gacha.json', JSON.stringify(obj),(err) =>{
+//           if (err) throw err;
+//           console.log('Is saved!');
+//         });
+//   });
 
 // for(let i=0;i<400;i++){
 //   var url = `https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R${AddZero(i)}.html`
@@ -223,25 +223,28 @@ request({
 function AddZero(n) {
   return n<100 ? (n<10 ? "00"+n : "0"+n ): n
 }
-var target = '41xMMgmvgqSFlGbH7oKgF97490w2';
+
 // listAllUsers();
 function listAllUsers(nextPageToken) {
     let timer = new Date().getTime();
+    // console.log(nextPageToken);
   // List batch of users, 1000 at a time.
   admin.auth().listUsers(100, nextPageToken)
     .then(function(listUsersResult) {
       listUsersResult.users.forEach(function(data) {
-        // console.log(data.providerData[0].providerId);
-        process.stdout.clearLine();
-        process.stdout.cursorTo(0);
-        process.stdout.write(data.uid);
+        // console.log(data.uid,data.providerData.length,data.metadata.lastSignInTime);
+        // process.stdout.clearLine();
+        // process.stdout.cursorTo(0);
+        // process.stdout.write(data.uid,data.metadata.creationTime);
 
-        if(data.uid == target){
-          process.stdout.write('\n');
-          console.log(data);
-          return
+        if(data.providerData.length == 0){
+          if(timer - Date.parse(data.metadata.lastSignInTime)>5*86400000){
+            console.log(data.uid);
+            admin.auth().deleteUser(data.uid)
+            database.ref("/user/"+data.uid).set(null);
+          }
+          // console.log(data);
         }
-
       });
       if (listUsersResult.pageToken) {
         // List next batch of users.

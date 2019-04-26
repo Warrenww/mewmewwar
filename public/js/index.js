@@ -17,24 +17,20 @@ else {
   console.log("Browser don't support local storage!!");
 }
 
-$(document).ready(function () {
-  var facebook_provider = new firebase.auth.FacebookAuthProvider();
-  var google_provider = new firebase.auth.GoogleAuthProvider();
-  var filter_name = '';
-  var newUser = false;
-  //user login
-  $("#fb_login").click(facebookLogin);
-  $("#google_login").click(googleLogin);
-  $("#guest_login").click(function () {
-    let r = confirm("資料庫容量有限，"+
-    "匿名登入使用者如果連續五天沒有使用將被刪除，"+
-    "是否仍要繼續匿名登入?");
-    if(r) guestLog();
-    else return
-  })
-  function facebookLogin() {
-    $(".login_box").children('span').hide().siblings('i').show();
-    auth.signInWithPopup(facebook_provider).then(function(result) {
+var facebook_provider = new firebase.auth.FacebookAuthProvider();
+var google_provider = new firebase.auth.GoogleAuthProvider();
+var newUser = false;
+
+function login(method = null) {
+  $(".login_box").children('span').css("opacity",0);
+  $(".login_box").addClass("loading");
+  if(method){
+    var provider;
+    if(method == 'facebook') provider = facebook_provider;
+    else if(method == 'google') provider = google_provider;
+    else alert("未知錯誤，請重新整理");
+
+    auth.signInWithPopup(provider).then(function(result) {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
       var token = result.credential.accessToken;
       // The signed-in user info.
@@ -50,57 +46,25 @@ $(document).ready(function () {
       var email = error.email;
       // The firebase.auth.AuthCredential type that was used.
       var credential = error.credential;
+      if(errorCode = "auth/popup-closed-by-user"){
+        $(".login_box").removeClass("loading").children('span').css("opacity",1);
+      }
     });
-  }
-  function googleLogin() {
-    $(".login_box").children('span').hide().siblings('i').show();
-    auth.signInWithPopup(google_provider).then(function(result) {
-      // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = result.credential.accessToken;
-      // The signed-in user info.
-      var user = result.user;
-      // console.log(user);
-      socket.emit("user login",result.user) ;
-    }).catch(function(error) {
-      console.log(error);
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      // The email of the user's account used.
-      var email = error.email;
-      // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
-      // ...
-    });
-  }
-  function guestLog() {
-    $(".login_box").children('span').hide().siblings('i').show();
-    firebase.auth().signInAnonymously().catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-
-      // ...
-    })
-    .then(function () {
-      //$("#login").fadeOut();
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // console.log(user);
-          socket.emit("user login",user) ;
-          var isAnonymous = user.isAnonymous;
-          var uid = user.uid;
-          // ...
-        } else {
-          // User is signed out.
-          // ...
-        }
-        // ...
+  } else {
+    if(confirm("資料庫容量有限，匿名登入使用者如果連續五天沒有使用將被刪除，是否仍要繼續匿名登入?")) {
+      firebase.auth().signInAnonymously()
+      .catch(function(error) { console.log(error); })
+      .then(function () {
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) { socket.emit("user login",user) ; }
+        });
       });
-    });
-
+    } else return
   }
+}
 
+$(document).ready(function () {
+  
   auth.onAuthStateChanged(function(user) {
     if (user) {
       if (!newUser)

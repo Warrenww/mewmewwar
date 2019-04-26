@@ -47,8 +47,14 @@ exports.updateLastLogin = function (uid,time) {
   });
 }
 exports.writeBack = function (uid) {
+  if(!uid) for(let i in ModifiedTable) writeBackUser(i);
+  else writeBackUser(uid);
+}
+function writeBackUser(uid) {
+  if(!uid) return;
   if(ModifiedTable[uid]){
     database.ref("/user/"+uid).update(UserData[uid]);
+    ModifiedTable[uid] = false;
   }
 }
 exports.getSetting = function (uid,subtype=null) {
@@ -202,7 +208,7 @@ exports.Login = function (user) {
         console.log("user exist");
         if(UserData[user.uid]){
           UserData[user.uid].last_login = timer;
-          ModifiedTable[uid] = true;
+          ModifiedTable[user.uid] = true;
           resolve({user,nickname:UserData[user.uid].nickname});
         } else {
           database.ref("/user/"+User.uid).once("value",(snapshot)=>{

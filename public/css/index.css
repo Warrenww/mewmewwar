@@ -139,7 +139,7 @@ nav a{cursor: pointer;}
   top: 0;
   position: relative;
   right: 0;
-  height: 60%;
+  height: 60vh;
   border: 5px solid white;
   border-radius: 5px;
   box-shadow: 5px 5px 10px 0px grey;

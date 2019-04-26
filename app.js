@@ -958,7 +958,10 @@ io.on('connection', function(socket){
     database.ref("/"+path.join("/")).update(obj);
   });
   socket.on("reloadAllData",()=>{ReloadAllData(1);});
-  socket.on("writeBackAllData",()=>{Users.writeBack();});
+  socket.on("update prepare",()=>{
+    io.emit("cloud message","伺服器即將更新，這段時間內所作的更改有可能不會更新到伺服器中，建議先關閉頁面，10分鐘之後再回來");
+    Users.writeBack();
+  });
 
   socket.on("user rename stage",(data)=>{
     console.log("rename stage",data);

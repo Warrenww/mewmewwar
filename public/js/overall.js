@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.35.1"
+const VERSION = "10.35.2"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -19,9 +19,10 @@ const tutorial_version = {
 var socket;
 $(document).ready(function () {
   socket = io.connect();
-  var facebook_provider = new firebase.auth.FacebookAuthProvider();
   var filter_name = '';
   var today = new Date();
+
+  socket.on("cloud message",data=>{alert(data);})
 
   if(screen.width <= 768){
     $("#lower_table .value_display").attr("colspan",7);

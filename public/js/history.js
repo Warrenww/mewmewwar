@@ -84,7 +84,7 @@ function parseTime(n) {
 
 }
 function appendHistory(type) {
-  var data = UserHistory[type];
+  var data = UserHistory[type], count = 0;
   if(!data) return;
   $(".main_board").empty();
   for(let i in data){
@@ -93,7 +93,9 @@ function appendHistory(type) {
       historyName(type,data[i].name,data[i].lv,data[i].stage)+
       "<span class='time'>"+parseTime(data[i].time)+"</span>"+
       "</div>");
+    count ++;
   }
+  if(count == 0) $(".main_board").prepend(createHtml("div","無歷程記錄"))
 }
 function historyPicture(type,id,stage=null) {
   if(type == 'cat') return "<img src='"+Unit.imageURL('cat',id+'-'+(stage?stage:1))+"'>";
