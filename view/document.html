@@ -1,0 +1,638 @@
+<html>
+  <head>
+    <meta charset='utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>使用教學</title>
+    <link rel="Shortcut Icon" type="image" href="./css/footage/tab_icon_event.png">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="./css/navBar.css" />
+    <link rel="stylesheet" href="./css/overall.css" />
+    <link rel="stylesheet" href="./css/document.css" />
+    <link rel="stylesheet" href="./css/rwd.css" />
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  </head>
+  <body>
+
+    <div class="content">
+      <div class="article"id="stage">
+        <h1><span onclick="switchIframe('stage')">關卡資料庫</span>用法</h1>
+        <div class="chooser">
+          <div class="search flex">
+            <input type="text" id="searchBox" placeholder="搜尋關卡...">
+            <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
+          </div>
+          <div class="search_type" style="display:flex;width:100%">
+            <span value='0' >選擇章節</span>
+            <span value='0' >選擇關卡</span>
+            <span value='0' >獎勵篩選器</span>
+            <span value='0' >搜尋結果</span>
+          </div>
+        </div>
+        <div style="margin-top:20px;text-align:center">
+          圖1、關卡選擇區，位於關卡資料頁的最上方
+        </div>
+        <h2 id="stage_0">開始使用</h2>
+        <ol>
+          <li>從<em>關卡選擇區</em>的<em>選擇章節</em>中各分類下選擇欲查詢之章節名稱</li>
+          <li>
+            系統會自動切換到<em>選擇關卡</em>的頁籤，於左側欄位點擊欲查詢之大關名稱，
+            手機版則是上下兩區，大關選擇位於上區
+          </li>
+          <li>
+            當該大關下的各子關卡出現於右側時，點擊欲查詢的關卡，
+            關卡資料即會載入於下方<em>資料顯示區</em>
+          </li>
+        </ol>
+        <h2 id="stage_1">進階查詢</h2>
+        <p> 除了基本的關卡查詢，本頁面也提供了2種進階查詢方法，如下: </p>
+        <ul>
+          <li>
+            <em style="text-decoration:underline">文字搜尋: </em>
+            在關卡選擇區上方的搜尋列輸入欲查詢的關卡名關鍵字
+            (不用完全相同)，在按下右方搜尋或是Enter鍵，
+            系統即會篩選出名字中含有該關鍵字的大關或關卡名稱
+          </li>
+          <li>
+            <em style="text-decoration:underline">獎勵篩選: </em>
+            點擊<em>獎勵篩選器</em>頁籤，
+            即可展開<em>獎勵篩選器</em>。在獎勵篩選器中，
+            <ol>
+              <li>點選欲篩選的獎勵(可多選)，激活該選項為橘色背景</li>
+              <li>選擇完畢後，點擊下方的<button>Go</button>開始篩選</li>
+              <li>系統會列舉出包含該項獎勵的關卡</li>
+              <li>結果包含關卡名稱與各獎勵取得機率(若為積分關卡，則顯示積分)</li>
+            </ol>
+          </li>
+        </ul>
+        <p>
+          兩種進階篩選其結果都會出現在<em>搜尋結果</em>頁簽下的結果顯示區中。
+        </p>
+        <h2 id="stage_2">資料顯示區功能列</h2>
+        <p> 當瀏覽資料顯示區時，常駐懸浮於畫面上方，其功能分別為: </p>
+        <ul>
+          <li style='margin:5 0'>
+            <i class="material-icons cir_but" text='上一關'>keyboard_arrow_left</i>
+            <b style="text-decoration:underline">上一關</b>: 顯示同樣大關底下的上一個關卡的關卡資訊
+          </li>
+          <li style='margin:5 0'>
+            <i class="material-icons cir_but"text='下一關'>keyboard_arrow_right</i>
+            <b style="text-decoration:underline">下一關</b>: 顯示同樣大關底下的下一個關卡的關卡資訊
+          </li>
+          <li style='margin:5 0'>
+            <i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i>
+            <b style="text-decoration:underline">在超絕攻略網打開</b>: 在新分頁開啟超絕攻略網的本關卡資訊
+          </li>
+          <li style='margin:5 0'>
+            <i class="material-icons cir_but"text='截圖'>add_a_photo</i>
+            <b style="text-decoration:underline">截圖</b>: 對現在的資料顯示區截圖
+          </li>
+          <li style='margin:5 0'>
+            <i class="material-icons cir_but"text='加入比較序列'>&#xE242;</i>
+            <b style="text-decoration:underline">加入比較序列</b>: 將本關所有敵人覆蓋現有敵人比較序列，並開啟敵人比較器頁面。
+          </li>
+          <li style='margin:5 0'>
+            <i class="material-icons cir_but"text='切換敵人資訊'>swap_vert</i>
+            <b style="text-decoration:underline">切換敵人資訊</b>: 切換資料顯示區中，敵人的資訊數值或關卡數值
+          </li>
+        </ul>
+        <h2 id="stage_3">資料顯示區</h2>
+        <div>
+          可以點選各區的區域名來展開/收合底下的獎勵列表或敵人列表
+          <div class="tableTitle"> 過關獎勵 </div>
+          <div>
+            此處會顯示過關時的各種獎勵資訊，
+            每一列依序為:
+            <ol>
+              <li>獎勵名稱</li>
+              <li>取得數量</li>
+              <li>取得機率或積分</li>
+              <li>領取上限</li>
+            </ol>
+            若此項獎勵為寶物，則可以點擊寶物名稱前往 <a onclick="switchIframe('treasure')">寶物圖鑑</a>
+          </div>
+          <div class="tableTitle"> 關卡敵人 </div>
+          <div>
+            <p>
+              關卡敵人會顯示下列各資訊(積分僅在排行賽關卡顯示)
+            </p>
+            <table class="enemy_head">
+              <tr>
+                <th>敵人</th>
+                <th>倍率<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"style='width:120'><span>篩選_1</span><span>篩選_2</span></div></th>
+                <th>數量<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"style='width:120'><span>篩選_1</span><span>篩選_2</span></div></th>
+                <th>城連動<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"style='width:120'><span>篩選_1</span><span>篩選_2</span></div></th>
+                <th>首次出現(s)<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"style='width:120'><span>篩選_1</span><span>篩選_2</span></div></th>
+                <th>再次出現(s)<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"style='width:120'><span>篩選_1</span><span>篩選_2</span></div></th>
+                <th>積分<span class="toggle_next" pos='right'offsetY='20'></span><div class="panel"style='width:120'><span>篩選_1</span><span>篩選_2</span></div></th>
+              </tr>
+            </table>
+            <p>
+              點選資料顯示區中，如上顯示之任一資料名稱，即可以該資料 <em>排序敵人</em>，
+              首次排序是由大至小(並將該資料名稱加以淺藍色條紋標記)，
+              再點選一次即可改為由小至大排列(並將該資料名稱加以橘色條紋標記)
+            </p>
+            <p>
+              而點擊資料名稱旁的小三角形下標，可以叫出篩選面板，上面會列出此項資料的所有數值，
+              點擊欲篩選的數值，即可隱藏與此值不相符的敵人列。
+              <br />*手機版暫無此功能
+            </p>
+            <p>
+              另外，點擊敵人圖片即可在漂浮顯示中，顯示敵人的資訊，獎勵中如果能獲得貓咪，
+              同樣可以藉由點擊圖片來顯示資訊。如欲查詢更詳細的資訊，
+              請點擊漂浮顯示區中的
+              <em style="border-radius:30px;box-shadow:1px 1px 11px 1px black;padding:0 10;background:white">
+                更多詳細資料>
+              </em>
+              來跳轉至貓咪資料庫或敵人資料庫。
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="article"id="compare">
+       <h1> <span onclick="switchIframe('compare')">比較器</span>用法</h1>
+       <div class="control">
+         <div class="swapper">
+             <div class="icon"style="background-image: url('css/footage/tab_icon.png')" active='1'></div>
+             <div class="icon"style="background-image: url('css/footage/tab_icon_enemy.png')"active='0'></div>
+             <h2>
+               <span>貓咪</span><span style="display:none">敵人</span>比較器
+             </h2>
+           </div>
+         <div class="functionArea">
+           <i class=" material-icons cir_but toggle_next" text="欄位顯示設定" offsetY="60">table_chart</i>
+           <div class="panel" active='0'>
+             <div class="field_toggle">
+               <label class="checkbox" name="picture">
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               圖片
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='color'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               屬性
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='rarity'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               稀有度
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='hp'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               體力
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='kb'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               KB
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='hardness'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               硬度
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='atk'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               攻擊力
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='dps'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               DPS
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='range'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               攻擊距離
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='freq'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               攻擊頻率
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='speed'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               跑速
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='multi'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               範圍
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='cost'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               價格
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='cd'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               再生產
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='reward'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               獲得金錢
+             </div>
+             <div class="field_toggle">
+               <label class="checkbox" name='char'>
+                 <input type="checkbox" checked="checked">
+                 <span class="checkmark"></span>
+               </label>
+               特性
+             </div>
+           </div>
+           <i class="material-icons cir_but"text="全部顯示">visibility</i>
+           <i class="material-icons cir_but"text="條件格式設定">format_color_fill</i>
+           <i class="material-icons cir_but"text="截圖">add_a_photo</i>
+         </div>
+       </div>
+       <div style="margin-top:20;text-align:center">
+         圖1、比較器功能列
+       </div>
+       <h2 id="compare_0">開始使用</h2>
+       <ol>
+         <li>
+           在<a onclick="switchIframe('cat')"><em>貓咪資料庫</em></a>或<a onclick="switchIframe('enemy')"><em>敵人資料庫</em></a>中，
+           點選搜尋結果旁邊的購物車按鈕 <i class="material-icons cir_but">&#xE8CC;</i>
+           ，即可將該貓咪或敵人加入比較器，也可以從查詢結果的功能列中批次加入。
+        </li>
+        <li>
+          在比較器頁面中，可以點擊比較器的名稱來切換貓咪比較器或敵人比較器，下方的比較表格會自動切換顯示
+        </li>
+       </ol>
+       <h2 id="compare_1">比較器功能列</h2>
+       <ul>
+         <li>
+           <i class=" material-icons cir_but" text="欄位顯示設定">table_chart</i>
+           <em style="text-decoration:underline">欄位顯示設定</em> :
+           控制比較表格中個欄位的顯示與否，此為全域切換，即，在貓咪比較器下將敵人才有的"獲得金錢"等欄位關閉，
+           切換至敵人比較器時自動生效，反之亦然。
+         </li>
+         <li>
+           <i class="material-icons cir_but"text="全部顯示">visibility</i>
+           <em style="text-decoration:underline">全部顯示</em> :
+           比較表格中可隱藏列(下方詳述)，此按鈕即可重新顯示所有隱藏的欄(由闌尾顯示設定所隱藏)與列。
+         </li>
+         <li>
+           <i class="material-icons cir_but" text="條件格式設定">format_color_fill</i>
+           <em style="text-decoration:underline">條件格式設定</em> :
+           此按鍵可以呼叫出如下面板，依據不同的條件設定顯示格式
+           <div class="modal"style="position:relative;display:flex;z-index:0">
+             <div class="modal-dialog">
+               <div class="modal-content">
+                 <div class="modal-header">
+                   <h2 class='title'>條件格式設定</h2>
+                 </div>
+                 <div class="modal-body">
+                   <table>
+                     <thead>
+                       <tr>
+                         <th>套用欄位</th>
+                         <th>格式設定</th>
+                         <th>條件設定</th>
+                         <th></th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       <tr>
+                         <td type='add_column'>新增套用欄位</td>
+                         <td type='add_format'>新增格式</td>
+                         <td type='add_query'>新增條件</td>
+                         <td type='del'> <i class="material-icons">delete</i> </td>
+                       </tr>
+                     </tbody>
+                     <tfoot>
+                       <tr>
+                         <td colspan="4" onclick="add_row()"> <i class="material-icons">add_circle</i> </td>
+                       </tr>
+                     </tfoot>
+                   </table>
+                   <datalist id="col_list">
+                     <option value='體力'></option>
+                     <option value='KB'></option>
+                     <option value='硬度'></option>
+                     <option value='攻擊力'></option>
+                     <option value='DPS'></option>
+                     <option value='攻擊距離'></option>
+                     <option value='攻擊頻率'></option>
+                     <option value='跑速'></option>
+                     <option value='價格'></option>
+                     <option value='再生產'></option>
+                     <option value='獲得金錢'></option>
+                   </datalist>
+                 </div>
+                 <div class="modal-footer">
+                   <button type="submit" onclick="commit_customFormat()" name="button">保存</button>
+                   <button type="clear" onclick="clear_customFormat()" data-dismiss="modal" name="button">清除</button>
+                   <button type="close" name="button" data-dismiss="modal">取消</button>
+                 </div>
+               </div>
+             </div>
+           </div>
+           <div style="margin-bottom:20;text-align:center">
+             圖2、條件格式設定面板
+           </div>
+           <ul>
+             <li>
+               <em>套用欄位</em>:設定此條件格式欲套用的欄位，每次只能選取一個欄位，
+               但多次選取可多選欄位，惟多選結果下個別移除功能尚未實作，在多選欄位時請多加小心
+             </li>
+              <em>格式設定</em>:設定格式，依序為
+              <ul>
+                <li>字體大小 : 16/20/12 px</li>
+                <li>字體顏色 : 可自由調整</li>
+                <li>背景顏色 : 可自由調整</li>
+                <li>粗體設定 : 一般/粗體/細體</li>
+              </ul>
+             <li>
+               <em>條件設定</em>:符合此條件的儲存格就會以前面所設定的格式顯示，
+               點選空白處可以切換模式(小於/大於/之間)
+             </li>
+             <li> <em>刪除</em>:刪除此條件設定 </li>
+           </ul>
+           而下方可以新增不同的條件格式，此處為示範，可以無限制添加，但實際使用時，需上方所有條件格式欄位
+           都設定完畢才可以新增下一個條件格式<br>
+           設定完之後，記得按 <em>保存</em>來儲存這些格式設定
+         </li>
+         <li>
+           <i class="material-icons cir_but"text="截圖">add_a_photo</i>
+           <em style="text-decoration:underline">截圖</em> :
+           擷取目前的比較表格，並可以下載
+         </li>
+       </ul>
+       <h2 id="compare_2">比較表格</h2>
+       <div class="display" style="padding:0" offsetX='0'>
+         <div class="func" active="1">
+           <span class="functionArea">
+             <i class="cir_but" text="Lv.40">Lv</i>
+             <i class="material-icons cir_but" text="刪除">delete</i>
+             <i class="material-icons cir_but" text="隱藏">desktop_access_disabled</i>
+             <i class="material-icons cir_but" text="切換階級">swap_vert</i>
+           </span>
+           <span class="dataArea">
+             <span class="img" style="background-image:url('css/footage/cat/u363-3.png')"></span>
+             <span>Saber Alter CC</span>
+           </span>
+           <i class="material-icons">arrow_right</i>
+         </div>
+       </div>
+       <div style="margin: 20 0;text-align:center">
+         圖3、比較表各列功能選單
+       </div>
+       <p>
+         在比較表格中，每一列的最左邊有如上圖的功能選單。此選單提供四種功能，分別為:
+         <ul>
+           <li>
+             <em>調整等級</em>: 懸浮游標時會顯示當前等級，點擊後跳出對話框可輸入等級，此等級也會同步儲存於雲端，當你在貓咪資料庫開啟時
+             將以此等級顯示。若為敵人比較表，則是調整倍率。
+           </li>
+           <li> <em>刪除</em>:將此貓咪(敵人)永久移出比較序列 </li>
+           <li> <em>隱藏</em>:將此貓咪(敵人)列暫時隱藏，欲重新顯示則點擊比較器功能列中的<i class="material-icons cir_but"text="全部顯示">visibility</i> </li>
+           <li>
+             <em>切換階級</em>: 此功能僅適用於貓咪比較表，可以切換貓咪的不同階級，階級也會同步儲存於雲端，
+             當使用者在貓咪資料庫開啟此腳色時，將以新的階級顯示。
+           </li>
+         </ul>
+         當比較表格有左右滑動時，為了方便使用者知道目前每一列是哪個腳色的數據，此功能列會切換顯示貓咪(敵人)的
+         圖片與名稱。
+         <em onclick="$(this).parent().find('.display').attr('offsetX',(Number($(this).parent().find('.display').attr('offsetX'))+1)%2)">點此切換</em>
+       </p>
+      </div>
+      <div class="article"id="combo">
+          <h1> <span onclick="switchIframe('combo')">聯組資料庫</span> 用法</h1>
+          <h2 id="combo_0">開始使用</h2>
+          <ol>
+            <li>從頁面上方的聯組分類選擇欲查詢的聯組種類(可多選)</li>
+            <li>
+              點擊<button>GO</button>系統即會載入所選聯組
+            </li>
+          </ol>
+          <h2 id="combo_1">進階查詢</h2>
+          <p>
+            點擊聯組中的貓咪圖片即可在漂浮顯示中顯示貓咪資料，
+            如欲察看詳細資料，請點選
+            <em style="border-radius:30px;box-shadow:1px 1px 11px 1px black;padding:0 10;background:white">
+              更多詳細資料>
+            </em>
+          </p>
+          <h2 id="combo_2">聯組延伸</h2>
+          <p>
+            所有聯組結果之右方皆有一聯組延伸按鈕
+            <i class="material-icons cir_but"text='聯組延伸'>playlist_add</i>
+            ，點擊即可啟用聯組延伸功能，功能如下:
+          </p>
+          <ul>
+            <li>
+              <b style="text-decoration:underline">自動更新包含聯組: </b><br />
+              <em>包含聯組</em>之定義為該聯組中的貓咪全部出現在
+              本聯組中。系統會自動計算出所有包含聯組並將其類別、名稱、效果，
+              附加於本聯組之類別、名稱、效果後方。
+            </li>
+            <li>
+              <b style="text-decoration:underline">可疊加聯組列表: </b><br />
+              <em>可疊加聯組</em>之定義為該聯組中至少包含一隻以上
+              本聯組中存在的貓咪(不限階級)。可疊加聯組列表會從交集最多
+              的聯組開始列出。若該聯組同時也是包含聯組，則不顯示。
+            </li>
+            <li>
+              <b style="text-decoration:underline">其他可容納聯組: </b><br />
+              其他聯組中貓咪數量與本聯組相加後，不超過出陣列表第一排上限(5隻)者，
+              因結果量龐大，故不會全部列出，請在聯組延伸區塊之最底下，
+              <em>查看其他聯組</em>處，選擇類別與效果，來顯示該類別中
+              符合上述條件的聯組。
+            </li>
+            <li>
+              <em style="text-decoration:underline">聯組合併: </em><br />
+              點選聯組延伸結果中的各聯組右方之
+              <i class="material-icons cir_but"text='連組合併'>merge_type</i>
+              按鈕，即可將該聯組與本聯組以類似「包含聯組」
+              的方式將類別、名稱、效果和內容合併，並取代原本聯組。
+              合併完成後，聯組延伸結果區將關閉。此延伸聯組同樣也可以執行
+              <em>聯組延伸</em>的功能，再繼續合併更多的聯組。
+            </li>
+          </ul>
+      </div>
+      <div class="article" id="expCalculator">
+        <h1> <span onclick="switchIframe('expCalculator')">經驗值計算器</span> 用法</h1>
+        <p>
+          本頁面除了基本的檢視各類貓咪升級所需經驗值與貓眼石外，提供兩種計算器:
+        </p>
+        <ul>
+          <li>輸入等級區間，以計算該區間內所需經驗值與貓眼石總和</li>
+          <li>輸入欲花費經驗與起始等級，以計算最多可升級之等級、所需貓眼石量與剩餘經驗值</li>
+        </ul>
+        <p>
+          要切換不同計算器請點選
+          <span style="background:#f2d5a7;padding:3 15;font-weight:bold;margin:0 5;">計算器</span>
+          來切換
+        </p>
+      </div>
+    </div>
+
+
+    <div class="left-side-column">
+      <ul>
+        <li>
+          <a href="?stage">關卡資料庫用法</a>
+          <ul>
+            <li> <a href="?stage_0">開始使用</a></li>
+            <li> <a href="?stage_1">進階查詢</a></li>
+            <li> <a href="?stage_2">資料顯示區功能列</a></li>
+            <li> <a href="?stage_3">資料顯示區</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <a href="?compare">比較器用法</a>
+          <ul>
+            <li> <a href="?compare_0">開始使用</a></li>
+            <li> <a href="?compare_1">比較器功能列</a></li>
+            <li> <a href="?compare_2">比較表格</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <a href="?combo">聯組資料庫用法</a>
+          <ul>
+            <li> <a href="?combo_0">開始使用</a></li>
+            <li> <a href="?combo_1">進階查詢</a></li>
+            <li> <a href="?combo_2">聯組延伸</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul>
+        <li> <a href="?expCalculator">經驗值計算器用法</a> </li>
+      </ul>
+    </div>
+    <div class="left-side-active"> 目錄 </div>
+
+
+    <div id="canvas_holder">
+      <div class="picture"></div>
+    </div>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://johnny.github.io/jquery-sortable/js/jquery-sortable.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="./js/html2canvas.min.js"></script>
+    <script src="./js/class.js"></script>
+    <script src="./js/overall.js"></script>
+    <script src="./js/jquery.easing.1.3.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+    <script src="./js/firebaseConfig.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+    $(".swapper").click(function () {
+      $(".swapper").find('h2 span').toggle();
+      $(".swapper").find(".icon").each(function () {
+        let temp = Number($(this).attr("active"));
+        $(this).attr("active",(temp+1)%2);
+      });
+    });
+    $(document).ready(function () {
+      var hash;
+      if(location.search) {
+        hash = location.search.split("?")[1];
+        scroll_to_div(hash,null,-10);
+      }
+    })
+    $(document).on("click",".modal td",function () {
+      var type = $(this).attr("type");
+      switch (type) {
+        case "del":
+          $(this).parent().remove();
+          break;
+        case "add_column":
+          $(this).attr("type","column").html(createHtml("input","",{list:"col_list",placeholder:"新增欄位"}));
+          $(this).children().focus();
+          break;
+        case "add_format":
+          $(this).empty().attr("type","format");
+          $(this).append(createHtml("span",createHtml("i","format_size",{class:"material-icons"})));
+          $(this).append(createHtml("span",createHtml("i","format_color_text",{class:"material-icons"})));
+          $(this).append(createHtml("span",createHtml("i","format_color_fill",{class:"material-icons"})));
+          $(this).append(createHtml("span",createHtml("i","format_bold",{class:"material-icons"})));
+          break;
+        case "add_query":
+          $(this).attr("type","query").html(
+            createHtml("input","",{type:"number",value:0})+
+            createHtml("span","~")+
+            createHtml("input","",{type:"number",value:0})
+          );
+          $(this).children().eq(0).focus();
+          break;
+        case "query":
+          var temp = Number($(this).attr("relation"));
+          if(Number.isNaN(temp)) temp = 0;
+          $(this).attr("relation",(temp+1)%3).children().eq(0).focus();
+          break;
+        default:
+      }
+    });
+    $(document).on("click",".modal td[type='format'] span",function () {
+      switch ($(this).text()) {
+        case "format_size":
+          var temp = Number($(this).attr("size"));
+          if(Number.isNaN(temp)) temp = 1;
+          $(this).attr("size",(temp+1)%3);
+          break;
+        case "format_bold":
+          var temp = Number($(this).attr("weight"));
+          if(Number.isNaN(temp)) temp = 0;
+          $(this).attr("weight",(temp+1)%3);
+          break;
+        default:
+      }
+    });
+    function add_row() {
+      $(createHtml("tr",
+        createHtml("td","新增套用欄位",{type:"add_column"})+
+        createHtml("td","新增格式",{type:"add_format"})+
+        createHtml("td","新增條件",{type:"add_query"})+
+        createHtml("td",createHtml("i","delete",{class:"material-icons"}),{type:"del"})
+      )).appendTo(".modal table tbody");
+
+    }
+    </script>
+  </body>
+</html>

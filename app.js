@@ -27,8 +27,6 @@ var Activity = require("./UpdateEvent");
 var Users = require("./Userdata");
 var Combodata = require("./Combodata");
 
-var CoinhiveAPI = require('coinhiveapi');
-var coinhive = new CoinhiveAPI('kyoXowX7ige3k8BcMVZcnhOwaZi3lEIv');
 var dashboardID;
 var editingTable = {}; // for rename stage
 var Apiai = require("apiai");
@@ -261,7 +259,7 @@ io.on('connection', function(socket){
           for(let i in buffer)
             buffer[i].stage = variable[buffer[i].id]?variable[buffer[i].id].stage:null;
 
-        socket.emit("search result",{result:buffer,query:data.query,type:data.type,query_type:data.query_type});
+        socket.emit("search result",{result:buffer,filterObj:data.filterObj,query:data.query,type:data.type,query_type:data.query_type});
   });
   socket.on("text search",function (data) {
     try{
@@ -720,7 +718,7 @@ io.on('connection', function(socket){
       if(!data.cat) return
       var setting = Users.getSetting(uid),
           target = Users.getVariable(uid,'cat')[cat];
-          target = target?target:{}
+      target = target?target:{}
       var exist = target.survey?(target.survey[type]?target.survey[type]:false):false,
           count = setting.cat_survey_count?setting.cat_survey_count:0;
       if(!exist) count += 0.25;
@@ -732,7 +730,6 @@ io.on('connection', function(socket){
         var survey = target.survey;
         survey = survey?survey:{};
         survey[type] = exist;
-        database.ref("/user/"+uid+"/variable/cat/"+cat+"/survey/"+type).set(exist);
       }
       else {
         if(!target.survey) target.survey = {};

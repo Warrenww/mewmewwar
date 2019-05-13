@@ -1,9 +1,9 @@
 $(document).on('click','#nickname span',function () {
-  let type = $(this).attr("id").split("_nick")[0],
-  quene = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
-  org = [];
-  for(let i in quene)
-  org.push(quene[i].nickname);
+  var type = $(this).attr("id"),
+      queue = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
+      org = [];
+  for(let i in queue) org.push(queue[i]);
+  if(type) type = type.split("_nick")[0];
 
   if(type == 'add'){
     $(this).hide().siblings('span').show();
@@ -14,21 +14,28 @@ $(document).on('click','#nickname span',function () {
   }
   else if(type == 'confirm'){
     let val = $('#nickname').find("input").val();
-    update_nickname(val,quene,org);
+    update_nickname(val,queue,org);
   }
-  $(this).siblings('div').html(org.join(","))
-  $("#add_nick").show().siblings('span').hide();
+  else if(type == 'cancel') {
+    appendNickname(org);
+    $("#add_nick").show().siblings('span').hide();
+  }
+  else{
+    let conf;
+    if($(this).parent().is(".panel")) conf = confirm("確定要刪除此暱稱?");
+    else conf = false;
+
+    if(!conf) return;
+    update_nickname($(this).parent().prev().text().trim(),queue,org,true);
+  }
 });
 $(document).on('keypress','#nickname div input',function (e) {
   if(e.keyCode!=13) return
-  let val = $(this).val(),
-  quene = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
-  org = [];
-  for(let i in quene)
-  org.push(quene[i].nickname);
-  update_nickname(val,quene,org);
-  $(this).parent().html(org.join(","));
-  $("#add_nick").show().siblings('span').hide();
+  var val = $(this).val(),
+      queue = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
+      org = [];
+  for(let i in queue) org.push(queue[i]);
+  update_nickname(val,queue,org);
 });
 $(document).on('click',".survey #rank span i,.rank_respec span i",function () {
   let a = $(this).attr("no"),
@@ -123,9 +130,6 @@ function initial_survey() {
   $("#rank i").attr('value',0);
   $('#rank span').attr("new",'true');
   $("#rank_c").find("path").remove();
-  $('#rank').parent().attr('colspan',function () { return screen.width>768?2:3 });
-  $('#rank_respec').parent().attr('colspan',function () { return screen.width>768?2:6 });
-  $('#rank_respec').parent().attr('rowspan',function () { return screen.width>768?6:1 });
   d3.select("#rank_c").select('text').text('尚無評分')
     .attr({
       x:"26,46,26,46",y:"40",dy:'0,0,20',
@@ -145,7 +149,7 @@ function initial_survey() {
       '<i class="material-icons" value="0" no="4">&#xe885;</i>'+
       '<i class="material-icons" value="0" no="5">&#xe885;</i>'+
       '</span>'
-    ).attr('colspan',function () { return screen.width>768?3:5 });
+    );
     index++;
   });
   $("#rank_respec").find("path[id='char']").remove();
@@ -164,13 +168,8 @@ function initial_survey() {
 function addSurvey(data,survey) {
   current_cat_survey = survey?survey:{};
   current_cat_statistic = data?data:current_cat_statistic;
-  let arr = [];
   if(!data) return
-  if(data.nickname){
-    for(let i in data.nickname)
-      arr.push(data.nickname[i].nickname);
-    $(".survey #nickname div").text(arr.join(","));
-  }
+  if(data.nickname) appendNickname(data.nickname);
   update_total_rank(data.rank);
   update_respect_rank(data.rank);
   update_application(data.application);
@@ -273,32 +272,58 @@ function update_application(app) {
   .css({"color":"#f79942","font-weight":'bold'})
 }
 
-function update_nickname(val,quene,org) {
-  let r = confirm('確定加入暱稱 : '+val+" ?");
-  if(!r) return
-  if(val == ''||!val){
+function update_nickname(val,queue,org,del = false) {
+  var r, flag = false;
+
+  if(!del) r = confirm('確定加入暱稱 : '+val+" ?");
+  if(!r) flag = true;
+
+  if((val == ''||!val) && !del){
     alert("請輸入暱稱!");
-    return
+    flag = true;
   }
-  for(let i in quene)
-    if(quene[i].nickname == val){
-      alert("暱稱已存在!");
-      return
+  for(let i in queue)
+    if(queue[i]){
+      if(queue[i].nickname == val && !del){
+        alert("暱稱已存在!");
+        flag = true;
+      }
     }
-  ga('send', 'event', 'survey_cat', 'nickname',CurrentCatID);
-  let obj = {
-    owner:CurrentUserID,
-    nickname:val
+  if(!flag || del){
+    var obj = {
+      owner:CurrentUserID,
+      nickname:val
+    }
+    if(del){
+      for(let i in queue) if(queue[i]) if(queue[i].owner == obj.owner && queue[i].nickname == obj.nickname) delete queue[i];
+      for(let i in org) if(org[i]) if(org[i].owner == obj.owner && org[i].nickname == obj.nickname) delete org[i];
+    }
+    else{
+      queue.push(obj);
+      org.push(obj);
+    }
+    socket.emit("cat survey",{
+      uid : CurrentUserID,
+      cat : CurrentCatID.substring(0,3),
+      type : 'nickname',
+      add : obj,
+      all : queue,
+    });
   }
-  quene.push(obj);
-  org.push(val);
-  socket.emit("cat survey",{
-    uid : CurrentUserID,
-    cat : CurrentCatID.substring(0,3),
-    type : 'nickname',
-    add : obj,
-    all : quene
-  });
+  appendNickname(org);
+  $("#add_nick").show().siblings('span').hide();
+}
+function appendNickname(array) {
+  $(".survey #nickname div").empty();
+  for(let i in array){
+    if(array[i] == null) continue;
+    $(".survey #nickname>div").append(
+      ` <span id='${i}' class='${array[i].owner == CurrentUserID?"own toggle_next":""}'offsetY='24'>
+          ${array[i].nickname}
+        </span>
+        ${array[i].owner == CurrentUserID?"<div class='panel'><span>刪除</span></div>":""}
+      `);
+  }
 }
 var commentMap = {};
 function append_comment(comment) {
@@ -306,7 +331,7 @@ function append_comment(comment) {
   $(".commentTable .comment,.commentTable .Nocomment").remove();
   if(!comment||comment == "-"){
     $(".commentTable").append("<tr class='Nocomment'><td colspan='6'>尚無評論</td></tr>");
-      return
+    return
   }
   let html = '';
   for(let i in comment){
@@ -317,7 +342,7 @@ function append_comment(comment) {
       commentMap[comment[i].owner].push(i);
     }
   }
-  $(".commentTable").append(html);
+  $(".commentTable tbody").append(html);
   commentPhoto(commentMap);
 }
 function submitComment() {
@@ -335,21 +360,29 @@ function submitComment() {
   $(".Nocomment").remove();
 }
 function commentHtml(id,comment,photo=null,name=null) {
-  let html,uid = CurrentUserID;
-  html = '<tr class="comment">'+
-  '<td colspan="6" style="border-left:'+
-  (comment.owner == uid?"5px solid #eb8a26":"0")+
-  '"><div class="comment_content">'+
-  '<span class="photo" style="'+
-  (photo?'background-image:url(\''+photo+'\')':'')+'")"></span>'+
-  '<span class="name">'+(name?name:'')+'</span>'+
-  '<div id="'+id+'">'+
-  '<span class="bubble">'+comment.comment.split("\n").join("</br>")+'</span>'+
-  "<span class='function'>"+
-  '<span class="time">'+commentTime(comment.time)+'</span>'+
-  '<span class="like">'+likeOrEdit(comment.owner,comment.like)+'</span>'+
-  '</span></div></div></td></tr>'
-  return html
+  if(comment.report)
+    if(comment.report.count > 3)
+      return createHtml('tr',createHtml('td',createHtml('div',"<span>此留言已被多人檢舉，正在處理中</span>",{class:"comment_content"}),{colspan:6}),{class:'comment'});
+  for(let i in comment.report)
+    if(i == CurrentUserID)
+      return createHtml('tr',createHtml('td',createHtml('div',"<span>你已檢舉此留言</span>",{class:"comment_content"}),{colspan:6}),{class:'comment'});
+  return `
+    <tr class="comment">
+      <td colspan="6" class="${comment.owner == CurrentUserID?"own":""}">
+        <div class="comment_content">
+          <span class="photo" style="background-image:url('${photo?photo:""}')"></span>
+          <span class='name'>${name?name:""}</span>
+          <div id='${id}'>
+            <span class='bubble'>${comment.comment.split("\n").join("</br>")}</span>
+            <span class='function'>
+              <span class='time'>${commentTime(comment.time)}</span>
+              <span class='like'>${likeOrEdit(comment.owner,comment.like)}</span>
+            </span>
+          </div>
+        </div>
+      </td>
+    </tr>
+  `
 }
 function commentTime(date) {
   var now = new Date().getTime(),
@@ -365,11 +398,12 @@ function likeOrEdit(uid,like) {
   var html = '',me = CurrentUserID,count = 0;
   for(let i in like) count++;
   html+='<i class="material-icons" id="like" value='+
-        (like?(like[me]?1:0):0) +'>&#xe8dc;</i>'+
-        '<span id="num_like">'+count+'</span>';
+        (like?(like[me]?1:0):0) +'>thumb_up_alt</i>'+
+        '<span id="num_like">'+count+'</span>'+
+        '<i class="material-icons" id="report">report</i>';
   if(uid == me){
-    html+='<i class="material-icons" id="edit">&#xe254;</i>';
-    html+='<i class="material-icons" id="del">&#xe872;</i>';
+    html+='<i class="material-icons" id="edit">edit</i>';
+    html+='<i class="material-icons" id="del">delete</i>';
   }
   return html
 }
@@ -380,6 +414,7 @@ function commentPhoto(obj) {
   socket.emit("required users photo",buffer);
 }
 
+var commentOrg;
 $(document).on('click','.function .like i',function () {
   var type = $(this).attr('id'),
       num = Number($(this).next('span').text()),
@@ -396,13 +431,17 @@ $(document).on('click','.function .like i',function () {
     if(r)
       $(this).parents(".comment").remove();
   }
-  else {
+  else if(type == 'edit'){
     a = $(this).parents(".function").siblings(".bubble");
-    b = a.html().split("<br>").join("\n");
-    a.html("<textarea rows='1' maxlength='100'></textarea>")
-      .find("textarea").val(b).select();
+    commentOrg = a.html().split("<br>").join("\n");
+    a.html(`<textarea rows='1' maxlength='100' style='width:${($(".comment").innerWidth() - $(".photo").innerWidth())*0.75}'></textarea>`)
+      .find("textarea").val(commentOrg).select();
     return
+  } else if(type == 'report'){
+    if(!confirm("確定檢舉此留言?")) return;
+    $(this).parents(".comment_content").html("<span>你已檢舉此留言</span>");
   }
+
   socket.emit('comment function',{
     uid:CurrentUserID,
     key:key,
@@ -418,20 +457,21 @@ $(document).on('keypress','.comment_content textarea',function (e) {
 $(document).on('blur','.comment_content textarea',editComment);
 function editComment() {
   var r = confirm("確定修改?");
-  if(!r) return
   var val = $('.comment_content textarea').val(),
       key = $(this).parents('div').attr("id"),
       b = val.split("\n").join("<br>");
-  $(this).parent().html(b);
-  socket.emit('comment function',{
-    uid:CurrentUserID,
-    key:key,
-    cat:CurrentCatID.substring(0,3),
-    type:'edit',
-    val:val,
-    inverse:false
-  });
-
+  if(r){
+     $(this).parent().html(b);
+     socket.emit('comment function',{
+       uid:CurrentUserID,
+       key:key,
+       cat:CurrentCatID.substring(0,3),
+       type:'edit',
+       val:val,
+       inverse:false
+     });
+   }
+  else $(this).parent().html(commentOrg.split("\n").join("<br>"));
 }
 
 $(document).ready(function () {
@@ -441,14 +481,15 @@ $(document).ready(function () {
   });
   socket.on('return users photo',function (obj) {
     // console.log(obj);
-    var default_photo = Unit.imageURL('cat','001-1');
+    var default_photo = Unit.imageURL('cat','001-1'),
+        unknowncount = 0;
     for(let i in obj){
       if(!obj[i]) obj[i] = {photo:default_photo,name:"使用者"};
       for(let j in commentMap[i]){
         let id = commentMap[i][j];
         $('.commentTable').find("#"+id).siblings('.photo')
           .css('background-image','url("'+(obj[i].photo?obj[i].photo:default_photo)+'")')
-          .siblings('.name').text(obj[i].name);
+          .siblings('.name').text(`${obj[i].name?obj[i].name:("使用者_"+(unknowncount++))}`);
       }
     }
   });

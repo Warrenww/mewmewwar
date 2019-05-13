@@ -1,5 +1,68 @@
-.main_board button,
-.select_chapter button{
+.chooser{
+  background-color: rgba(255,255,255,0.8);
+  box-shadow: 0px 2px 10px 5px;
+  position: relative;
+}
+.chooser>div[class*="Table"]{display: none}
+.chooser>div[active="1"]{display: flex}
+.search_type{
+  display: flex;
+  width: 100%;
+  padding:0 10;
+  justify-content: flex-start;
+}
+.search_type span {
+  font-size: 18px;
+  padding: 3 20;
+  margin: 0 5;
+  border-bottom: 2px solid gray;
+  border-radius: 10px 10px 0px 0px;
+  font-weight: bold;
+  transition: .3s ease;
+}
+.search_type span[value='1'],.search_type span:hover{
+  border-bottom: 2px solid transparent;
+  background: var(--lightorange);
+}
+.chapterTable,
+.searchResultTable{
+  width: 100%;
+  overflow: hidden;
+  flex-direction: column;
+}
+.levelTable{
+  max-height: 60vh;
+}
+.chapterTable>div:first-of-type,
+.searchResultTable>div:first-of-type
+{
+  padding: 5px 20px;
+  font-size: 16;
+  font-weight: bold;
+  display: flex;
+  background: var(--lightorange);
+}
+.chapterTable>div:first-of-type>div {
+    padding: 5 10;
+    cursor: pointer;
+}
+.chapterTable>div:first-of-type>div[value='1'],
+.chapterTable>div:first-of-type>div:hover {background: var(--lightred)}
+
+.chapterTable>div:last-of-type{width: 1000vw;display: flex}
+.chapterTable>div:last-of-type>div{
+  display: flex;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: .3s ease;
+}
+.chapterTable>div:last-of-type>div[value='1']{
+  max-width: 100vw;
+  flex-wrap: wrap;
+  opacity: 1;
+}
+.chapterTable button{
   width: 180px;
   height: 120px;
   border-radius: 0;
@@ -13,7 +76,7 @@
   background-color: rgba(0,0,0,.6);
   background-blend-mode: multiply;
 }
-.select_chapter button[value~='1']{
+.chapterTable button[value~='1']{
   animation-name: border-blink;
   animation-duration: .5s ;
   animation-iteration-count: 5;
@@ -25,52 +88,24 @@
   animation-iteration-count: 5;
     box-shadow: 0px 0px 20px 5px;
 }
+
+.rewardSelectorTable img,.searchResultTable img{width: 30;height: 30}
+.rewardSelectorTable span[value='0'] img{mix-blend-mode: multiply;}
 @keyframes border-blink {
   0%{border-color: rgb(255, 93, 46)}
   50%{border-color: yellow}
   100%{border-color: orange}
 }
 
-.select_chapter{
-  display: flex;
-  flex-direction: column;
-  transition: .1s ease-in-out;
-  justify-content: center;
-}
-.select_chapter span{
-  background-color: rgba(242, 132, 85, 0.85);
-  cursor: pointer;
-  width: 100%;
-  height: 40px;
-  padding: 1% 5% ;
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: .4s ease-in-out;
-  justify-content: space-between;
-}
-.select_chapter div{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden;
-}
-
 #select_stage::-webkit-scrollbar,
 #select_level::-webkit-scrollbar,
-#searchResult .result::-webkit-scrollbar
+.searchResultTable .result::-webkit-scrollbar
 {
     width: 0px;
 }
-#selector{ width: 100%; }
 #select_stage,#select_level{
   flex:3;
   background-color: rgba(255,255,255,.7);
-  transition: .8s ease-in-out;
-  border: 5px solid gray;
   overflow-y: scroll;
   background-size: cover;
   display: flex;
@@ -78,21 +113,27 @@
   flex-wrap: wrap;
   padding: 30px 10px;
 }
-#select_stage{background-image: url("footage/stage/select_stage_BG.png");flex:1}
+#select_stage{
+  background-image: url("footage/stage/select_stage_BG.png");
+  flex:1;
+  border-right: 5px solid gray;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
 #select_level{background-image: url("footage/stage/select_level_BG.png")}
-#select_stage button{padding: 0}
+#select_stage button{
+  padding: 5;
+  margin: 5;
+  width: 200px;
+}
 #select_stage button[value~='1']{
   background: linear-gradient(rgb(222, 168, 30), rgb(213, 97, 14));
   animation-name: border-blink;
   animation-duration: .5s ;
   animation-iteration-count: 10;
 }
-.lv_sg_box{
-  display:flex;
-  height:500px;
-  width:100%
-}
-.enemy{cursor: pointer;}
 .float{
   width: 768px;
   height: 60%;
@@ -119,48 +160,25 @@
 {background: linear-gradient(#b4d161,#91b02b)}
 #select_stage[chapter='trueStory'] button[value='1']
 {background: linear-gradient(#91a253,#4c5b14)}
-#expend_sl_chap{
-  width: 100%;
-  background-color: rgba(255,255,255,.7);
-  display: flex;
-  justify-content: center;
-  margin-bottom: 30px;
-  cursor: pointer;
-  transition: .4s ease-in-out;
-}
-#expend_sl_chap i{transition: .4s ease-in-out;}
-#expend_sl_chap:hover{
-  background-color: rgba(170, 170, 170, 0.7);
-}
-.display #next,
-.display #prev{
-  font-weight: bold;
-  cursor: pointer;
-}
+
 .rewardTable img{width: 30}
-#searchResult{
-  width: 100%;
-  background-color: rgba(255,255,255,.8);
-  margin: 30px;
-  padding: 30px;
-  display: none;
-}
-#searchResult .result{
+.searchResultTable .result{
   display: flex;
   flex-direction: column;
   max-height: 300px;
   overflow: scroll;
 }
-#searchResult .result span{font-size: 20px;padding:10;margin:5 0;cursor: pointer;}
-#searchResult .result span d{text-decoration: underline;}
-#searchResult .result span b{color: rgb(226, 30, 75)}
-#searchResult .result span c{font-weight: bold;text-decoration: underline;}
-#searchResult .result>span:hover{
+.searchResultTable .result span{font-size: 20px;padding:10;margin:5 0;cursor: pointer;}
+.searchResultTable .result>span:nth-of-type(2n){background-color: lightgray}
+.searchResultTable .result span d{text-decoration: underline;}
+.searchResultTable .result span b{color: rgb(226, 30, 75)}
+.searchResultTable .result span c{font-weight: bold;text-decoration: underline;}
+.searchResultTable .result>span:hover{
   box-shadow: 0px 2px 6px 0px;
   background-color: rgba(220,220,220,0.5);
 }
-#searchResult i{border-radius: 50%}
-#searchResult i:hover{background-color: rgb(205, 205, 205)}
+.searchResultTable i{border-radius: 50%}
+.searchResultTable i:hover{background-color: rgb(205, 205, 205)}
 #more_option i::before{
   top:30%;
   left:125%;
@@ -280,15 +298,6 @@
 .enemy_head #point{display: none;}
 .rewardTable th{min-width: 150}
 
-#rewardSelector{
-  width: 100%;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-}
-#rewardSelector[show='1']{display: flex;}
-#rewardSelector img,#searchResult img{width: 30;height: 30}
-#rewardSelector span[value='0'] img{mix-blend-mode: multiply;}
 .ability_tip{min-width: 200px;text-align: center;}
 .card{
   background-color: rgba(0, 0, 0, 0.5);
@@ -348,4 +357,15 @@ i.noedit{ cursor: not-allowed;color: var(--red) !important}
 @media screen and (max-width:768px) {
   .display *{font-size: 14px}
   .rewardTable th{min-width: 75px}
+  .chapterTable>div:first-of-type{flex-wrap: wrap;justify-content:center }
+  .chapterTable>div:last-of-type>div{justify-content: center;}
+  .chapterTable button{width: 120;height: 80;font-size: 18}
+  #select_stage button{font-size: 14px;width: 160px}
+}
+@media screen and (max-width:425px) {
+  .levelTable{flex-direction: column;max-height: 80vh }
+  #select_stage{border: 0;border-bottom: 3px solid gray;max-height: 20vh}
+  #select_stage button{font-size: 12px}
+  .rewardTable tr th:not(:first-of-type){display: none;}
+  .search_type span{font-size: 16;padding: 3 10;}
 }

@@ -175,4 +175,5 @@ nav .mobile,
   .displayControl{width: calc(100% - 6px); top: 16vw;}
   .displayControl[float='true']{top: 0%;}
   .displayControl[float='true'] .data #name{display: none;}
+  .comboPic .card{width: 60;height: 40}
 }

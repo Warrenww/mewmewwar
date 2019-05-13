@@ -57,7 +57,7 @@ $(document).ready(function () {
     }
     if(data.last_cat_search){
       let last = data.last_cat_search;
-      console.log(last);
+      // console.log(last);
       if(last.query)
         socket.emit(last.query_type+" search",last);
       if(last.query_type=='gacha'){
@@ -74,14 +74,13 @@ $(document).ready(function () {
       }
       var value_search = false;
       for(let i in last.filterObj){
-        $("#lower_table").find("th[id='"+i+"']").attr({
-          'active':last.filterObj[i].active,
+        $("#lower_table").find("th[id='"+i+"']").attr('active',last.filterObj[i].active?1:0)
+          .next().children().attr({
           'value':last.filterObj[i].type==2?("["+last.filterObj[i].value+"]"):last.filterObj[i].value,
           'type':last.filterObj[i].type
-        }).click();
-        if(last.filterObj[i].active) value_search = true;
+        });
+        filterSlider($("#lower_table").find("th[id='"+i+"']").next().children());
       }
-      if(value_search) $("#value_search").click();
     }
     if(data.setting.show_ability_text && screen.width > 768)
         $(".select_ability").children(".button").each(function () {
@@ -90,14 +89,14 @@ $(document).ready(function () {
   });
 
   $(document).on('click','.card',function (e) {
-    if($(this).parent().parent().attr("class")=='compareTarget_holder') return
-    else
+    if($(this).parent().parent().attr("class")=='compareTarget_holder') return;
     socket.emit("required data",{
       type:'cat',
       target:$(this).attr('value'),
       record:true,
       uid:CurrentUserID
     });
+    scroll_to_div(".display",null,-50);
   });
 
   var input_org ;
@@ -106,21 +105,15 @@ $(document).ready(function () {
       $(this).html('<input type="number" value="' +input_org+ '"></input>').find('input').select();
   });
   $(document).on('blur', '.editable input', calculateLV);
-  $('.filter_option').click(function () {
-    $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0');
-    filter_name = $(this).attr('id') ;
-    filterSlider($(this));
+
+  var level_org ;
+  $(document).on('click','#level_num',function () {
+      level_org = Number($(this).text());
+      $(this).html('<input type="number" value="' +level_org+ '"></input>').find('input').select();
   });
-  var filter_org ;
-  $(document).on('click','.value_display,#level_num',function () {
-      filter_org = Number($(this).text());
-      $(this).html('<input type="number" value="' +filter_org+ '"></input>').find('input').select();
-  });
-  $(document).on('blur','.value_display input',changeSlider) ;
   $(document).on('blur','#level_num input',function () {
     let val = Number($(this).val()) ;
-    val = val && val>0 && val<101 ? val : filter_org ;
+    val = val && val>0 && val<101 ? val : level_org ;
     $('#level').slider('option','value',val);
   });
   $(document).on('click','.searchCombo',function () {
@@ -179,7 +172,7 @@ $(document).ready(function () {
     addSurvey(info.statistic,survey);
     append_comment(info.comment);;
 
-    scroll_to_class("content",1);
+    // scroll_to_class("content",1);
   }
   // Change Cat Stage
   $(document).on('click',".dataTable #title .img",function () {
@@ -312,7 +305,7 @@ $(document).ready(function () {
       uid:CurrentUserID,
       query:{rFilter,cFilter,aFilter},
       query_type:type,
-      filterObj:[],
+      filterObj:{},
       type:"cat",
       value:0
     });
@@ -366,18 +359,7 @@ $(document).ready(function () {
       stage : Number(current.split("-")[1])-1
     });
   }
-  function changeSlider() {
-    let target = $("#"+filter_name+".filter_option");
-    let range = JSON.parse(target.attr('range')),
-        step = Number(target.attr('step')),
-        value = Number($(this).val()),
-        type = Number(target.attr("type"));
 
-    value = Math.round(value/step)*step ;
-
-    if(value && value<range[1] && value>range[0]) $("#slider_holder").find('.slider').slider('option','value',value);
-    else $("#slider_holder").find('.slider').slider('option','value',filter_org);
-  }
   function calculateLV() {
     var val = Number($(this).val()),
         rarity = current_cat_data.rarity,

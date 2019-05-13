@@ -1,5 +1,9 @@
 var Unitdata = require("./Unitdata");
 var database = require("firebase").database();
+var dashboard_socket;
+exports.SetSocket = function (socket_id) {
+  dashboard_socket = socket_id
+}
 
 exports.Sort = function (list,target=null,reverse=false) {
   return quickSort(list,target,reverse)
@@ -64,7 +68,8 @@ exports.__handalError = function (e) {
   database.ref("/error_log").push({
     time:time,
     message:e.message?e.message:"undefine",
-    stack:e.stack?e.stack:"undefine"
+    stack:e.stack?e.stack:"undefine",
+    debug:e.debug?e.debug:"undefine"
   });
   return e.message.toString()+"\n"+e.stack.toString();
 }

@@ -235,7 +235,7 @@
 {margin: 0 5;display: none;}
 #custom_format td[relation='2'] span,
 #custom_format td[relation='2'] input:last-of-type
-{display: inline-block;;}
+{display: inline-block;}
 #custom_format .jscolor{
   width: 100%;
   position: absolute;

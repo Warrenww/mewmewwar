@@ -66,12 +66,6 @@ exports.load = function (mostSearchCat) {
     console.log("Module load cat data complete!");
     console.log("most Search Cat : ",mostSearchCat);
     console.log("Number of cat search : ",__numberOfCatSearch);
-    // for(let i in AbilityMap.cat) console.log(i,AbilityMap.cat[i].length);
-    // fs.appendFile('nicknameMap.txt', JSON.stringify(nicknameMap),(err) =>{
-    //   if (err) throw err;
-    //   console.log('Is saved!');
-    //   // process.exit();
-    // });
   });
   database.ref("/enemydata").once("value",(snapshot)=>{
     var temp = snapshot.val();
@@ -378,6 +372,15 @@ exports.updateComment = function (data,type) {
       }else if(data.type == 'edit'){
         CatData[data.cat].comment[data.key].comment = data.val;
         database.ref("/CatData/"+data.cat+"/comment/"+data.key+"/comment").set(data.val);
+      } else if(data.type == 'report'){
+        CatData[data.cat].comment[data.key].report = CatData[data.cat].comment[data.key].report ?
+        CatData[data.cat].comment[data.key].report:{count:0};
+        CatData[data.cat].comment[data.key].report[data.uid] = 1;
+        CatData[data.cat].comment[data.key].report.count += 1;
+        database.ref("/CatData/"+data.cat+"/comment/"+data.key+"/report").set(CatData[data.cat].comment[data.key].report);
+        if(CatData[data.cat].comment[data.key].report.count > 3){
+          database.ref("/Report/catComment").push({cat:data.cat,key:data.key});
+        }
       }
     }
   }
@@ -388,44 +391,48 @@ exports.updateComment = function (data,type) {
 
 exports.fetch = function (type,arr) {
   console.log(type,arr);
-  for(let i in arr){
-    var exist = false;
-    if(type == 'cat' && catNameMap[Util.AddZero(arr[i],2)]) exist = true;
-    getData(type,arr[i],exist);
-  }
-}
+  var Generator = (function* (arr) {
+    for(let i in arr){
+      var exist = false;
+      if(type == 'cat' && catNameMap[Util.AddZero(arr[i],2)]) exist = true;
+      getData(type,arr[i],exist);
+      yield;
+    }
+  })(arr), genstate = {finish:false};
 
-function getData(type,id,exist) {
-  id = Util.AddZero(id,2);
-  var url = "https://battlecats-db.com/"+(type == 'cat'?"unit":'enemy')+"/"+id+".html";
-  console.log(url);
-  request({
-    url: url,
-    method: "GET"
-  }, function(e,r,b) {
-    var obj = type == "cat"?
-        {
-          comment:CatData[id]?(CatData[id].comment?CatData[id].comment:"-"):"-",
-          count:CatData[id]?(CatData[id].count?CatData[id].count:0):0,
-          statistic:CatData[id]?(CatData[id].statistic?CatData[id].statistic:"-"):"-",
-          region:CatData[id]?(CatData[id].region?CatData[id].region:"[TW][JP]"):"[TW][JP]",
-          data:{}, id:id, rarity:"",
-        } : {tag:[],char:[],id:id,color:[]};
-    if(!e){
-      console.log("get data");
-      $ = cheerio.load(b);
-      var Bgc12 = 0; // cat stage
-      if($(".maincontents table").find("tr[class='bgc12']").length == 1) Bgc12 = 1;
-      $(".maincontents table").find("tr[class='bgc12']").each(function () {
-        if(!Bgc12){Bgc12 ++;return;}  // ignore first bgc 12
-        var data = type == 'cat'?(obj.data[Bgc12]={tag:[],char:[]}):obj; // point to data to write
-        data.id = id+(type == 'cat'?("-"+Bgc12):"");
-        data.jp_name = $(this).children().eq(1).text();
-        if(type == 'cat')
-          data.name = catNameMap[id]?(catNameMap[id][Number(Bgc12)-1]?catNameMap[id][Number(Bgc12)-1]:""):"";
-        else
-          data.name = enemyNameMap[id]?enemyNameMap[id]:"";
-        var row_1 = $(this).next().next(),
+  genstate = Generator.next();
+
+  function getData(type,id,exist) {
+    id = Util.AddZero(id,2);
+    var url = "https://battlecats-db.com/"+(type == 'cat'?"unit":'enemy')+"/"+id+".html";
+    console.log(url);
+    request({
+      url: url,
+      method: "GET"
+    }, function(e,r,b) {
+      var obj = type == "cat"?
+          {
+            comment:CatData[id]?(CatData[id].comment?CatData[id].comment:"-"):"-",
+            count:CatData[id]?(CatData[id].count?CatData[id].count:0):0,
+            statistic:CatData[id]?(CatData[id].statistic?CatData[id].statistic:"-"):"-",
+            region:CatData[id]?(CatData[id].region?CatData[id].region:"[TW][JP]"):"[TW][JP]",
+            data:{}, id:id, rarity:"",
+          } : {tag:[],char:[],id:id,color:[]};
+      if(!e){
+        try {
+          $ = cheerio.load(b);
+          var Bgc12 = 0; // cat stage
+          if($(".maincontents table").find("tr[class='bgc12']").length == 1) Bgc12 = 1;
+          $(".maincontents table").find("tr[class='bgc12']").each(function () {
+            if(!Bgc12){Bgc12 ++;return;}  // ignore first bgc 12
+            var data = type == 'cat'?(obj.data[Bgc12]={tag:[],char:[]}):obj; // point to data to write
+            data.id = id+(type == 'cat'?("-"+Bgc12):"");
+            data.jp_name = $(this).children().eq(1).text();
+            if(type == 'cat')
+            data.name = catNameMap[id]?(catNameMap[id][Number(Bgc12)-1]?catNameMap[id][Number(Bgc12)-1]:""):"";
+            else
+            data.name = enemyNameMap[id]?enemyNameMap[id]:"";
+            var row_1 = $(this).next().next(),
             row_2 = row_1.next(),
             row_3 = row_2.next(),
             row_4 = row_3.next(),
@@ -434,52 +441,59 @@ function getData(type,id,exist) {
             row_7 = row_6.next(),
             row_8 = row_7.next();
 
-        var level = 0;
-        row_3.children().eq(1).find(".finger").each(function () {
-          level += Number($(this).text());
-        });
-        if(type == "enemy")
-          row_1.children().eq(0).find('a').each(function () {
-            data.color.push(Parser.parseEnemy($(this).text()));
+            var level = 0;
+            row_3.children().eq(1).find(".finger").each(function () {
+              level += Number($(this).text());
+            });
+            if(type == "enemy")
+            row_1.children().eq(0).find('a').each(function () {
+              data.color.push(Parser.parseEnemy($(this).text()));
+            });
+            else obj.rarity = Parser.parseRarity(row_1.children().eq(0).find("a").text());
+
+            data.hp = Number(row_1.children().eq(3).children().eq(0).text().split(",").join(""));
+            data.kb = Number(row_1.children().eq(5).text().split(",").join(""));
+            data.hardness = data.hardness!=Infinity?data.hardness:'Infinity';
+            data.freq = Number(row_1.children().eq(7).children().eq(0).text())?Number(row_1.children().eq(7).children().eq(0).text())/30:"-";
+            data.atk = Number(row_2.children().eq(1).children().eq(0).text().split(",").join(""));
+            data.speed = Number(row_2.children().eq(3).text());
+            data.atk_speed = Number(row_2.children().eq(5).children().eq(0).text())/30;
+            data.range = Number(row_3.children().eq(5).text().split(",").join(""));
+            data.atk_period = Number(row_3.children().eq(7).children().eq(0).text())?Number(row_3.children().eq(7).children().eq(0).text())/30:"-";
+            data.aoe = (type == 'cat'?row_4:row_3).children().eq(3).children().eq(0).text() == "単体" ? false : true;
+            if(type == 'cat'){
+              data.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
+              data.cd = Number(row_3.children().eq(7).children().eq(0).text())/30;
+              data.hp = Parser.ToOriginal(data.hp,data.rarity,level);
+              data.atk = Parser.ToOriginal(data.atk,data.rarity,level);
+            } else{
+              data.reward = Number(row_3.children().eq(7).text().split(",").join(""));
+            }
+            data.dps = data.freq!="-"?data.atk/data.freq:"-" ;
+            data.hardness = data.hp/data.kb ;
+            Parser.parseChar(row_5.children().eq(1),data,type);
+            if (type == 'cat'){
+              if(row_6.children().eq(0).text() == "本能") Parser.parseInstinct(row_6,data);
+              if(row_7.children().eq(0).text() != "開放条件") row_7 = row_7.next();
+              Parser.parseCondition(row_7,data);
+            }
+            Bgc12++;
+            // console.log(data.char);
+            // console.log(data);
           });
-        else obj.rarity = Parser.parseRarity(row_1.children().eq(0).find("a").text());
-
-        data.hp = Number(row_1.children().eq(3).children().eq(0).text().split(",").join(""));
-        data.kb = Number(row_1.children().eq(5).text().split(",").join(""));
-        data.hardness = data.hardness!=Infinity?data.hardness:'Infinity';
-        data.freq = Number(row_1.children().eq(7).children().eq(0).text())?Number(row_1.children().eq(7).children().eq(0).text())/30:"-";
-        data.atk = Number(row_2.children().eq(1).children().eq(0).text().split(",").join(""));
-        data.speed = Number(row_2.children().eq(3).text());
-        data.atk_speed = Number(row_2.children().eq(5).children().eq(0).text())/30;
-        data.range = Number(row_3.children().eq(5).text().split(",").join(""));
-        data.atk_period = Number(row_3.children().eq(7).children().eq(0).text())?Number(row_3.children().eq(7).children().eq(0).text())/30:"-";
-        data.aoe = (type == 'cat'?row_4:row_3).children().eq(3).children().eq(0).text() == "単体" ? false : true;
-        if(type == 'cat'){
-          data.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));
-          data.cd = Number(row_3.children().eq(7).children().eq(0).text())/30;
-          data.hp = Parser.ToOriginal(data.hp,data.rarity,level);
-          data.atk = Parser.ToOriginal(data.atk,data.rarity,level);
-        } else{
-          data.reward = Number(row_3.children().eq(7).text().split(",").join(""));
+          console.log(obj);
+          database.ref("/"+(type == 'cat'?"CatData":"enemydata")+"/"+id).update(obj);
+          if(type == 'cat') CatData[id] = obj;
+          else EnemyData[id] = obj;
+        } catch (e) {
+          e.debug = {type,id};
+          Util.__handalError(e);
+        } finally {
+          genstate = Generator.next();
         }
-        data.dps = data.freq!="-"?data.atk/data.freq:"-" ;
-        data.hardness = data.hp/data.kb ;
-        Parser.parseChar(row_5.children().eq(1),data,type);
-        if (type == 'cat'){
-          if(row_6.children().eq(0).text() == "本能") Parser.parseInstinct(row_6,data);
-          if(row_7.children().eq(0).text() != "開放条件") row_7 = row_7.next();
-          Parser.parseCondition(row_7,data);
-        }
-        Bgc12++;
-        // console.log(data.char);
-        // console.log(data);
-      });
-      console.log(obj);
-      database.ref("/"+(type == 'cat'?"CatData":"enemydata")+"/"+id).update(obj);
-      if(type == 'cat') CatData[id] = obj;
-      else EnemyData[id] = obj;
-    }
-    else { console.log(e); }
-  });
+      }
+      else { console.log(e); }
+    });
 
+  }
 }

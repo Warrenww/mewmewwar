@@ -39,14 +39,13 @@ $(document).ready(function () {
       }
       var value_search = false;
       for(let i in last.filterObj){
-        $("#lower_table").find("th[id='"+i+"']").attr({
-          'active':last.filterObj[i].active,
+        $("#lower_table").find("th[id='"+i+"']").attr('active',last.filterObj[i].active?1:0)
+          .next().children().attr({
           'value':last.filterObj[i].type==2?("["+last.filterObj[i].value+"]"):last.filterObj[i].value,
           'type':last.filterObj[i].type
-        }).click();
-        if(last.filterObj[i].active) value_search = true;
+        });
+        filterSlider($("#lower_table").find("th[id='"+i+"']").next().children());
       }
-      if(value_search) $("#value_search").click();
     }
     if(data.compare_e2e) {
       $(".compareTarget").empty();
@@ -65,13 +64,6 @@ $(document).ready(function () {
     if(!data.setting.show_enemy_count)
       $('.display').find("#count").css({'background-color':'transparent','color':'transparent'})
         .prev().css({'background-color':'transparent','color':'transparent'});
-  });
-
-  $(document).on('click','.filter_option',function () {
-    $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid rgb(241, 166, 67)').siblings().css('border-bottom','0px solid');
-    filter_name = $(this).attr('id') ;
-    filterSlider($(this));
   });
   $(document).on('click','.card',function () {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
@@ -218,7 +210,6 @@ $(document).ready(function () {
       type : 'enemy'
     });
   }
-  $(".slider").slider();
 
 });
 

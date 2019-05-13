@@ -27,6 +27,17 @@ var database = firebase.database();
 var db = admin.firestore();
 console.log('start');
 
+// var list = fs.readFileSync("./public/text.txt",'utf-8').split("\n");
+// console.log(list.length);
+// var ptr = 0;
+// (function load() {
+//   console.log(ptr);
+//   var url = list[ptr];
+//   request.get(url).pipe(fs.createWriteStream(`./public/pic/picture_${ptr>100?ptr:(ptr>10?"0"+ptr:"00"+ptr)}.png`));
+//   ptr++;
+//   setTimeout(load,1000);
+// })(0)
+
 // database.ref("/error_log").set(null);
 
 // db.collection('users').doc('alovelace').collection('www').doc('wwww').set({w:true});;

@@ -199,9 +199,9 @@ function comboTR(item,more=false) {
     } else  pic_html += "<span class='seat'>-</span>";
   }
   if(more){
-    pic_html += "<i class='material-icons' func='merge' value='0'>merge_type</i></div>" ;
+    pic_html += "<i class='material-icons cir_but'text='連組合併'func='merge' value='0'>merge_type</i></div>" ;
   } else {
-    pic_html += "<i class='material-icons' func='more' value='0'>playlist_add</i></div>" ;
+    pic_html += "<i class='material-icons cir_but'text='聯組延伸'func='more' value='0'>playlist_add</i></div>" ;
   }
   html = screen.width > 768 ?
   ("</tr><tr>"+

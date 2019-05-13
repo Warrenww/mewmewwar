@@ -15,77 +15,84 @@
     <link rel="stylesheet" href="./css/rwd.css" />
   </head>
   <body>
-
-    <div class="select_chapter_holder left-side-column" active='0'>
-      <div class="select_chapter">
-        <span>主線任務</span>
-        <div style="display:none">
-          <button class="stageBG" bg='world' id='world' value='0'>世界篇</button>
-          <button class="stageBG" bg='future' id='future' value='0'>未來篇</button>
-          <button class="stageBG" bg='universe' id='universe' value='0'>宇宙篇</button>
-        </div>
-        <span>傳說故事</span>
-        <div style="display:none">
-          <button class="stageBG" bg='story' id='story' value='0'>傳說故事</button>
-          <button class="stageBG" bg='trueStory' id='trueStory' value='0'>真傳說故事</button>
-         </div>
-        <span>貓咪風雲塔</span>
-        <div style="display:none"> <button class="stageBG" bg='tower' id='tower' value='0'>貓咪</br>風雲塔</button> </div>
-        <span>經驗值/素材</span>
-        <div style="display:none">
-          <button class="stageBG" bg='XP' id='XP' value='0'>經驗關</button>
-          <button class="stageBG" bg='evolution' id='evolution' value='0'>貓薄荷</button>
-          <button class="stageBG" bg='castleMaterial' id='castleMaterial' value='0'>城堡素材</button>
-          <button class="stageBG" bg='ticket' id='ticket' value='0'>貓咪卷關卡</button>
-        </div>
-        <span>開眼/取得貓咪</span>
-        <div style="display:none">
-          <button class="stageBG" bg='crazy' id='crazy' value='0'>狂亂系列</button>
-          <button class="stageBG" bg='hard' id='hard' value='0'>極難關</button>
-          <button class="stageBG" bg='cyclone' id='cyclone' value='0'>旋渦關</button>
-          <button class="stageBG" bg='smallCat' id='smallCat' value='0'>開眼小小貓</button>
-          <button class="stageBG" bg='openeye' id='openeye' value='0'>Ex貓開眼關</button>
-        </div>
-        <span>時節性關卡</span>
-        <div style="display:none">
-          <button class="stageBG" bg='weekly' id='weekly' value='0'>每日關卡</button>
-          <button class="stageBG" bg='month' id='month' value='0'>月間關</button>
-          <button class="stageBG" bg='month' id='festival' value='0'>節日關卡</button>
-        </div>
-        <span>特殊關卡</span>
-        <div style="display:none">
-          <button class="stageBG" bg='memory' id='memory' value='0'>紀念關</button>
-          <button class="stageBG" bg='ranking' id='ranking' value='0'>排行賽關卡</button>
-          <button class="stageBG" bg='RedCome' id='RedCome' value='0'>紅色戰亂</button>
-          <button class="stageBG" bg='DarkCome' id='DarkCome' value='0'>黑夜襲擊</button>
-        </div>
-        <span>合作關卡</span>
-        <div style="display:none">
-          <button class="stageBG" bg='Fish' id='Fish' value='0'>曼波魚<br />合作關卡</button>
-          <button class="stageBG" bg='Fate' id='Fate' value='0'>Fate<br />合作關卡</button>
-          <button class="stageBG" bg='egg' id='egg' value='0'>蛋黃哥<br />合作關卡</button>
-          <button class="stageBG" bg='pokopang' id='pokopang' value='0'>POKOPANG<br />合作關卡</button>
-          <button class="stageBG" bg='eva' id='eva' value='0'>福音戰士<br />合作關卡</button>
-          <button class="stageBG" bg='lazybird' id='lazybird' value='0'>懶得鳥你</br>合作關卡</button>
-          <button class="stageBG" bg='baseball' id='baseball' value='0'>實況野球</br>合作關卡</button>
-          <button class="stageBG" bg='maylook' id='maylook' value='0'>梅露可</br>合作關卡</button>
-          <button class="stageBG" bg='castleAndDragon' id='castleAndDragon' value='0'>城與龍</br>合作關卡</button>
-          <button class="stageBG" bg='CrashFever' id='CrashFever' value='0'>CrashFever</br>合作關卡</button>
-        </div>
+    <div class="chooser">
+      <div class="search flex">
+        <input type="text" id="searchBox" placeholder="搜尋關卡...">
+        <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
       </div>
-    </div>
-    <div class="left-side-active" active='0'> 選擇關卡 </div>
-
-    <div class="content" id="selector">
       <div class="search_type" style="display:flex;width:100%">
-        <span class="button" value='0' id="toggleSearch">獎勵篩選器</span>
-        <div class="search flex">
-          <input type="text" id="searchBox" placeholder="搜尋關卡...">
-          <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
-        </div>
+        <span value='0' onclick="openTable('chapterTable')">選擇章節</span>
+        <span value='0' onclick="openTable('levelTable')">選擇關卡</span>
+        <span value='0' onclick="openTable('rewardSelectorTable')">獎勵篩選器</span>
+        <span value='0' onclick="openTable('searchResultTable')">搜尋結果</span>
       </div>
-      <div id="rewardSelector" show='0'>
+      <div class="chapterTable">
+          <div>
+            <div target='0' value='1'>主線任務</div>
+            <div target='1' value='0'>傳說故事</div>
+            <div target='2' value='0'>貓咪風雲塔</div>
+            <div target='3' value='0'>經驗值/素材</div>
+            <div target='4' value='0'>開眼/取得貓咪</div>
+            <div target='5' value='0'>時節性關卡</div>
+            <div target='6' value='0'>特殊關卡</div>
+            <div target='7' value='0'>合作關卡</div>
+          </div>
+          <div>
+            <div target='0' value='1'>
+              <button class="stageBG" bg='world' id='world' value='0'>世界篇</button>
+              <button class="stageBG" bg='future' id='future' value='0'>未來篇</button>
+              <button class="stageBG" bg='universe' id='universe' value='0'>宇宙篇</button>
+            </div>
+            <div target='1' value='0'>
+              <button class="stageBG" bg='story' id='story' value='0'>傳說故事</button>
+              <button class="stageBG" bg='trueStory' id='trueStory' value='0'>真傳說故事</button>
+            </div>
+            <div target='2' value='0'> <button class="stageBG" bg='tower' id='tower' value='0'>貓咪</br>風雲塔</button> </div>
+            <div target='3' value='0'>
+              <button class="stageBG" bg='XP' id='XP' value='0'>經驗關</button>
+              <button class="stageBG" bg='evolution' id='evolution' value='0'>貓薄荷</button>
+              <button class="stageBG" bg='castleMaterial' id='castleMaterial' value='0'>城堡素材</button>
+              <button class="stageBG" bg='ticket' id='ticket' value='0'>貓咪卷關卡</button>
+            </div>
+            <div target='4' value='0'>
+              <button class="stageBG" bg='crazy' id='crazy' value='0'>狂亂系列</button>
+              <button class="stageBG" bg='hard' id='hard' value='0'>極難關</button>
+              <button class="stageBG" bg='cyclone' id='cyclone' value='0'>旋渦關</button>
+              <button class="stageBG" bg='smallCat' id='smallCat' value='0'>開眼小小貓</button>
+              <button class="stageBG" bg='openeye' id='openeye' value='0'>Ex貓開眼關</button>
+            </div>
+            <div target='5' value='0'>
+              <button class="stageBG" bg='weekly' id='weekly' value='0'>每日關卡</button>
+              <button class="stageBG" bg='month' id='month' value='0'>月間關</button>
+              <button class="stageBG" bg='month' id='festival' value='0'>節日關卡</button>
+            </div>
+            <div target='6' value='0'>
+              <button class="stageBG" bg='memory' id='memory' value='0'>紀念關</button>
+              <button class="stageBG" bg='ranking' id='ranking' value='0'>排行賽關卡</button>
+              <button class="stageBG" bg='RedCome' id='RedCome' value='0'>紅色戰亂</button>
+              <button class="stageBG" bg='DarkCome' id='DarkCome' value='0'>黑夜襲擊</button>
+            </div>
+            <div target='7' value='0'>
+              <button class="stageBG" bg='Fish' id='Fish' value='0'>曼波魚<br />合作關卡</button>
+              <button class="stageBG" bg='Fate' id='Fate' value='0'>Fate<br />合作關卡</button>
+              <button class="stageBG" bg='egg' id='egg' value='0'>蛋黃哥<br />合作關卡</button>
+              <button class="stageBG" bg='pokopang' id='pokopang' value='0'>POKOPANG<br />合作關卡</button>
+              <button class="stageBG" bg='eva' id='eva' value='0'>福音戰士<br />合作關卡</button>
+              <button class="stageBG" bg='lazybird' id='lazybird' value='0'>懶得鳥你</br>合作關卡</button>
+              <button class="stageBG" bg='baseball' id='baseball' value='0'>實況野球</br>合作關卡</button>
+              <button class="stageBG" bg='maylook' id='maylook' value='0'>梅露可</br>合作關卡</button>
+              <button class="stageBG" bg='castleAndDragon' id='castleAndDragon' value='0'>城與龍</br>合作關卡</button>
+              <button class="stageBG" bg='CrashFever' id='CrashFever' value='0'>CrashFever</br>合作關卡</button>
+            </div>
+          </div>
+      </div>
+      <div class="levelTable">
+        <div id="select_stage" class="loading"></div>
+        <div id="select_level" class="loading"></div>
+      </div>
+      <div class="rewardSelectorTable content"style="padding:0">
         <table>
+          <tr> <th colspan="2">獎勵篩選器</th> </tr>
           <tr>
             <th rowspan="2">貓薄荷</th>
             <td>
@@ -235,16 +242,11 @@
         </table>
         <button>GO</button>
       </div>
-      <div id="searchResult">
-        <div style="display:flex;font-size: 20px; border-bottom: 1px solid;">
-          <div style="flex:2">共<b id="num"></b>筆搜尋結果</div>
-          <i class="material-icons" style="cursor:pointer;margin-bottom:5">&#xE14C;</i>
+      <div class="searchResultTable">
+        <div>
+          <div style="flex:2">共<b id="num">0</b>筆搜尋結果</div>
         </div>
         <div class="result"> </div>
-      </div>
-      <div class="lv_sg_box" >
-        <div id="select_stage" class="loading"></div>
-        <div id="select_level" class="loading"></div>
       </div>
     </div>
     <div class="content">
@@ -365,120 +367,7 @@
       <div class="picture"></div>
     </div>
 
-    <div class="tutorial">
-      <div class="article">
-        <h1 style="text-align:center">關卡資料庫用法</h1>
-        <h2>開始使用</h2>
-        <ol>
-          <li>從左側<span>選擇關卡</span>中，在各分類下選擇欲查詢之章節名稱</li>
-          <li>
-            當各大關名稱出現在頁面上端<span>關卡選擇區</span>中左側欄位後，
-            點擊欲查詢之大關名稱
-          </li>
-          <li>
-            當該大關下的各子關卡出現於右側時，點擊欲查詢的關卡，
-            關卡資料即會載入於下方<span>資料顯示區</span>
-          </li>
-        </ol>
-        <h2>進階查詢</h2>
-        <p> 除了基本的關卡查詢，本頁面也提供了2種進階查詢方法，如下: </p>
-        <ul>
-          <li>
-            <span style="text-decoration:underline">文字搜尋: </span>
-            在關卡選擇區上方的搜尋列輸入欲查詢的關卡名關鍵字
-            (不用完全相同)，在按下右方搜尋或是Enter鍵，
-            系統即會篩選出名字中含有該關鍵字的大關或關卡名稱
-          </li>
-          <li>
-            <span style="text-decoration:underline">獎勵篩選: </span>
-            點擊文字篩選右方的<div class="button" value='0'>獎勵篩選器</div>，
-            即可展開/收合<span>獎勵篩選器</span>。在獎勵篩選器中，
-            <ol>
-              <li>點選欲篩選的獎勵(可多選)，激活該選項為橘色</li>
-              <li>選擇完畢後，點擊下方的<button>Go</button>開始篩選</li>
-              <li>系統會列舉出包含該項獎勵的關卡</li>
-              <li>結果包含關卡名稱與各獎勵取得機率(若為積分關卡，則顯示積分)</li>
-            </ol>
-          </li>
-        </ul>
-        <p>
-          兩種進階篩選其結果都會出現在<span>結果顯示區</span>中，
-          結果顯示區在一般狀態下不會顯示，僅在有篩選結果的時候出現。
-          若要關閉結果顯示區，可點選其右上方的
-          <i class="material-icons" >&#xE14C;</i>
-          來關閉，惟須注意一旦關閉目前無法再打開，需重新進行篩選後才能顯示
-        </p>
-        <h2>資料顯示區功能列</h2>
-        <p> 懸浮於資料顯示區右方，其功能分別為: </p>
-        <ul>
-          <li style='margin:5 0'>
-            <i class="material-icons">&#xE5C4;</i>
-            <b style="text-decoration:underline">上一關</b>: 顯示同樣大關底下的上一個關卡的關卡資訊
-          </li>
-          <li style='margin:5 0'>
-            <i class="material-icons">&#xE5C8;</i>
-            <b style="text-decoration:underline">下一關</b>: 顯示同樣大關底下的下一個關卡的關卡資訊
-          </li>
-          <li style='margin:5 0'>
-            <i class="material-icons">&#xe895;</i>
-            <b style="text-decoration:underline">在超絕攻略網打開</b>: 在新分頁開啟超絕攻略網的本關卡資訊
-          </li>
-          <li style='margin:5 0'>
-            <i class="material-icons">&#xe439;</i>
-            <b style="text-decoration:underline">截圖</b>: 對現在的資料顯示區截圖
-          </li>
-          <li style='margin:5 0'>
-            <i class="material-icons">&#xE242;</i>
-            <b style="text-decoration:underline">加入比較序列</b>: 將本關所有敵人加入敵人比較序列(<span>會覆蓋</span>)，
-            並開啟敵人比較器頁面。
-          </li>
-          <li style='margin:5 0'>
-            <i class="material-icons">&#xE25A;</i>
-            <b style="text-decoration:underline">移至頂端</b>: 滑動頁面至資料顯示區的頂端
-          </li>
-        </ul>
-        <h2>資料顯示區收合資訊</h2>
-        <p>
-          可以點選
-          <div style="text-align:center;background:#f7d8ab;margin:5">
-            過關獎勵
-            <i class="material-icons" style="background:transparent;box-shadow:none;">expand_more</i>
-          </div>
-          <div style="text-align:center;background:#f7d8ab;margin:5">
-            關卡敵人
-            <i class="material-icons" style="background:transparent;box-shadow:none;">expand_more</i>
-          </div>
-          來展開/收合底下的獎勵列表或敵人列表
-        </p>
-        <h2>關卡敵人</h2>
-        <p>
-          關卡敵人會顯示下列各資訊(積分僅在排行賽關卡顯示)
-        </p>
-        <table class="dataTable">
-          <tr>
-            <th>敵人</th><th>倍率</th><th>數量</th><th>城連動</th>
-            <th>首次出現(s)</th><th>再次出現(s)</th><th>積分</th>
-          </tr>
-        </table>
-        <p>
-          點選資料顯示區中，如上顯示之任一資料名稱，即可以該資料
-          <span>排序敵人</span>，
-          首次排序是由小至大(並將該資料名稱加以淺藍色條紋標記)，
-          再點選一次即可改為由大至小排列(並將該資料名稱加以橘色條紋標記)
-          <br />*手機版暫無此功能
-        </p>
-        <p>
-          另外，點擊敵人圖片即可在漂浮顯示中，顯示敵人的資訊，獎勵中如果能獲得貓咪，
-          同樣可以藉由點擊圖片來顯示資訊。如欲查詢更詳細的資訊，
-          請點擊漂浮顯示區右下角
-          <span style="border-radius:30px;box-shadow:1px 1px 11px 1px black;padding:0 10">
-            更多詳細資料>
-          </span>
-            來跳轉至貓咪資料庫或敵人資料庫。
-        </p>
-      </div>
-      <button action='known'>我知道了</button>
-    </div>
+    
 
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>

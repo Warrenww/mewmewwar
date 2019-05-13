@@ -1,12 +1,6 @@
 var CurrentUserID;
 if(Storage){
-  if(localStorage.stageSelector == "true"){
-    $("#rewardSelector").attr("show",1);
-    $("#toggleSearch").attr("value",1);
-  } else {
-    $("#rewardSelector").attr("show",0);
-    $("#toggleSearch").attr("value",0);
-  }
+  localStorage.removeItem('stageSelector');
 }
 var current_level_data = {},
     current_enemy_data = {},
@@ -44,23 +38,21 @@ $(document).ready(function () {
       $('#select_stage').attr("chapter",arr[0]);
       $('#select_level').attr("stage",arr[1]);
       socket.emit("required level name",{chapter:arr[0],stage:arr[1]});
-      $(".select_chapter").find("#"+arr[0]).parent().prev().click();
+      let temp = Number($(".chapterTable").find("#"+arr[0]).parent().attr('target'));
+      $('.chapterTable>div:first').children().eq(temp).click();
     }
   });
 
-  $("#toggleSearch").click(function () {
-    var temp = Number($("#rewardSelector").attr("show"));
-    temp = (temp+1)%2;
-    $("#rewardSelector").attr("show",temp);
-    if(Storage){
-      if(temp == 1) localStorage.stageSelector = true;
-      else localStorage.stageSelector = false;
-    }
+  $(".chapterTable>div:first-of-type>div").click(function () {
+    var temp = Number($(this).attr("value")),target = Number($(this).attr('target'));
+    if(temp) return;
+    $(this).attr("value",1).siblings().attr("value",0);
+    $(this).parent().next().children().eq(target).attr("value",1).siblings().attr("value",0);
   });
-  $("#rewardSelector button").click(search);
+  $(".rewardSelectorTable button").click(search);
   function search() {
     var list = [];
-    $("#rewardSelector .button[value='1']").each(function () {
+    $(".rewardSelectorTable .button[value='1']").each(function () {
       list.push($(this).attr("name"));
     });
     // console.log(list);
@@ -69,11 +61,11 @@ $(document).ready(function () {
   socket.on("search stage",(buffer)=>{
     console.log(buffer);
     var count = 0;
-    $("#searchResult .result").empty();
+    $(".searchResultTable .result").empty();
 
     for(let i in buffer){
       count ++;
-      $("#searchResult .result").append(
+      $(".searchResultTable .result").append(
         "<span id='"+i+"'>"+
         content(i,buffer[i])+
         "</span>"
@@ -89,10 +81,8 @@ $(document).ready(function () {
       }
       return "<span>"+name+"</span><span style='float:right'>"+reward+"</span>"
     }
-    $("#searchResult").find("#num").text(count);
-    $("#searchResult").show(300);
-    $("#toggleSearch").attr("value",0);
-    $("#rewardSelector").attr("show",0);
+    $(".searchResultTable").find("#num").text(count);
+    openTable("searchResultTable")
   });
 
   $("#searchBox").blur(textSearch);
@@ -104,15 +94,15 @@ $(document).ready(function () {
   socket.on('text search stage',function (data) {
     // console.log(data);
     let text = $("#searchBox").val();
-    $("#searchResult .result").empty();
+    $(".searchResultTable .result").empty();
     for(let i in data){
-      $("#searchResult .result").append(
+      $(".searchResultTable .result").append(
         "<span id='"+data[i].id+"'>"+
         resultName(data[i],text)+"</span>"
       );
     }
-    $("#searchResult").find("#num").text(data.length);
-    $("#searchResult").show(300);
+    $(".searchResultTable").find("#num").text(data.length);
+    openTable("searchResultTable")
     function resultName(obj,text) {
       let id = obj.id.split("-"),
           name = id.length == 3?"<c>關卡</c> ":"<c>大關</c> ";
@@ -121,8 +111,7 @@ $(document).ready(function () {
       return name
     }
   });
-  $("#searchResult i").click(function () {$("#searchResult").hide(300); });
-  $(document).on("click","#searchResult .result span",function () {
+  $(document).on("click",".searchResultTable .result span",function () {
     let id = $(this).attr("id").split("-");
     if(id.length == 3){
       socket.emit("required level data",{
@@ -136,25 +125,22 @@ $(document).ready(function () {
       $("#select_stage").attr("chapter",id[0]);
       socket.emit("required level name",{chapter:id[0],stage:id[1]});
       $("#select_level").attr("stage",id[1]);
-      scroll_to_class("lv_sg_box",0);
+      openTable("levelTable");
     }
-  });
-  $(document).on("click",".select_chapter span",function () {
-    $(this).next().toggle(400).siblings("div").hide(400)
   });
 
   var loadingTimeOut;
-  $(document).on("click",".select_chapter button",function () {
+  $(document).on("click",".chapterTable button",function () {
     let chapter = $(this).attr('id');
-    $(this).attr("value",'1');
-    $(".select_chapter button[value=1]").attr("value",0);
+    $(this).attr("value",1);
+    $(".chapterTable button[value=1]").attr("value",0);
 
     $("#select_stage").empty();
     $("#select_level").empty();
-    // console.log(chapter);
+    console.log(chapter);
     $("#select_stage").attr("chapter",chapter);
     socket.emit("required stage name",chapter);
-    scroll_to_div('selector');
+    openTable('levelTable');
     $("#select_stage").empty();
     loadingTimeOut = setTimeout(function () {
       $("#select_stage").addClass("loading");
@@ -166,9 +152,7 @@ $(document).ready(function () {
     $("#select_stage").empty().removeClass("loading");
     for( let i in data )
       $("#select_stage").append(
-        "<button value='0' style='width:180px;height:"+
-        (data[i].name?(data[i].name.length>9?80:40):40)+"px;margin:5px' id='"+
-        data[i].id+"'>"+data[i].name+"</button>"
+        "<button value='0' id='"+data[i].id+"'>"+data[i].name+"</button>"
       );
   });
   $(document).on("click","#select_stage button",function (e) {
@@ -242,7 +226,7 @@ $(document).ready(function () {
           "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
     $(".displayControl .control #next").attr("query",JSON.stringify(next_stage));
     $(".displayControl .control #prev").attr("query",JSON.stringify(prev_stage));
-    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent.replace("<br>"," ")}>${data.name}`);
+    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent?obj.parent.replace("<br>"," "):""}>${data.name}`);
     // append data
     for(let i in data){
       if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
@@ -327,8 +311,7 @@ $(document).ready(function () {
   });
   // Show where this level come from
   $(".display .dataTable #chapter").click(function () {
-    scroll_to_div('selector');
-    $(".select_chapter").find("button[id='"+$(this).attr('value')+"']").click();
+    $(".search_type span:first").click();
   });
   $(".display .dataTable #stage").click(function () {
     let chapter = $(this).siblings("#chapter").attr("value"),
@@ -532,7 +515,7 @@ $(document).ready(function () {
   }
   function chapterName(s) {
     var name='';
-    $(".select_chapter").find('button').each(function () {
+    $(".chapterTable").find('button').each(function () {
       if($(this).attr("id")==s) name = $(this).text();
     });
     return name
@@ -554,7 +537,7 @@ $(document).ready(function () {
   }
   function rewardPicture(s) {
     var html = "";
-    $("#rewardSelector .button").each(function () {
+    $(".rewardSelectorTable .button").each(function () {
       if($(this).attr("name") == s) html = $(this).html();
     });
     return html
@@ -586,7 +569,7 @@ $(document).ready(function () {
   }
 
   var tip_fadeOut;
-  $("#rewardSelector .button").click(function () {
+  $(".rewardSelectorTable .button").click(function () {
     let text = $(this).attr("name"),
     val = $(this).attr('value')=='1'?true:false;
     if(!val){
@@ -720,4 +703,10 @@ function scrollSelectArea(area,target) {
 function toTreasure(s) {
   if(!s) return;
   switchIframe("treasure?"+s);
+}
+function openTable(tableName) {
+  if(!tableName) return ;
+  var target = $(".chooser").find("."+tableName);
+  target.attr('active',1).siblings('[class*="Table"]').attr('active',0);
+  $(".search_type span[onclick*='"+tableName+"']").attr("value",1).siblings().attr("value",0);
 }

@@ -142,7 +142,10 @@
             </td>
           </tr>
         </table>
-        <table id="gacha_table" style="display:none">
+        <table id="gacha_table"style="max-height:0">
+          <tr>
+            <th colspan="2">活動篩選器</th>
+          </tr>
           <tr class="gacha_search">
             <th>常駐轉蛋</th>
             <td>
@@ -203,29 +206,66 @@
             </td>
           </tr>
         </table>
-        <table id="lower_table" style="display:none">
+        <table id="lower_table"style="max-height:0">
           <tbody>
             <tr>
-              <th rowspan="2" id="selectAll"> 啟用 </th>
-              <th colspan="8"> 數值篩選器 </th>
+              <th colspan="5"> 數值篩選器 </th>
             </tr>
             <tr>
-              <th class="filter_option" id="hp" lv-bind="true" value="20000" type="0" range="[1000,100000]" step="1000" active="false">體力</th>
-              <th class="filter_option" id="dps" lv-bind="true" value="3000" type="0" range="[100,10000]" step="100" active="false">DPS</th>
-              <th class="filter_option" id="speed" lv-bind="false" value="10" type="0" range="[1,100]" step="1" active="false">速度</th>
-              <th class="filter_option" id="cost" lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false">花費</th>
-              <th class="filter_option" id="freq" lv-bind="false" value="5" type="0" range="[1,20]" step="0.5" active="false">攻頻</th>
-              <th class="filter_option" id="atk" lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000" active="false">攻撃力</th>
-              <th class="filter_option" id="range" lv-bind="false" value="300" type="0" range="[10,1000]" step="10" active="false">射程</th>
-              <th class="filter_option" id="cd" lv-bind="false" value="5" type="0" range="[2,300]" step="1" active="false">再生産</th>
+              <th class="filter_option" active='0' id="hp" >體力</th>
+              <td> <div class="slider"lv-bind="true" value="20000" type="0" range="[1000,100000]" step="1000"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
             </tr>
-            <tr id="slider_holder">
-              <td class="active"></td>
-              <td colspan="6">
-                <div class="slider"></div>
-              </td>
-              <td class="value_display" colspan="1"></td>
-              <td class="type"></td>
+            <tr>
+              <th class="filter_option" active='0' id="dps" >DPS</th>
+              <td> <div class="slider"lv-bind="true" value="3000" type="0" range="[100,10000]" step="100"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
+            </tr>
+            <tr>
+              <th class="filter_option" active='0' id="speed" >速度</th>
+              <td> <div class="slider"lv-bind="false" value="10" type="0" range="[1,100]" step="1"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
+            </tr>
+            <tr>
+              <th class="filter_option" active='0' id="cost" >花費</th>
+              <td> <div class="slider"lv-bind="false" value="1000" type="0" range="[10,5000]" step="10"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
+            </tr>
+            <tr>
+              <th class="filter_option" active='0' id="freq" >攻頻</th>
+              <td> <div class="slider"lv-bind="false" value="5" type="0" range="[1,20]" step="0.5"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
+            </tr>
+            <tr>
+              <th class="filter_option" active='0' id="atk" >攻撃力</th>
+              <td> <div class="slider"lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
+            </tr>
+            <tr>
+              <th class="filter_option" active='0' id="range" >射程</th>
+              <td> <div class="slider"lv-bind="false" value="300" type="0" range="[10,1000]" step="10"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
+            </tr>
+            <tr>
+              <th class="filter_option" active='0' id="cd" >再生産</th>
+              <td> <div class="slider"lv-bind="false" value="5" type="0" range="[2,300]" step="1"></div> </td>
+              <td class="value_display"></td>
+              <td class="value_display" style="display:none"></td>
+              <td class="type" colspan="2"></td>
             </tr>
           </tbody>
         </table>

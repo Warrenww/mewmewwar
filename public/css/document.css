@@ -1,0 +1,185 @@
+.content{padding: 3% 5%}
+.left-side-column{padding: 30 10}
+.left-side-column ul{padding:0 20;font-size: 16}
+.left-side-column a{color:var(--bluegreen);font-weight: bold;}
+.left-side-column a:hover{color:var(--orange)}
+.article{padding: 30px;border-radius: 30px;background-color: rgba(255,255,255,.5);font-size: 16px;margin: 10 0;width: 100%}
+.article h1{text-align: center;font-weight: bold;}
+.article h2{font-weight: bold;}
+.article ol,.article ul,.article p{font-size: 16px}
+.article h1 span:hover{color:var(--bluegreen)}
+.article h1 span::after{
+  content: "\279A";
+  position: relative;
+  top: -20px;
+  font-size: 20px;
+}
+.article em{font-weight: bold;color: var(--red);font-style: normal;}
+
+
+.chooser{
+  background-color: rgba(255,255,255,0.8);
+  box-shadow: 0px 0px 5px gray;
+  position: relative;
+}
+.search_type{
+  display: flex;
+  width: 100%;
+  padding:0 10;
+  justify-content: flex-start;
+}
+.search_type span {
+  font-size: 18px;
+  padding: 3 20;
+  margin: 0 5;
+  border-bottom: 2px solid gray;
+  border-radius: 10px 10px 0px 0px;
+  font-weight: bold;
+  transition: .3s ease;
+}
+.search_type span[value='1'],.search_type span:hover{
+  border-bottom: 2px solid transparent;
+  background: var(--lightorange);
+}
+.enemy_head th>span {
+  width: 14;
+  height: 14;
+  position: absolute;
+  top: 45%;
+  border: 7px solid transparent;
+  border-top: 7px solid gray;
+  right: 20px;
+  transition: .5s ease;
+}
+
+.control{
+  background-color: rgba(255,255,255,.8);
+  box-shadow: 0px 1px 10px 0px gray;
+  width: 100%;
+  height: 80;
+  display: flex;
+  align-items: center;
+}
+.swapper{
+  cursor: pointer;
+  padding: 20 10 10 10;
+  position: relative;
+}
+.control h2{font-size: 30;margin: 0;margin-left: 50}
+.control>div{display: flex;height: 100%;align-items: center;flex:1}
+.control .swapper .icon{
+  width: 20;
+  height: 20;
+  position: absolute;
+  bottom: 20;
+  box-shadow: 1px 1px 10px;
+  background-size: 70%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 1px solid;
+  border-radius: 50%;
+  background-color: white;
+  z-index: 2;
+  transition: .3s ease;
+}
+.control .swapper .icon[active='1']{
+  background-color: orange;
+  width: 40;
+  z-index: 1;
+  height: 40;
+}
+.modal th{background-color: #eccb98;cursor: auto;}
+.modal td{
+  border-bottom: 1px solid lightgray;
+  cursor: pointer;
+  min-width: 150px;
+  max-width: 150px;
+}
+.modal td:last-of-type {
+  min-width: 30px;
+  border-radius: 50px;
+  border: 0;
+}
+.modal td:hover{background-color: #ddd}
+.modal td[type='format'] span {
+  margin: 0 3;
+  border: 1px solid;
+  border-radius: 50%;
+  width: 30;
+  height: 30;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: .3s ease;
+  position: relative;
+}
+.modal td[type='format'] span i{
+  font-size: 16;
+  transition: .3s ease;
+}
+.modal td[type='format'] span:hover{border: 2px #ff6765 solid;}
+.modal td[type='format'] span[size='0'] i{font-size: 12px;}
+.modal td[type='format'] span[size='2'] i{font-size: 20px;}
+.modal td[type='format'] span[weight='1'] i{font-weight: bold;}
+.modal td[type='format'] span[weight='2'] i{font-weight: lighter;color: gray}
+.modal td[type='query']:before{
+  content: "\2264";
+  margin-right: 5;
+  font-weight: bold;
+}
+.modal td[relation='1']:before{
+  content: "\2265";
+}
+.modal td[type='query'] span,
+.modal td[relation='2']::before,
+.modal td[type='query'] input:last-of-type
+{margin: 0 5;display: none;}
+.modal td[relation='2'] span,
+.modal td[relation='2'] input:last-of-type
+{display: inline-block;}
+.func{
+  background-color: #eccb98;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 255px;
+  height: 90;
+  box-shadow: 5px 0px 10px;
+  border-radius: 0 20px 20px 0;
+  border: 3px solid white;
+  transition: .3s ease;
+}
+.functionArea i{margin: 0 5;font-style: normal;width: 36;text-align: center;}
+.display[offsetX='1'] tbody tr th:nth-child(1){background-color: transparent;}
+.func[active='1']>i{ transform: rotate(180deg);}
+.display[offsetX='1'] .func .functionArea,
+.display .func .dataArea
+{display: none;}
+.display[offsetX='1'] .func .dataArea{display: flex;align-items: center;}
+.func .dataArea .img{
+  width: 50px;
+  height: 50;
+  background-size: cover;
+  margin: 0 10;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.panel span {
+  text-align: center;
+  padding: 3 5;
+  width: 90%;
+  margin: 0 5%;
+  border-bottom: .5px solid gray;
+}
+.panel div{
+  padding: 15px 20 15px 0;
+  border-bottom: 0.5px solid gray;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+@media screen and (max-width:425px) {
+  .enemy_head .toggle_next{display: none;}
+  .control,.modal{ width: calc(90vw - 100px);overflow: scroll; }
+}

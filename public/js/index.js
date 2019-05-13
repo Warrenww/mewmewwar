@@ -46,8 +46,14 @@ function login(method = null) {
       var email = error.email;
       // The firebase.auth.AuthCredential type that was used.
       var credential = error.credential;
-      if(errorCode = "auth/popup-closed-by-user"){
+      if(errorCode == "auth/popup-closed-by-user"){
         $(".login_box").removeClass("loading").children('span').css("opacity",1);
+      } else if(errorCode == "auth/web-storage-unsupported"){
+        $(".login_box").append("<div style='padding: 15; font-weight: bold; color: var(--red);'>"+
+         "<div>登入錯誤</div>瀏覽器禁用了第三方cookie，請從設定中啟用第三方cookie<br>"+
+        (window.navigator.userAgent.indexOf("Chrome") != -1?
+        "點擊複製以下連結，並在網址列貼上以前往設定<div class='copiable' style='background:var(--bluegreen);border-radius: 10px; padding: 0 5; color: white;'>chrome://settings/content/cookies</div>":"")+
+        "</div>").children('span').hide();
       }
     });
   } else {
@@ -64,7 +70,7 @@ function login(method = null) {
 }
 
 $(document).ready(function () {
-  
+
   auth.onAuthStateChanged(function(user) {
     if (user) {
       if (!newUser)
@@ -310,7 +316,7 @@ $(document).ready(function () {
     return {
       "cat":"貓咪資料", "enemy":"敵人資料", "combo":"查詢聯組", "stage":"關卡資訊",
       "gacha":"轉蛋模擬器", "compare":"比較器", "book":"我的貓咪圖鑑",
-      "calendar":"活動日程", "event":"最新消息", "intro":"新手專區",
+      "calendar":"活動日程", "document":"使用教學",
       "setting":"設定","rank":"等級排行","history":"歷程記錄","list":"出陣列表",
       "game":"釣魚小遊戲","expCalculator":"經驗計算機","treasure":"寶物圖鑑"
     }[str]

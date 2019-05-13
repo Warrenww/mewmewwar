@@ -152,32 +152,28 @@
 #mark_own[value~='0']{color:rgb(224, 103, 103)}
 #mark_own[value~='1']{color:rgb(96, 176, 37)}
 .survey #nickname{display: flex;text-align: center;}
-.survey #nickname span,
-.survey #nickname div,
-{
+.survey #nickname div {
   display: flex;
-  width: 30px;
-  height: 30px;
   justify-content: center;
-  align-items: center;
-}
-.survey #nickname div{
-  border-bottom: 1px solid gray;
   flex:3;
-
+  flex-wrap: wrap;
 }
-.survey #add_nick,
-.survey #confirm_nick,
-.survey #cancel_nick{
+.survey #nickname>div>span{
+   margin: 3;
+   border: 1px solid gray;
+   padding: 0 7px;
+   border-radius: 20px;
+}
+.survey #nickname .panel span{ padding: 0 10 }
+.survey #nickname i{
   border: 1px solid gray;
   cursor: pointer;
   margin: 2px;
-  border-radius: 5px;
-  transition: .4s ease-in-out
+  border-radius: 50%;
+  transition: .3s ease-in-out
 }
-.survey #add_nick:hover,
-.survey #confirm_nick:hover,
-.survey #cancel_nick:hover{background-color: rgb(180, 180, 180)}
+.survey #nickname i:hover,
+.survey #nickname div span:hover{background-color: #b4b4b4}
 
 .survey input{
   border: 0;
@@ -227,6 +223,7 @@
   transform: rotate(-90deg);
   transition: .2s ease-in-out
 }
+.comment td {border-left: 5px solid transparent}
 .comment_input {
   display: flex;
   align-items: center;
@@ -320,6 +317,7 @@
   border-radius: 20px;
   background: gainsboro;
 }
+.survey .own,.comment .own {border-color: var(--orange)!important}
 #more_option i::before{
   top:30%;
   left:125%;
@@ -333,6 +331,16 @@
 }
 .select_ability .smallicon span{display: none;}
 .select_ability .smallicon i{width: 40;height: 40}
+#lower_table tr td:first-of-type{min-width: 30vw;padding: 20 10;}
+.filter_option[active='0']{
+  background-color: rgba(129, 115, 92,.93);
+  color: lightgray
+}
+.search_table table{
+  display: flex;
+  transition: .3s ease;
+  overflow: hidden;
+}
 @keyframes rotate {
   0%{transform:rotate(0deg);}
   50%{transform:rotate(720deg);}
@@ -462,11 +470,6 @@
 .displayControl .data #img,
 .displayControl .data #name
 {display: none;}
-
 @media screen and (max-width: 425px) {
   .survey{flex-direction: column;}
-  .survey:first-of-type{height: 100}
-  .survey:nth-of-type(2n){height: 300}
-  .survey:nth-of-type(3n){height: 400}
-  .survey:last-of-type{height: 150}
 }

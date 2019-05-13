@@ -1,23 +1,22 @@
 var page = location.pathname.split("/")[1];
 if(page == 'list') page = 'cat';
 var number_page,page_factor ;
+var filterObj = {};
 
 // Press enter to trigger search
 $('.search_type .button').click(function () {
-  let type = $(this).attr('id').split("_")[0];
-  if(Number($(this).attr('value')) && type != 'value') return false
+  var type = $(this).attr('id').split("_")[0];
+  if($(this).attr('value') == 1) return false;
   if(type == 'normal'){
-    $("#gacha_search").attr("value",0);
-    $("#gacha_table").hide().siblings("#upper_table").show();
-    $("#value_search").css("pointer-events","auto");
+    $("#gacha_search,#value_search").attr("value",0);
+    $("#upper_table").css('max-height',1200).siblings().css('max-height',0);
   } else if(type == 'gacha'){
-    $("#normal_search").attr("value",0);
-    $("#upper_table").hide().siblings("#gacha_table").show();
-    $("#lower_table").hide(300);
-    $("#value_search").css("pointer-events","none").attr("value",0);
-  } else {
-    $("#lower_table").toggle(300);
-    return
+    $("#normal_search,#value_search").attr("value",0);
+    $("#gacha_table").css('max-height',1200).siblings().css('max-height',0);
+  } else if(type == 'value'){
+    $("#normal_search,#gacha_search").attr("value",0);
+    $("#lower_table").css('max-height',1200).siblings().css('max-height',0);
+    type = 'normal';
   }
   $("#search_ability").attr("value",type);
 });
@@ -60,6 +59,7 @@ function textSearch() {
   var keyword = $("#searchBox").val(),opt = $("#searchBox").prev("select").val();
   if(keyword.trim()=="") return;
   socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page,option:opt});
+  scroll_to_div('#selected',null,-100);
 }
 // Start a search
 $('#search_ability').click(search) ;
@@ -70,7 +70,6 @@ function search() {
       ability = $(".select_ability [value=1]"),
       gacha = $(".gacha_search td .button[value=1]"),
       type = $("#search_ability").attr("value"),
-      value_search = Number($("#value_search").attr("value")),
       instinct = Number($("#instinct_involve").attr('value'));
   var rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
   for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
@@ -81,7 +80,6 @@ function search() {
     for(let i in aFilter) aFilter.push(aFilter[i]+"能力解放");
     for(let i in cFilter) cFilter.push("屬性新增"+cFilter[i].substring(1)+"敵人");
   }
-  console.log({rFilter,cFilter,aFilter});
   // Send query require
   socket.emit(type+" search",{
     uid:CurrentUserID,
@@ -89,11 +87,11 @@ function search() {
     query_type:type,
     colorAnd:$("#colorAnd").attr('value'),
     abilityAnd:$("#abilityAnd").attr('value'),
-    filterObj:value_search?filterObj:{},
+    filterObj:filterObj,
     type:page,
     instinct:instinct
   });
-  scroll_to_div('selected');
+  scroll_to_div('#selected',null,-100);
 }
 $(document).ready(function () {
   // Recive query response
@@ -109,7 +107,6 @@ $(document).ready(function () {
     $("#selected").css('display','flex').scrollTop(0).append(
       page == 'cat' ? condenseCatName(data.result): condenseEnemyName(data.result)
     );
-    scroll_to_div("selected");
     // Calculating # of page and display the dot
     var select_width = $("#selected").innerWidth(),       // Size of result area
         card_width = screen.width > 1024 ? 216 :140,      // Size of card
@@ -137,11 +134,11 @@ $(document).ready(function () {
       for(let j in data.query.aFilter)
         query +=  "<span>"+data.query.aFilter[j]+"</span>";
       if(data.query.aFilter) if(data.query.aFilter.length) query += "<b>|</b>";
-      for(let j in filterObj){
-        if(!filterObj[j].active) continue;
+      for(let j in data.filterObj){
+        if(!data.filterObj[j].active) continue;
         query +=  "<span>"+Unit.propertiesName(j)+" : "+
-                  (typeof(filterObj[j].value)=='object'?filterObj[j].value.join("到"):filterObj[j].value)+
-                  ['以上','以下','之間'][filterObj[j].type]+"</span>"
+                  (typeof(data.filterObj[j].value)=='object'?data.filterObj[j].value.join("到"):data.filterObj[j].value)+
+                  ['以上','以下','之間'][data.filterObj[j].type]+"</span>"
       }
     }
     // console.log(query);
@@ -260,3 +257,124 @@ $(document).on('click','.compareSorce .title #option i',function () {
     switchIframe("gacha");
   }
 });
+
+// initial filter table slider
+$("#lower_table .slider").each(function () {
+  var value = $(this).attr('value'),
+      type = Number($(this).attr('type')),
+      range = JSON.parse($(this).attr('range')),
+      step = Number($(this).attr('step'));
+  $(this).slider();
+  $(this).slider('option','range',type==2);
+  $(this).slider('option',{
+    'min': range[0],
+    'max': range[1],
+    'step': step,
+    'value':value
+  }).parent().siblings(".value_display").text(value).siblings('.type').html(['以上','以下','範圍'][type]);
+});
+
+$('.filter_option').click(function () {
+  $(this).attr('active',(Number($(this).attr('active'))+1)%2);
+  filterSlider($(this).parent().find(".slider"));
+});
+var filter_org ;
+$(document).on('click','.value_display',function () {
+    filter_org = Number($(this).text());
+    $(this).html('<input type="number" value="' +filter_org+ '"></input>').find('input').select();
+});
+$(document).on('blur','.value_display input',changeSlider) ;
+function changeSlider(e) {
+  let target = $(e.target).parents('tr'),
+      range = JSON.parse(target.find('.slider').attr('range')),
+      step = Number(target.find('.slider').attr('step')),
+      value = Number(e.target.value),
+      type = Number(target.find('.slider').attr("type"));
+
+  target.find('th').attr('active',1);
+  value = Math.round(value/step)*step ;
+  if(!value || Number.isNaN(value)) value = filter_org;
+  else if(value > range[1]) value = range[1];
+  else if(value < range[0]) value = range[0];
+
+  $(e.target).parent().text(value)
+  value = type == 2? `[${target.find('.value_display').eq(0).text()},${target.find('.value_display').eq(1).text()}]`:target.find('.value_display').eq(0).text();
+  target.find(".slider").attr("value",value);
+  filterSlider(target.find(".slider"));
+}
+
+$('#lower_table .type').click(function (e) {
+  var target = $(e.target).parents('tr'),
+      type = Number(target.find(".slider").attr('type')),
+      value = type == 2?JSON.parse(target.find(".slider").attr('value')):Number(target.find(".slider").attr('type')),
+      range = JSON.parse(target.find(".slider").attr("range"));
+
+  type = (type+1)%3;
+  if(type == 2){
+    let temp = range[1]-range[0];
+    target.find(".slider").attr('value',"["+temp/4+","+temp/4*3+"]");
+    target.find(".type").attr("colspan",1).prev().show();
+  }
+  else if(typeof(value) == 'object'){
+    target.find(".slider").attr('value',(value[0]+value[1])/2);
+    target.find(".type").attr("colspan",2).prev().hide();
+  }
+
+  target.find(".slider").attr('type',type);
+  target.find("th").attr('active',1);
+  filterSlider(target.find(".slider"));
+});
+
+$(".slider").on("slide",function (e,ui) {
+  var type = $(this).attr("type");
+  if(type == 2){
+    $(this).parents('tr').find('.value_display').eq(0).text(ui.values[0]);
+    $(this).parents('tr').find('.value_display').eq(1).text(ui.values[1]);
+  } else {
+    $(this).parents('tr').find('.value_display').eq(0).text(ui.value);
+  }
+});
+$(".slider").on("slidestop",function (e,ui) {
+  var type = $(this).attr("type");
+  if(type == 2){
+    $(this).attr('value',"["+ui.values[0]+","+ui.values[1]+"]");
+  } else {
+    $(this).attr('value',ui.value);
+  }
+  filterSlider($(this));
+});
+
+function filterSlider(target) {
+  let value = target.attr('value') ,
+      type = Number(target.attr('type')) ,
+      range = JSON.parse(target.attr('range')),
+      step = Number(target.attr('step')) ,
+      active = target.parent().prev().attr('active') == 1,
+      filter_name = target.parent().prev().attr('id');
+
+  target.slider("destroy");
+  target.slider({
+    range: type == 2,
+    min: range[0],
+    max: range[1],
+    step: step
+  });
+  target.parents('tr').find('.type').html(['以上','以下','範圍'][type]);
+  if(type == 2){
+    value = JSON.parse(value);
+    if(value[1] < value[0]) value = value.reverse();
+    target.slider("option","values",value);
+    target.parents('tr').find(".value_display").eq(0).text(value[0]);
+    target.parents('tr').find(".value_display").eq(1).text(value[1]);
+  }
+  else{
+    target.slider("option","value",Number(value));
+    target.parents('tr').find(".value_display").eq(0).text(Number(value));
+  }
+  filterObj[filter_name] = {
+    type: Number(type),
+    active: active,
+    value: type != 2 ? Number(value) : JSON.parse(value),
+    lv_bind: target.attr('lv-bind') == 'true'
+  }
+}

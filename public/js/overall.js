@@ -1,33 +1,25 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.35.2"
+const VERSION = "10.36.1"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
 console.log("mobile : ",is_mobile);
 console.log("ios : ",is_ios);
 var showcomparetarget = 1 ;
-var filterObj = {};
 const tutorial_version = {
   expCalculator: 1,
-  compareCat: 1,
-  compareEnemy: 1,
+  compare: 1,
   stage: 1,
   combo: 1
 }
 var socket;
 $(document).ready(function () {
   socket = io.connect();
-  var filter_name = '';
   var today = new Date();
 
   socket.on("cloud message",data=>{alert(data);})
-
-  if(screen.width <= 768){
-    $("#lower_table .value_display").attr("colspan",7);
-    $("#dataTable").find("#level_num").parent().attr("colspan",7);
-  }
 
   //input reaction
   $(document).on('keypress', 'input', function(e) {
@@ -53,6 +45,17 @@ $(document).ready(function () {
       return type
     })
   }
+
+  // copy reaction
+  $(document).on("click",".copiable",function (e) {
+    var text = $(this).text(),
+        temp = document.createElement("input");
+    document.body.appendChild(temp);
+    temp.value = text;
+    temp.select();
+    document.execCommand('copy');
+    setTimeout(()=>{temp.remove();},500);
+  });
 
   // table title reaction
   $('.tableTitle').click(function () {
@@ -180,19 +183,40 @@ $(document).ready(function () {
 
   // tutorial
   if(typeof(Storage)){
+    if(localStorage.mewmewwar == undefined){
+      localStorage.mewmewwar = "{}";
+      localStorage.removeItem("tutorial_combo");
+      localStorage.removeItem("tutorial_expCalculator");
+      localStorage.removeItem("tutorial_compareEnemy");
+      localStorage.removeItem("tutorial_compareCat");
+    }
     var page = location.pathname.split("/")[1],
-        ver = localStorage["tutorial_"+page];
-    if(ver != tutorial_version[page]){
-      $(".tutorial").attr("show","true");
+        ver = (localStorage["mewmewwar"]?JSON.parse(localStorage["mewmewwar"]):{})["tutorial"];
+    if(!ver) ver = {};
+    if(ver[page] != tutorial_version[page]){
+      $("body").append( `
+          <div class='tutorial'>
+            <div class='article'>
+              <h2><b>本頁面有新的使用說明囉!</b></h2>
+              <div style='display:flex;justify-content:center'>
+                <button onclick="switchIframe('document?${page}')">前往察看</button>
+                <button >稍後再看</button>
+              </div>
+            </div>
+          </div>
+        `);
     }
   } else {
     console.log("browser don't support local storage");
   }
 
-  $(".tutorial button[action='known']").click(function (e) {
-    $(".tutorial").fadeOut();
-    var page = location.pathname.split("/")[1];
-    localStorage["tutorial_"+page] = tutorial_version[page];
+  $(document).on("click",".tutorial button",function (e) {
+    $(".tutorial").remove();
+    var page = location.pathname.split("/")[1],
+        temp = localStorage["mewmewwar"]?JSON.parse(localStorage["mewmewwar"]):{};
+    temp.tutorial = temp.tutorial?temp.tutorial:{};
+    temp.tutorial[page] = tutorial_version[page];
+    localStorage["mewmewwar"] = JSON.stringify(temp);
   });
 
   // version check
@@ -244,41 +268,6 @@ $(document).ready(function () {
     }
   }
   $("#version_alert #ok").click(function () { location.reload(); });
-});
-
-$(window).load(function () {
-  $('#slider_holder').children('.active').click(function () {
-    let target = $("#"+filter_name+".filter_option");
-    target.attr('active',target.attr('active')=='true'?'false':'true');
-    filterObj[filter_name].active = target.attr('active')=='true';
-    $(this).html('<i class="material-icons">&#xe83'+(target.attr('active')=='true'?7:6)+';</i>');
-  });
-  $('#slider_holder').children('.type').click(function () {
-    let target = $("#"+filter_name+".filter_option"),
-        value = filterObj[filter_name].value,
-        range = JSON.parse(target.attr("range"));
-    target.attr('type',Number(target.attr('type'))+1<3?Number(target.attr('type'))+1:0);
-    if(Number(target.attr('type'))==2)
-      target.attr('value',"["+range[0]*10+","+range[1]*0.9+"]");
-    else if(typeof(value) == 'object')
-      target.attr('value',(value[0]+value[1])/2);
-    filterSlider(target);
-  });
-  $('#slider_holder').find('.slider').on("slidechange",function (e,ui) {
-    setTimeout(function () {
-      let target = $("#"+filter_name+".filter_option");
-      target.attr('value',Number(target.attr('type'))==2?("["+ui.values+"]"):ui.value);
-      if(!filterObj[filter_name]) filterObj[filter_name] = {};
-      filterObj[filter_name].value = Number(target.attr("value"))?Number(target.attr("value")):JSON.parse(target.attr("value"));
-      $(this).parent().siblings('.value_display').text(filterObj[filter_name].value);
-    },300);
-  });
-  $(".slider").on("slide", function(e,ui) {
-    $(this).parent().siblings('.value_display').html(ui.value);
-  });
-  $(".slider").on("slidechange", function(e,ui) {
-    $(this).parent().siblings('td.value_display').html(ui.value);
-  });
 });
 
 $("#PageGoToTop").click(function () {
@@ -352,7 +341,7 @@ function switchIframe(target) {
   if(!target) return;
   var openMethod = "iframe";
   if(Storage){ if(localStorage.openMethod) openMethod = localStorage.openMethod; }
-  if((is_ios && openMethod == 'iframe')|| (openMethod == 'iframe' && window.parent.reloadIframe == undefined)) openMethod='_blank';
+  if((is_ios && openMethod == 'iframe')|| (openMethod == 'iframe' && window.parent.reloadIframe == undefined)) openMethod='_top';
   if(openMethod == "iframe"){
     window.parent.reloadIframe(target);
     window.parent.changeIframe(target);
@@ -363,11 +352,12 @@ function switchIframe(target) {
   }
 }
 
-function scroll_to_div(div_id,container=null,offset=0){
+function scroll_to_div(div,container=null,offset=0){
   if($(container).length == 0) container = $('html,body');
   else container = $(container);
+  if(!/\#|\./.test(div)) div = "#"+div;
   container.animate(
-    {scrollTop: container.scrollTop()+$("#"+div_id).offset().top+offset},
+    {scrollTop: container.scrollTop()+$(div).offset().top+offset},
     600,'easeInOutCubic');
 }
 function scroll_to_class(class_name,n=0) {
@@ -403,34 +393,6 @@ var hide_side_column = function (e) {
   $(".left-side-column,.left-side-active").attr("active",0);
   $(".side-column-bg").remove();
   return false;
-}
-
-function filterSlider(target) {
-  let value = target.attr('value') ;
-  let type = Number(target.attr('type')) ;
-  let range = JSON.parse(target.attr('range'));
-  let step = Number(target.attr('step')) ;
-  let active = target.attr('active') ;
-  let Slider = $("#slider_holder").find('.slider');
-  Slider.slider("destroy");
-  Slider.slider();
-  Slider.slider('option','range',type==2);
-  Slider.slider('option',{
-    'min': range[0],
-    'max': range[1],
-    'step': step,
-  }).parent().siblings('.active').html('<i class="material-icons">&#xe83'+(active=='true'?7:6)+';</i>')
-  .siblings('.type').html(type?(type == '1'?'以下':'範圍'):'以上');
-  if(type==2)
-    Slider.slider("option","values",JSON.parse(value));
-  else
-    Slider.slider("option","value",Number(value));
-  filterObj[filter_name] = {
-    type:Number(type),
-    active:active=='true',
-    value:Number(value)?Number(value):JSON.parse(value),
-    lv_bind:target.attr('lv-bind')=='true'
-  }
 }
 
 function sum(list) {

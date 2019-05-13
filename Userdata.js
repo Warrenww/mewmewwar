@@ -46,6 +46,31 @@ exports.updateLastLogin = function (uid,time) {
     }
   });
 }
+function userPromise(uid) {
+  return new Promise(function(resolve, reject) {
+    try {
+      if(UserData[uid]){
+        console.log("cache hit");
+        resolve(UserData[uid]);
+      } else {
+        console.log("cache miss");
+        database.ref("/user/"+uid).once("value",(snapshot)=>{
+          console.log("data fetch complete");
+          var temp = snapshot.val();
+          if(temp != null){
+            UserData[uid] = temp;
+            resolve(UserData[uid]);
+          } else {
+            reject("user not found!");
+          }
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 exports.writeBack = function (uid) {
   if(!uid) for(let i in ModifiedTable) writeBackUser(i);
   else writeBackUser(uid);
@@ -122,38 +147,40 @@ exports.getHistory = function (uid,type=null) {
 }
 exports.setHistory = function (uid,type,id,opt={}){
   try{
-    // Check if it is last search
-    if(UserData[uid].history['last_'+type] == id && type != 'gacha') return;
+    userPromise(uid).then((rs,rj)=>{
+      // Check if it is last search
+      if(UserData[uid].history['last_'+type] == id && type != 'gacha') return;
 
-    var user_history = UserData[uid].history[type],
-        user_variable = UserData[uid].variable[type],
-        current = type == 'cat'?id.toString().substring(0,3):id,
-        history_count = 0;
+      var user_history = UserData[uid].history[type],
+      user_variable = UserData[uid].variable[type],
+      current = type == 'cat'?id.toString().substring(0,3):id,
+      history_count = 0;
 
-    if(user_history == "" || !user_history ) user_history = {};
-    if(user_variable == "" || !user_variable ) user_variable = {};
-    // Find same unit and clear it
-    for(let i in user_history){
-      var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id;
-      if(exist == current) delete user_history[i];
-      else history_count ++ ;
-    }
-    // trim all kind of user history to at most 40
-    for(let i in user_history){
-      if(history_count < HistoryLimit) break;
-      history_count -- ;
-      delete user_history[i];
-    }
-    var key = database.ref().push().key; // Generate hash key
-    // Update history and write to firebase
-    user_history[key] = {type : type,id : id,time:new Date().getTime()};
-    for(let i in opt){ user_history[key][i] = opt[i]; }
-    UserData[uid].history["last_"+type] = id;
-    ModifiedTable[uid] = true;
+      if(user_history == "" || !user_history ) user_history = {};
+      if(user_variable == "" || !user_variable ) user_variable = {};
+      // Find same unit and clear it
+      for(let i in user_history){
+        var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id;
+        if(exist == current) delete user_history[i];
+        else history_count ++ ;
+      }
+      // trim all kind of user history to at most 40
+      for(let i in user_history){
+        if(history_count < HistoryLimit) break;
+        history_count -- ;
+        delete user_history[i];
+      }
+      var key = database.ref().push().key; // Generate hash key
+      // Update history and write to firebase
+      user_history[key] = {type : type,id : id,time:new Date().getTime()};
+      for(let i in opt){ user_history[key][i] = opt[i]; }
+      UserData[uid].history["last_"+type] = id;
+      ModifiedTable[uid] = true;
 
-    if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
-    if(!user_variable[id]) user_variable[id] = {count:0};
-    user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
+      if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
+      if(!user_variable[id]) user_variable[id] = {count:0};
+      user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
+    });
   } catch(err){
     Util.__handalError(err);
   }
@@ -168,14 +195,16 @@ exports.SearchHistory = function (uid,type,data) {
 exports.StoreLevel = function(uid,id,type,lv){
   console.log(uid+" change his/her "+type,id+"'s level to "+lv);
   try{
-    id = id.toString().substring(0,3);
-    // target cat or enemy
-    var buffer = UserData[uid].variable[type][id] ;
-    buffer = buffer?buffer:{lv:1,count:0}; // handal of not exist data
-    // set level and store to firebase
-    buffer.lv = lv;
-    // database.ref("/user/"+uid+"/variable/"+type+"/"+id).update({lv:lv});
-    ModifiedTable[uid] = true;
+    userPromise(uid).then((rs,rj)=>{
+      id = id.toString().substring(0,3);
+      // target cat or enemy
+      var buffer = UserData[uid].variable[type][id] ;
+      buffer = buffer?buffer:{lv:1,count:0}; // handal of not exist data
+      // set level and store to firebase
+      buffer.lv = lv;
+      // database.ref("/user/"+uid+"/variable/"+type+"/"+id).update({lv:lv});
+      ModifiedTable[uid] = true;
+    });
   }catch(e){
     Util.__handalError(e);
   }
