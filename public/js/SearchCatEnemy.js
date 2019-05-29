@@ -1,35 +1,23 @@
 var page = location.pathname.split("/")[1];
 if(page == 'list') page = 'cat';
-var number_page,page_factor ;
-var filterObj = {};
+var number_page,filterObj = {}, resultDataPreview = {cat:[],enemy:[]};
 
 // Press enter to trigger search
-$('.search_type .button').click(function () {
-  var type = $(this).attr('id').split("_")[0];
-  if($(this).attr('value') == 1) return false;
-  if(type == 'normal'){
-    $("#gacha_search,#value_search").attr("value",0);
-    $("#upper_table").css('max-height',1200).siblings().css('max-height',0);
-  } else if(type == 'gacha'){
-    $("#normal_search,#value_search").attr("value",0);
-    $("#gacha_table").css('max-height',1200).siblings().css('max-height',0);
-  } else if(type == 'value'){
-    $("#normal_search,#gacha_search").attr("value",0);
-    $("#lower_table").css('max-height',1200).siblings().css('max-height',0);
-    type = 'normal';
-  }
-  $("#search_ability").attr("value",type);
-});
-$(".search_table .button").click(function () {
+var quick_search_mutex = false;
+$(".normalTable .button, .gachaTable .button").click(function () {
+  if(quick_search_mutex) return;
   $("body").bind('keypress',quickSearch);
+  quick_search_mutex = true;
   setTimeout(function () {
     $("body").unbind('keypress',quickSearch);
+    quick_search_mutex = false;
   },5000);
 });
 function quickSearch(e) {
   let code = (e.keyCode ? e.keyCode : e.which);
   if (code == 13) search();
   $("body").unbind('keypress',quickSearch);
+  quick_search_mutex = false;
 }
 // Only available on when searching cat
 if(page == 'cat'){
@@ -59,7 +47,7 @@ function textSearch() {
   var keyword = $("#searchBox").val(),opt = $("#searchBox").prev("select").val();
   if(keyword.trim()=="") return;
   socket.emit("text search",{uid:CurrentUserID,key:keyword,type:page,option:opt});
-  scroll_to_div('#selected',null,-100);
+  openTable('resultTable');
 }
 // Start a search
 $('#search_ability').click(search) ;
@@ -69,8 +57,9 @@ function search() {
       color = $(".select_color [value=1]"),
       ability = $(".select_ability [value=1]"),
       gacha = $(".gacha_search td .button[value=1]"),
-      type = $("#search_ability").attr("value"),
+      type = $(".search_type span[value='1']").attr("onclick").split("'")[1].split("Table")[0],
       instinct = Number($("#instinct_involve").attr('value'));
+  if(type == 'value') type = 'normal';
   var rFilter = [], cFilter = [], aFilter = [],gFilter = [] ;
   for(let i = 0;i<rarity.length;i++) rFilter.push(rarity.eq(i).attr('name')) ;
   for(let i = 0;i<color.length;i++) cFilter.push(color.eq(i).attr('name')) ;
@@ -89,37 +78,29 @@ function search() {
     abilityAnd:$("#abilityAnd").attr('value'),
     filterObj:filterObj,
     type:page,
-    instinct:instinct
+    instinct:instinct,
+    optional: ['tag'].concat(resultDataPreview[page])
   });
-  scroll_to_div('#selected',null,-100);
+  openTable('resultTable');
 }
 $(document).ready(function () {
   // Recive query response
   socket.on("search result",function (data) {
     if(data.type != page) return;
     console.log("recive search result");
-    console.log(data);
+    // console.log(data);
+
     current_search = [];
     number_page = 0 ; // # of page of search result
-    page_factor = 1 ; // 1 dot represent how many pages
     // Clear old result and display new result
     $("#selected,#page_dot").empty();
-    $("#selected").css('display','flex').scrollTop(0).append(
+    $("#selected").append(
       page == 'cat' ? condenseCatName(data.result): condenseEnemyName(data.result)
     );
-    // Calculating # of page and display the dot
-    var select_width = $("#selected").innerWidth(),       // Size of result area
-        card_width = screen.width > 1024 ? 216 :140,      // Size of card
-        per_page = Math.floor(select_width/card_width)*2; // # of cards per page
 
-    number_page = Math.ceil(number_page/per_page) ; // # of pages
-    if(number_page>25) page_factor = 2; // 1 dot represent 2 pages when # of page more than 25
-    for (let i = 0;i<Math.ceil(number_page)/page_factor;i++) // Display page dot
-      $("#page_dot").append("<span value='"+i*page_factor+"'></span>");
-    $("#page_dot span").eq(0).css("background-color",'#fea84a'); // Active 1st page dot
     if (data.query_type == "gacha" && data.query.length == 1)
-      $(".compareSorce .title #option #Gogacha").attr('value',data.query[0]).show();
-    else $(".compareSorce .title #option #Gogacha").hide();
+      $(".resultTable .title #option #Gogacha").attr('value',data.query[0]).show();
+    else $(".resultTable .title #option #Gogacha").hide();
     // Show the query as text
     var query = '';
     if(data.query_type == 'gacha') for(let i in data.query) query += "<span>"+parseGachaName(data.query[i])+"</span>";
@@ -142,11 +123,11 @@ $(document).ready(function () {
       }
     }
     // console.log(query);
-    $(".compareSorce").find("#query").html(query);
+    $(".resultTable").find("#query").html(query);
   });
 });
 function parseGachaName(name) {
-  $("#gacha_table").find(".button").each(function () {
+  $(".gachaTable").find(".button").each(function () {
     if($(this).attr('name') == name) name = $(this).text();
   });
   return name
@@ -155,62 +136,74 @@ function condenseCatName(data) {
   var html = '' ;
   for(let i in data){
     if(!data[i].id) continue
-    var nameArr = data[i].name, id = data[i].id, stage = data[i].stage?data[i].stage-1:0;
-
-    html += '<span class="card-group" value="'+id+'">'+
-            '<span class="glyphicon glyphicon-refresh"></span>'+
-            '<span class="glyphicon glyphicon-shopping-cart"></span>';
-    for(let j in nameArr){
-      html +=
-      '<span class="card" value="'+id+"-"+(Number(j)+1)+
-      '"style="background-image:url('+
-      Unit.imageURL('cat',`${AddZero(id,2)}-${Number(j)+1}`)+');'+
-      (j == stage?"":"display:none")+
-      '"name="'+nameArr[j]+'"></span>';
+    var nameArr = data[i].name,
+        id = data[i].id,
+        stage = data[i].stage?data[i].stage-1:0,
+        tag = [],
+        optional = [];
+    for(let j in data[i].tag) tag = tag.concat(data[i].tag[j]);
+    for(let j in data[i]) if(['id','name','tag','stage'].indexOf(j)==-1) optional.push({key:j,value:data[i][j]});
+    html += `<div data-tag='${tag.join(" ")}' id='${id}' stage='${stage}'>`;
+    for(let j in data[i].name){
+      html += ` <div class='img' stage='${j}' active='${j == stage?1:0}'
+                style='background-image:url("${Unit.imageURL('cat',`${AddZero(id,2)}-${Number(j)+1}`)}")'></div>
+                <div class='name'active='${j == stage?1:0}'>${data[i].name[j]}</div>
+                <div class='optional flex_col'active='${j == stage?1:0}'>
+                  ${optional.map(x=>x.key!=""?`<div>${Unit.propertiesName(x.key)} : ${x.value[j]}</div>`:"").join("")}
+                </div>`
     }
-    html += "</span>"
-
+    html += ` <div class='function flex'>
+                <i class='material-icons cir_but' text='切換階級' onclick='toggleCatStage(event)'>swap_vertical_circle</i>
+                <i class='material-icons cir_but' text='加到購物車'onclick='resultToCart(event)'>shopping_cart</i>
+              </div>
+              </div>`;
     number_page ++ ;
     current_search.push(id);
-
   }
-  $(".compareSorce #result_count").find("span").text(number_page);
+  $("#result_count span").text(number_page);
   return html ;
 }
 function condenseEnemyName(data) {
   let html = '' ;
   for(let i in data){
-    let name = data[i].name;
-    let id = data[i].id ;
-    html += '<span class="card-group">'+
-    '<span class="glyphicon glyphicon-shopping-cart"></span>'+
-    '<span class="card" value="'+id+'" '+
-    'style="background-image:url('+
-     Unit.imageURL('enemy',id)+')" name="'+name+'"></span></span>';
+    if(!data[i].id) continue
+    var name = data[i].name, id = data[i].id, optional = [] ;
+    for(let j in data[i]) if(['id','name','tag','stage'].indexOf(j)==-1) optional.push({key:j,value:data[i][j]});
+    html += `<div data-tag='${data[i].tag?data[i].tag[0].join(" "):""}' id='${id}'>`;
+    html += ` <div class='img' active='1'
+              style='background-image:url("${Unit.imageURL('enemy',`${AddZero(id,2)}`)}")'></div>
+              <div class='name'active='1'>${name}</div>
+              <div class='optional flex_col'active='1'>
+                ${optional.map(x=>`<div>${Unit.propertiesName(x.key)} : ${x.value[0]}</div>`).join("")}
+              </div>`
+    html += ` <div class='function flex'>
+                <i class='material-icons cir_but' text='切換階級' onclick='toggleCatStage(event)'>swap_vertical_circle</i>
+                <i class='material-icons cir_but' text='加到購物車'onclick='resultToCart(event)'>shopping_cart</i>
+              </div>
+              </div>`;
+
     number_page ++ ;
     current_search.push(id);
   }
-  $(".compareSorce #result_count").find("span").text(number_page);
+  $(".resultTable #result_count").find("span").text(number_page);
   return html ;
 }
+
 // Search result function
-var result_expand = 0,originHeight;
-$(document).on('click','.compareSorce .title #option i',function () {
+$("#selected").attr("view_mode",localStore.get("resultViewMode"));
+if(localStore.get("resultViewMode") == 'card') $('.resultTable .title #option #view_module').hide().prev().show();
+$(document).on('click','.resultTable .title #option i',function () {
   let type = $(this).attr("id");
-  if(type == 'result_expand'){
-    let trueHeight = $("#selected")[0].scrollHeight;
-    if(!result_expand){
-      originHeight = $("#selected")[0].offsetHeight;
-    }
-    $(".compareSorce .title").css('position',function () {
-      return result_expand?'relative':'sticky'
-    });
-    $("#selected").css("height",function () {
-      return result_expand?originHeight:trueHeight
-    });
-    result_expand = result_expand?0:1;
-    scroll_to_class("title",0);
+  if(type == 'view_list'){
+    $(this).hide().next().show();
+    $("#selected").attr("view_mode","list");
+    localStore.set("resultViewMode","list");
   }
+  else if (type == 'view_module') {
+    $(this).hide().prev().show();
+    $("#selected").attr("view_mode","card");
+    localStore.set("resultViewMode","card");
+   }
   else if(type == 'batch_own'){
     let r = confirm("確定批次加入「我擁有的貓咪」?!");
     if(!r) return
@@ -229,21 +222,20 @@ $(document).on('click','.compareSorce .title #option i',function () {
     if(current_search.length<15){
       $(".compareTarget").empty();
       let target = [];
-      $("#selected").children('.card-group').each(function () {
-        let visible = $(this).children(".card:visible"),
-            id = visible.attr('value'),
-            name = visible.attr('name');
+      $("#selected>div").each(function () {
+        let id = $(this).attr('id'),
+            stage = Number($(this).attr('stage')),
+            name = $(this).children(".name").eq(stage).text();
         // console.log(id,name);
         if(id) {
-          id = id.split("-");
-          compareTargetAddCard(id[0],name,id[1]);
-          target.push(id[0]);
+          compareTargetAddCard(id,name,stage+1);
+          target.push(id);
         }
       });
       // console.log(target);
       compare = target;
       socket.emit("Set Compare",{type:'cat',id:CurrentUserID,target:compare});
-      if(showcomparetarget) showhidecomparetarget();
+      if(showcomparetarget) toggle_side_column();
       $("#compare_number").text(target.length);
     }
     else alert("超過15隻!!!");
@@ -256,10 +248,28 @@ $(document).on('click','.compareSorce .title #option i',function () {
     });
     switchIframe("gacha");
   }
+  else if(type == 'snapshot'){
+    $("#selected").css("max-height",32768);
+    setTimeout(()=>{
+      snapshot(".resultTable","#fff").then((rs,rj)=>{
+        $("#selected").removeAttr("style")
+      });
+    },500);
+  }
 });
-
+$(document).on('click','#query span',function () {
+  var active = Number($(this).attr('active')),
+      query = $(this).text(),
+      target = $("#selected>div:not(*[data-tag ~= "+query+"])");
+  if(Number.isNaN(active)) active = 0;
+  active = (active+1)%2;
+  $(this).attr("active",active).siblings().attr('active',0);
+  $("#selected>div").show(100);
+  if(active) {target.hide(100);$("#result_count span").text(current_search.length - target.length);}
+  else $("#result_count span").text(current_search.length);
+});
 // initial filter table slider
-$("#lower_table .slider").each(function () {
+$(".valueTable .slider").each(function () {
   var value = $(this).attr('value'),
       type = Number($(this).attr('type')),
       range = JSON.parse($(this).attr('range')),
@@ -303,7 +313,7 @@ function changeSlider(e) {
   filterSlider(target.find(".slider"));
 }
 
-$('#lower_table .type').click(function (e) {
+$('.valueTable .type').click(function (e) {
   var target = $(e.target).parents('tr'),
       type = Number(target.find(".slider").attr('type')),
       value = type == 2?JSON.parse(target.find(".slider").attr('value')):Number(target.find(".slider").attr('type')),
@@ -377,4 +387,28 @@ function filterSlider(target) {
     value: type != 2 ? Number(value) : JSON.parse(value),
     lv_bind: target.attr('lv-bind') == 'true'
   }
+}
+function toggleCatStage(e) {
+  e.stopPropagation();
+  var parent = $(e.target).parent().parent(),
+      stage = Number(parent.attr("stage")),
+      maxStage = parent.find(".img").length;
+
+  stage = (stage+1)%maxStage;
+  parent.find(".img").eq(stage).attr('active',1).siblings(".img").attr('active',0);
+  parent.find(".name").eq(stage).attr('active',1).siblings(".name").attr('active',0);
+  parent.find(".optional").eq(stage).attr('active',1).siblings(".optional").attr('active',0);
+  parent.attr('stage',stage);
+
+  socket.emit("store stage",{
+    uid : CurrentUserID,
+    id : parent.attr('id'),
+    stage :stage
+  });
+}
+function resultToCart(e) {
+  e.stopPropagation();
+  var parent = $(e.target).parent().parent(),
+      stage = Number(parent.attr("stage"));
+  addToCompare(parent.attr("id"),parent.find(".name").eq(stage).text(),stage+1);
 }

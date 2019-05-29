@@ -38,7 +38,7 @@ body::-webkit-scrollbar-thumb {
 }
 *[onclick],.copiable{cursor: pointer;}
 input:focus{outline: 0}
-#searchBox{box-shadow: 0px 0px 5px;}
+#searchBox,.chooser select{box-shadow: 0px 0px 5px;}
 #login,#version_alert{
   display: none;
   position: fixed;
@@ -101,7 +101,8 @@ input:focus{outline: 0}
 .stageBG[bg='baseball'],.stageBG[bg='lazybird'],
 .stageBG[bg='easter'],.stageBG[bg='eva'],.stageBG[bg='Fate'],.stageBG[bg='Fish'],
 .stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking'],
-.stageBG[bg='castleAndDragon'],.stageBG[bg='CrashFever']{
+.stageBG[bg='castleAndDragon'],.stageBG[bg='CrashFever'],
+.stageBG[bg='mahoshojo']{
   background-size: cover;
   background-position: center;
 }
@@ -113,6 +114,7 @@ input:focus{outline: 0}
   background-color: rgba(0,0,0,.1);
   font-size: 0;
 }
+.stageBG[bg='mahoshojo']{background-image: url("footage/stage/mahoshojo_BG.png");}
 .stageBG[bg='Fate']{background-image: url("footage/stage/Fate_BG.png");}
 .stageBG[bg='Fish']{background-image: url("footage/stage/Fish_BG.png");}
 .stageBG[bg='hard']{background-image: url("footage/stage/hard_BG.png");}
@@ -214,7 +216,8 @@ td, th {
   position: relative;
 }
 .content th,
-.floatDisplay th{
+.floatDisplay th,
+.chooser th{
   cursor: pointer;
   width: 10%;
   background-color: var(--lightorange);
@@ -288,7 +291,8 @@ table {
 .left-side-column::-webkit-scrollbar,
 #result::-webkit-scrollbar,
 .panel::-webkit-scrollbar,
-#canvas_holder::-webkit-scrollbar
+#canvas_holder::-webkit-scrollbar,
+#selected::-webkit-scrollbar
 { width: 0px; }
 
 .functionArea{
@@ -341,6 +345,33 @@ table {
   cursor: pointer;
   margin: 5px;
   transition: .6s ease-in-out
+}
+
+.chooser{
+  background-color: rgba(255,255,255,0.8);
+  box-shadow: 0px 2px 10px 5px;
+  position: relative;
+}
+.chooser>div[class*="Table"]{display: none}
+.chooser>div[active="1"]{display: flex}
+.search_type{
+  display: flex;
+  width: 100%;
+  padding:0 10;
+  justify-content: flex-start;
+}
+.search_type span {
+  font-size: 18px;
+  padding: 3 20;
+  margin: 0 5;
+  border-bottom: 2px solid gray;
+  border-radius: 10px 10px 0px 0px;
+  font-weight: bold;
+  transition: .3s ease;
+}
+.search_type span[value='1'],.search_type span:hover{
+  border-bottom: 2px solid transparent;
+  background: var(--lightorange);
 }
 
 @keyframes jump {
@@ -734,8 +765,6 @@ input:checked + .slider_but:before {
 }
 .panel[active='1']{max-height: calc(80% - 120px);opacity: 1}
 #panelBG{position: fixed;width: 100vw;height: 100vw;top: 0;z-index: 9}
-
-
 
 @keyframes rotate {
   0%{transform: rotate(0deg);}

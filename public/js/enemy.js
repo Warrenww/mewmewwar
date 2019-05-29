@@ -35,16 +35,16 @@ $(document).ready(function () {
         socket.emit("normal search",last);
       }
       for(let i in last.query){
-        for(let j in last.query[i]) $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
+        for(let j in last.query[i]) $(".normalTable").find(".button[name='"+last.query[i][j]+"']").click();
       }
       var value_search = false;
       for(let i in last.filterObj){
-        $("#lower_table").find("th[id='"+i+"']").attr('active',last.filterObj[i].active?1:0)
+        $(".valueTable").find("th[id='"+i+"']").attr('active',last.filterObj[i].active?1:0)
           .next().children().attr({
           'value':last.filterObj[i].type==2?("["+last.filterObj[i].value+"]"):last.filterObj[i].value,
           'type':last.filterObj[i].type
         });
-        filterSlider($("#lower_table").find("th[id='"+i+"']").next().children());
+        filterSlider($(".valueTable").find("th[id='"+i+"']").next().children());
       }
     }
     if(data.compare_e2e) {
@@ -58,19 +58,17 @@ $(document).ready(function () {
         compare.push(id);
       }
     }
-    if(!data.setting.show_enemy_id)
-      $('.display').find("#id").css({'background-color':'transparent','color':'transparent'})
-        .prev().css({'background-color':'transparent','color':'transparent'});
-    if(!data.setting.show_enemy_count)
-      $('.display').find("#count").css({'background-color':'transparent','color':'transparent'})
-        .prev().css({'background-color':'transparent','color':'transparent'});
+    if(data.setting.resultDataPreview){
+      if(data.setting.resultDataPreview.cat) resultDataPreview.cat = data.setting.resultDataPreview.cat;
+      if(data.setting.resultDataPreview.enemy) resultDataPreview.enemy = data.setting.resultDataPreview.enemy;
+    }
   });
-  $(document).on('click','.card',function () {
+  $(document).on('click','.card, #selected>div',function () {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return
     else
       socket.emit("required data",{
         type:'enemy',
-        target:$(this).attr('value'),
+        target:$(this).attr('value')||$(this).attr("id"),
         record:true,
         uid:CurrentUserID
       });
@@ -88,7 +86,8 @@ $(document).ready(function () {
         query_type:'normal',
         filterObj:{},
         type:"cat",
-        value:0
+        value:0,
+        optional:['tag'].concat(resultDataPreview.cat)
       });
       switchIframe("cat");
     }
@@ -125,7 +124,8 @@ $(document).ready(function () {
       query_type:'normal',
       filterObj:[],
       type:"cat",
-      value:0
+      value:0,
+      optional:['tag'].concat(resultDataPreview.cat)
     });
     if(window.parent.reloadIframe){
       window.parent.reloadIframe('cat');

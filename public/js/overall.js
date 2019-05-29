@@ -1,19 +1,44 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.36.1"
+const VERSION = "10.36.2"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
 console.log("mobile : ",is_mobile);
 console.log("ios : ",is_ios);
-var showcomparetarget = 1 ;
+const Page = location.pathname.split("/")[1];
 const tutorial_version = {
   expCalculator: 1,
   compare: 1,
   stage: 1,
   combo: 1
 }
+const localStore = (function(){
+      if(Storage){
+        this.storage = {}
+        if(localStorage.mewmewwar == undefined){
+          localStorage.mewmewwar = "{}";
+          localStorage.removeItem("tutorial_stage");
+        } else this.storage = JSON.parse(localStorage.mewmewwar)
+        this.get = (key) => {return this.storage[key]}
+        this.set = (key,value) => {
+          this.storage[key] = value;
+          localStorage.mewmewwar = JSON.stringify(this.storage)
+        }
+      } else {
+        console.warn("Storage Not Support");
+        this.get = (k)=>{}
+        this.set = (k,v)=>{}
+      }
+      return this
+    })();
+
+const _native_erroe = console.error;
+// console.error = function () {
+//
+// }
+
 var socket;
 $(document).ready(function () {
   socket = io.connect();
@@ -127,96 +152,29 @@ $(document).ready(function () {
     }
   });
 
-  //change page reaction
-  $(document).on('click','#next_sel_pg',function () {turnPage(1);}) ;
-  $(document).on('click','#pre_sel_pg',function () {turnPage(-1);}) ;
-  function turnPage(n) {
-    $('#selected').unbind('mousewheel', scroll_select);
-    $(window).bind('mousewheel', false);
-    let current = $("#selected").scrollTop(),
-        offset = $("#selected").height(),
-        current_page = Number((current/offset).toFixed(0))+Number(n) ;
-
-    $("#selected").animate(
-      {scrollTop: current+offset*n},
-      100*Math.sqrt(Math.abs(n)),'easeInOutCubic');
-
-    $("#page_dot").find("span[value='"+Number(current_page)+"']")
-      .css('background-color','rgb(254, 168, 74)')
-      .siblings().css('background-color','white')
-
-    setTimeout(function(){
-      $('#selected').bind('mousewheel', scroll_select);
-      $(window).unbind('mousewheel', false);
-    }, 300);
-  }
-  var scroll_select = function (e) {
-    if(e.originalEvent.wheelDelta < 0) {
-      if( $(this).scrollTop()+$(this).height() > $(this)[0].scrollHeight-2
-      &&  $(this).scrollTop()+$(this).height() < $(this)[0].scrollHeight+2
-      ) return true
-      turnPage(1);
-        //scroll down
-    }else {
-      if($(this).scrollTop() == 0) return true
-      turnPage(-1);
-        //scroll up
-        // alert('Up');
-    }
-    //prevent page fom scrolling
-    return false;
-  };
-  $('#selected').bind('mousewheel', scroll_select);
-  $(document).on('click','#page_dot span',function () {
-    let current = $("#selected").scrollTop(),
-        offset = $("#selected").height(),
-        current_page = current/offset,
-        goto = $(this).attr('value') ;
-    // console.log(current_page+","+goto);
-    let n = current_page-goto;
-    // console.log(n);
-    turnPage(-n);
-    // $(this).css('background-color','rgb(254, 168, 74)')
-    //   .siblings().css('background-color','white');
-    // $(this).attr('active',true).siblings().attr('active',false);
-  });
-
   // tutorial
-  if(typeof(Storage)){
-    if(localStorage.mewmewwar == undefined){
-      localStorage.mewmewwar = "{}";
-      localStorage.removeItem("tutorial_combo");
-      localStorage.removeItem("tutorial_expCalculator");
-      localStorage.removeItem("tutorial_compareEnemy");
-      localStorage.removeItem("tutorial_compareCat");
-    }
-    var page = location.pathname.split("/")[1],
-        ver = (localStorage["mewmewwar"]?JSON.parse(localStorage["mewmewwar"]):{})["tutorial"];
-    if(!ver) ver = {};
-    if(ver[page] != tutorial_version[page]){
-      $("body").append( `
-          <div class='tutorial'>
-            <div class='article'>
-              <h2><b>本頁面有新的使用說明囉!</b></h2>
-              <div style='display:flex;justify-content:center'>
-                <button onclick="switchIframe('document?${page}')">前往察看</button>
-                <button >稍後再看</button>
-              </div>
-            </div>
+  var  ver = localStore.get("tutorial") || {};
+  if(ver[Page] != tutorial_version[Page]){
+    $("body").append( `
+      <div class='tutorial'>
+        <div class='article'>
+          <h2><b>本頁面有新的使用說明囉!</b></h2>
+          <div style='display:flex;justify-content:center'>
+            <button onclick="switchIframe('document?${page}')">前往察看</button>
+            <button >稍後再看</button>
           </div>
-        `);
+        </div>
+      </div>
+      `);
     }
-  } else {
-    console.log("browser don't support local storage");
-  }
 
   $(document).on("click",".tutorial button",function (e) {
     $(".tutorial").remove();
     var page = location.pathname.split("/")[1],
-        temp = localStorage["mewmewwar"]?JSON.parse(localStorage["mewmewwar"]):{};
-    temp.tutorial = temp.tutorial?temp.tutorial:{};
-    temp.tutorial[page] = tutorial_version[page];
-    localStorage["mewmewwar"] = JSON.stringify(temp);
+        temp = localStore.get("tutorial") || {};
+
+    temp[page] = tutorial_version[page];
+    localStore.set("tutorial",temp);
   });
 
   // version check
@@ -283,52 +241,55 @@ gtag('js', new Date());
 gtag('config', 'UA-111466284-1');
 
 var snapshotMutex = true;
-function snapshot(selector) {
-  if(!snapshotMutex) return;
-  snapshotMutex = false;
-  var target = $(selector);
-  if(target.length == 0) target = $(".display")[0];
-  else target = target[0];
+function snapshot(selector,bgc = "#60e6f9") {
+  return new Promise(function(resolve, reject) {
+    if(!snapshotMutex) reject();
+    snapshotMutex = false;
+    var target = $(selector);
+    if(target.length == 0) target = $(".display")[0];
+    else target = target[0];
 
-  html2canvas(target,{
-    backgroundColor:"#60e6f9",
-    allowTaint:true
-  }).then(function(canvas) {
-    snapshotMutex = true;
-    $('#canvas_holder').css("display",'flex');
-    $('#canvas_holder .picture').append(canvas);
-    $("#canvas_holder .picture canvas").css("transform",'scale(0,0)');
-    setTimeout(function () {
-      $("#canvas_holder canvas").css("transform",'matrix(0.75,0,0,0.75,0,0)');
-    },100);
-    $('#canvas_holder .picture').append("<a class='flex'><i class='material-icons'>cloud_download</i></a>")
-    $('#canvas_holder .picture').append("<span id='zoom_in' class='flex'><i class='material-icons'>zoom_in</i></span>")
-    $('#canvas_holder .picture').append("<span id='zoom_out' class='flex'><i class='material-icons'>zoom_out</i></span>")
-    $('#canvas_holder a').bind("click",function () {
-      try {
-        canvas.toBlob(blob => {
-          // console.log(blob);
-          var a = document.createElement('a');
-          a.download = 'download.png';
-          a.href = URL.createObjectURL(blob);
-          console.log(a.href);
-          a.click();
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    });
-    var scale = .75 ;
-    $('#canvas_holder span').bind("click",function (e) {
-      e.stopPropagation();
-      if($(this).attr("id")=='zoom_in') scale = scale<.25?.25:(scale>2?scale:scale+.25);
-      else scale = scale<.26?(scale<.1?scale:scale-.05):scale-.25;
-      $("#canvas_holder canvas").css("transform",function () {
-        var matrix = $("#canvas_holder canvas").css('transform');
-        matrix = matrix.split("(")[1].split(")")[0].split(",");
-        matrix[0] = matrix[3] = scale;
-        return "matrix("+matrix.toString()+")"
+    html2canvas(target,{
+      backgroundColor:bgc,
+      allowTaint:true
+    }).then(function(canvas) {
+      snapshotMutex = true;
+      $('#canvas_holder').css("display",'flex');
+      $('#canvas_holder .picture').append(canvas);
+      $("#canvas_holder .picture canvas").css("transform",'scale(0,0)');
+      setTimeout(function () {
+        $("#canvas_holder canvas").css("transform",'matrix(0.75,0,0,0.75,0,0)');
+      },100);
+      $('#canvas_holder .picture').append("<a class='flex'><i class='material-icons'>cloud_download</i></a>")
+      $('#canvas_holder .picture').append("<span id='zoom_in' class='flex'><i class='material-icons'>zoom_in</i></span>")
+      $('#canvas_holder .picture').append("<span id='zoom_out' class='flex'><i class='material-icons'>zoom_out</i></span>")
+      $('#canvas_holder a').bind("click",function () {
+        try {
+          canvas.toBlob(blob => {
+            // console.log(blob);
+            var a = document.createElement('a');
+            a.download = 'download.png';
+            a.href = URL.createObjectURL(blob);
+            console.log(a.href);
+            a.click();
+          });
+        } catch (e) {
+          console.log(e);
+        }
       });
+      var scale = .75 ;
+      $('#canvas_holder span').bind("click",function (e) {
+        e.stopPropagation();
+        if($(this).attr("id")=='zoom_in') scale = scale<.25?.25:(scale>2?scale:scale+.25);
+        else scale = scale<.26?(scale<.1?scale:scale-.05):scale-.25;
+        $("#canvas_holder canvas").css("transform",function () {
+          var matrix = $("#canvas_holder canvas").css('transform');
+          matrix = matrix.split("(")[1].split(")")[0].split(",");
+          matrix[0] = matrix[3] = scale;
+          return "matrix("+matrix.toString()+")"
+        });
+      });
+      resolve();
     });
   });
 }
@@ -350,6 +311,21 @@ function switchIframe(target) {
     window.open("/"+target,openMethod);
     return false;
   }
+}
+
+var openedTable = localStore.get("openedTable");
+if(!openedTable) openedTable = {cat:"",enemy:"",stage:""};
+if(openedTable[Page] && openedTable[Page] != ""){
+  openTable(openedTable[Page]);
+}
+function openTable(tableName) {
+  if(!tableName) return ;
+  var target = $(".chooser").find("."+tableName);
+  if(!target.length) return;
+  target.attr('active',1).siblings('[class*="Table"]').attr('active',0);
+  $(".search_type span[onclick*='"+tableName+"']").attr("value",1).siblings().attr("value",0);
+  openedTable[Page] = tableName;
+  localStore.set("openedTable",openedTable);
 }
 
 function scroll_to_div(div,container=null,offset=0){

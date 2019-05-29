@@ -1,7 +1,3 @@
-.setting_container{
-  padding: 5% 10%;
-
-}
 .setting_element{
   display: flex;
   flex-direction: column;
@@ -11,12 +7,13 @@
   box-shadow: grey 5px 5px 10px;
   min-height: 50px;
 }
-.setting_container h4 {
-  padding: 2px 20px;
-  margin: 0 ;
+h4 {
+  padding: 5px 20px;
   font-weight: bold;
-  font-size: 20px;
-  margin: 10px 0;
+  font-size: 30px;
+  margin-top: 20px;
+  width: 100%;
+  border-bottom: 2px solid;
 }
 .setting_item{
   width: 95%;
@@ -39,46 +36,13 @@
   font-size: 20px;
   text-align: center;
 }
+.setting_item select{ border:1px dashed gray }
+.setting_item .cir_but{ background-color: #e3e3e3; }
+.setting_item .cir_but:hover{background-color: #e8e8e8}
+
+
 #reset_cat_lv,#reset_own_cat{
   background: linear-gradient(rgb(246, 154, 87),rgb(255, 74, 74))
-}
-#cat_history,#ene_history,#own_cat{
-  font-size: 40px;
-  color:gray;
-  transform: rotate(-90deg);
-  cursor: pointer;
-  transition: .4s ease-in-out;
-}
-#cat_history:hover,
-#ene_history:hover,
-#own_cat:hover{
-  background-color: rgba(200,200,200,.5);
-  border-radius: 50%
-}
-#history_cat,#history_ene,#cat_own{
-  width: 95%;
-  margin: 0 2.5%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  height: 0;
-  transition: .8s ease-in-out;
-  overflow-y: scroll;
-}
-#history_cat::-webkit-scrollbar,
-#history_ene::-webkit-scrollbar,
-#cat_own::-webkit-scrollbar{
-    width: 8px;
-}
-#history_cat::-webkit-scrollbar-track,
-#history_ene::-webkit-scrollbar,
-#cat_own::-webkit-scrollbar { -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); }
-#history_cat::-webkit-scrollbar-thumb,
-#history_ene::-webkit-scrollbar,
-#cat_own::-webkit-scrollbar {
-  background-color: gray;
-  outline: 1px solid slategrey;
-  border-radius: 4px;
 }
 #photo{
   width: 100px;
@@ -152,7 +116,6 @@
   width: 120;
   max-height: 30;
 }
-#include span:hover,#exclude span:hover{background-color: #e8e8e8}
 #include,#exclude{
   border: 2px dashed gray;
   flex: 1;
@@ -172,7 +135,6 @@
 }
 #exclude::before{content: "停用的資料欄位"}
 #include::after{content: "調整後記得點選保存設定噢";position: absolute;bottom: 0;right: 5}
-#saveField,#restoreField{ background-color: #e3e3e3; }
 #saveField:hover,#restoreField:hover{background-color: #acacac}
 #saveField[save='true']{ background-color: #63bd84; color: white}
 #saveField[save='true']:hover{ background-color: #438e5e; color: white}

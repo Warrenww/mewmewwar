@@ -87,6 +87,7 @@ function ReloadAllData(m=0) {
       }
     }
     Stagelegend();
+    User.writeBack();
   }
   function Stagelegend(){
     mostSearchStage = [];
@@ -116,6 +117,7 @@ function ReloadAllData(m=0) {
       counter ++;
     }
   }
+
   reloadTimeOut = setTimeout(ReloadAllData,6*3600*1000);
   firstReload = false;
 }
@@ -323,7 +325,7 @@ io.on('connection', function(socket){
           CurrentUserData.compare_c2c = arr;
           CurrentUserData.last_cat_search = history.last_cat_search;
           CurrentUserData.setting = {
-            show_more_option:setting.show_more_option,
+            resultDataPreview:setting.resultDataPreview,
             show_ability_text:setting.show_ability_text,
             default_cat_lv:setting.default_cat_lv,
             show_cat_id:setting.show_cat_id,
@@ -335,7 +337,7 @@ io.on('connection', function(socket){
           CurrentUserData.compare_e2e = brr;
           CurrentUserData.last_enemy_search = history.last_enemy_search;
           CurrentUserData.setting = {
-            show_more_option:setting.show_more_option,
+            resultDataPreview:setting.resultDataPreview,
             show_enemy_id:setting.show_enemy_id,
             show_enemy_count:setting.show_enemy_count
           }
@@ -437,7 +439,9 @@ io.on('connection', function(socket){
   function countOnlineUser(sid,uid,connect) {
     var count = 0;
     if(connect){
-      if(onLineUser[uid]) onLineUser[uid].push(sid);
+      if(onLineUser[uid]){
+        if(onLineUser[uid].indexOf(sid) == -1) onLineUser[uid].push(sid);
+      }
       else onLineUser[uid] = [sid];
     }
     for(let i in onLineUser) {

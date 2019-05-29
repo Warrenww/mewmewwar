@@ -104,6 +104,7 @@ exports.Search = function (data,level,showJP,variable={}) {
       cFilter = data.query.cFilter?data.query.cFilter:[],
       aFilter = data.query.aFilter?data.query.aFilter:[],
       filterObj = data.filterObj?data.filterObj:[],
+      optional = data.optional?data.optional:[],
       colorAnd = Number(data.colorAnd)?"and":"or",
       abilityAnd = Number(data.abilityAnd)?"and":"or",
       instinct = Number(data.instinct),
@@ -111,9 +112,9 @@ exports.Search = function (data,level,showJP,variable={}) {
       buffer = [],
       nameMap = type == 'cat'?catNameMap:enemyNameMap;
       counter = 0;
-      // buffer initialy are empty.
-      // To prevent MargeArray(buffer,arr,"and") become empty,
-      // use this bit to determind first operation.
+  // buffer initialy are empty.
+  // To prevent MargeArray(buffer,arr,"and") become empty,
+  // use this bit to determind first operation.
   var abilityMap = AbilityMap[type];
 
   // First, if one of basic filter exist, extract unit; else extract all unit
@@ -207,13 +208,25 @@ exports.Search = function (data,level,showJP,variable={}) {
     var id = buffer[i];
     buffer[i] = {
       id:id,
-      name:nameMap[id],
+      name:nameMap[id]
+    }
+    for(let j in optional){
+      buffer[i][optional[j]] = [];
+      if(type == 'cat'){
+        if(CatData[id]){
+          for(let k in CatData[id].data) buffer[i][optional[j]].push(CatData[id].data[k][optional[j]]);
+        }
+      } else if(type == 'enemy'){
+        if(EnemyData[id]){
+          buffer[i][optional[j]].push(EnemyData[id][optional[j]]);
+        }
+      }
     }
   }
 
   console.log("Result length:",buffer.length);
-  buffer = Util.Sort(buffer,'id')
-  return buffer
+  buffer = Util.Sort(buffer,'id');
+  return buffer;
 }
 exports.TextSearch = function (type,keyword,option='text') {
   var load_data,nameMap,result = [];

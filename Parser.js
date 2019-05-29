@@ -83,6 +83,10 @@ exports.parseChar = function(c,obj,type) {
           obj.char.push({type:"免疫"+parseAbility(aa[i])});
         }
       }
+      else if(c[i].indexOf("メタル")!=-1){
+        obj.tag.push("鋼鐵");
+        obj.char.push({type:"鋼鐵 (受到會心一擊以外傷害值為1)"});
+      }
       else if(c[i].indexOf("クリティカル")!=-1){
         let aa = c[i].split("％")[0];
         obj.tag.push("爆擊");
@@ -223,10 +227,6 @@ exports.parseChar = function(c,obj,type) {
             against:ene,
             percent:abi.split(" ")[1]?abi.split(" ")[1].split("%")[0]:null
           });
-      }
-      else if(c[i].indexOf("メタル")!=-1 && c[i].indexOf("な敵 ")==-1){
-        obj.tag.push("鋼鐵");
-        obj.char.push({type:"鋼鐵 (受到會心一擊以外傷害值為1)"});
       }
       else {
         c[i] = c[i].split(" ※")[0];

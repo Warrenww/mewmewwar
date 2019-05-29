@@ -1,6 +1,7 @@
 $(document).ready(function () {
 
   var current_user_data = {};
+  var resultDataPreview = {};
   var user_photo_url = false;
   if(Storage){
     if(localStorage.openMethod){
@@ -8,7 +9,7 @@ $(document).ready(function () {
       if($("select[name='openMethod'] option[value='"+temp+"']").length == 0){
         temp = "iframe";
         localStorage.openMethod = temp;
-``      }
+      }
       $("select[name='openMethod'] option[value='"+temp+"']").prop("selected",true);
     }
   }
@@ -90,7 +91,7 @@ $(document).ready(function () {
     $("#userName").attr('value',data.name);
   });
   socket.on("user setting",function (data) {
-    // console.log(data);
+    console.log(data);
     var exp = 0 , dataField = ['hp','atk','range','tag'];
     for(let i in data){
       if(i == "default_cat_lv"){
@@ -113,7 +114,23 @@ $(document).ready(function () {
     }
     $("#include,#exclude").sortable({ connectWith:"#include,#exclude" });
     $("#saveField").attr("save",'true');
-
+    if(data.resultDataPreview){
+      resultDataPreview = data.resultDataPreview;
+      for(let unit in resultDataPreview){
+        var target = $(".resultDataPreview[type='"+unit+"']");
+        target.children("*:not(:first)").remove();
+        for(let i in resultDataPreview[unit]){
+          if(target.find("select:last").val()==""){
+            target.find("select:last").val(resultDataPreview[unit][i])
+          } else {
+            target.find("select:last").parent().clone().appendTo(target);
+            target.find("select:last").val(resultDataPreview[unit][i])
+            .siblings("span").text(target.find("select").length+". ");
+          }
+        }
+        target.attr("data-array",JSON.stringify(resultDataPreview[unit]));
+      }
+    }
   });
 
 
@@ -145,11 +162,10 @@ $(document).ready(function () {
     if(window.parent.changePhoto) window.parent.changePhoto(photo);
   });
   $(".showNext").click(function () {
-    $(this).attr('active',()=>{return (Number($(this).attr('active'))+1)%2})
-      .siblings('i').toggle().parent().next().toggle();
+    $(this).attr('active',()=>{return (Number($(this).attr('active'))+1)%2}).siblings('i').toggle();
+    $(this).parent().next().toggle();
   });
-  $("#include").on("sortupdate",()=>{ $("#saveField").attr("save",'false');
-  });
+  $("#include").on("sortupdate",()=>{ $("#saveField").attr("save",'false');});
   $("#saveField").click(()=>{
     var arr = $("#include").sortable("toArray",{attribute:"tag"});
     console.log(arr);
@@ -174,5 +190,35 @@ $(document).ready(function () {
     arr.map( x => $("#exclude span[tag='"+x+"']").appendTo("#include"));
     $("#saveField").attr("save",'true');
     if(window.parent.reloadIframe) window.parent.reloadIframe('stage');
+  });
+
+  $(".cloneSelect").click(function () {
+    var next = $(this).parent().next(),
+        last = next.children(":last").find("select"),
+        length = next.children().length;
+    if(last.val() == "") {alert("請先填入最後欄位!");return;}
+    if(length>2) if(!confirm("超過3個欄位可能造成顯示過於擁擠，是否仍要繼續?")) return;
+    next.children().eq(0).clone().appendTo(next);
+    next.children(":last").find("span").text(next.children().length+". ");
+  });
+  $(document).on("change",".dataPreview",function (e) {
+    var type = $(this).parents(".setting_item").attr("type"),
+        arr = JSON.parse($(this).parents(".setting_item").attr("data-array"));
+    if(arr.indexOf($(this).val()) != -1){
+      alert("欄位已存在!");
+      console.log(arr);
+      arr.map((x,i)=>$(this).parents(".setting_item").find("select").eq(i).val(x));
+      if($(this).is($(".setting_item select:last"))) $(this).parents(".setting_item").find("select:last").val("");
+      return;
+    }
+    arr = [];
+    $(this).parents(".setting_item").find("select").each(function() {arr.push($(this).val());});
+    $(this).parents(".setting_item").attr("data-array",JSON.stringify(arr));
+    resultDataPreview[type] = arr;
+    socket.emit("Set Setting",{
+      uid : current_user_data.uid,
+      target: "resultDataPreview",
+      value : resultDataPreview
+    });
   });
 });

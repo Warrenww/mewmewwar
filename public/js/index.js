@@ -327,6 +327,7 @@ $(document).ready(function () {
   $(".searchMore").click(function () {
     let id = $(this).parent().attr("id"),
         type = $(this).parent().attr("type");
+    if(type == 'stage') id += '-1';
     socket.emit("set history",{
       type:type,
       target:id,

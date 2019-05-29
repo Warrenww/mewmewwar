@@ -73,6 +73,7 @@
               <button class="stageBG" bg='DarkCome' id='DarkCome' value='0'>黑夜襲擊</button>
             </div>
             <div target='7' value='0'>
+              <button class="stageBG" bg='mahoshojo' id='mahoshojo' value='0'>魔法少女<br />合作關卡</button>
               <button class="stageBG" bg='Fish' id='Fish' value='0'>曼波魚<br />合作關卡</button>
               <button class="stageBG" bg='Fate' id='Fate' value='0'>Fate<br />合作關卡</button>
               <button class="stageBG" bg='egg' id='egg' value='0'>蛋黃哥<br />合作關卡</button>
@@ -263,7 +264,7 @@
           <i class="material-icons cir_but"text='上一關'id='prev'>keyboard_arrow_left</i>
           <i class="material-icons cir_but"text='下一關'id='next'>keyboard_arrow_right</i>
           <a target='blank'id="out"><i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i></a>
-          <i class="material-icons cir_but"text='截圖'onclick='snapshot()'>add_a_photo</i>
+          <i class="material-icons cir_but"text='截圖'id='snapshot'>add_a_photo</i>
           <i class="material-icons cir_but"text='加入比較序列'id='AddToCompare'>&#xE242;</i>
           <i class="material-icons cir_but"text='切換敵人資訊'id='swapdata'>swap_vert</i>
         </div>
@@ -293,7 +294,7 @@
             <th>敵人出擊限制</th><td id="limit_no"></td>
           </tr>
           <tr>
-            <th>我方出擊限制</th><td colspan='3' id="constrain"></td>
+            <th>我方出擊限制</th><td colspan='3' id="constrain">無</td>
           </tr>
         </table>
         <div id="reward_head" class="tableTitle" active='0'>過關獎勵</div>
@@ -367,7 +368,7 @@
       <div class="picture"></div>
     </div>
 
-    
+
 
 
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111466284-1"></script>

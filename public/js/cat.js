@@ -63,36 +63,39 @@ $(document).ready(function () {
       if(last.query_type=='gacha'){
         $("#gacha_search").click();
         for(let i in last.query)
-          $("#gacha_table").find(".button[name='"+last.query[i]+"']").click();
+          $(".gachalTable").find(".button[name='"+last.query[i]+"']").click();
       } else {
         for(let i in last.query)
          for(let j in last.query[i])
-          $("#upper_table").find(".button[name='"+last.query[i][j]+"']").click();
+          $(".normalTable").find(".button[name='"+last.query[i][j]+"']").click();
         if(Number(last.colorAnd)) $("#colorAnd").click();
         if(Number(last.abilityAnd)) $("#abilityAnd").click();
         if(Number(last.instinct)) $("#instinct_involve").click();
       }
       var value_search = false;
       for(let i in last.filterObj){
-        $("#lower_table").find("th[id='"+i+"']").attr('active',last.filterObj[i].active?1:0)
+        $(".valueTable").find("th[id='"+i+"']").attr('active',last.filterObj[i].active?1:0)
           .next().children().attr({
           'value':last.filterObj[i].type==2?("["+last.filterObj[i].value+"]"):last.filterObj[i].value,
           'type':last.filterObj[i].type
         });
-        filterSlider($("#lower_table").find("th[id='"+i+"']").next().children());
+        filterSlider($(".valueTable").find("th[id='"+i+"']").next().children());
       }
     }
     if(data.setting.show_ability_text && screen.width > 768)
         $(".select_ability").children(".button").each(function () {
           $(this).removeClass("smallicon");
         });
-  });
+        if(data.setting.resultDataPreview){
+          if(data.setting.resultDataPreview.cat) resultDataPreview.cat = data.setting.resultDataPreview.cat;
+          if(data.setting.resultDataPreview.enemy) resultDataPreview.enemy = data.setting.resultDataPreview.enemy;
+        }  });
 
-  $(document).on('click','.card',function (e) {
+  $(document).on('click','.card,#selected>div',function (e) {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return;
     socket.emit("required data",{
       type:'cat',
-      target:$(this).attr('value'),
+      target:$(this).attr('value')||$(this).attr("id"),
       record:true,
       uid:CurrentUserID
     });
@@ -183,7 +186,10 @@ $(document).ready(function () {
       id : CurrentCatID,
       stage : CurrentCatStage
     });
-    $("#selected").find(".card-group[value='"+CurrentCatID+"'] .card").eq(CurrentCatStage).show().siblings(".card").hide();
+    $("#selected #"+CurrentCatID).find(".img").eq(CurrentCatStage).attr('active',1).siblings(".img").attr('active',0);
+    $("#selected #"+CurrentCatID).find(".name").eq(CurrentCatStage).attr('active',1).siblings(".name").attr('active',0);
+    $("#selected #"+CurrentCatID).find(".optional").eq(CurrentCatStage).attr('active',1).siblings(".optional").attr('active',0);
+    $("#selected #"+CurrentCatID).attr('stage',CurrentCatStage);
   });
   function updateCatData (currentStage,lv = null) {
     var data = current_cat_data[currentStage];
@@ -272,7 +278,7 @@ $(document).ready(function () {
     if(type == 'color') {
       let ww = $(this).text().split(",")
       for(let i in ww) cFilter.push("對"+ww[i].substring(0,2));
-      $("#upper_table .button").each(function () {
+      $(".normalTable .button").each(function () {
         if(cFilter.indexOf($(this).attr('name'))==-1) $(this).attr('value',0);
         else $(this).attr('value',1);
       });
@@ -297,7 +303,7 @@ $(document).ready(function () {
           ww = ww;
       }
       aFilter=[ww];
-      $("#upper_table .button").each(function () {
+      $(".normalTable .button").each(function () {
         if($(this).attr('name')==ww||$(this).attr('value')=='1') $(this).click() ;
       });
     }
@@ -307,9 +313,11 @@ $(document).ready(function () {
       query_type:type,
       filterObj:{},
       type:"cat",
-      value:0
+      value:0,
+      optional:["tag"].concat(resultDataPreview.cat)
     });
-    if($('#normal_search').attr("value")!=1) $("#normal_search").click();
+    scroll_to_div(".chooser");
+    openTable("resultTable");
   });
   $(document).on("click","#condition span",function () {
     var type = $(this).attr("type"),
@@ -337,28 +345,6 @@ $(document).ready(function () {
   });
 
   $(".slider").slider();
-
-  $(document).on('click','.glyphicon-refresh',toggleCatStage);
-
-  function toggleCatStage() {
-    let group = $(this).parent(),
-        current = group.children(".card:visible").next('.card').attr('value');
-    if(group.children(".card").length>1) group.css("transform","rotateY(90deg)");
-    setTimeout(function () {
-      group.css("transform","rotateY(0)");
-      if(current != undefined){
-        group.children(".card:visible").hide().next('.card').show();
-      }
-      else{
-        group.children(".card:visible").hide().parent().children('.card').eq(0).show();
-      }
-    },300);
-    socket.emit("store stage",{
-      uid : CurrentUserID,
-      id : current.split("-")[0],
-      stage : Number(current.split("-")[1])-1
-    });
-  }
 
   function calculateLV() {
     var val = Number($(this).val()),

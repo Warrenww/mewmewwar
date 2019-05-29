@@ -2,13 +2,6 @@ var type = location.pathname.split("/")[1],
     compare = [];
 $(document).ready(function () {
 
-  $(document).on('click','.glyphicon-shopping-cart',function () {
-    var target = $(this).parent().children(".card:visible").attr('value'),
-        name = $(this).parent().children(".card:visible").attr('name');
-        target = target.split("-");
-        // console.log(target[0],name,target[1]);
-    addToCompare(target[0],name,target[1]);
-  });
   $(document).on('click',"#addcart", function () {
     var target = $(this).attr('value'),
         stage = Number($(".dataTable").find(".img[active='1']").attr('stage')),

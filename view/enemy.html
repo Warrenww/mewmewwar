@@ -15,157 +15,166 @@
     <link rel="stylesheet" href="./css/cat.css" />
   </head>
   <body>
-    <style>
-    .glyphicon-shopping-cart {right: -164px;}
-    </style>
 
-    <div class="content">
+    <div class="chooser">
       <div class="search flex" style="width:100%;margin-bottom:20px">
         <select class="" name="">
           <option value="text">文字</option>
           <option value="id">ID</option>
         </select>
         <input type="text" id="searchBox" placeholder="Search for enemies...">
-        <button id="searchBut"><span class="glyphicon glyphicon-search"></span></button>
+        <button id="searchBut"><i class="material-icons">search</i></button>
       </div>
-      <div class="search_table">
-        <table id="upper_table">
-          <tr>
-            <th colspan="6">
-              <div style="padding: 10; display: flex; justify-content: center; align-items: center;">
+      <div class="search_type">
+        <span value='0' onclick="openTable('normalTable')">一般篩選</span>
+        <span value='0' onclick="openTable('valueTable')">數值篩選</span>
+        <span value='0' onclick="openTable('resultTable')">篩選結果</span>
+      </div>
+      <table class="normalTable">
+        <tr>
+          <th colspan="6">
+            <div style="padding: 10; display: flex; justify-content: center; align-items: center;">
+              <div>
                 <span>屬性欄位完全符合</span>
                 <label class="switch">
                   <input type="checkbox" id="colorAnd" value='0' >
                   <span class="slider_but"></span>
                 </label>
+              </div>
+              <div>
                 <span>能力欄位完全符合</span>
                 <label class="switch">
                   <input type="checkbox" id="abilityAnd" value='0' >
                   <span class="slider_but"></span>
                 </label>
               </div>
-            </th>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th colspan="2">屬性</th>
+          <td colspan="4" class="select_color">
+            <span class='button' name='紅色敵人' value='0'>紅色敵人</span>
+            <span class='button' name='漂浮敵人' value='0'>漂浮敵人</span>
+            <span class='button' name='黑色敵人' value='0'>黑色敵人</span>
+            <span class='button' name='鋼鐵敵人' value='0'>鋼鐵敵人</span>
+            <span class='button' name='天使敵人' value='0'>天使敵人</span>
+            <span class='button' name='外星敵人' value='0'>外星敵人</span>
+            <span class='button' name='外星敵人(星)' value='0'>外星敵人(星)</span>
+            <span class='button' name='不死敵人' value='0'>不死敵人</span>
+            <span class='button' name='白色敵人' value='0'>白色敵人</span>
+            <span class='button' name='無屬性敵人' value='0'>無屬性敵人</span>
+            <span class='button' name='古代種' value='0'>古代種</span>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2" rowspan="2">能力</th>
+          <td colspan="4" rowspan="2" class="select_ability">
+            <span class='button' name='爆擊' value='0'>爆擊</span>
+            <span class='button' name='鋼鐵' value='0'>鋼鐵</span>
+            <span class='button' name='緩速' value='0'>緩速</span>
+            <span class='button' name='波動' value='0'>波動</span>
+            <span class='button' name='擊退' value='0'>擊退</span>
+            <span class='button' name='暫停' value='0'>暫停</span>
+            <span class='button' name='連續攻擊' value='0'>連續攻擊</span>
+            <span class='button' name='降攻' value='0'>降攻</span>
+            <span class='button' name='增攻' value='0'>增攻</span>
+            <span class='button' name='攻城' value='0'>攻城</span>
+            <span class='button' name='遠方攻擊' value='0'>遠方攻擊</span>
+            <span class='button' name='免疫擊退' value='0'>免疫擊退</span>
+            <span class='button' name='免疫緩速' value='0'>免疫緩速</span>
+            <span class='button' name='免疫波動' value='0'>免疫波動</span>
+            <span class='button' name='免疫暫停' value='0'>免疫暫停</span>
+            <span class='button' name='免疫降攻' value='0'>免疫降攻</span>
+            <span class='button' name='潛地' value='0'>潛地</span>
+            <span class='button' name='復活' value='0'>復活</span>
+            <span class='button' name='傳送' value='0'>傳送</span>
+            <span class='button' name='護盾' value='0'>護盾</span>
+          </td>
+        </tr>
+      </table>
+      <table class="valueTable">
+        <tbody>
+          <tr>
+            <th colspan="5"> 數值篩選器 </th>
           </tr>
           <tr>
-            <th colspan="2">屬性</th>
-            <td colspan="4" class="select_color">
-              <span class='button' name='紅色敵人' value='0'>紅色敵人</span>
-              <span class='button' name='漂浮敵人' value='0'>漂浮敵人</span>
-              <span class='button' name='黑色敵人' value='0'>黑色敵人</span>
-              <span class='button' name='鋼鐵敵人' value='0'>鋼鐵敵人</span>
-              <span class='button' name='天使敵人' value='0'>天使敵人</span>
-              <span class='button' name='外星敵人' value='0'>外星敵人</span>
-              <span class='button' name='外星敵人(星)' value='0'>外星敵人(星)</span>
-              <span class='button' name='不死敵人' value='0'>不死敵人</span>
-              <span class='button' name='白色敵人' value='0'>白色敵人</span>
-              <span class='button' name='無屬性敵人' value='0'>無屬性敵人</span>
-              <span class='button' name='古代種' value='0'>古代種</span>
-            </td>
+            <th class="filter_option" active='0' id="hp" >體力</th>
+            <td> <div class="slider"lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
           </tr>
           <tr>
-            <th colspan="2" rowspan="2">能力</th>
-            <td colspan="4" rowspan="2" class="select_ability">
-              <span class='button' name='爆擊' value='0'>爆擊</span>
-              <span class='button' name='鋼鐵' value='0'>鋼鐵</span>
-              <span class='button' name='緩速' value='0'>緩速</span>
-              <span class='button' name='波動' value='0'>波動</span>
-              <span class='button' name='擊退' value='0'>擊退</span>
-              <span class='button' name='暫停' value='0'>暫停</span>
-              <span class='button' name='連續攻擊' value='0'>連續攻擊</span>
-              <span class='button' name='降攻' value='0'>降攻</span>
-              <span class='button' name='增攻' value='0'>增攻</span>
-              <span class='button' name='攻城' value='0'>攻城</span>
-              <span class='button' name='遠方攻擊' value='0'>遠方攻擊</span>
-              <span class='button' name='免疫擊退' value='0'>免疫擊退</span>
-              <span class='button' name='免疫緩速' value='0'>免疫緩速</span>
-              <span class='button' name='免疫波動' value='0'>免疫波動</span>
-              <span class='button' name='免疫暫停' value='0'>免疫暫停</span>
-              <span class='button' name='免疫降攻' value='0'>免疫降攻</span>
-              <span class='button' name='潛地' value='0'>潛地</span>
-              <span class='button' name='復活' value='0'>復活</span>
-              <span class='button' name='傳送' value='0'>傳送</span>
-              <span class='button' name='護盾' value='0'>護盾</span>
-            </td>
+            <th class="filter_option" active='0' id="dps" >DPS</th>
+            <td> <div class="slider"lv-bind="true" value="3000" type="0" range="[100,10000]" step="100"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
           </tr>
-        </table>
-        <table id="lower_table">
-          <tbody>
-            <tr>
-              <th colspan="5"> 數值篩選器 </th>
-            </tr>
-            <tr>
-              <th class="filter_option" active='0' id="hp" >體力</th>
-              <td> <div class="slider"lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-            <tr>
-              <th class="filter_option" active='0' id="dps" >DPS</th>
-              <td> <div class="slider"lv-bind="true" value="3000" type="0" range="[100,10000]" step="100"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-            <tr>
-              <th class="filter_option" active='0' id="speed" >速度</th>
-              <td> <div class="slider"lv-bind="false" value="10" type="0" range="[1,100]" step="1"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-            <tr>
-              <th class="filter_option" id="reward" active='0'>獲得金錢</th>
-              <td> <div class="slider"lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-            <tr>
-              <th class="filter_option" active='0' id="freq" >攻頻</th>
-              <td> <div class="slider"lv-bind="false" value="5" type="0" range="[1,20]" step="0.5"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-            <tr>
-              <th class="filter_option" active='0' id="atk" >攻撃力</th>
-              <td> <div class="slider"lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-            <tr>
-              <th class="filter_option" active='0' id="range" >射程</th>
-              <td> <div class="slider"lv-bind="false" value="300" type="0" range="[10,1000]" step="10"></div> </td>
-              <td class="value_display"></td>
-              <td class="value_display" style="display:none"></td>
-              <td class="type" colspan="2"></td>
-            </tr>
-          </tbody>
-        </table>
+          <tr>
+            <th class="filter_option" active='0' id="speed" >速度</th>
+            <td> <div class="slider"lv-bind="false" value="10" type="0" range="[1,100]" step="1"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
+          </tr>
+          <tr>
+            <th class="filter_option" id="reward" active='0'>獲得金錢</th>
+            <td> <div class="slider"lv-bind="false" value="1000" type="0" range="[10,5000]" step="10" active="false"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
+          </tr>
+          <tr>
+            <th class="filter_option" active='0' id="freq" >攻頻</th>
+            <td> <div class="slider"lv-bind="false" value="5" type="0" range="[1,20]" step="0.5"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
+          </tr>
+          <tr>
+            <th class="filter_option" active='0' id="atk" >攻撃力</th>
+            <td> <div class="slider"lv-bind="true" value="10000" type="0" range="[1000,100000]" step="1000"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
+          </tr>
+          <tr>
+            <th class="filter_option" active='0' id="range" >射程</th>
+            <td> <div class="slider"lv-bind="false" value="300" type="0" range="[10,1000]" step="10"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="resultTable">
+        <tr>
+          <th>
+            <div class="title">
+              <div id="option">
+                <i class="material-icons cir_but"id="view_list" text='條列顯示'style="display:none">view_list</i>
+                <i class="material-icons cir_but"id="view_module" text='卡牌顯示'>view_module</i>
+                <i class="material-icons cir_but"id="snapshot" text='截圖'>add_a_photo</i>
+                <i class="material-icons cir_but"id="batch_own" text='批次加入貓咪圖鑑'>&#xe7f0;</i>
+                <i class="material-icons cir_but"id="batch_compare" text='批次加入比較序列'>&#xE8CC;</i>
+                <i class="material-icons cir_but"id="Gogacha" text='去轉蛋' style="display:none">&#xE332;</i>
+              </div>
+              <span id="result_count">共<span></span>筆結果</span>
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th> <div id="query"></div> </th>
+        </tr>
+        <tr>
+          <td style="background:transparent"><div id="selected" class="flex_col"></div></td>
+        </tr>
+      </table>
+      <div class="content" style="padding:0">
+        <button onclick="search()">GO</button>
       </div>
-      <button id="search_ability" value="normal">GO</button>
-      <div class="compareSorce flex_col">
-        <div class="title">
-          <span>搜尋篩選結果</span>
-          <div id="option">
-            <i class="material-icons cir_but"text='展開/收合'id="result_expand">&#xe240;</i>
-            <i class="material-icons cir_but"text='截圖'onclick="snapshot('#selected')">add_a_photo</i>
-            <i class="material-icons cir_but"text='批次加入比較序列'id="batch_compare">&#xE8CC;</i>
-          </div>
-          <span id="result_count">共<span></span>筆結果</span>
-        </div>
-        <div id="query"></div>
-        <div id="selected" class="flex">
-        </div>
-        <div class="button_group flex" style="margin-top:10px" >
-          <button id="pre_sel_pg"><span class="glyphicon glyphicon-chevron-up"></span>上一排</button>
-          <span id="page_dot" class="flex"></span>
-          <button id="next_sel_pg">下一排<span class="glyphicon glyphicon-chevron-down"></span></button>
-        </div>
-      </div>
-
     </div>
     <div class="content">
       <div class="displayControl">

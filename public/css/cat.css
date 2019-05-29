@@ -1,3 +1,74 @@
+.chooser table{
+  display: none;
+  transition: .3s ease;
+  overflow: hidden;
+}
+.valueTabke tr td:first-of-type{min-width: 30vw;padding: 20 10;}
+.filter_option[active='0']{
+  background-color: rgba(129, 115, 92,.93);
+  color: lightgray
+}
+.chooser table[active='1']{ display: flex; }
+.valueTable tr td:first-of-type{width: 200px}
+.chooser .content{display: none;}
+.chooser .normalTable[active='1'] ~ .content,
+.chooser .gachaTable[active='1'] ~ .content{display: flex;}
+.resultTable th{width: 100vw}
+.resultTable .title{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.resultTable #query{
+  display: flex;
+  justify-content: flex-end;
+}
+.resultTable #query span{
+  border: 1px solid;
+  padding: 1 5;
+  margin: 3 5;
+  border-radius: 20px;
+}
+.resultTable #query span:hover,
+.resultTable #query span[active='1']
+{background-color: var(--lightred)}
+#selected>div{
+  width: 100%;
+  display: flex;
+  min-height: 120;
+  background-color: rgba(255,255,255,.5);cursor: pointer;}
+#selected>div:nth-of-type(2n){background-color: rgba(200,200,200,.5) }
+#selected>div:hover{background-color: rgba(150,150,150,.5) }
+#selected>div .img[active='0'],
+#selected>div .name[active='0'],
+#selected>div .optional[active='0']
+{ display: none;}
+#selected>div .function{
+  align-items: center;
+  padding-right: 20;
+  justify-content: center;
+}
+#selected[view_mode='card'] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#selected[view_mode='card']>div{
+  width: 180px;
+  flex-direction: column;
+  margin: 10;
+  border-radius: 10px;
+  align-items: center;
+}
+#selected[view_mode='card']>div .img {
+    width: 80%;
+    border-radius: 10px;
+    min-height: 120px;
+}
+#selected[view_mode='card']>div .name {padding: 0 5 }
+#selected[view_mode='card']>div .function {padding-right: 0 }
+
+
 .glyphicon-refresh,
 .glyphicon-shopping-cart{
   top: 140px;
@@ -109,32 +180,11 @@
   background-blend-mode: multiply;
 }
 .ability_tip{width: 200px;text-align: center;}
-.compareSorce{ width: 100%; }
-.compareSorce .title{
-  width: 100%;
-  background-color: rgba(255,255,255,.9);
-  padding: 5px 20px;
-  font-size: 20px;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  min-height: 46px;
-  top: 0;
-  z-index: 2;
-}
-.compareSorce .title #option{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 #selected{
   width: 100%;
-  height: 347.88px;
-  flex-wrap: wrap;
-  overflow: hidden;
+  max-height: 300px;
+  overflow: scroll;
   transition: .3s ease-in-out;
-  background-color: rgba(255,255,255,.5)
 }
 .card-group{
   margin: 0 8px;
@@ -303,20 +353,6 @@
 .function .like i[value~='1']
 {color: rgb(251, 146, 60)}
 
-.compareSorce #query{
-  width: 100%;
-  background-color: rgba(255,255,255,.7);
-  padding: 3 20;
-  display: flex;
-  justify-content: flex-end;
-}
-.compareSorce #query span{
-  border: 1px solid;
-  padding: 1 5;
-  margin: 3 5;
-  border-radius: 20px;
-  background: gainsboro;
-}
 .survey .own,.comment .own {border-color: var(--orange)!important}
 #more_option i::before{
   top:30%;
@@ -331,16 +367,6 @@
 }
 .select_ability .smallicon span{display: none;}
 .select_ability .smallicon i{width: 40;height: 40}
-#lower_table tr td:first-of-type{min-width: 30vw;padding: 20 10;}
-.filter_option[active='0']{
-  background-color: rgba(129, 115, 92,.93);
-  color: lightgray
-}
-.search_table table{
-  display: flex;
-  transition: .3s ease;
-  overflow: hidden;
-}
 @keyframes rotate {
   0%{transform:rotate(0deg);}
   50%{transform:rotate(720deg);}
@@ -356,23 +382,26 @@
   display: flex;
   height: 120px;
 }
-.dataTable #title .img{
-      padding: 0px;
-      background-size: cover;
-      width: 100;
-      height: 100;
-      margin: 10;
-      border-radius: 50%;
-      box-shadow: 1px 1px 10px 0px;
-      border: 3px solid white;
-      cursor: pointer;
-      transition: .3s ease
+.dataTable #title .img,
+#selected>div .img{
+    padding: 0px;
+    background-size: cover;
+    width: 100;
+    height: 100;
+    margin: 10;
+    border-radius: 50%;
+    box-shadow: 1px 1px 10px 0px;
+    border: 3px solid white;
+    cursor: pointer;
+    transition: .3s ease
 }
-.dataTable #title .img[active~='1']{
+.dataTable #title .img[active~='1'] {
   width: 180px;
   border-radius: 10px;
 }
-.dataTable #title .name{
+.dataTable #title .name,
+#selected>div .optional,
+#selected>div .name {
   flex:1;
   display: flex;
   justify-content: center;
@@ -383,7 +412,7 @@
   transition: .3s ease;
   pointer-events: none;
 }
-.dataTable #title .name[active~='0']{
+.dataTable #title .name[active~='0'] {
   flex: 0;
   color: transparent
 }
@@ -472,4 +501,6 @@
 {display: none;}
 @media screen and (max-width: 425px) {
   .survey{flex-direction: column;}
+  #selected>div .optional{display: none;}
+  #selected>div .img{width: 80;height: 80}
 }

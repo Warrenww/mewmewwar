@@ -1,7 +1,4 @@
 var CurrentUserID;
-if(Storage){
-  localStorage.removeItem('stageSelector');
-}
 var current_level_data = {},
     current_enemy_data = {},
     current_user_setting = {};
@@ -285,7 +282,7 @@ $(document).ready(function () {
         stage:data.stage,
         level:data.level
       });
-  })
+  });
   $("#AddToCompare").click(function () {
     var enemy = current_level_data.data.enemy,
         arr = [];
@@ -308,6 +305,14 @@ $(document).ready(function () {
       if(Storage) localStorage.compareType = 'enemy'
       switchIframe("compare");
     },800);
+  });
+  $("#snapshot").click(()=>{
+    $(".display .panel,.toggle_next").css("display","none");
+    setTimeout(()=>{
+      snapshot("#selected","#eee").then((rs,rj)=>{
+        $(".display .panel,.toggle_next").removeAttr("style")
+      });
+    },500);
   });
   // Show where this level come from
   $(".display .dataTable #chapter").click(function () {
@@ -433,10 +438,10 @@ $(document).ready(function () {
     for(let i in arr){
       if(!arr[i]) continue
       html += "<tr class='enemy_row' id='"+i+"'>"+
-      "<td class='enemy' id='"+arr[i].id+"' style='padding:0;"+
+      "<th class='enemy' id='"+arr[i].id+"' style='padding:0;"+
       (arr[i].Boss?'border:5px solid var(--red)':'')+
       "'  colspan='1'><img src='"+Unit.imageURL('enemy',arr[i].id)+
-      "' style='width:100%'/></td>" ;
+      "' style='width:100%'/></th>" ;
       html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
       "<td id='amount'class='orgdata'>"+arr[i].amount+"</td>"+
       "<td id='castle'class='orgdata'>"+arr[i].castle+"</td>"+
@@ -703,10 +708,4 @@ function scrollSelectArea(area,target) {
 function toTreasure(s) {
   if(!s) return;
   switchIframe("treasure?"+s);
-}
-function openTable(tableName) {
-  if(!tableName) return ;
-  var target = $(".chooser").find("."+tableName);
-  target.attr('active',1).siblings('[class*="Table"]').attr('active',0);
-  $(".search_type span[onclick*='"+tableName+"']").attr("value",1).siblings().attr("value",0);
 }

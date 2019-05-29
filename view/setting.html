@@ -16,7 +16,7 @@
   </head>
   <body>
 
-    <div class="setting_container">
+    <div class="content">
         <h4>使用者設定</h4>
         <div class="setting_element">
           <div class="setting_item">
@@ -28,7 +28,7 @@
           </div>
           <div class="setting_item">
             <span>視窗開啟方式</span>
-            <select name="openMethod"style="border:1px dashed gray">
+            <select name="openMethod">
               <option value="iframe" selected>內嵌式(預設)</option>
               <option value="_blank">新分頁</option>
               <option value="_parent">原分頁</option>
@@ -54,20 +54,6 @@
             <span>重設所有貓咪等級</span>
             <button id="reset_cat_lv">重設</button>
           </div>
-          <!-- <div class="setting_item">
-            <span>顯示貓咪ID</span>
-            <label class="switch">
-              <input type="checkbox" id="show_cat_id" >
-              <span class="slider_but"></span>
-            </label>
-          </div>
-          <div class="setting_item">
-            <span>顯示貓咪查詢次數</span>
-            <label class="switch">
-              <input type="checkbox" id="show_cat_count" >
-              <span class="slider_but"></span>
-            </label>
-          </div> -->
           <div class="setting_item">
             <span>顯示能力篩選文字</span>
             <label class="switch">
@@ -82,39 +68,70 @@
               <span class="slider_but"></span>
             </label>
           </div>
-          <div class="setting_item">
+          <!-- <div class="setting_item">
             <span>已填寫貓咪評價數</span>
             <h3 id="total_survey" style="margin:0">0</h3>
+          </div> -->
+          <div class="setting_item">
+            <span>搜尋結果資料預顯示</span>
+            <i class="material-icons cir_but cloneSelect" text='新增欄位'style="display:none"> add </i>
+            <i class="material-icons showNext"active='0'> arrow_drop_down </i>
+          </div>
+          <div class="setting_item resultDataPreview" style="display:none" type='cat' data-array='[]'>
+            <div>
+              <span>1. </span>
+              <select class="dataPreview">
+                <option value="">無</option>
+                <option value='hp'>體力</option>
+                <option value='kb'>KB</option>
+                <option value='hardness'>硬度</option>
+                <option value='atk'>攻擊力</option>
+                <option value='dps'>DPS</option>
+                <option value='range'>攻擊距離</option>
+                <option value='freq'>攻擊頻率</option>
+                <option value='speed'>跑速</option>
+                <option value='cost'>價格</option>
+                <option value='cd'>再生產</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <!-- <h4>敵人查詢設定</h4>
+        <h4>敵人查詢設定</h4>
         <div class="setting_element">
           <div class="setting_item">
-            <span>顯示敵人ID</span>
-            <label class="switch">
-              <input type="checkbox" id="show_enemy_id" >
-              <span class="slider_but"></span>
-            </label>
+            <span>搜尋結果資料預顯示</span>
+            <i class="material-icons cir_but cloneSelect" text='新增欄位'style="display:none"> add </i>
+            <i class="material-icons showNext"active='0'> arrow_drop_down </i>
           </div>
-          <div class="setting_item">
-            <span>顯示敵人查詢次數</span>
-            <label class="switch">
-              <input type="checkbox" id="show_enemy_count" >
-              <span class="slider_but"></span>
-            </label>
+          <div class="setting_item resultDataPreview" style="display:none" type='enemy' data-array='[]'>
+            <div>
+              <span>1. </span>
+              <select class="dataPreview">
+                <option value="">無</option>
+                <option value='hp'>體力</option>
+                <option value='kb'>KB</option>
+                <option value='hardness'>硬度</option>
+                <option value='atk'>攻擊力</option>
+                <option value='dps'>DPS</option>
+                <option value='range'>攻擊距離</option>
+                <option value='freq'>攻擊頻率</option>
+                <option value='speed'>跑速</option>
+                <option value='reward'>獲得金錢</option>
+              </select>
+            </div>
           </div>
-        </div> -->
+        </div>
 
         <h4>關卡查詢設定</h4>
         <div class="setting_element">
           <div class="setting_item">
             <span>關卡敵人資訊顯示欄位設定</span>
-            <i class="material-icons cir_but"text='回復預設'id="restoreField"> restore </i>
-            <i class="material-icons cir_but"text='保存設定'id="saveField"> done </i>
+            <i class="material-icons cir_but"text='回復預設'id="restoreField"style="display:none"> restore </i>
+            <i class="material-icons cir_but"text='保存設定'id="saveField"style="display:none"> done </i>
             <i class="material-icons showNext"active='0'> arrow_drop_down </i>
           </div>
-          <div class="setting_item">
+          <div class="setting_item" style="display:none">
             <div id="include"> </div>
             <div id="exclude">
               <span tag='aoe'>範圍攻擊</span><span tag='atk'>攻擊力</span><span tag='atk_speed'>攻擊速度</span>

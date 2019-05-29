@@ -188,13 +188,13 @@ console.log('start');
   // });
 // });
 
-// var url = 'https://battlecats-db.com/unit/lot011.html'
+// var url = 'https://battlecats-db.com/unit/lot028.html'
 // request({
 //   url:url,
 //   method:'GET'
 // },function (e,r,b) {
 //   $ = cheerio.load(b);
-//   var a = {'超激レア':'ssr','激レア':'sr','レア':'r'},id = 'R376',name = "「活下去！曼波魚！」 稀有轉蛋活動",
+//   var a = {'超激レア':'ssr','激レア':'sr','レア':'r'},id = 'R323',name = "『劇場版 魔法少女☆小圓［新編］叛逆的物語』 稀有轉蛋活動",
 //   obj = {
 //       id:id,name:name,ssr:[],sr:[],r:[]
 //     },count = 0;
@@ -204,15 +204,22 @@ console.log('start');
 //           });
 //         });
 //         console.log(obj);
-//         database.ref("/gachadata/Fish").update(obj);
+//         database.ref("/gachadata/mahoshojo").update(obj);
 //         fs.appendFile('gacha.json', JSON.stringify(obj),(err) =>{
 //           if (err) throw err;
 //           console.log('Is saved!');
 //         });
 //   });
 
-// for(let i=0;i<400;i++){
-//   var url = `https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R${AddZero(i)}.html`
+// var gen = (function* () {
+//   for(let i=0;i<450;i++){
+//     var url = `https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R${AddZero(i)}.html`
+//     showgachaName(url,i);
+//     yield;
+//   }
+// })();
+// gen.next();
+// function showgachaName(url,i) {
 //   request({
 //     url:url,
 //     method:'GET'
@@ -221,7 +228,8 @@ console.log('start');
 //     if($("h2").length){
 //       console.log(AddZero(i),$("h2").eq(0).text());
 //     }
-//   })
+//     gen.next();
+//   });
 // }
 
 // database.ref("/user").once('value',function (snapshot) {
