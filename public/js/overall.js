@@ -160,7 +160,7 @@ $(document).ready(function () {
         <div class='article'>
           <h2><b>本頁面有新的使用說明囉!</b></h2>
           <div style='display:flex;justify-content:center'>
-            <button onclick="switchIframe('document?${page}')">前往察看</button>
+            <button onclick="switchIframe('document?${Page}')">前往察看</button>
             <button >稍後再看</button>
           </div>
         </div>
