@@ -87,7 +87,7 @@ function ReloadAllData(m=0) {
       }
     }
     Stagelegend();
-    User.writeBack();
+    Users.writeBack();
   }
   function Stagelegend(){
     mostSearchStage = [];
