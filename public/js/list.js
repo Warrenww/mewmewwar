@@ -15,7 +15,7 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
-    // console.log(data);
+    console.log(data);
     CurrentUserID = data.uid;
       if(data.list){
         $("#display_pannel").find('h1').hide();
@@ -27,107 +27,6 @@ $(document).ready(function () {
   });
   $(".slider").slider();
 
-//-----------------------------------------------------------------------------
-  $('.filter_option').click(function () {
-    $("#slider_holder").show();
-    $(this).css('border-bottom','5px solid #f1a643').siblings().css('border-bottom','0');
-    filter_name = $(this).attr('id') ;
-    filterSlider($(this));
-  });
-  var filter_org ;
-  $(document).on('click','.value_display,#level_num',function () {
-      filter_org = Number($(this).text());
-      $(this).html('<input type="number" value="' +filter_org+ '"></input>').find('input').select();
-  });
-  $(document).on('blur','.value_display input',changeSlider) ;
-  $(".select_ability").find(".ability_icon").each(function () {
-    let name = $(this).attr("id");
-    $(this).css("background-image","url('"+image_url_icon+name+".png')");
-  });
-  var sortable_item ;
-
-  $(document).on('click','.glyphicon-refresh',toggleCatStage);
-  function toggleCatStage() {
-    somethingChange();
-    let group = $(this).parent(),
-        current = group.children(".card:visible").next('.card').attr('value');
-    if(group.children(".card").length>1) group.css("transform","rotateY(90deg)");
-    setTimeout(function () {
-      group.css("transform","rotateY(0)");
-      if(current != undefined){
-        group.children(".card:visible").hide().next('.card').show();
-        group.css('transform','');
-      }
-      else{
-        current = group.children(".card:visible").hide().parent().children('.card').eq(0).show().attr("value");
-        group.css('transform','');
-      }
-      if(checkList(list.upper,current)){
-        let n = checkList(list.upper,current)-1;
-        $("#list_p1 .card").eq(n).attr('value',current)
-        .css('background-image','url(\"'+Unit.imageURL('cat',current)+"\")");
-      }
-      if(checkList(list.lower,current)){
-        let n = checkList(list.lower,current)-1;
-        $("#list_p2 .card").eq(n).attr('value',current)
-        .css('background-image','url(\"'+Unit.imageURL('cat',current)+"\")");
-      }
-    },300);
-  }
-  function changeSlider() {
-    let target = $("#"+filter_name+".filter_option");
-    let range = JSON.parse(target.attr('range')),
-        step = Number(target.attr('step')),
-        value = Number($(this).val()),
-        type = Number(target.attr("type"));
-
-    value = Math.round(value/step)*step ;
-
-    if(value && value<range[1] && value>range[0]) $("#slider_holder").find('.slider').slider('option','value',value);
-    else $("#slider_holder").find('.slider').slider('option','value',filter_org);
-  }
-  socket.on("combo result",function (arr) {
-    searchCombo(arr);
-  }) ;
-  function searchCombo(arr) {
-    $(".dataTable").empty();
-    let html = "" ;
-    for(let i in arr){
-        // console.log(arr[i].id);
-        let pic_html = "<div style='display:flex'>" ;
-        for(let j in arr[i].cat){
-          // console.log(arr[i].cat[j])
-          if(arr[i].cat[j] != "-"){
-            pic_html +=
-            '<span class="card" value="'+arr[i].cat[j]+'" '+
-            'style="background-image:url('+
-            Unit.imageURL('cat',arr[i].cat[j])+');'+
-            (screen.width > 768 ? "width:90;height:60;margin:5px" : "width:75;height:50;margin:0px")
-            +'"></span>' ;
-          }
-        }
-        pic_html += "</div>" ;
-        html = screen.width > 768 ?
-                ("</tr><tr>"+
-                "<th class='searchCombo' val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-                "<td>"+arr[i].name+"</td>"+
-                "<td rowspan=2 colspan=4 class='comboPic'>"+pic_html+"</td>"+
-                "</tr><tr>"+
-                "<td colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>") :
-                ("</tr><tr>"+
-                "<th colspan=2 class='searchCombo' val='"+arr[i].id.substring(0,2)+"'>"+arr[i].catagory+"</th>"+
-                "<td colspan=4 rowspan=2 class='searchCombo' val='"+arr[i].id.substring(0,4)+"'>"+arr[i].effect+"</td>"+
-                "</tr><tr>"+
-                "<td colspan=2 >"+arr[i].name+"</td>"+
-                "</tr><tr>"+
-                "<td colspan=6 class='comboPic'>"+pic_html+"</td>"+
-                "</tr><tr>");
-          $(".dataTable").append(html);
-
-    }
-    $(".display").show();
-  }
-//------------------------------------------------------------------------------
 
   $(document).on("click",'.display',function () { $(this).hide(); });
   $(document).on('click','.comboPic',function (e) {
@@ -506,27 +405,27 @@ $(document).ready(function () {
   });
   function AddList(key,data) {
     // console.log(key,data);
-    let list = data.list?data.list:{upper:[],lower:[]};
+    var list = data.list?data.list:{upper:[],lower:[]};
     $(".display_pannel h1").hide();
     $("#display_pannel .content").prepend(
-      "<div id='"+key+"' class='list_display_holder' public='"+data.public+"'>"+
-      "<div class='list_display'>"+appendCat(list.upper)+appendCat(list.lower)+"</div>"+
-      "<div class='list_data'>"+"<h3>"+data.name+"</h3>"+
-      "<div class='list_detail'>"+
-      "<span class='combo'>發動聯組 : <b>"+appendCombo(data.combo)+"</b></span>"+
-      "<span>連結關卡 : </span>"+
-      "<span class='stage'><b>"+appendStage(data.stageBind)+"</b></span>"+
-      "<span>備註 : </span>"+
-      "<span class='note'><b>"+data.note.split("\n").join("<br>")+"</b></span>"+
-      "</div>"+
-      "</div>"+
-      "<div class='option'>"+
-      "<i class=\"material-icons\"id='edit'text='編輯'>create</i>"+
-      "<i class=\"material-icons\"id='del'text='刪除'>delete</i>"+
-      "<i class=\"material-icons\"id='analyze'text='分析'>pie_chart</i>"+
-      "</div>"+
-      "</div>"
-    )
+      ` <div id='${key}' class='list_display_holder'>
+          <div class='list_display'>${appendCat(list.upper)+appendCat(list.lower)}</div>
+          <div class='list_data'>
+            <h3>${data.name}</h3>
+            <div class='list_detail'>
+              <span class='combo'>發動聯組 : <b>${appendCombo(data.combo)}</b></span>
+              <span>連結關卡 : </span>
+              <span class='note'><b>${data.note.split("\n").join("<br>")}/b></span>
+            </div>
+          </div>
+          <div class='option'>
+            <i class="material-icons cir_but"id='edit'text='編輯'>create</i>
+            <i class="material-icons cir_but"id='del'text='刪除'>delete</i>
+            <i class="material-icons cir_but"id='analyze'text='分析'>pie_chart</i>
+          </div>
+        </div>
+      `
+    );
   }
   function appendCat(list) {
     let html = "<div>",count=0;

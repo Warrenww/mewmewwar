@@ -87,7 +87,7 @@ function ReloadAllData(m=0) {
       }
     }
     Stagelegend();
-    User.writeBack();
+    Users.writeBack();
   }
   function Stagelegend(){
     mostSearchStage = [];
@@ -1001,8 +1001,12 @@ http.listen(process.env.PORT || port, function(){
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
 
+app.use('/static', express.static(__dirname + '/onepageapp/build/static'));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/view/index.html');
+});
+app.get('/app',function (req,res) {
+  res.sendFile(__dirname + '/onepageapp/build/index.html');
 });
 app.get("/dashboard/:uid",function (req,res) {
   if(req.params.uid == "zB56cQVSuOdBEdCZmn6bl4AA8wx1"){
