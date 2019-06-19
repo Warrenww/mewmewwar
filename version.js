@@ -1,4 +1,5 @@
 var firebase = require("firebase");
+var fs = require("fs");
 var config = {
     apiKey: "AIzaSyC-SA6CeULoTRTN10EXqXdgYaoG1pqWhzM",
     authDomain: "battlecat-smart.firebaseapp.com",
@@ -20,10 +21,17 @@ var config = {
   if(process.argv[2]){
     database.ref("/version").set(process.argv[2]);
     database.ref("/error_log").set(null);
-    setTimeout(function () {
-      console.log("version update!!");
-      process.exit();
-    },5000);
+    database.ref("/").once("value",(snapshot)=>{
+      var data = snapshot.val(),
+          date = new Date().toLocaleDateString().split("/").join("-");
+      fs.writeFileSync("./backup/"+date+"User.json",JSON.stringify(data.user));
+      fs.writeFileSync("./backup/"+date+"Cat.json",JSON.stringify(data.CatData));
+      fs.writeFileSync("./backup/"+date+"Stage.json",JSON.stringify(data.stagedata));
+      setTimeout(function () {
+        console.log("version update and data backup");
+        process.exit();
+      },5000);
+    })
   } else {
     console.log("undefine version!!");
     process.exit();

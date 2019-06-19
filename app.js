@@ -59,17 +59,17 @@ var reloadTimeOut,firstReload=true;
 ReloadAllData();
 function ReloadAllData(m=0) {
   clearTimeout(reloadTimeOut);
+  database.ref("/version").once("value",(snapshot)=>{
+    VERSION = snapshot.val();
+    if(dashboardID) io.to(dashboardID).emit("console",`VERSION : ${VERSION}`);
+    console.log("VERSION : ",VERSION);
+  });
   mostSearchCat = [];
   mostSearchStage = [];
   Activity.UpdateEvent();
   Unitdata.load(mostSearchCat);
   Stagedata.load(mostSearchStage);
   Combodata.load(combodata);
-  database.ref("/version").once("value",(snapshot)=>{
-    VERSION = snapshot.val();
-    if(dashboardID) io.to(dashboardID).emit("console",`VERSION : ${VERSION}`);
-    console.log("VERSION : ",VERSION);
-  });
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
   if(!m && app.settings.env != 'development') Users.load();
   if(firstReload){
@@ -124,6 +124,21 @@ function ReloadAllData(m=0) {
 
 var onLineUser = {};
 io.on('connection', function(socket){
+
+  socket.on("public data",(dataArr)=>{
+    var response = {};
+    for(let i in dataArr) response[dataArr[i]] = getData(dataArr[i]);
+    socket.emit("public data",response);
+
+    function getData(filed){
+      if(filed === "index"){
+        return {
+          legend: {mostSearchCat,mostSearchStage},
+          event: Activity.getData()
+        }
+      }
+    }
+  });
   // Client require data with structure like
   // {
   //   type:type of need data(cat,enemy...etc),
@@ -146,7 +161,6 @@ io.on('connection', function(socket){
           target = data.target,
           uid = data.uid,
           default_cat_lv = Users.getSetting(uid,"default_cat_lv"),
-          user_variable = Users.getVariable(uid,type),
           buffer = [];
       // Make sure the target's type is array
       target = typeof(target) == 'object'?target:[target];
@@ -156,18 +170,30 @@ io.on('connection', function(socket){
       for (let i in target) {
         var id = target[i].substring(0,3),
             stage = target[i].split("-")[1],
-            lv = data.lv;
+            lv = data.lv,
+            user_variable = Users.getVariable(uid,type,id);
+        if(!user_variable) user_variable = {count:0,lv:default_lv[type]}
+
         // record history
         if (data.record) SetHistory({uid:uid,type:type,target:id});
-        if(Number(stage)){
-          if(!user_variable[id]) user_variable[id] = {count:0,stage:1};
-          user_variable[id].stage = stage;
-        }
+        if(Number(stage)){ user_variable[id].stage = stage; }
+
         //Extract data
-        user_variable = Users.getVariable(uid,type,id);
-        if(!user_variable) user_variable = {count:0,lv:default_lv[type]}
+        var result = Unitdata.getData(type,id);
+        if(type == 'cat'){
+          var stageMap = Stagedata.stageMap();
+          for(let j in result.data){
+            if(result.data[j].condition){
+              if(result.data[j].condition.stage){
+                let stageID = result.data[j].condition.stage.id,
+                    stageName = Stagedata.GetNameArr(stageMap[stageID]).find(x=>x.id===stageID);
+                if(stageName) result.data[j].condition.stage.name = stageName.name ;
+              }
+            }
+          }
+        }
         buffer.push({
-          data:Unitdata.getData(type,id),
+          data:result,
           count:user_variable.count?user_variable.count:0,
           lv:data.lv?data.lv:(user_variable.lv?user_variable.lv:default_lv[type]),
           own:type == "cat"?(user_variable.own?true:false):null,
@@ -282,7 +308,7 @@ io.on('connection', function(socket){
   socket.on("user login",function (user) {
      console.log(user.uid+" user login");
      Users.Login(user).then((data)=>{
-       socket.emit("login complete",{user:data.user,name:data.nickname});
+       socket.emit("login complete",{user:data.user,name:data.nickname,photo:data.photo});
      });
    });
   socket.on("user connect",function (data){
@@ -417,11 +443,7 @@ io.on('connection', function(socket){
         }
         else {
           CurrentUserData.name = Users.getAttr(user.uid,'nickname');
-          CurrentUserData.first_login = Users.getAttr(user.uid,'first_login');
-          CurrentUserData.setting = {show_miner:setting.show_miner,mine_alert:setting.mine_alert,user_photo:setting.photo};
-          CurrentUserData.legend = {mostSearchCat,mostSearchStage};
-          CurrentUserData.event = Activity.getData();
-          // console.log(CurrentUserData.event.text_event.length);
+          CurrentUserData.photo = setting.photo;
         }
         countOnlineUser(socket.id,user.uid,true);
         socket.emit("current_user_data",CurrentUserData);
@@ -620,8 +642,22 @@ io.on('connection', function(socket){
     socket.emit('return users photo',obj);
   });
 
-  socket.on("required stage name",function (chapter) {socket.emit("stage name",Stagedata.GetNameArr(chapter));});
-  socket.on("required level name",function (pos) {socket.emit("level name",Stagedata.GetNameArr(pos.chapter,pos.stage));});
+  socket.on("required stage name",chapter => {
+    if(chapter === 'legendquest')
+      socket.emit("stage name",[{id:"s16000",name:"傳奇尋寶記"}]);
+    else
+      socket.emit("stage name",Stagedata.GetNameArr(chapter));
+  });
+  socket.on("required level name",ref => {
+    if(ref.chapter === 'legendquest'){
+      let response = [];
+      for(let i=1;i<48;i++) response.push({id:i,name:"Level "+i,bg:"bg"+Util.AddZero(Math.ceil(Math.random()*108),2)});
+      response.push({id:i,name:"Level Final",bg:"bg"+Util.AddZero(Math.ceil(Math.random()*108),2)});
+      socket.emit("level name",response);
+    }
+    else
+      socket.emit("level name",Stagedata.GetNameArr(ref.chapter,ref.stage));
+  });
   socket.on("required level data",function (data) {
     console.log("load level data");
     console.log(data);
@@ -633,16 +669,33 @@ io.on('connection', function(socket){
           uid = data.uid,
           parent = Stagedata.getData(chapter,stage),
           prev=null,next=null,flag=false;
+      if(chapter === 'legendquest'){
+        var response = [], storyName = Stagedata.GetNameArr('story');
+        level -= 1;
+        response.push({name:storyName[level],stage:Stagedata.GetNameArr('story','s000'+Util.AddZero(level),true)});
+        response.push({name:storyName[level+1],stage:Stagedata.GetNameArr('story','s000'+Util.AddZero(level+1),true)});
+        socket.emit("legendquest",{response,level});
+        return;
+      }
       for(let i in parent){
         if(flag) {next = i;break}
         if(i != level) prev = i ;
         else flag = true ;
       }
-      var tempID = [chapter,stage].join("-");
+      var tempID = [chapter,stage].join("-"),
+          levelData = Stagedata.getData(chapter,stage,level);
       if(legenddata.stage.thisWeek[tempID]) legenddata.stage.thisWeek[tempID] ++;
       else legenddata.stage.thisWeek[tempID] = 1;
+      if(levelData.reward){
+        levelData.reward.map((x,i)=>{
+          if(x.prize.name.indexOf("u") === 0){
+            let twName = Unitdata.catName(x.prize.name.slice(1))[x.prize.name.split("-")[1]];
+            x.prize.amount = twName?twName:x.prize.amount;
+          }
+        })
+      }
       socket.emit("level data",{
-        data:Stagedata.getData(chapter,stage,level),
+        data: levelData,
         parent:parent.name,
         chapter:chapter,
         stage:stage,
@@ -1005,7 +1058,7 @@ app.use('/static', express.static(__dirname + '/onepageapp/build/static'));
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/view/index.html');
 });
-app.get('/app',function (req,res) {
+app.get('/beta',function (req,res) {
   res.sendFile(__dirname + '/onepageapp/build/index.html');
 });
 app.get("/dashboard/:uid",function (req,res) {

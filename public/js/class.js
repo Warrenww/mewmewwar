@@ -154,6 +154,7 @@ class Cat extends Unit{
   }
   CondHtml(){
     var cond = this.condition;
+    if(!cond) return "-";
     var html='';
     html += (cond.lv?"合併等級"+cond.lv+"以上<br>":"")+
     (cond.xp?"XP "+cond.xp+"+<br>":"")+

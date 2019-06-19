@@ -478,7 +478,7 @@
   border: 10px solid transparent;
   border-bottom: 10px solid black;
 }
-.surveyTable .pos_holder:hover .describe{display: flex}
+/* .surveyTable .pos_holder:hover .describe{display: flex} */
 
 .displayControl[float='true'] .data #img,
 .displayControl[float='true'] .data #name,

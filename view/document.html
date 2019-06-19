@@ -17,6 +17,394 @@
   <body>
 
     <div class="content">
+      <div class="article"id="cat">
+        <h1> <span onclick="switchIframe('cat')">貓咪資料庫</span>用法 </h1>
+        <h2 id="cat_0">篩選器用法</h2>
+        <div class="chooser">
+          <div class="search flex" >
+              <select style="width:80">
+                <option value="text">名字</option>
+                <option value="nickname">暱稱</option>
+                <option value="id">ID</option>
+              </select>
+              <input type="text" id="searchBox" placeholder="Search for Cats...">
+              <button id="searchBut"><i class="material-icons">search</i></button>
+            </div>
+          <div class="search_type" style="display:flex;width:100%">
+            <span value='0' >一般篩選</span>
+            <span value='0' >活動篩選</span>
+            <span value='0' >數值篩選</span>
+            <span value='0' >篩選結果</span>
+          </div>
+        </div>
+        <div style="margin-top:20px;text-align:center">
+          圖1、貓咪篩選區，位於貓咪資料庫頁面的最上方
+        </div>
+        <h3 id="cat_0_0"><b>一般篩選</b></h3>
+        <p>
+          除了與遊戲中相同的篩選器外，另外多了一個<em>本能篩選列</em>，這邊將與本能相關的一些篩選條件從"能力"欄位中獨立出來，
+          還可以用<em>本能</em>
+          <i class="ability_icon" style="background-image: url('/css/footage/gameIcon/instinct.png');"></i>，
+          篩選出有本能開放的角色，另外本區上方有三個功能鍵，分別是:
+          <ul>
+            <li> <b>屬性欄位完全符合: </b>屬性欄位中勾選的各種條件預設以or(交集)合併個單一條件的結果，若勾選了此功能，會改以<em>and(聯集)合併</em> </li>
+            <li> <b>能力欄位完全符合: </b>能力欄位中勾選的各種條件預設以or(交集)合併個單一條件的結果，若勾選了此功能，會改以<em>and(聯集)合併</em> </li>
+            <li>
+              <b>考慮本能: </b> 有些角色的本能可以開放其新的能力或對付屬性，一般情況下該功能不會被篩選器選種，
+              勾選此選項後，若角色可藉由本能開放篩選中的功能，則會一並被列在結果中
+            </li>
+          </ul>
+        </p>
+        <h3 id="cat_0_1"> <b>活動篩選</b> </h3>
+        <p>
+          列出了各種合作活動或常駐轉蛋，可以從此處篩選轉蛋貓咪，常駐、限定、其他轉蛋只會列出可以抽到的SSR與SSSR角色，或是限定的SR角色，
+          稀有角色與一般激稀有不會在結果中顯示；而活動篩選則會列出所有與該活動相關的EX、R、SR、SSR角色。
+        </p>
+        <h3 id="cat_0_2"> <b>數值篩選</b> </h3>
+        <p>
+          此項篩選提供了更多樣的篩選功能，可以依據每隻貓咪的數據值來進行篩選，
+          若該數據值與等級相關，則會以<em>使用者調整的等級</em>來計算，如果使用者沒有改變過該貓咪的等級，
+          則會以使用者的預設貓咪等級來計算(可以在設定中更改)。每種數值篩選單元如下:
+        </p>
+        <table class="valueTable" style="background: rgba(255,255,255,0.6);padding: 10px;">
+          <tr>
+            <th class="filter_option" active='0' >體力</th>
+            <td style="width:50vw"> <div class="slider"lv-bind="true" value="20000" type="0" range="[1000,100000]" step="1000"></div> </td>
+            <td class="value_display"></td>
+            <td class="value_display" style="display:none"></td>
+            <td class="type" colspan="2"></td>
+          </tr>
+        </table>
+        <div style="margin:20px 0;text-align:center">
+          圖2、數值篩選單元
+        </div>
+        <p>
+          在非啟用狀態下，數值篩選單元的名稱會以灰底白字顯示，<em>欲啟用該數值篩選請點選名稱</em>，
+          否則即使有設定後方的拉桿數值，系統仍不會以該數值作為篩選依據。篩選的中類有三種:
+          以上、以下、範圍，點選後方的篩選種類來輪流切換。另外，雖然調整拉桿並不會自動啟用該列，
+          但切換篩選種類會自動啟用。另外，從"範圍"篩選切回"以上"時，會以最大最小的中間值作為滑桿數值。
+        </p>
+        <h3 id="cat_0_3"> <b>篩選結果</b> </h3>
+        <table class="resultTable">
+            <tbody>
+            <tr>
+              <th>
+                <div class="title">
+                  <div>
+                    <i class="material-icons cir_but" text="條列顯示" id="view_list">view_list</i>
+                    <i class="material-icons cir_but" text="卡牌顯示" id="view_module" style="display:none">view_module</i>
+                    <i class="material-icons cir_but" text="截圖">add_a_photo</i>
+                    <i class="material-icons cir_but" text="批次加入貓咪圖鑑"></i>
+                    <i class="material-icons cir_but" text="批次加入比較序列"></i>
+                    <i class="material-icons cir_but" text="去轉蛋" ></i>
+                  </div>
+                  <span >共<span>2</span>筆結果</span>
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <th> <div id="query"><span>稀有</span><b>|</b><span>對天使</span><span>對外星</span><b>|</b></div> </th>
+            </tr>
+            <tr>
+              <td>
+                <div id="selected" class="flex_col" view_mode="card">
+                  <div data-tag="對外星 超大傷害 對外星 超大傷害 對外星 超大傷害 本能 擊退能力解放 降攻抗性 基本體力上升 基本攻擊力上升 生產金額減少" id="039" stage="2">
+                    <div class="img" stage="0" active="0" style="background-image:url('css/footage/cat/u039-1.png')"></div>
+                    <div class="name" active="0">車輪貓</div>
+                    <div class="optional flex_col" active="0">
+                      <div>價格 : 1050</div><div>攻擊距離 : 170</div>
+                    </div> <div class="img" stage="1" active="0" style="background-image:url('css/footage/cat/u039-2.png')"></div>
+                    <div class="name" active="0">太陽貓</div>
+                    <div class="optional flex_col" active="0">
+                      <div>價格 : 1050</div><div>攻擊距離 : 170</div>
+                    </div> <div class="img" stage="2" active="1" style="background-image:url('css/footage/cat/u039-3.png')"></div>
+                    <div class="name" active="1">雪花貓</div>
+                    <div class="optional flex_col" active="1">
+                      <div>價格 : 1050</div><div>攻擊距離 : 200</div>
+                    </div> <div class="function flex">
+                    <i class="material-icons cir_but" text="切換階級" onclick="toggleCatStage(event)">swap_vertical_circle</i>
+                    <i class="material-icons cir_but" text="加到購物車" >shopping_cart</i>
+                  </div>
+                  </div>
+                  <div data-tag="對天使 擊退 對天使 擊退 對天使 擊退" id="147" stage="0"> <div class="img" stage="0" active="1" style="background-image:url('css/footage/cat/u147-1.png')">
+                  </div>
+                    <div class="name" active="1">高蹺貓</div>
+                    <div class="optional flex_col" active="1">
+                      <div>價格 : 570</div><div>攻擊距離 : 310</div>
+                    </div> <div class="img" stage="1" active="0" style="background-image:url('css/footage/cat/u147-2.png')"></div>
+                    <div class="name" active="0">圖騰柱貓</div>
+                    <div class="optional flex_col" active="0">
+                      <div>價格 : 570</div><div>攻擊距離 : 310</div>
+                    </div> <div class="img" stage="2" active="0" style="background-image:url('css/footage/cat/u147-3.png')"></div>
+                    <div class="name" active="0">貓咪特技團</div>
+                    <div class="optional flex_col" active="0">
+                      <div>價格 : 570</div><div>攻擊距離 : 310</div>
+                    </div> <div class="function flex">
+                    <i class="material-icons cir_but" text="切換階級" onclick="toggleCatStage(event)">swap_vertical_circle</i>
+                    <i class="material-icons cir_but" text="加到購物車" >shopping_cart</i>
+                  </div>
+                  </div>
+                  </div>
+                </div></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin:20px 0;text-align:center">
+          圖3、貓咪篩選結果示意圖
+        </div>
+        <p>
+          此處會列出篩選出來的貓咪，有兩種檢視模式:
+          <ul>
+            <li>
+              <i class="material-icons cir_but" text='卡牌顯示'>view_module</i> <b style='text-decoration:underline'>卡牌顯示</b>:
+              以卡牌方式顯示結果
+            </li>
+            <li>
+              <i class="material-icons cir_but" text='條列顯示'>view_list</i> <b style='text-decoration:underline'>條列顯示</b>:
+              條列每項結果
+            </li>
+          </ul>
+          可以依照自己的喜好透過點選上方功能列中對應的按鈕來切換。
+          每項結果都會有貓咪名字與圖片，另外可以在
+          <span onclick="switchIframe('setting')" style="font-weight:bold;color:var(--bluegreen)">設定</span>
+          中增加想要預覽的數據值，就可以不用點開貓咪，直接檢視數值。每項篩選結果中還有提供以下兩種功能:
+          <ul>
+            <li>
+              <i class="material-icons cir_but" text="切換階級">swap_vertical_circle</i><b style="text-decoration:underline">切換階級</b>:
+              點選後可以輪流切換貓咪的階級，並將階級同步到資料庫中下次開啟這隻貓的時候的預設階級
+            </li>
+            <li>
+              <i class="material-icons cir_but" text="加到購物車">shopping_cart</i><b style="text-decoration:underline">加到購物車</b>:
+              點選後可以將該貓咪加入購物車(購物車為比較器序列的暱稱，更多資訊參考下方的"比較器用法"章節)
+            </li>
+          </ul>
+          上方功能列中除了切換檢視模式外，還有以下幾種功能:
+          <ul>
+            <li>
+              <i class="material-icons cir_but" text="截圖">add_a_photo</i>截圖:
+              展開並截圖篩選結果畫面
+            </li>
+            <li>
+              <i class="material-icons cir_but" text="批次加入貓咪圖鑑"></i>批次加入貓咪圖鑑:
+              將篩選結果中所有的貓咪加入"我的貓咪圖鑑"
+            </li>
+            <li>
+              <i class="material-icons cir_but" text="批次加入比較序列"></i>批次加入比較序列:
+              將篩選結果中所有的貓咪<em>覆蓋</em>"貓咪購物車"(比較序列)，此功能有數量上限15隻
+            </li>
+            <li>
+              <i class="material-icons cir_but" text="去轉蛋"></i>去轉蛋:
+              若為活動篩選結果，才會顯示此功能按鈕，點選後可以直接跳轉到轉蛋模擬器試試手氣
+            </li>
+          </ul>
+          而功能列下方會列出此次的篩選條件，點選條件即可在本結果中<em>再限縮</em>至該條件，例如上方範例中為"對天使"與"對外星"的篩選結果，
+          沒有開啟"能力條件完全符合"所以符合其中一種的貓咪就會被放在篩選結果中，此時若想要在此項結果中再限縮至"對外星"，
+          只要點選篩選條件中的 <span style="border: 1px solid; padding: 1 5; margin: 3 5; border-radius: 20px;">對外星</span>
+          即可限縮結果，再點選一次可以恢復原本的篩選結果。
+          <p style="color:gray;font-size:12px">*本範例不代表真實篩選情況<br>*目前並未實作稀有度的再限縮<br>*上方範例中並未實作此項功能</p>
+        </p>
+        <h3 id="cat_0_4"> <b>文字篩選</b> </h3>
+        <p>
+          在頁面上方的搜尋列中可以用文字搜索貓咪，只要含有該關鍵字的的貓咪都會被放入篩選結果中，
+          除了基本的文字搜尋，我們還提供了另外兩種搜尋方法:
+          <ul>
+            <li><b style="text-decoration:underline"> ID搜尋</b>: 以每隻貓咪的ID搜尋，可以用",(半形逗號)"分隔多個ID</li>
+            <li>
+              <b style="text-decoration:underline"> 暱稱搜尋</b>: 每隻貓咪都可以讓所有使用者加入暱稱(參考下方"貓咪問卷"部分)，此項搜尋可以用大家加入的暱稱來找尋貓咪，
+              唯目前仍有一些Bug待解決，故暱稱必須要完全相符才能查詢到<br>
+              <span style="color:gray;font-size:12px">*冷知識: 目前用暱稱搜尋"老婆"可以查到16筆結果(2019年6月)</span>
+            </li>
+          </ul>
+          可以從搜尋框前置的選單中切換不同的搜尋方式。
+        </p>
+        <h2 id="cat_1">資料顯示區功能列</h2>
+        <div class="displayControl" style="position:relative;width:100%;top:0">
+          <div class="data">
+            <span id="rarity">稀有度</span>
+            <span id="img"></span>
+            <span id="name">貓咪名稱</span>
+          </div>
+          <div class="position">
+            <span>基本資料</span>
+            <span>本能</span>
+            <span>發動聯組</span>
+            <span>統計數據</span>
+            <span>評論</span>
+          </div>
+          <div class="control" style="height:40px;background:transparent;box-shadow: none;">
+            <i class="material-icons cir_but" text='我沒有這隻貓'>&#xE8E7;</i>
+            <i class="material-icons cir_but"text='加到購物車'>&#xE8CC;</i>
+            <a target='blank' ><i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i></a>
+            <i class="material-icons cir_but"text='截圖'>&#xe439;</i>
+          </div>
+        </div>
+        <div style="margin:20px 0;text-align:center">
+          圖4、貓咪資料顯示區功能列
+          <button onclick="document.querySelector('.displayControl').setAttribute('float',true)">切換懸浮模式</button>
+        </div>
+        <p>
+          如圖四所示，顯示區功能列會在<em>左側資料區</em>顯示貓咪的稀有度，<em>右側功能區</em>顯示各種功能按鍵，
+          當畫面滑動時，系統會偵測目前的畫面位置，當顯示區超過頁面頂端時，功能列會自動進入<em>懸浮模式</em>，
+          在懸浮模式下，左側資料區除了稀有度外，會另外顯示貓咪圖片與名稱；而功能區<em>中間會顯示快速滑動目錄</em>，
+          可以快速滑動頁面到資料區的不同部分，如欲在本範例中觀看懸浮模式，請點選圖說旁的"切換懸浮模式"按鈕。
+        </p>
+        <p>
+          功能區提供的各種功能如下:
+          <ul>
+            <li>
+              <i class="material-icons cir_but" text='我沒有這隻貓'>&#xE8E7;</i><b style="text-decoration:underline">我沒有這隻貓</b>:
+              將資料顯示區的貓咪從"我的貓咪圖鑑"中加入或移除
+            </li>
+            <li>
+              <i class="material-icons cir_but"text='加到購物車'>&#xE8CC;</i><b style="text-decoration:underline">加到購物車</b>:
+              將資料顯示區的貓咪加入購物車
+            </li>
+            <li>
+              <i class="material-icons cir_but"text='在超絕攻略網打開'>&#xe895;</i><b style="text-decoration:underline">在超絕攻略網打開</b>:
+              在超絕攻略網打開資料顯示區的貓咪
+            </li>
+            <li>
+              <i class="material-icons cir_but"text='截圖'>&#xe439;</i><b style="text-decoration:underline">截圖</b>:
+              截圖資料顯示區
+            </li>
+          </ul>
+        </p>
+        <h2 id="cat_2">資料顯示區</h2>
+        <p>
+          基礎資料區，此處會顯示貓咪的各種基礎數值，第一列展示了貓咪三階的圖片，與目前階級的名稱，
+          可以透過<em>點選圖片來切換貓咪階級</em>，此階級也會同步到資料庫中，作為下次瀏覽貓咪資料時的預設階級。<br>
+          第二列可以透過滑桿或是直接點選後方等級欄位來<em>調整貓咪等級</em>，調整時與等級相關的數據也會同步更新，
+          我們也提供了<em>反向查詢</em>的機制，即，在與等級相關的數值資料欄位，輸入欲達到的數值，系統會自動計算所需等級，
+          並自動調整等級到該數值，以上調整後的等級都會同步到資料庫，作為下次查詢該貓咪時的預設值。
+          與等級相關的數據有:
+          <ul>
+            <li>體力</li>
+            <li>硬度</li>
+            <li>攻擊力</li>
+            <li>DPS</li>
+          </ul>
+        </p>
+        <div>
+          其他資料區可以藉由點選各區的區域名來展開/收合
+          <div class="tableTitle" active='0'>本能(三階開放)</div>
+          <table>
+            <tr>
+              <td>
+                如果該貓咪有開放本能，則會顯示在此處。
+              </td>
+            </tr>
+          </table>
+          <div class="tableTitle" active='0'>發動聯組</div>
+          <div>
+            <table>
+              <tbody>
+                <tr class="combo">
+                  <th val="C1" style="min-width:120">角色特殊能力</th>
+                  <td>美術教室</td><td class="searchCombo" val="C1E2">「很耐打」 的效果UP 10%</td>
+                </tr>
+                <tr class="combo">
+                  <td colspan="3" class="comboPic">
+                    <div style="display:flex">
+                      <span class="card" value="149-2" style="background-image:url(css/footage/cat/u149-2.png);"></span>
+                      <span class="card" value="061-2" style="background-image:url(css/footage/cat/u061-2.png);"></span>
+                      <span class="card" style="background-color: lightgray;pointer-events: none;"></span>
+                      <span class="card" style="background-color: lightgray;pointer-events: none;"></span>
+                      <span class="card" style="background-color: lightgray;pointer-events: none;"></span>
+                    </div>
+                  </td>
+                </tr>
+            </table>
+            <div style="margin:20px 0;text-align:center">
+              圖5、貓咪聯組單元示意圖
+            </div>
+            這裡會列出所有包含該貓咪的聯組，每個聯組單元由兩列所構成，第一列三欄中分別為:
+            <ol>
+              <li>聯組分類</li>
+              <li>聯組名稱</li>
+              <li>聯組效果</li>
+            </ol>
+            點擊聯組效果，可以跳轉到聯組查詢頁，查詢相同效果的聯組。第二列中則列出了發動聯組所需要的貓咪，
+            圖片顯示的階級為該聯組所要求的最低階級。點擊貓咪的圖片，可以查詢該隻貓的資料。
+          </div>
+          <div class="tableTitle" active='0'>統計數據</div>
+          <div>
+            這裡可以讓所有使用者自由的對該貓咪評價，主要有以下幾個部分:
+            <ul>
+              <li>
+                <b style="text-decoration:underline">設定暱稱:</b>
+                此處可以讓大家添加平時會稱呼該貓咪用法，心得感想或是對其他暱稱的回應還請發到下方留言區。
+                自己添加的暱稱會以橘框標示，點選後可以刪除該暱稱。
+                (暱稱請不要違反善良風俗，或是牽扯到政治宗教)
+              </li>
+              <li>
+                <b style="text-decoration:underline">實用度評分:</b>
+                此處可以讓大家對貓咪做綜合評價，直接點擊星星即可評分。
+                5顆星最高分，1顆星最低分。
+              </li>
+              <li>
+                <b style="text-decoration:underline">個別能力評分:</b>
+                此處可以讓大家對貓咪個別能力進行評價，直接點擊星星即可評分。
+                攻擊力、控場力與體力都是數值越大越高分；價格則是越低越高分；
+                而攻擊範圍與速度則不一定，有時跑速快反而容易衝出去被打而獲得低分
+              </li>
+              <li>
+                <b style="text-decoration:underline">定位:</b>
+                此處可以讓大家對貓咪定位進行投票，可以多選。點擊每個定位名稱旁的
+                <i class="material-icons">help</i>
+                可以開合詳細說明。
+              </li>
+            </ul>
+          </div>
+          <div class="tableTitle" active='0'>評論</div>
+          <table>
+            <tr class="comment">
+              <td colspan="6" class="own">
+                <div class="comment_content">
+                  <span class="photo" style="background-image: url('./css/footage/cat/u450-2.png');"></span>
+                  <span class="name">使用者名稱</span>
+                  <div>
+                    <span class="bubble">評論內容.................</span>
+                    <span class="function">
+                      <span class="time">2018/3/19</span>
+                      <span class="like">
+                        <i class="material-icons"value="0" id="like">thumb_up_alt</i>
+                        <span>0</span>
+                        <i class="material-icons" onclick="document.getElementsByClassName('comment_content')[0].innerHTML = '<span>你已檢舉此留言</span>'">report</i>
+                        <i class="material-icons">edit</i>
+                        <i class="material-icons">delete</i>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <div style="margin:20px 0;text-align:center">
+            圖6、貓咪評論單元
+          </div>
+          此處可以提供使用者對該貓咪進行評論，每個評論單元中會有以下幾個功能，
+          <ul>
+            <li>
+              <b style="text-decoration:underline"><i class="material-icons">thumb_up_alt</i>讚: </b>
+              喜歡這則留言，旁邊會顯示該則留言的喜歡數，再次點選可以取消喜歡。
+            </li>
+            <li>
+              <b style="text-decoration:underline"><i class="material-icons">report</i>檢舉: </b>
+              如果該則留言有違反善良風俗或是牽涉到政治宗教，可以透過點擊此按鈕來檢舉該留言，
+              檢舉後該留言之後將會在你的客戶端被屏蔽，若超過3人以上檢舉，則該留言會在所有人的客戶端被屏蔽，
+              並發送紀錄至後端，待我們審核之後再決定要刪除或是恢復。
+            </li>
+            <li>
+              <b style="text-decoration:underline"><i class="material-icons">edit</i>編輯: </b>
+              只有該留言的留言者可以使用此項功能，可以編輯該留言。
+            </li>
+            <li>
+              <b style="text-decoration:underline"><i class="material-icons">delete</i>刪除: </b>
+              只有該留言的留言者可以使用此項功能，可以刪除該留言。
+            </li>
+          </ul>
+        </div>
+      </div>
       <div class="article"id="stage">
         <h1><span onclick="switchIframe('stage')">關卡資料庫</span>用法</h1>
         <div class="chooser">
@@ -509,6 +897,25 @@
     <div class="left-side-column">
       <ul>
         <li>
+          <a href="?cat">貓咪資料庫用法</a>
+          <ul>
+            <li>
+              <a href="?cat_0">篩選器用法</a>
+              <ul>
+                <li> <a href="?cat_0_0">一般篩選</a> </li>
+                <li> <a href="?cat_0_1">活動篩選</a> </li>
+                <li> <a href="?cat_0_2">數值篩選</a> </li>
+                <li> <a href="?cat_0_3">篩選結果</a> </li>
+                <li> <a href="?cat_0_4">文字篩選</a> </li>
+              </ul>
+            </li>
+            <li> <a href="?cat_1">資料顯示區功能列</a> </li>
+            <li> <a href="?cat_2">資料顯示區</a> </li>
+          </ul>
+        </li>
+      </ul>
+      <ul>
+        <li>
           <a href="?stage">關卡資料庫用法</a>
           <ul>
             <li> <a href="?stage_0">開始使用</a></li>
@@ -631,7 +1038,119 @@
         createHtml("td","新增條件",{type:"add_query"})+
         createHtml("td",createHtml("i","delete",{class:"material-icons"}),{type:"del"})
       )).appendTo(".modal table tbody");
+    }
+    $(".valueTable .slider").each(function () {
+      var value = $(this).attr('value'),
+          type = Number($(this).attr('type')),
+          range = JSON.parse($(this).attr('range')),
+          step = Number($(this).attr('step'));
+      $(this).slider();
+      $(this).slider('option','range',type==2);
+      $(this).slider('option',{
+        'min': range[0],
+        'max': range[1],
+        'step': step,
+        'value':value
+      }).parent().siblings(".value_display").text(value).siblings('.type').html(['以上','以下','範圍'][type]);
+    });
+    $('.valueTable .type').click(function (e) {
+      var target = $(e.target).parents('tr'),
+          type = Number(target.find(".slider").attr('type')),
+          value = type == 2?JSON.parse(target.find(".slider").attr('value')):Number(target.find(".slider").attr('type')),
+          range = JSON.parse(target.find(".slider").attr("range"));
 
+      type = (type+1)%3;
+      if(type == 2){
+        let temp = range[1]-range[0];
+        target.find(".slider").attr('value',"["+temp/4+","+temp/4*3+"]");
+        target.find(".type").attr("colspan",1).prev().show();
+      }
+      else if(typeof(value) == 'object'){
+        target.find(".slider").attr('value',(value[0]+value[1])/2);
+        target.find(".type").attr("colspan",2).prev().hide();
+      }
+
+      target.find(".slider").attr('type',type);
+      target.find("th").attr('active',1);
+      filterSlider(target.find(".slider"));
+    });
+    $(".slider").on("slide",function (e,ui) {
+      var type = $(this).attr("type");
+      if(type == 2){
+        $(this).parents('tr').find('.value_display').eq(0).text(ui.values[0]);
+        $(this).parents('tr').find('.value_display').eq(1).text(ui.values[1]);
+      } else {
+        $(this).parents('tr').find('.value_display').eq(0).text(ui.value);
+      }
+    });
+    $(".slider").on("slidestop",function (e,ui) {
+      var type = $(this).attr("type");
+      if(type == 2){
+        $(this).attr('value',"["+ui.values[0]+","+ui.values[1]+"]");
+      } else {
+        $(this).attr('value',ui.value);
+      }
+      filterSlider($(this));
+    });
+    function filterSlider(target) {
+      let value = target.attr('value') ,
+          type = Number(target.attr('type')) ,
+          range = JSON.parse(target.attr('range')),
+          step = Number(target.attr('step')) ,
+          active = target.parent().prev().attr('active') == 1,
+          filter_name = target.parent().prev().attr('id');
+
+      target.slider("destroy");
+      target.slider({
+        range: type == 2,
+        min: range[0],
+        max: range[1],
+        step: step
+      });
+      target.parents('tr').find('.type').html(['以上','以下','範圍'][type]);
+      if(type == 2){
+        value = JSON.parse(value);
+        if(value[1] < value[0]) value = value.reverse();
+        target.slider("option","values",value);
+        target.parents('tr').find(".value_display").eq(0).text(value[0]);
+        target.parents('tr').find(".value_display").eq(1).text(value[1]);
+      }
+      else{
+        target.slider("option","value",Number(value));
+        target.parents('tr').find(".value_display").eq(0).text(Number(value));
+      }
+    }
+    $('.filter_option').click(function () {
+      $(this).attr('active',(Number($(this).attr('active'))+1)%2);
+    });
+    $(document).on('click','.resultTable .title i',function () {
+      let type = $(this).attr("id");
+      if(type == 'view_list'){
+        $(this).hide().next().show();
+        $("#selected").attr("view_mode","list");
+      }
+      else if (type == 'view_module') {
+        $(this).hide().prev().show();
+        $("#selected").attr("view_mode","card");
+       }
+    });
+    function toggleCatStage(e) {
+      e.stopPropagation();
+      var parent = $(e.target).parent().parent(),
+          stage = Number(parent.attr("stage")),
+          maxStage = parent.find(".img").length;
+
+      stage = (stage+1)%maxStage;
+      parent.find(".img").eq(stage).attr('active',1).siblings(".img").attr('active',0);
+      parent.find(".name").eq(stage).attr('active',1).siblings(".name").attr('active',0);
+      parent.find(".optional").eq(stage).attr('active',1).siblings(".optional").attr('active',0);
+      parent.attr('stage',stage);
+    }
+    document.getElementById("like").onclick = (e) => {
+      var temp = Number(e.target.getAttribute('value'));
+      temp = Number(!temp);
+      e.target.setAttribute("value",temp);
+      e.target.parentElement.querySelector("span").innerText = temp;
     }
     </script>
   </body>

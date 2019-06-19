@@ -108,7 +108,7 @@ $(document).ready(function () {
       return name
     }
   });
-  $(document).on("click",".searchResultTable .result span",function () {
+  $(document).on("click",".searchResultTable .result span,.legendquestTable th .card",function () {
     let id = $(this).attr("id").split("-");
     if(id.length == 3){
       socket.emit("required level data",{
@@ -131,16 +131,14 @@ $(document).ready(function () {
     let chapter = $(this).attr('id');
     $(this).attr("value",1);
     $(".chapterTable button[value=1]").attr("value",0);
-
     $("#select_stage").empty();
     $("#select_level").empty();
-    console.log(chapter);
+
     $("#select_stage").attr("chapter",chapter);
     socket.emit("required stage name",chapter);
     openTable('levelTable');
-    $("#select_stage").empty();
     loadingTimeOut = setTimeout(function () {
-      $("#select_stage").addClass("loading");
+      if(chapter !== 'legendquest') $("#select_stage").addClass("loading");
     },300);
   });
   socket.on("stage name",function (data) {
@@ -156,6 +154,7 @@ $(document).ready(function () {
     e.stopPropagation();
     let stage = $(this).attr('id'),
         chapter = $(this).parent().attr('chapter');
+
     $(this).attr('value',1).siblings().each(function () {
       $(this).attr('value',0);
     });
@@ -192,6 +191,16 @@ $(document).ready(function () {
     $(this).attr('value',1).siblings().each(function () {
       $(this).attr('value',0);
     });
+    if(chapter === 'legendquest' && level == 48){
+      socket.emit("required level data",{
+        uid: CurrentUserID,
+        chapter:'story',
+        stage:'s00048',
+        level:'1'
+      });
+      return;
+    }
+    $(".legendquestTable").hide();
     socket.emit("required level data",{
       uid: CurrentUserID,
       chapter:chapter,
@@ -200,60 +209,71 @@ $(document).ready(function () {
     });
     scroll_to_class('display',0);
   });
-  socket.on("level data",function (obj) {
-    // console.log(obj);
-    current_level_data = obj;
-    current_enemy_data = null;
-
-    var html = "",
-        data = obj.data,
-        prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
-        next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
-    // Initialization
-    $(".display .dataTable td,.display .enemyTable tbody,.display .rewardTable tbody").empty();
-    $(".moredata").remove();
-    $(".display .dataTable img").remove();
-    $(".display #star").hide();
-    $("*[class='orgdata']").show();
-    $(".enemyTable thead th").attr("reverse","");
-    // Initialize more option
-    $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
-    $(".display .dataTable #stage").html(`${(obj.parent?obj.parent:"")}<i class='material-icons'>create</i>`).attr('value',obj.stage);
-    if(data.id) $(".displayControl .control #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
-          "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
-    $(".displayControl .control #next").attr("query",JSON.stringify(next_stage));
-    $(".displayControl .control #prev").attr("query",JSON.stringify(prev_stage));
-    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent?obj.parent.replace("<br>"," "):""}>${data.name}`);
-    // append data
-    for(let i in data){
-      if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
-      else if (i == 'continue') $(".display .dataTable").find("#"+i).text(data[i]?"可以":"不行");
-      else if (i == 'castle_img') $(".display .dataTable").find("#"+i).html("<img src='"+image_url_stage+data[i]+".png'>");
-      else if (i == 'bg_img') $(".display .dataTable").find("#"+i).html("<img src='"+image_url_stage+data[i]+".png'>");
-      else if (i == 'star') {
-        let starArr = data[i],starhtml="";
-        if(data[i].length > 1) {
-          $("#star").show();
-          for(let j in starArr){
-            if(j == 0)
-              starhtml += '<i class="material-icons" val="'+starArr[j]+'" active="1"> star </i>';
-            else if(j != starArr.length-1)
-              starhtml += '<i class="material-icons" val="'+starArr[j]+'"star="'+j+'"> star </i>';
-          }
-          $(".display .dataTable").find("#"+i).html(starhtml);
-        }
-      }
-      else if(i == 'name') $(".display .dataTable").find("#"+i).html(`${data[i]?data[i]:data.jp_name}<i class='material-icons'>create</i>`);
-      else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
-    }
-    $(".rewardTable tbody").append(Addreward(data.reward,data.integral));
-    $(".enemyTable tbody").append(Addenemy(data.enemy));
-    // $(Addlist(data.list)).insertAfter($("#list_toggle"));
-    setTimeout(function () {
-      scrollSelectArea('stage',obj.stage);
-      scrollSelectArea('level',data.id.split("-")[2]);
-    },300);
+  socket.on("level data",(obj) => {
+    $(".legendquestTable").hide();
+    displayStageData(obj)
   });
+  socket.on("legendquest",data => {
+    console.log(data);
+    $(".legendquestTable").show();
+    var level = Number(data.level),
+        obj = {
+          chapter:"legendquest",
+          parent:"傳奇尋寶記",
+          data:{
+            continue:false,
+            energy:(Math.floor(level/20)+1)*50,
+            exp:(Math.floor(level/20)+1)*950,
+            id: "legendquest-s16000",
+            integral:false,
+            name: "Level "+(level+1),
+            reward:[],
+          }
+        },
+        res = data.response,
+        table = "<tr>";
+    if([15,25,35,40,45,48].indexOf(level+1) !== -1){
+      obj.data.reward.push({chance:"100%",limit:1,prize:{amount:(level+1 === 48?3:1)+"個",name:"貓眼石【傳說稀有】"}});
+    }
+    else if([11,21,31,41,47].indexOf(level+1) !== -1){
+      obj.data.reward = ["ＥＸ","稀有","激稀有","超激稀有","傳說稀有"].map(x=>{return {chance:"20%",limit:1,prize:{amount:"3個",name:`貓眼石【${x}】`}}});
+    }
+    else if([13,17,19,23,26,28,33,36,38,43].indexOf(level+1) !== -1){
+      obj.data.reward.push({chance:"100%",limit:1,prize:{amount:"1個",name:"貓咪卷"}});
+    }
+    else if([20,30].indexOf(level+1) !== -1){
+      obj.data.reward.push({chance:"100%",limit:1,prize:{amount:"1個",name:"稀有卷"}});
+    }
+    else{
+      obj.data.reward = ["加速","寶物雷達","土豪貓","貓型電腦","洞悉先機","狙擊手"].map(x=>{
+        return {chance:"16%",limit:1,prize:{amount:(level+1 < 28?1:(level+1<43?2:3))+"個",name:x}}
+      });
+    }
+
+    for(let i in res){
+      let stage = res[i].name.id, stageName = res[i].name.name;
+      table += `<th colspan='3'>${stageName}</th></tr><tr>`;
+      for(let j in res[i].stage){
+        let temp = res[i].stage[j], exist = [];
+        table += `<th style="padding:0"><span class='card' id='${['story',stage,temp.id].join("-")}' style="background-image:url('/css/footage/stage/${temp.bg}.png')">${temp.name}</span></th>`;
+        table += "<td><div>";
+        for(let k in temp.enemy){
+          let enemyID = temp.enemy[k].id;
+          if(exist.indexOf(enemyID) !== -1 || enemyID == '023') continue;
+          exist.push(enemyID);
+          table += "<img src='"+Unit.imageURL("enemy",enemyID)+"'/>";
+        }
+        table += "</div></td><td style='width:50px'>"+exist.length+"</td></tr><tr>"
+      }
+    }
+    table += "</tr>";
+    $(".legendquestTable").eq(0).find(".starReq td").each(function (index) {
+      $(this).html(index+(level<40?1:2)+"★");
+    });
+    $(".legendquestTable").eq(1).empty().append(table);
+    displayStageData(obj);
+  });
+
   // Change level star
   $(document).on('click',"#star i",function () {
     var mul = Number($(this).attr("val"))/Number($("#star i[active='1']:last").attr('val')),
@@ -409,6 +429,59 @@ $(document).ready(function () {
     }
   }
 
+  function displayStageData(obj) {
+    current_level_data = obj;
+    current_enemy_data = null;
+
+    var html = "",
+        data = obj.data,
+        prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
+        next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
+    // Initialization
+    $(".display .dataTable td,.display .enemyTable tbody,.display .rewardTable tbody").empty();
+    $(".moredata").remove();
+    $(".display .dataTable img").remove();
+    $(".display #star").hide();
+    $("*[class='orgdata']").show();
+    $(".enemyTable thead th").attr("reverse","");
+    // Initialize more option
+    $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
+    $(".display .dataTable #stage").html(`${(obj.parent?obj.parent:"")}<i class='material-icons'>create</i>`).attr('value',obj.stage);
+    if(data.id) $(".displayControl .control #out").attr("href",'http://battlecats-db.com/stage/'+(data.id).split("-")[1]+
+          "-"+(Number((data.id).split("-")[2])?AddZero((data.id).split("-")[2]):(data.id).split("-")[2])+'.html');
+    $(".displayControl .control #next").attr("query",JSON.stringify(next_stage));
+    $(".displayControl .control #prev").attr("query",JSON.stringify(prev_stage));
+    $(".displayControl .data #name").text(`${chapterName(obj.chapter)}>${obj.parent?obj.parent.replace("<br>"," "):""}>${data.name}`);
+    // append data
+    for(let i in data){
+      if (i == 'exp') $(".display .dataTable").find("#"+i).text(parseEXP(data[i]));
+      else if (i == 'continue') $(".display .dataTable").find("#"+i).text(data[i]?"可以":"不行");
+      else if (i == 'castle_img') $(".display .dataTable").find("#"+i).html("<img src='"+image_url_stage+data[i]+".png'>");
+      else if (i == 'bg_img') $(".display .dataTable").find("#"+i).html("<img src='"+image_url_stage+data[i]+".png'>");
+      else if (i == 'star') {
+        let starArr = data[i],starhtml="";
+        if(data[i].length > 1) {
+          $("#star").show();
+          for(let j in starArr){
+            if(j == 0)
+              starhtml += '<i class="material-icons" val="'+starArr[j]+'" active="1"> star </i>';
+            else if(j != starArr.length-1)
+              starhtml += '<i class="material-icons" val="'+starArr[j]+'"star="'+j+'"> star </i>';
+          }
+          $(".display .dataTable").find("#"+i).html(starhtml);
+        }
+      }
+      else if(i == 'name') $(".display .dataTable").find("#"+i).html(`${data[i]?data[i]:data.jp_name}<i class='material-icons'>create</i>`);
+      else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
+    }
+    $(".rewardTable tbody").append(Addreward(data.reward,data.integral));
+    $(".enemyTable tbody").append(Addenemy(data.enemy));
+    // $(Addlist(data.list)).insertAfter($("#list_toggle"));
+    setTimeout(function () {
+      scrollSelectArea('stage',obj.stage);
+      scrollSelectArea('level',data.id.split("-")[2]);
+    },300);
+  }
   function Addreward(arr,b) {
     // console.log(arr);
     let html ="";
@@ -425,6 +498,7 @@ $(document).ready(function () {
     return html
   }
   function Addenemy(arr) {
+    if(!arr) return;
     var html = "",
         range = {
           multiple:[],
@@ -537,6 +611,7 @@ $(document).ready(function () {
     return html
   }
   function parseEXP(n) {
+    if(!Number.isNaN(Number(n))) return n;
     n = n.split(",").join("");
     return Math.ceil(Number(n)*4.2);
   }

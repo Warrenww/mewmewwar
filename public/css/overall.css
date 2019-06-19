@@ -37,7 +37,7 @@ body::-webkit-scrollbar-thumb {
   align-items: center;
 }
 *[onclick],.copiable{cursor: pointer;}
-input:focus{outline: 0}
+input:focus,button,select{outline: 0}
 #searchBox,.chooser select{box-shadow: 0px 0px 5px;}
 #login,#version_alert{
   display: none;
@@ -102,7 +102,7 @@ input:focus{outline: 0}
 .stageBG[bg='easter'],.stageBG[bg='eva'],.stageBG[bg='Fate'],.stageBG[bg='Fish'],
 .stageBG[bg='pokopang'],.stageBG[bg='egg'],.stageBG[bg='ranking'],
 .stageBG[bg='castleAndDragon'],.stageBG[bg='CrashFever'],
-.stageBG[bg='mahoshojo']{
+.stageBG[bg='mahoshojo'],.stageBG[bg='legendquest']{
   background-size: cover;
   background-position: center;
 }
@@ -114,6 +114,7 @@ input:focus{outline: 0}
   background-color: rgba(0,0,0,.1);
   font-size: 0;
 }
+.stageBG[bg='legendquest']{background-image: url("footage/stage/legendquest_BG.jpg");}
 .stageBG[bg='mahoshojo']{background-image: url("footage/stage/mahoshojo_BG.png");}
 .stageBG[bg='Fate']{background-image: url("footage/stage/Fate_BG.png");}
 .stageBG[bg='Fish']{background-image: url("footage/stage/Fish_BG.png");}

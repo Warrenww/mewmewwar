@@ -1,0 +1,22 @@
+.Login{justify-content: center;}
+.Login>div{ background: white; padding: 40px 60px; border-radius: 30px; box-shadow: 2px 2px 20px; }
+.Login h4{font-size: 30px;margin: 0}
+.login_box span{
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  font-size: 30px;
+  text-align: center;
+  border-radius: 50%;
+  margin: 30px 10px;
+  cursor: pointer;
+  background-color: lightgrey;
+}
+.login_box span:hover{background-color: rgba(79, 98, 101, 0.7)}
+.Copiable{
+  background: var(--bluegreen);
+  padding: 5px 10px;
+  color: white;
+  margin: 10px;
+  border-radius: 20px;
+}

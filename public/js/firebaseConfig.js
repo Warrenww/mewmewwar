@@ -11,15 +11,15 @@ var config = {
 firebase.initializeApp(config);
 
 const auth = firebase.auth();
-const database = firebase.database();
+// const database = firebase.database();
 
-auth.onAuthStateChanged(user => {
-  if(user){
-    console.log('firebase signed in');
-  } else {
-    console.log('firebase signed in');
-  }
-});
+// auth.onAuthStateChanged(user => {
+//   if(user){
+//     console.log('firebase signed in');
+//   } else {
+//     console.log('firebase signed in');
+//   }
+// });
 
 //
 // $(document).ready(function () {

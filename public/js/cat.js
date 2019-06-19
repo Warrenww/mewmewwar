@@ -36,7 +36,7 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     CurrentUserID = data.uid;
     // console.log(data);
-    if(data.last_cat && location.pathname.indexOf('once') == -1)
+    if(data.last_cat)
       socket.emit("required data",{
         type:'cat',
         target:data.last_cat.substring(0,3),
@@ -95,7 +95,7 @@ $(document).ready(function () {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return;
     socket.emit("required data",{
       type:'cat',
-      target:$(this).attr('value')||$(this).attr("id"),
+      target:($(this).attr('value')||$(this).attr("id")).split("-")[0],
       record:true,
       uid:CurrentUserID
     });
@@ -128,6 +128,7 @@ $(document).ready(function () {
   }) ;
 
   socket.on("required data",(data)=>{
+    console.log(data);
     displayCatData(data.buffer[0]) ;
     $(".display").css("pointer-events","auto");
   });

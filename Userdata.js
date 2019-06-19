@@ -238,13 +238,13 @@ exports.Login = function (user) {
         if(UserData[user.uid]){
           UserData[user.uid].last_login = timer;
           ModifiedTable[user.uid] = true;
-          resolve({user,nickname:UserData[user.uid].nickname});
+          resolve({user,nickname:UserData[user.uid].nickname,photo:UserData[user.uid].photo});
         } else {
           database.ref("/user/"+User.uid).once("value",(snapshot)=>{
             UserData[user.uid] = snapshot.val();
             UserData[user.uid].last_login = timer;
             ModifiedTable[uid] = true;
-            resolve({user,nickname:UserData[user.uid].nickname});
+            resolve({user,nickname:UserData[user.uid].nickname,photo:UserData[user.uid].photo});
           });
         }
       } else {
@@ -273,6 +273,7 @@ function arrangeUserData(userdata) {
   let count = 0,
       timer = new Date().getTime();
   for(let i in userdata){
+    var uptodate = false;
     if(i == undefined|| i == "undefined"){
       console.log("remove "+i);
       database.ref('/user/'+i).remove();
@@ -301,9 +302,9 @@ function arrangeUserData(userdata) {
       database.ref('/user/'+i+"/variable").set({cat:"",enemy:"",stage:""});
       // userdata[i].variable = {cat:"",enemy:"",stage:""};
     }
-    if((timer - userdata[i].last_login) < 86400000) UserData[i] = userdata[i];
-    if(ModifiedTable[i]){ database.ref("/user/"+i).update(UserData[i]); }
+    if(ModifiedTable[i]){ database.ref("/user/"+i).update(UserData[i]); uptodate = true;}
     ModifiedTable[i] = false;
+    if((timer - userdata[i].last_login) < 86400000 && !uptodate) UserData[i] = userdata[i];
   }
   console.log("there are "+count+" users!!");
 }

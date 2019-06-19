@@ -1,3 +1,6 @@
+body{
+  scroll-behavior: smooth;
+}
 .content{padding: 3% 5%}
 .left-side-column{padding: 30 10}
 .left-side-column ul{padding:0 20;font-size: 16}
@@ -179,6 +182,182 @@
   display: flex;
   align-items: center;
 }
+.filter_option[active='0'] {
+    background-color: rgba(129, 115, 92,.93);
+    color: lightgray;
+}
+.ability_icon{
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  background-color: rgba(0,0,0,.6);
+  background-blend-mode: multiply;
+}
+.resultTable .title{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.resultTable #query{
+  display: flex;
+  justify-content: flex-end;
+}
+.resultTable #query span{
+  border: 1px solid;
+  padding: 1 5;
+  margin: 3 5;
+  border-radius: 20px;
+}
+.resultTable #query span:hover,
+.resultTable #query span[active='1']
+{background-color: var(--lightred)}
+#selected>div{
+  width: 100%;
+  display: flex;
+  min-height: 120;
+  background-color: rgba(255,255,255,.5);cursor: pointer;}
+#selected>div:nth-of-type(2n){background-color: rgba(200,200,200,.5) }
+#selected>div:hover{background-color: rgba(150,150,150,.5) }
+#selected>div .img[active='0'],
+#selected>div .name[active='0'],
+#selected>div .optional[active='0']
+{ display: none;}
+#selected>div .function{
+  align-items: center;
+  padding-right: 20;
+  justify-content: center;
+}
+#selected[view_mode='card'] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#selected[view_mode='card']>div{
+  width: 180px;
+  flex-direction: column;
+  margin: 10;
+  border-radius: 10px;
+  align-items: center;
+}
+#selected[view_mode='card']>div .img {
+    width: 80%;
+    border-radius: 10px;
+    min-height: 120px;
+    background-size: cover;
+}
+#selected[view_mode='card']>div .name {padding: 0 5 }
+#selected[view_mode='card']>div .function {padding-right: 0 }
+#selected>div .img{
+    padding: 0px;
+    background-size: cover;
+    width: 100;
+    height: 100;
+    margin: 10;
+    border-radius: 50%;
+    box-shadow: 1px 1px 10px 0px;
+    border: 3px solid white;
+    cursor: pointer;
+    transition: .3s ease
+}
+#selected>div .optional,
+#selected>div .name {
+  flex:1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0px;
+  transition: .3s ease;
+  pointer-events: none;
+}
+.displayControl[float='true'] .data #img,
+.displayControl[float='true'] .data #name,
+.displayControl[float='true'] .position
+{display: flex;}
+.displayControl .data #img{
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  border-radius: 50%;
+  margin: 0 5;
+  border: 1px solid;
+}
+.displayControl .data #rarity{
+  border: 1px solid;
+  border-radius: 20px;
+}
+.displayControl .data #img,
+.displayControl .data #name
+{display: none;}
+.comboPic .card {
+    width: 90;
+    height: 60;
+    box-shadow: 0px 0px 10px black;
+    border: 3px solid;
+}
+.comment_input i{
+  color: #18669e;
+  cursor: pointer;
+  margin: 0 10px;
+  font-size: 30px;
+  transition: .3s ease-in-out;
+}
+.comment_input i:hover{color:#189e62;}
+.comment_content{
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.comment_content .photo{
+  background-image: url('/public/css/footage/cat/u001-1.png');
+  min-width: 75px;
+  height: 75px;
+  background-size: cover;
+  border-radius: 50%;
+  box-shadow: 3px 3px 9px 1px grey;
+  margin: 10px 20px;
+}
+.comment_content .name{
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.61);
+  margin: 0 20px;
+  bottom: 0;
+  color: white;
+  padding: 3px 5px;
+}
+.comment_content div{
+  display: flex;
+  flex-direction: column;
+}
+.comment_content div .function{
+  display: flex;
+  font-size: 14px;
+  padding: 4px;
+  align-items: center;
+  color: gray;
+  font-weight: bold;
+}
+.comment_content div .bubble{
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: white;
+  box-shadow: 1px 1px 11px 3px grey;
+  text-align: left;
+}
+.function .time{margin-right: 10px}
+.function .like i{
+  margin: 3px;
+  cursor: pointer;
+  transition: .3s ease
+}
+.function .like span{margin: 3px}
+.function .like i:hover,
+.function .like i[value~='1']
+{color: rgb(251, 146, 60)}
+.comment td {border-left: 5px solid transparent}
+.survey .own,.comment .own {border-color: var(--orange)!important}
+
 @media screen and (max-width:425px) {
   .enemy_head .toggle_next{display: none;}
   .control,.modal{ width: calc(90vw - 100px);overflow: scroll; }

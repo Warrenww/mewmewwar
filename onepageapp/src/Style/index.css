@@ -1,0 +1,272 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",Microsoft JhengHei,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: default;
+  background-image: url("/css/footage/search_BG.png");
+  --lightorange : #f2d5a7;
+  --orange : #d9ac0c;
+  --bluegreen : #2ea69d;
+  --lightred : #f18787;
+  --red : #e35555;
+  --yellow : #d7bc21;
+  --green : #50a162;
+}
+
+#root{width: 100vw;height: 100vh;overflow: hidden;}
+.NoScrollBar::-webkit-scrollbar { width: 0px; }
+.material-icons{  user-select:none;}
+.subApp{
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-bottom: 10px;
+  position: relative;
+}
+.flex{ display: flex; justify-content: center; }
+.flex_col{ display: flex; flex-direction: column; align-items: center; }
+h1,h2,h3,h4{cursor: default;}
+
+nav{
+  display: flex; height: 40px ;
+  background-color: black; width: 100vw;
+  position: fixed; top: 0;z-index: 100;
+}
+nav img{height: 40px;margin: 0px 50px}
+.menu{
+  min-width: 40px; height: 40px;
+  position: absolute; padding: 0;
+  top: 0; z-index: 3;
+  left: 0 ; opacity: 1 ; cursor: pointer;
+}
+.menu span{
+  width: 80%; height: 3px; margin: 0 10%;
+  background-color: white; display: block;
+  position: absolute; top: 25%; transition: .3s ease;
+  border-radius: 5px;
+}
+.menu span:nth-of-type(2){top: 50%}
+.menu span:last-of-type{top: 75%}
+.menu[active='1'] span{top: 50%;opacity: 0;transform-origin: center;}
+.menu[active='1'] span:nth-of-type(2){opacity: 1;transform: rotate(45deg);}
+.menu[active='1'] span:last-of-type{opacity: 1;transform: rotate(-45deg);}
+.NavigationSideColumn{
+  position: absolute; top: 0px; height: 100vh; width: 200px;
+  left: -200px; overflow-y: scroll; background-color: black ;
+  font-size: 20px; color:white; transition: .4s ease-in-out;
+  z-index: 2; padding-top: 40px;
+}
+.NavBG{position: absolute;top:0;left:0;width: 100vw;height: 100vh;background-color: black;opacity: .7;cursor: pointer;display: none;z-index: 1}
+.menu[active='1'] + .NavigationSideColumn{left:0}
+.menu[active='1'] ~ .NavBG{display: block;}
+.NavigationSideColumn a,.NavigationSideColumn a:active{color:white;padding:5px;text-decoration: none;}
+.NavigationSideColumn a:hover{color:var(--bluegreen)}
+.NavigationSideColumn .TreeView {margin: 0px 10px}
+.NavigationSideColumn .TreeView .Root:hover {background-color: gray}
+.AuthArea{
+  color: white;align-items: center;flex:1;justify-content: flex-end;
+  padding-right: 10px;position: relative;right: -46px;
+  transition: .3s ease-in-out
+}
+.AuthArea span{margin: 0 5px;cursor: default;}
+.AuthArea .userPhoto{border: 1px solid;border-radius: 50%;width: 30px;height: 30px;overflow: hidden;justify-content: flex-start;}
+.AuthArea .userPhoto img{margin: 0;height: 32px}
+.AuthArea .UserName{max-width: 100px}
+.AuthArea:hover {right: 0;}
+.AuthArea .authChange a{cursor: pointer;color: white;text-decoration: none;}
+.AuthArea .authChange a:hover{color: var(--bluegreen);}
+
+.TreeView, .TreeView .NodeCollection{
+  display: flex;
+  flex-direction: column;
+  margin: 10px;
+  transition: .3s ease-in-out;
+}
+.TreeView .NodeCollection{
+  margin-top: 0;
+  border-left: 1px solid;
+  overflow: hidden;
+  max-height: 0;
+}
+.TreeView .NodeCollection[expand='1']{max-height: 100vh;}
+.TreeView .Root, .TreeView .Node{padding: 5px}
+
+.Select{
+  font-size: 16px;
+  border: 0px;
+  border-radius: 20px;
+  font-weight: bold;
+  padding: 3px 10px;
+  background-color: rgba(255,255,255,.7);
+  -webkit-appearance: none;
+  position: relative;
+  margin: 0px 8px;
+  cursor: pointer;
+  box-shadow: 0px 0px 10px;
+  font-family: inherit;
+}
+.Select select{display: none};
+select:disabled{ background-color: gray; cursor: not-allowed; box-shadow: none}
+
+td, th {
+  font-size: 16px;
+  border-collapse: collapse;
+  margin: 2px 0 ;
+  padding: 8px;
+  text-align: center;
+  transition: .3s ease-in-out;
+  border-radius: 5px;
+  background-color: white;
+  position: relative;
+}
+th{
+  cursor: pointer;
+  background-color: var(--lightorange);
+}
+
+.CoustomAlert{
+  font-size: 20px;
+  background-color: var(--bluegreen);
+  padding: 10px 20px;
+  position: fixed;
+  top: 100px;
+  left: -10px;
+  max-width: 250px;
+  min-width: 100px;
+  text-align: center;
+  font-weight: bold;
+  color: white;
+  box-shadow: 3px 4px 10px black;
+  z-index: 100;
+  animation-name: ShowAlert;
+  animation-duration: .5s;
+  animation-timing-function: ease-in-out;
+}
+@keyframes ShowAlert {
+  from {left: -250px;}
+  to {left: -10px;}
+}
+
+.FunctionButton{
+  margin: 10px;
+  background-color: white;
+  color: black;
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: .2s ease-in-out;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  user-select:none;
+  box-shadow: 0px 0px 10px black;
+}
+.FunctionButton span{
+  position: absolute;
+  display: none;
+  min-width: 50px;
+  padding: 3px 15px;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #242424;
+  border-radius: 7px;
+  box-shadow: 0px 0px 7px black;
+  opacity: 0;
+  z-index: 3;
+  transition: .3s ease-in-out;
+}
+.FunctionButton span::after{
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px;
+  position: absolute;
+}
+.FunctionButton span[pos='top']{bottom: calc(100% + 10px);}
+.FunctionButton span[pos='top']::after{border-color: #242424 transparent transparent transparent;top: 100%;left: calc(50% - 10px)}
+.FunctionButton span[pos='right']{left: calc(100% + 10px);}
+.FunctionButton span[pos='right']::after{border-color: transparent #242424 transparent transparent;top: calc(50% - 10px);left: -20px}
+.FunctionButton span[pos='bottom']{top: calc(100% + 10px);}
+.FunctionButton span[pos='bottom']::after{border-color: transparent transparent #242424 transparent;bottom: 100%;left: calc(50% - 10px)}
+.FunctionButton span[pos='left']{right: calc(100% + 10px);}
+.FunctionButton span[pos='left']::after{border-color: transparent transparent transparent #242424;top: calc(50% - 10px);right: -20px}
+.FunctionButton:hover{background-color: gray;color:white}
+.FunctionButton:hover span{display: flex;opacity: 1}
+.FunctionButton i{font-size: 24px}
+
+button, input[type='submit']{
+  background-color: #e39e49 ;
+  background: linear-gradient(#f5d84c, #c78527);
+  border: 2px solid black ;
+  border-radius: 10px ;
+  cursor: pointer;
+  color: white ;
+  font-weight: bolder;
+  display: flex;
+  justify-content: center;
+  font-size: 18px ;
+  padding: 2px 20px ;
+  transition: .2s ease-in-out;
+  outline: 0;
+  user-select:none;
+  font-family: inherit;
+}
+.StateButtonGroup .ButtonState[active='0'] button{background: linear-gradient(#c3c3c3, #6a6a6a);}
+#SnapshotHolder{
+  width: 100vw;
+  height: calc(100vh - 40px);
+  display: none;
+  top: 40px;
+  position: absolute;
+  background-color: rgba(0,0,0,.8);
+  z-index: 10;
+}
+#SnapshotHolder[show='1']{ display: flex; }
+#SnapshotHolder .picture{
+  width: calc(100% - 40px);
+  height: calc(100% - 40px);
+  overflow: scroll;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+}
+#SnapshotHolder .loading{
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 50%;
+  left: 50%;
+  display: block;
+}
+#SnapshotHolder .loading span{
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  display: block;
+  border-radius: 50%;
+  position: absolute;
+  animation-name: loading;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  color:white;
+}
+#SnapshotHolder .loading span:nth-of-type(1){left:-60px;background-color: #4285f4;animation-delay: 0s}
+#SnapshotHolder .loading span:nth-of-type(2){left:-20px;background-color: #34a853;animation-delay: .25s}
+#SnapshotHolder .loading span:nth-of-type(3){left:20px;background-color: #fbbc05;animation-delay: .5s}
+#SnapshotHolder .loading span:nth-of-type(4){left:60px;background-color: #ea4335;animation-delay: .75s}
+@keyframes loading {
+  0% {transform: scale(0);top:0}
+  25% {transform: scale(1);top:-40px}
+  50% {top:-10px}
+  75% {transform: scale(1);top:-20px}
+  100% {transform: scale(0);top:0}
+}

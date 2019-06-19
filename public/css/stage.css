@@ -285,6 +285,7 @@
   border-radius: 10px;
   box-shadow: 1px 1px 10px 0 black;
   transition: .3s ease-in-out;
+  width: 200px;
 }
 #castle_img img{width: 100%}
 #star i{color: #a3a3a3}
@@ -324,6 +325,18 @@
 i.noedit::after{content: "編輯中..." !important; }
 .dataTable #stage i:hover::after, .dataTable #name i:hover::after{ display: block;}
 i.noedit{ cursor: not-allowed;color: var(--red) !important}
+
+.legendquestTable {display: none;}
+.legendquestTable .card{
+  width: 150px;
+  height: 100px;
+  margin: 0;
+}
+.legendquestTable td div{
+display: flex;
+flex-wrap: wrap;
+}
+.legendquestTable td img{margin: 5px}
 
 @media screen and (max-width:1024px) {
   .enemy_head th>span{display: none;}

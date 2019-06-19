@@ -1,0 +1,159 @@
+.HomePageBlock{
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 90%;
+  padding: 3% 5%;
+  font-size: 16px;
+  background-size: cover;
+  background-attachment: fixed;
+  background-blend-mode: multiply;
+}
+.HomePageBlock:nth-child(2n+1){
+  background-color: rgba(250,250,250,.9);
+  color: black;
+}
+.HomePageBlock:nth-child(2n){
+  background-color: rgba(10,10,10,.9);
+  color:white;
+}
+.HomePageBlock h2{text-align: center;font-weight: bold;margin: 20px 0;font-size: 30px}
+.HomePageBlock>div{
+  display:flex;
+}
+.HomePageBlock .article{
+  flex: 1;
+  padding: 15px;
+  line-height: 2;
+  font-weight: 100;
+}
+
+.LegendBoard{
+  display: flex;
+  flex:1;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+.LegendCard{
+  display: flex;
+  flex:1;
+  flex-direction: column;
+  padding: 5px;
+  border: 2px dashed;
+  border-radius: 10px;
+  position: relative;
+  margin: 0 5px;
+}
+.LegendCard span{
+    font-weight: bold;
+    margin: 3px 5px;
+    border-bottom: 1px solid lightgray;
+}
+.LegendCard a{color: inherit;}
+.LegendCard span:first-of-type{text-align: center;}
+.LegendCard span:last-child{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 0
+}
+
+.EventIframe iframe, .EventIframe .alt_text{
+  top: 0;
+  position: relative;
+  right: 0;
+  height: 60vh;
+  max-height: 60vh;
+  width: 100%;
+  border: 5px solid white;
+  border-radius: 5px;
+  box-shadow: 5px 5px 10px 0px grey;
+  transition: .3s ease-in-out max-height;
+}
+.EventIframe iframe[display='false'], .EventIframe .alt_text[display='false']{ border:0;max-height: 0 }
+.EventIframe .alt_text h3{background-color: gray; padding: 5px;}
+.EventIframe .alt_text span{font-weight: bold;}
+.EventIframe .alt_text a{color: inherit;}
+.EventIframe .alt_text{
+  overflow-y: scroll;
+  background-color:white;
+  color:black;
+}
+.HomePageBlock:nth-child(2n+1) .alt_text{
+  background-color: black;
+  color: white;
+}
+.EventIframe select{
+  color: black;
+  margin: 10px;
+  padding: 3px 30px;
+}
+
+.EventPrediction{
+  position: relative;
+  width: 100%;
+}
+.PredictionTable div{
+  width: 100%;
+  display: flex;
+  flex:1
+}
+.cell div{
+  background-color: rgba(255,255,255,.7);
+  color: black;
+  padding: 4px;
+  margin: 2px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+.PredictionTable .head .cell div{background-color: var(--lightorange)}
+.StateButtonGroup{display: flex;margin-bottom: 10px}
+.EventPrediction .control button i{
+  font-size: 75px;
+  opacity: .5;
+}
+.EventPrediction .control button:nth-child(1) {left: 1px;}
+.EventPrediction .control button{
+  position: absolute;
+  top: calc(50% - 25px);
+  background: transparent;
+  border: 0;
+  right: 1px;
+}
+.EventPrediction .control button:hover i{
+  opacity: 1;
+  text-shadow: 0px 0px 5px black;
+}
+
+.ContactBlock{
+  margin: 0 20px;
+  padding: 10px;
+  align-items: center;
+  color: white;
+  border: 1px dashed transparent;
+}
+.ContactBlock:hover{
+  border-color: white;
+}
+.ContactBlock img{width: 100px}
+
+.Head div{position: absolute;bottom: 20px;right: 20px}
+.Head .expand{
+  width: 60px;
+  height: 60px;
+  left: calc(50% - 30px);
+  cursor: pointer;
+}
+.Head .expand i{font-size: 60px;position: relative;}
+.Head .expand:hover i{animation-name: loading;animation-duration: 1s;animation-iteration-count: infinite;}
+
+@media screen and (max-width: 768px){
+  .HomePageBlock>div { flex-direction: column; }
+  .EventPrediction .control {display: none;}
+}
+@media screen and (max-width: 426px){
+  .HomePageBlock{font-size: 12px}
+  .HomePageBlock select{font-size: 12px}
+}

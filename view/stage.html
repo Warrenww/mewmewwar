@@ -46,6 +46,7 @@
             <div target='1' value='0'>
               <button class="stageBG" bg='story' id='story' value='0'>傳說故事</button>
               <button class="stageBG" bg='trueStory' id='trueStory' value='0'>真傳說故事</button>
+              <button class="stageBG" bg='legendquest' id='legendquest' value='0'>傳奇尋寶記</button>
             </div>
             <div target='2' value='0'> <button class="stageBG" bg='tower' id='tower' value='0'>貓咪</br>風雲塔</button> </div>
             <div target='3' value='0'>
@@ -206,6 +207,9 @@
               <span class="button" value='0' name='貓眼石【超激稀有】'>
                 <img src="./css/footage/gameIcon/eye_SSR.png" />
               </span>
+              <span class="button" value='0' name='貓眼石【傳說稀有】'>
+                <img src="./css/footage/gameIcon/eye_SSSR.png" />
+              </span>
               <span class="button" value='0' name='喵力達A'>
                 <img src="./css/footage/drink_A.png" />
               </span>
@@ -301,6 +305,95 @@
         <table class="rewardTable">
           <tbody> </tbody>
         </table>
+        <table class="legendquestTable">
+          <thead>
+            <tr><th colspan='12'>消耗★數</th></tr>
+            <tr>
+              <th colspan="3">初回</th> <th colspan="3">第2回</th> <th colspan="3">第3回</th>
+              <th colspan="3">第4回之後</th>
+            </tr>
+            <tr class="starReq">
+              <td colspan="3"></td><td colspan="3"></td><td colspan="3"></td><td colspan="3"></td>
+            </tr>
+            <tr><th colspan='12'>出陣列表變動率</th></tr>
+            <tr>
+              <th>變動隻數</th> <th>10隻</th> <th>9隻</th> <th>8隻</th> <th>7隻</th>
+              <th>6隻</th> <th>5隻</th> <th>4隻</th> <th>3隻</th> <th>2隻</th>
+              <th>1隻</th> <th>0隻</th>
+            </tr>
+            <tr>
+              <th>初回</th>
+              <td style="color:var(--orange)">20%</td> 
+              <td style='color:var(--red)'>23%</td>
+              <td>12%</td>
+              <td>9%</td>
+              <td>9%</td>
+              <td>7%</td>
+              <td>7%</td>
+              <td>5%</td>
+              <td>5%</td>
+              <td>3%</td>
+              <td style='color:lightgray'>0%</td>
+            </tr>
+            <tr>
+              <th>第2回</th>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td>13%</td>
+              <td style='color:var(--red)'>25%</td>
+              <td>15%</td>
+              <td>13%</td>
+              <td>9%</td>
+              <td>9%</td>
+              <td>9%</td>
+              <td>7%</td>
+              <td style='color:lightgray'>0%</td>
+            </tr>
+            <tr>
+              <th>第3回</th>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td>10%</td>
+              <td style='color:var(--red)'>30%</td>
+              <td>18%</td>
+              <td>15%</td>
+              <td>15%</td>
+              <td>12%</td>
+              <td style='color:lightgray'>0%</td>
+            </tr>
+            <tr>
+              <th>第4回</th>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td>10%</td>
+              <td style='color:var(--red)'>35%</td>
+              <td style="color:var(--orange)">30%</td>
+              <td style="color:var(--orange)">25%</td> 
+              <td style='color:lightgray'>0%</td>
+            </tr>
+            <tr>
+              <th>第5回之後</th>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style='color:lightgray'>0%</td>
+              <td style="color:var(--orange)">30%</td>
+              <td style='color:var(--red)'>45%</td>
+              <td style="color:var(--orange)">25%</td>
+            </tr>
+          </thead>
+        </table>
+        <table class="legendquestTable"></table>
         <div id="enemy_head" class="tableTitle" active='0'>關卡敵人</div>
         <table class="enemyTable">
           <thead>

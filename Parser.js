@@ -315,6 +315,7 @@ function parseEnemy(c) {
 exports.parseCondition = function(row_7,obj) {
   c = row_7.children().eq(1).html();
   var condition ={},c_text=[];
+  if(c === null) return ;
   c = c.split("<br>");
   for(let i in c){
     c[i] = $("<div>").html(c[i]);
@@ -355,8 +356,9 @@ exports.parseCondition = function(row_7,obj) {
         b = c[i].find("a").text();
         a = /s[0-9]+\-*[0-9]+/.exec(a)[0];
         c = a.indexOf("-")!=-1;
-        if (c) n = Stage.stageMap()[a.split("-")[0]]?Stage.stageMap()[a.split("-")[0]][Number(a.split("-")[1])].name:"-";
-        else n = Stage.stageMap()[a]?Stage.stageMap()[a].name:b;
+        let chapter = Stage.stageMap()[a.split("-")[0]]
+        if (c) n = chapter?Stage.GetNameArr(chapter,a.split("-")[0])[Number(a.split("-")[1])].name:"-";
+        else n = chapter?Stage.GetNameArr(chapter).find(x=>x.id == a).name:b;
         condition.stage = {id:(a.split("-")[0]+(c?("-"+a.split("-")[1]):"")),name:n};
         if(s.indexOf("XP")!=-1){
           b = /XP[0-9]+/.exec(s)[0].split("XP")[1];

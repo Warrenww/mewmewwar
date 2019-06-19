@@ -1,7 +1,7 @@
 const image_url_icon =  "/css/footage/gameIcon/" ;
 const image_url_gacha =  "/css/footage/gacha/" ;
 const image_url_stage =  "/css/footage/stage/" ;
-const VERSION = "10.36.2"
+const VERSION = "10.36.3"
 var is_mobile = screen.width < 768;
 var _browser = navigator.userAgent;
 var is_ios = _browser.indexOf("iPad") != -1 || _browser.indexOf("iPhone") != -1;
@@ -12,7 +12,8 @@ const tutorial_version = {
   expCalculator: 1,
   compare: 1,
   stage: 1,
-  combo: 1
+  combo: 1,
+  cat: 1
 }
 const localStore = (function(){
       if(Storage){
@@ -33,11 +34,6 @@ const localStore = (function(){
       }
       return this
     })();
-
-const _native_erroe = console.error;
-// console.error = function () {
-//
-// }
 
 var socket;
 $(document).ready(function () {
@@ -209,7 +205,7 @@ $(document).ready(function () {
     }
   });
   function invalidVersion(version) {
-    var newVer = version.split("."),
+    var newVer = version?version.split("."):[Infinity,0,0],
         oldVer = VERSION.split(".");
     for(let i in oldVer){
       if(Number(oldVer[i]) > Number(newVer[i])) return false

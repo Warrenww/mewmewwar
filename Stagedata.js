@@ -13,29 +13,13 @@ exports.load = function () {
     for(let i in temp){
       StageData[i] = temp[i];
       for(let j in temp[i]){
-        for(let k in temp[i][j]){
-          if(k == 'name') continue
-          // buffer.push({
-          //   id:temp[i][j][k].id,
-          //   count:temp[i][j][k].count,
-          //   energy:temp[i][j][k].energy,
-          //   name:temp[i][j][k].name,
-          //   enemy:temp[i][j][k].enemy
-          // });
-        }
-        stageMap[j] = temp[i][j];
+        stageMap[j] = i;
       }
     }
-    // buffer = Util.Sort(buffer,'count',true);
-    // for(let i=0; i<3; i++){
-    //   mostSearchStage.push(buffer[i]);
-    // }
-    // buffer = [];
     console.log("Module load stage data complete!");
-    // console.log("most Search Stage : ",mostSearchStage);
   });
 }
-exports.GetNameArr = function (chapter,level=null) {
+exports.GetNameArr = function (chapter,level=null,enemy = false) {
   try {
     var target = StageData[chapter],
     response = [];
@@ -44,6 +28,7 @@ exports.GetNameArr = function (chapter,level=null) {
       if (i == 'name') continue;
       var temp = {id:i,name:target[i].name};
       if(level) temp.bg = target[i].bg_img;
+      if(enemy) temp.enemy = target[i].enemy;
       response.push(temp);
     }
     return response
@@ -148,9 +133,7 @@ exports.Search = function (type,query) {
   return buffer
 }
 
-exports.stageMap = function () {
-  return stageMap
-}
+exports.stageMap = function () { return stageMap }
 
 var NumberOfLevel,fetch_Url,starVar,LevelArr,finalLevelPos,modify = 0;
 exports.fetch = function (chapter,id,correction) {

@@ -48,12 +48,19 @@ function login(method = null) {
       var credential = error.credential;
       if(errorCode == "auth/popup-closed-by-user"){
         $(".login_box").removeClass("loading").children('span').css("opacity",1);
-      } else if(errorCode == "auth/web-storage-unsupported"){
+      }
+      else if(errorCode == "auth/web-storage-unsupported"){
         $(".login_box").append("<div style='padding: 15; font-weight: bold; color: var(--red);'>"+
          "<div>登入錯誤</div>瀏覽器禁用了第三方cookie，請從設定中啟用第三方cookie<br>"+
         (window.navigator.userAgent.indexOf("Chrome") != -1?
         "點擊複製以下連結，並在網址列貼上以前往設定<div class='copiable' style='background:var(--bluegreen);border-radius: 10px; padding: 0 5; color: white;'>chrome://settings/content/cookies</div>":"")+
         "</div>").children('span').hide();
+      }
+      else if(errorCode == "auth/network-request-failed"){
+        
+      }
+      else if(errorCode == "auth/popup-blocked"){
+
       }
     });
   } else {
@@ -70,6 +77,90 @@ function login(method = null) {
 }
 
 $(document).ready(function () {
+  socket.emit("public data",['index']);
+  socket.on("public data",(data)=>{
+    console.log(data);
+
+    var dataArr = ['name','hp','atk','count'],
+        dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
+    for(let i in data.index.legend.mostSearchCat){
+      let target = $(".LegendCard").eq(i);
+      target.children("img").attr("src",Unit.imageURL('cat',data.index.legend.mostSearchCat[i].id+"-1"));
+      for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.index.legend.mostSearchCat[i][dataArr[j]]);
+      target.attr({"id":data.index.legend.mostSearchCat[i].id,type:'cat'});
+    }
+    for(let i in data.index.legend.mostSearchStage){
+      let target = $(".LegendCard").eq(Number(i)+3),level=[],
+          temp = data.index.legend.mostSearchStage[i],
+          id = temp.id.split("-");
+      target.children("div").attr("bg",data.index.legend.mostSearchStage[i].id.split("-")[0]);
+      for(let j in temp.name) if(temp.name[j].id == id[1]) target.children("span").eq(0).text(temp.name[j].name);
+      target.children("span").eq(1).text("子關卡數 : "+temp.data.length);
+      target.children("span").eq(2).text("平均查詢數 : "+Math.round(temp.count));
+      target.children("span").eq(3).attr("level",JSON.stringify(temp.data));
+      target.attr({"id":temp.id,type:'stage'});
+    }
+    $(".LegendCard span").click(function () {
+      if(!$(this).attr("level")) return;
+      var arr = JSON.parse($(this).attr("level"));
+      $('body').append("<div id='levelBoard'><div></div></div>");
+      for(let i in arr)
+        $("#levelBoard div")
+          .append("<span class='card' name='"+arr[i].name+
+                  "' style='background:url(\""+image_url_stage+arr[i].bg+".png\");background-size: cover;'/>");
+    });
+    $(document).on('click',"#levelBoard",function () { $(this).remove() });
+
+    // Update Event
+    $("#event_tw,#event_jp").empty(); // Initial area
+     // Append prediction queue
+    $("#event_tw").append(createPredictionQueue(data.index.event.prediction));
+    $("#event_jp").append(createPredictionQueue(data.index.event.prediction_jp));
+    // calculate table width
+    $("#event_tw").css('width',function(){ return Number($(this).find("th").length)/2*60 + 100 });
+    $("#event_jp").css('width',function(){ return Number($(this).find("th").length)/2*60 + 100 });
+    // Append source URL
+    $("#event_source_tw").attr('href',data.index.event.prediction.source);
+    $("#event_source_jp").attr('href',data.index.event.prediction_jp.source);
+    // Find most recent new event day
+    var flag = false,str="",last;
+    $("#event_date").empty();
+    for(let i in data.index.event){
+      if(i.indexOf('prediction')!=-1||i=="text_event") continue ;
+      if(data.index.event[i]){
+        if(str != ""){
+          str += strTodate(Number(i)-1)+"</option>";
+          $("#event_date").prepend(str);
+          str = "<option value='"+i+"'>"+strTodate(i)+"~";
+        } else {
+          str = "<option value='"+i+"'>"+strTodate(i)+"~";
+        }
+        last = i ;
+      }
+    }
+    $("#event_date").prepend(str+"</option>"); // Add date option to selector
+    $('#event_date').val(last); // choose most recent date
+    function strTodate(s) {
+      s = s.toString();
+      return [s.substring(0,4),s.substring(4,6),s.substring(6,8)].join("/")
+    }
+    // if device is running ios OS replace iframe with text div
+    var alt_text="";
+    for(i in data.index.event.text_event){
+      alt_text += "<h3>"+data.index.event.text_event[i].title+"</h3><div>"+data.index.event.text_event[i].content+"</div>"
+    }
+    $("#alt_text").append(alt_text);
+    if(is_ios){
+      $("#event_iframe").prev().prop("disabled",'disabled');
+      $("#event_iframe").hide().next().show();
+    }
+    // update new event iframe
+    updateNewEventIframe(last);
+    $("#event_date").on("change",function () {
+      var date = $("#event_date").val();
+      updateNewEventIframe(date)
+    });
+  });
 
   auth.onAuthStateChanged(function(user) {
     if (user) {
@@ -89,13 +180,12 @@ $(document).ready(function () {
   socket.on("current_user_data",function (data) {
     CurrentUserId = data.uid ;
     console.log('get user data');
-    let name = data.name ;
-    $(".current_user_name").text("Hi, "+name);
+
     if(Storage) {
-      localStorage.userDisplayName = name;
+      localStorage.userDisplayName = data.name;
       $(".current_user_name").text("Hi, "+localStorage.userDisplayName);
-      localStorage.userPhoto = data.setting.userPhoto;
-      $("#userPhoto").css("background-image","url("+data.setting.user_photo+")");
+      localStorage.userPhoto = data.photo;
+      $("#userPhoto").css("background-image","url("+localStorage.userPhoto+")");
       if(localStorage.event){
          $("#"+localStorage.event).show();
          $("#"+localStorage.event+"_but").attr('value',1);
@@ -108,86 +198,6 @@ $(document).ready(function () {
     }
     let timer = new Date().getTime(),setting = data.setting;
     console.log(data);
-    dataArr = ['name','hp','atk','count'];
-    dataBrr = ['','血量 : ','攻擊 : ','查詢次數 : '];
-    for(let i in data.legend.mostSearchCat){
-      let target = $(".LegendCard").eq(i);
-      target.children("img").attr("src",Unit.imageURL('cat',data.legend.mostSearchCat[i].id+"-1"));
-      for(let j in dataArr) target.children("span").eq(j).text(dataBrr[j]+data.legend.mostSearchCat[i][dataArr[j]]);
-      target.attr({"id":data.legend.mostSearchCat[i].id,type:'cat'});
-    }
-    for(let i in data.legend.mostSearchStage){
-      let target = $(".LegendCard").eq(Number(i)+3),level=[],
-          temp = data.legend.mostSearchStage[i],
-          id = temp.id.split("-");
-      target.children("div").attr("bg",data.legend.mostSearchStage[i].id.split("-")[0]);
-      for(let j in temp.name) if(temp.name[j].id == id[1]) target.children("span").eq(0).text(temp.name[j].name);
-      target.children("span").eq(1).text("子關卡數 : "+temp.data.length);
-      target.children("span").eq(2).text("平均查詢數 : "+Math.round(temp.count));
-      target.children("span").eq(3).attr("level",JSON.stringify(temp.data));
-      target.attr({"id":temp.id,type:'stage'});
-    }
-    $(".LegendCard span").click(function () {
-      if(!$(this).attr("level")) return;
-      var arr = JSON.parse($(this).attr("level"));
-      $('body').append("<div id='levelBoard'><div></div></div>");
-      for(let i in arr)
-        $("#levelBoard div")
-          .append("<span class='card' name='"+arr[i].name+
-                  "' style='background:url(\""+image_url_stage+arr[i].bg+".png\");background-size: cover;'/>");
-    });
-    $(document).on('click',"#levelBoard",function () { $(this).remove() });
-
-
-    // Update Event
-    $("#event_tw,#event_jp").empty(); // Initial area
-     // Append prediction queue
-    $("#event_tw").append(createPredictionQueue(data.event.prediction));
-    $("#event_jp").append(createPredictionQueue(data.event.prediction_jp));
-    // calculate table width
-    $("#event_tw").css('width',function(){ return Number($(this).find("th").length)/2*60 + 100 });
-    $("#event_jp").css('width',function(){ return Number($(this).find("th").length)/2*60 + 100 });
-    // Append source URL
-    $("#event_source_tw").attr('href',data.event.prediction.source);
-    $("#event_source_jp").attr('href',data.event.prediction_jp.source);
-    // Find most recent new event day
-    var flag = false,str="",last;
-    $("#event_date").empty();
-    for(let i in data.event){
-      if(i.indexOf('prediction')!=-1||i=="text_event") continue ;
-      if(data.event[i]){
-        if(str != ""){
-          str += strTodate(Number(i)-1)+"</option>";
-          $("#event_date").prepend(str);
-          str = "<option value='"+i+"'>"+strTodate(i)+"~";
-        } else {
-          str = "<option value='"+i+"'>"+strTodate(i)+"~";
-        }
-        last = i ;
-      }
-    }
-    $("#event_date").prepend(str+"</option>"); // Add date option to selector
-    $('#event_date').val(last); // choose most recent date
-    function strTodate(s) {
-      s = s.toString();
-      return [s.substring(0,4),s.substring(4,6),s.substring(6,8)].join("/")
-    }
-    // if device is running ios OS replace iframe with text div
-    var alt_text="";
-    for(i in data.event.text_event){
-      alt_text += "<h3>"+data.event.text_event[i].title+"</h3><div>"+data.event.text_event[i].content+"</div>"
-    }
-    $("#alt_text").append(alt_text);
-    if(is_ios){
-      $("#event_iframe").prev().prop("disabled",'disabled');
-      $("#event_iframe").hide().next().show();
-    }
-    // update new event iframe
-    updateNewEventIframe(last);
-    $("#event_date").on("change",function () {
-      var date = $("#event_date").val();
-      updateNewEventIframe(date)
-    });
   });
   function updateNewEventIframe(date) {
     var url = eventURL+date+'.html';

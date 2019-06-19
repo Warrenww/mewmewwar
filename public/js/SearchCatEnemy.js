@@ -164,12 +164,13 @@ function condenseCatName(data) {
   return html ;
 }
 function condenseEnemyName(data) {
+  console.log(data);
   let html = '' ;
   for(let i in data){
     if(!data[i].id) continue
     var name = data[i].name, id = data[i].id, optional = [] ;
     for(let j in data[i]) if(['id','name','tag','stage'].indexOf(j)==-1) optional.push({key:j,value:data[i][j]});
-    html += `<div data-tag='${data[i].tag?data[i].tag[0].join(" "):""}' id='${id}'>`;
+    html += `<div data-tag='${data[i].tag?(data[i].tag[0]?data[i].tag[0].join(" "):""):""}' id='${id}'>`;
     html += ` <div class='img' active='1'
               style='background-image:url("${Unit.imageURL('enemy',`${AddZero(id,2)}`)}")'></div>
               <div class='name'active='1'>${name}</div>
@@ -384,7 +385,7 @@ function filterSlider(target) {
   filterObj[filter_name] = {
     type: Number(type),
     active: active,
-    value: type != 2 ? Number(value) : JSON.parse(value),
+    value: value,
     lv_bind: target.attr('lv-bind') == 'true'
   }
 }
