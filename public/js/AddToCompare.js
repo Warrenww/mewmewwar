@@ -23,7 +23,7 @@ $(document).ready(function () {
     $('.compare_panel #show').click(function () {
       socket.emit("required data",{
         type:type,
-        target : $(this).parent().attr('id'),
+        target : [{id:$(this).parent().attr('id'),lv:'user'}],
         record:true,
         uid:CurrentUserID
       });

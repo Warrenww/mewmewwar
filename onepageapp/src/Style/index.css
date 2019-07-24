@@ -24,12 +24,12 @@ body {
   height: 100vh;
   overflow-y: scroll;
   overflow-x: hidden;
-  padding-bottom: 10px;
   position: relative;
 }
 .flex{ display: flex; justify-content: center; }
 .flex_col{ display: flex; flex-direction: column; align-items: center; }
 h1,h2,h3,h4{cursor: default;}
+a[disabled]{pointer-events: none;}
 
 nav{
   display: flex; height: 40px ;
@@ -69,16 +69,43 @@ nav img{height: 40px;margin: 0px 50px}
 .NavigationSideColumn .TreeView .Root:hover {background-color: gray}
 .AuthArea{
   color: white;align-items: center;flex:1;justify-content: flex-end;
-  padding-right: 10px;position: relative;right: -46px;
+  padding-right: 10px;position: relative;
   transition: .3s ease-in-out
 }
-.AuthArea span{margin: 0 5px;cursor: default;}
-.AuthArea .userPhoto{border: 1px solid;border-radius: 50%;width: 30px;height: 30px;overflow: hidden;justify-content: flex-start;}
+.AuthArea>div{
+  align-items: center;
+  cursor: pointer;
+  justify-content: space-around;
+  display: flex;
+  transition: .45s ease-in-out;
+}
+.AuthArea .userPhoto{
+  border: 1px solid;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  justify-content: flex-start;
+  margin: 5px;
+}
 .AuthArea .userPhoto img{margin: 0;height: 32px}
 .AuthArea .UserName{max-width: 100px}
-.AuthArea:hover {right: 0;}
-.AuthArea .authChange a{cursor: pointer;color: white;text-decoration: none;}
-.AuthArea .authChange a:hover{color: var(--bluegreen);}
+#AuthAreaMenu .MuiMenu-paper{
+  top: 40px !important;
+  left: calc(100% - 100px) !important;
+  width: 100px;
+}
+#AuthAreaMenu .MuiMenu-paper li{ padding: 0; }
+#AuthAreaMenu .MuiMenu-paper a{
+  text-decoration: none;
+  width: 100%;
+  color: black;
+  font-family: Microsoft JhengHei;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .TreeView, .TreeView .NodeCollection{
   display: flex;
@@ -96,21 +123,67 @@ nav img{height: 40px;margin: 0px 50px}
 .TreeView .Root, .TreeView .Node{padding: 5px}
 
 .Select{
+  position: relative;
+  user-select: none;
+}
+.Select>div{
   font-size: 16px;
   border: 0px;
   border-radius: 20px;
   font-weight: bold;
   padding: 3px 10px;
-  background-color: rgba(255,255,255,.7);
-  -webkit-appearance: none;
+  background-color: white;
   position: relative;
   margin: 0px 8px;
   cursor: pointer;
   box-shadow: 0px 0px 10px;
   font-family: inherit;
 }
-.Select select{display: none};
-select:disabled{ background-color: gray; cursor: not-allowed; box-shadow: none}
+.Select span{
+  width: 10px;
+  height: 3px;
+  display: block;
+  background-color: gray;
+  position: absolute;
+  right: 10px;
+  top: calc(50% - 1.5px);
+  border-radius: 10px;
+  transition: .3s ease-in-out;
+}
+.Select .options{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: scroll;
+  position: fixed;
+  border-radius: 16px;
+  transition: .45s ease-in-out ;
+  transition-property: max-height,padding;
+  z-index: 100;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+}
+.Select .options div{
+  width: 100%;
+  text-align: center;
+  transition: .2s;
+  padding: 3px 0;
+}
+.Select .options div:hover,
+.Select .options div[option-selected='true']{
+  background-color: lightgray;
+}
+.Select .optionBG{
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  cursor: default;
+  z-index: 99;
+}
 
 td, th {
   font-size: 16px;
@@ -238,32 +311,33 @@ button, input[type='submit']{
   display: flex;
   align-items: center;
 }
-#SnapshotHolder .loading{
+.Loading{
   position: absolute;
   width: 0;
   height: 0;
   top: 50%;
   left: 50%;
-  display: block;
+  display: none;
 }
-#SnapshotHolder .loading span{
+#SnapshotHolder[loading='1'] .Loading{display: block}
+.Loading span{
   width: 30px;
   height: 30px;
   background-color: white;
   display: block;
   border-radius: 50%;
   position: absolute;
-  animation-name: loading;
+  animation-name: Loading;
   animation-duration: 1s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   color:white;
 }
-#SnapshotHolder .loading span:nth-of-type(1){left:-60px;background-color: #4285f4;animation-delay: 0s}
-#SnapshotHolder .loading span:nth-of-type(2){left:-20px;background-color: #34a853;animation-delay: .25s}
-#SnapshotHolder .loading span:nth-of-type(3){left:20px;background-color: #fbbc05;animation-delay: .5s}
-#SnapshotHolder .loading span:nth-of-type(4){left:60px;background-color: #ea4335;animation-delay: .75s}
-@keyframes loading {
+.Loading span:nth-of-type(1){left:-60px;background-color: #4285f4;animation-delay: 0s}
+.Loading span:nth-of-type(2){left:-20px;background-color: #34a853;animation-delay: .25s}
+.Loading span:nth-of-type(3){left:20px;background-color: #fbbc05;animation-delay: .5s}
+.Loading span:nth-of-type(4){left:60px;background-color: #ea4335;animation-delay: .75s}
+@keyframes Loading {
   0% {transform: scale(0);top:0}
   25% {transform: scale(1);top:-40px}
   50% {top:-10px}

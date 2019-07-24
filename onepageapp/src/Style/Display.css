@@ -1,0 +1,143 @@
+.Loading{
+  display: block;
+}
+.Display .content{
+  padding-top: 40px;
+  align-items: center;
+}
+.Display .DisplayControl{
+  width: 100%;
+  height: 40px;
+  background-color: white;
+  box-shadow: 0px -2px 10px 5px;
+  position: sticky;
+  top: 40px;
+  z-index: 10;
+}
+.Display .DisplayTable{
+  width: calc(100% - 10px);
+  max-width: 900px;
+  padding: 50px;
+}
+.DisplayTable .Title{
+  width: 100%;
+  background: var(--lightorange);
+  padding: 20px 0;
+  border-radius: 10px;
+  align-items: center;
+  display: flex;
+}
+.DisplayTable .Title .name{
+  flex:1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+.DisplayTable .Title .img{
+  width: 100px;
+  height: 100px;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 2px 2px 6px;
+  margin: 0 10px;
+  background-size: cover;
+  cursor: pointer;
+  transition: .45s ease-in-out;
+}
+.DisplayTable .Title .img[active='true']{
+  width: 180px;
+  border-radius: 10px;
+}
+.DisplayTable table{
+  width: 100%;
+  border-spacing: 3px;
+}
+.DisplayTable table th,
+.DisplayTable table td{
+  width: 16%
+}
+.DisplayTable .MuiSlider-rail,
+.DisplayTable .MuiSlider-track
+{
+  left: 0;
+  height: 3px;
+}
+.DisplayTable .condition div,
+.DisplayTable .characteristic div
+{margin: 3px 0}
+.DisplayTable .condition span,
+.DisplayTable .characteristic span
+{display: inline-flex;justify-content: center;align-items: center;}
+.DisplayTable .condition .fruit img,
+.DisplayTable .characteristic img
+{
+  width: 30px;height: 30px;margin: 3px;
+}
+.DisplayTable .characteristic img{
+  background: lightgray; border-radius: 5px;
+
+}
+.ComboTable{
+  width: 100%
+}
+.TableHead{
+  width: calc(100% - 22px);
+  background-color: var(--lightorange);
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.ComboTable .TableHolder{
+  width: calc(100% - 6px);
+  padding: 3px;
+  overflow: hidden;
+  transition: .45s ease-in-out;
+}
+.ComboTable .TableHolder .comboRow{
+    width: 100%;
+}
+.ComboTable .TableHolder .comboRow span{
+  padding: 8px;
+  display: flex;
+  margin: 1.5px;
+  background: white;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+.ComboTable .TableHolder .comboRow .cardHolder{
+  background-color: white;
+  margin: 1.5px;
+  border-radius: 7px;
+  justify-content: flex-start;
+  padding: 10px
+}
+.ComboTable .TableHolder .comboRow .card{
+  width: 90px;
+  height: 60px;
+  box-shadow: 0px 0px 10px black;
+  border: 3px solid white;
+  background-color: lightgray;
+  background-size: cover;
+  margin: 5px;
+}
+
+@media screen and (max-width: 768px) {
+
+}
+@media screen and (max-width: 425px) {
+  .DisplayTable .Title .img{
+    width: 50px;
+    height: 50px;
+    margin: 0 5px;
+    border-width: 2px;
+  }
+  .DisplayTable .Title .img[active='true']{width: 90px}
+  .ComboTable .TableHolder .comboRow .card{width: 60px;height: 40px}
+
+}

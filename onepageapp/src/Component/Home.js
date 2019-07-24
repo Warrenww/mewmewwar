@@ -68,24 +68,15 @@ class EventIframe extends Component{
   render(){
     return(
       <div className='flex_col EventIframe'style={{width:"100%"}}>
-        <div>
+        <div className='flex' style={{alignItems:"center"}}>
           選擇日期 :
           <Select
             onChange={this.handleChange}
-            value={this.state.active_date}
+            defaultValue={this.state.active_date}
             disabled={this.state.active_text === 1}
-            options={this.props.event.map((x,i)=>{return [x.substring(0,4),x.substring(4,6),x.substring(6,8)].join("/")})}
+            options={this.props.event.map((x,i)=>{return {value:x,text:[x.substring(0,4),x.substring(4,6),x.substring(6,8)].join("/")}})}
+            style={{margin:"10px", padding:"3px 30px 3px 20px"}}
           />
-          <select onChange={this.handleChange} value={this.state.active_date}
-            disabled={this.state.active_text === 1}>
-          {this.props.event.map((x,i)=>{
-            return (
-              <option key={x} value={x}>
-              {[x.substring(0,4),x.substring(4,6),x.substring(6,8)].join("/")}
-              </option>
-            );
-          })}
-          </select>
         </div>
         <iframe title='EventIframe' src={this.state.active_date?this.state.eventURL+this.state.active_date+".html":null}
           display={(this.state.active_text && !Is_ios)? "false" :"true"}></iframe>
@@ -273,8 +264,9 @@ class Home extends Component {
   }
 
   componentDidMount(){
-    this.props.socket.emit("public data",['index']);
-    this.props.socket.on("public data",(data)=>{
+    const socket = this.props.socket;
+    socket.emit("public data",['index']);
+    socket.on("public data",(data)=>{
       var mostSearchCat = data.index.legend.mostSearchCat,
           mostSearchStage = data.index.legend.mostSearchStage,
           temp = [];
@@ -322,15 +314,6 @@ class Home extends Component {
       this.setState({stageLegend:temp});
 
     });
-    this.props.socket.on("online user change",(count)=>{
-      document.querySelector(".Head .onLineUser span").innerText = count;
-    });
-  }
-  componentWillReceiveProps(newProps) {
-    if(this.state.user === null) {
-      this.setState({user: newProps.user});
-      console.log(newProps);
-    }
   }
 
   article_cat(){
@@ -426,7 +409,7 @@ class Home extends Component {
               <img alt="" border="0"style={{display:"none"}} src="https://www.paypalobjects.com/zh_TW/i/scr/pixel.gif" width="1" height="1" />
               <input type="hidden" name="cmd" value="_s-xclick" />
               <input type="hidden" name="hosted_button_id" value="R8LMUVKC7U5WU" />
-              <select name="os0">
+              <select name="os0" style={{ padding: "5px 10px", border: 0, borderRadius: "30px", margin: "10px", cursor: "pointer"}}>
                 <option value="100">便當+咖啡 NT$100 TWD</option>
                 <option value="70">一個便當 NT$70 TWD</option>
                 <option value="30">一杯咖啡 NT$30 TWD</option>

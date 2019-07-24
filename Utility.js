@@ -10,8 +10,9 @@ exports.Sort = function (list,target=null,reverse=false) {
 }
 
 exports.AddZero = function (n,e=1) {
-  var s = Number(n).toString();
-  if(s == "NaN") return s
+  var s = Number(n);
+  if(Number.isNaN(s)) return n;
+  s = s.toString();
   if(n == 0) e--;
   for(let i = e; i >= 0; i--){
     if (n < 10**(i)) s = "0"+s;

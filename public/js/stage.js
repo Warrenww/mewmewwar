@@ -374,15 +374,13 @@ $(document).ready(function () {
       if(!current_level_data.data.enemy[0].point) $(" .enemyTable thead #point").hide();
     } else {
       var enemy = current_level_data.data.enemy,
-          arr = [];
+          arr = enemy.map(x => { return {id:x.id,lv:"default"}});
       FloatDisplayMutex = false;
-      for(let i in enemy) arr.push(enemy[i].id)
       socket.emit("required data",{
         type : 'enemy',
         target : arr,
         record : false,
-        uid : CurrentUserID,
-        lv : 1
+        uid : CurrentUserID
       });
     }
   });

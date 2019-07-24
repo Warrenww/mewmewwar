@@ -105,19 +105,28 @@ $(document).ready(function () {
       else
       target.append("<span id='openeye-s010"+Excat[exPos].id+"-1'>開眼"+Excat[exPos].name+"襲來!</span><br>");
     }
-    if([1,2,15,16].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01119-1'>女帝飛來</li>");
+    if([1,2,15,16].indexOf(dd)!=-1)
+      $("#alldayevent ul").append(
+          "<li id='hard-s01119-1'>女帝飛來</li>"+
+          "<li id='hard-s01201-1'>絕・女帝飛來</li>"          
+        );
     if([3,4,17,18].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01128-1'>亡者肥普降臨</li>");
     if([5,6,19,20].indexOf(dd)!=-1)
-    $("#alldayevent ul").append(
-      "<li id='hard-s01158-1'>吉娃娃伯爵降臨</li>"+
-      "<li id='hard-s01111-1'>禍不單行</li>");
+      $("#alldayevent ul").append(
+        "<li id='hard-s01158-1'>吉娃娃伯爵降臨</li>"+
+        "<li id='hard-s01111-1'>禍不單行</li>"
+      );
     if([7,8,21,22].indexOf(dd)!=-1)
       $("#alldayevent ul").append(
           "<li id='hard-s01095-1'>斷罪天使海蝶降臨</li>"+
           "<li id='hard-s01196-1'>絕・斷罪天使海蝶降臨</li>"
         );
     if([9,10,23,24].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01114-1'>超尖端科技</li>");
-    if([11,12,25,26].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01117-1'>地獄門</li>");
+    if([11,12,25,26].indexOf(dd)!=-1)
+      $("#alldayevent ul").append(
+        "<li id='hard-s01117-1'>地獄門</li>"+
+        "<li id='hard-s01199-1'>絕・地獄門</li>"
+      );
     if([13,14,27,28].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01112-1'>神判日</li>");
     if([12,13,14,15].indexOf(dd)!=-1) $("#alldayevent ul").append("<li id='hard-s01177-1'>春宵苦短,少女做夢吧!</li>");
     if(dd==2||dd==22)

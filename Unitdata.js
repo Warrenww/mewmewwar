@@ -34,7 +34,7 @@ exports.load = function (mostSearchCat) {
       if(rarityMap[temp[i].rarity]) rarityMap[temp[i].rarity].push(i);
       else rarityMap[temp[i].rarity] = [i];
       for(let j in temp[i].data){
-        catNameMap[i].push(temp[i].data[j].name?temp[i].data[j].name:temp[i].data[j].jp_name);
+        catNameMap[i].push(temp[i].data[j].name || temp[i].data[j].jp_name);
         var tag = temp[i].data[j].tag;
         for(let k in tag){
           if(AbilityMap.cat[tag[k]])
@@ -318,14 +318,15 @@ exports.enemyName = function (id) {
   return enemyNameMap[id]
 }
 exports.GetAbilityList = function (type,ability) {
-  var Obj;
   if(!type||!ability) return
+  var map;
 
-  if(type == 'cat') Obj = AbilityMap.cat;
-  else Obj = AbilityMap.enemy;
+  if(type == 'cat') map = AbilityMap.cat;
+  else map = AbilityMap.enemy;
 
-  return Obj[ability]
+  return map[ability]
 }
+exports.getRarityMap = () => {return rarityMap;}
 
 exports.setHistory = function (type,id) {
   var load_data
@@ -472,7 +473,6 @@ exports.fetch = function (type,arr) {
             data.speed = Number(row_2.children().eq(3).text());
             data.atk_speed = Number(row_2.children().eq(5).children().eq(0).text())/30;
             data.range = Number(row_3.children().eq(5).text().split(",").join(""));
-            data.atk_period = Number(row_3.children().eq(7).children().eq(0).text())?Number(row_3.children().eq(7).children().eq(0).text())/30:"-";
             data.aoe = (type == 'cat'?row_4:row_3).children().eq(3).children().eq(0).text() == "単体" ? false : true;
             if(type == 'cat'){
               data.cost = Number(row_4.children().eq(5).children().eq(0).text().split(",").join(""));

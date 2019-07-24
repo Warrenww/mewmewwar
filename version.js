@@ -21,6 +21,7 @@ var config = {
   if(process.argv[2]){
     database.ref("/version").set(process.argv[2]);
     database.ref("/error_log").set(null);
+    database.ref("/newCatData").set(null);
     database.ref("/").once("value",(snapshot)=>{
       var data = snapshot.val(),
           date = new Date().toLocaleDateString().split("/").join("-");

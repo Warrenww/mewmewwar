@@ -147,7 +147,7 @@
   cursor: pointer;
 }
 .Head .expand i{font-size: 60px;position: relative;}
-.Head .expand:hover i{animation-name: loading;animation-duration: 1s;animation-iteration-count: infinite;}
+.Head .expand:hover i{animation-name: Loading;animation-duration: 1s;animation-iteration-count: infinite;}
 
 @media screen and (max-width: 768px){
   .HomePageBlock>div { flex-direction: column; }

@@ -8,9 +8,9 @@ $(document).on('click','#nickname span',function () {
   if(type == 'add'){
     $(this).hide().siblings('span').show();
     $(this).siblings('div')
-    .html('<input type="text" placeholder="請輸入暱稱" />')
+    .html('<input type="text" maxlength="30" placeholder="請輸入暱稱" />')
     .find('input').focus();
-    return
+    return;
   }
   else if(type == 'confirm'){
     let val = $('#nickname').find("input").val();
@@ -349,7 +349,7 @@ function submitComment() {
   ga('send', 'event', 'comment', 'cat',CurrentCatID);
   let comment = $(".comment_input").find('textarea').val();
   // console.log(comment);
-  if(!comment||!comment.trim()) return
+  if(!comment||!comment.trim()) return;
   socket.emit('comment cat',{
     cat:CurrentCatID,
     owner:CurrentUserID,
@@ -476,8 +476,9 @@ function editComment() {
 
 $(document).ready(function () {
   socket.on('cat comment push',function (data) {
-    // console.log(data);
-    $(".commentTable tbody").append(commentHtml(data.key,data,data.photo,data.name));
+    console.log(data);
+    if(data === 'Anonymous') alert("匿名使用者無法發布評論!");
+    else $(".commentTable tbody").append(commentHtml(data.key,data,data.photo,data.name));
   });
   socket.on('return users photo',function (obj) {
     // console.log(obj);

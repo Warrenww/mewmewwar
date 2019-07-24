@@ -231,7 +231,9 @@ table input {
   background-color: transparent;
 }
 table input:focus{outline: 0}
-#char img{ width: 20; margin: 0 5;}
+#char img,
+.instinctTable img
+{ width: 20; margin: 0 5;}
 .card{
   align-items: flex-end;
   background-repeat: no-repeat;

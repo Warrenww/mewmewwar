@@ -94,11 +94,11 @@ exports.setSetting = function (uid,attr,data) {
   // database.ref("/user/"+uid+"/setting/"+attr).set(data);
 }
 exports.getVariable = function (uid, arg_0 = null, arg_1 = null, arg_2 = null) {
-  if(!UserData[uid]) return {}
+  if(!uid) return {};
   var response;
   if(arg_0){
     if(UserData[uid].variable[arg_0]==''||!UserData[uid].variable[arg_0])
-      UserData[uid].variable[arg_0] = {};
+    UserData[uid].variable[arg_0] = {};
     if(arg_1){
       if(arg_2) response = UserData[uid].variable[arg_0][arg_1][arg_2];
       else response = UserData[uid].variable[arg_0][arg_1];
@@ -119,11 +119,10 @@ exports.setCompare = function (uid,type,array) {
 exports.getFolder = function (uid) {
   if(!UserData[uid]) return null
   if(!UserData[uid].folder){
-    UserData[uid].folder = {};
+    UserData[uid].folder = {owned:""};
     ModifiedTable[uid] = true;
-    // database.ref('/user/'+uid+"/folder").set({own:""});
   }
-  return UserData[uid].folder
+  return UserData[uid].folder;
 }
 exports.setFolder = function (uid,folder,data) {
   if(!UserData[uid]) return null
@@ -132,8 +131,8 @@ exports.setFolder = function (uid,folder,data) {
   // database.ref("/user/"+data.uid+"/folder/"+folder).set(data);
 }
 exports.getAttr = function (uid,attr) {
-  if(!UserData[uid]) return null
-  return UserData[uid][attr]
+  if(UserData[uid]) return UserData[uid][attr];
+  else return null;
 }
 exports.getList = function (uid) {
   if(!UserData[uid]) return null
@@ -147,17 +146,16 @@ exports.getHistory = function (uid,type=null) {
 }
 exports.setHistory = function (uid,type,id,opt={}){
   try{
-    userPromise(uid).then((rs,rj)=>{
+    userPromise(uid).then(user => {
       // Check if it is last search
-      if(UserData[uid].history['last_'+type] == id && type != 'gacha') return;
+      if(user.history['last_'+type] == id) return;
+      var user_history = user.history[type],
+          user_variable = user.variable[type],
+          current = type == 'cat'?id.toString().substring(0,3):id,
+          history_count = 0;
 
-      var user_history = UserData[uid].history[type],
-      user_variable = UserData[uid].variable[type],
-      current = type == 'cat'?id.toString().substring(0,3):id,
-      history_count = 0;
+      if(typeof(user_history) !== "object" || user_history === null ) user_history = {};
 
-      if(user_history == "" || !user_history ) user_history = {};
-      if(user_variable == "" || !user_variable ) user_variable = {};
       // Find same unit and clear it
       for(let i in user_history){
         var exist = type == 'cat'?user_history[i].id.toString().substring(0,3):user_history[i].id;
@@ -174,10 +172,12 @@ exports.setHistory = function (uid,type,id,opt={}){
       // Update history and write to firebase
       user_history[key] = {type : type,id : id,time:new Date().getTime()};
       for(let i in opt){ user_history[key][i] = opt[i]; }
-      UserData[uid].history["last_"+type] = id;
+      user.history[type] = user_history;
+      user.history["last_"+type] = id;
       ModifiedTable[uid] = true;
 
-      if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return
+      if(type != 'cat' &&type != 'enemy' &&type != 'stage' ) return;
+      if(user_variable == "" || !user_variable ) user_variable = {};
       if(!user_variable[id]) user_variable[id] = {count:0};
       user_variable[id].count = user_variable[id].count?(user_variable[id].count+1):1;
     });

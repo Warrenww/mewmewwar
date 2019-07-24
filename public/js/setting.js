@@ -46,12 +46,60 @@ $(document).ready(function () {
     socket.emit("reset cat level",current_user_data.uid);
     if(window.parent.reloadIframe) window.parent.reloadIframe('all');
   });
-  $(document).on("click","#reset_own_cat",function () {
-    let r = confirm("要重置所有擁有的貓咪嗎?");
-    if(!r) return
-    socket.emit("reset owned cat",current_user_data.uid);
-    if(window.parent.reloadIframe) window.parent.reloadIframe('all');
+  var owned;
+  $("#reset_own_cat").click(function () {
+    socket.emit("cat list",current_user_data.uid);
+    $("#own_setting").fadeIn(300);
   });
+  $("#own_setting .wrapper .progress span").click(function () {
+    $(this).attr("active",true).siblings().attr("active",null);
+    $("#own_setting .wrapper .display").css("left",Number($(this).attr("pos"))*(-100)+"%");
+    $("#own_setting .wrapper .display").scrollTop(0);
+  });
+  socket.on("cat list",res => {
+    var map = res.map,total = 0;
+    owned = res.owned;
+    for(let i in map){
+      let count = 0;
+      $(`#own_setting .wrapper .display div[target='${i}']`).empty();
+      $(`#own_setting .wrapper .display div[target='${i}']`).append(
+        map[i].map(x => {
+          if(Number(owned.indexOf(x) !== -1)) {count ++;total++;}
+          return `<span class="card" cat-id=${x} owned=${Number(owned.indexOf(x) !== -1)} style="background-image:url('/css/footage/cat/u${x}-1.png')"></span>`
+        }).join("")
+      );
+      $(`#own_setting .wrapper .progress span[target="${i}"]`).attr("number",count);
+    }
+    $(`#own_setting .wrapper .control span`).text(total);
+    console.log(owned);
+  });
+  $("#own_setting .wrapper .control i").click(function () {
+    var conf = true;
+    if($(this).text() === "done"){
+      conf = confirm("確定儲存我擁有的貓咪");
+      socket.emit("reset owned cat",{uid:current_user_data.uid,arr:owned});
+    }
+    if(conf) $("#own_setting").fadeOut(300);
+  });
+  $(document).on("click","#own_setting .wrapper .display .card",function () {
+    var cat_id = $(this).attr("cat-id"),
+        rarity = $(this).parent().attr("target"),
+        count = Number($(`#own_setting .wrapper .progress span[target="${rarity}"]`).attr("number")),
+        total = Number($(`#own_setting .wrapper .control span`).text());
+    if(Number($(this).attr("owned"))){
+      owned.splice(owned.indexOf(cat_id),1);
+      count --;
+      total --;
+    } else {
+      owned.push(cat_id);
+      count ++;
+      total ++;
+    }
+    $(this).attr("owned",Number(!Number($(this).attr("owned"))));
+    $(`#own_setting .wrapper .progress span[target="${rarity}"]`).attr("number",count);
+    $(`#own_setting .wrapper .control span`).text(total);
+  });
+
   $(document).on("click","#logout",function () {
     if(!confirm("確定要登出嗎")) return
     firebase.auth().signOut().then(function() {
@@ -133,27 +181,65 @@ $(document).ready(function () {
     }
   });
 
-
-  $("#photo span").click(function () { $('#photo_chooser').css('display','flex'); });
-  $("#photo_chooser").click(function () { $('#photo_chooser').fadeOut(400); });
+  var fadeOut = e => $('#photo_chooser').fadeOut(400);
+  $("#photo span").click(function () {
+    $('#photo_chooser').css('display','flex');
+    $("#photo_chooser div:first").show();
+    $("#photo_chooser div:last").hide();
+    $("#photo_chooser").bind('click',fadeOut);
+  });
   $("#photo_chooser div div span").click(function (e) {
     e.stopPropagation();
+    $("#photo_chooser").unbind('click',fadeOut);
     var type = $(this).attr("type");
-    if(type == 'account'){
-      if(!user_photo_url){ alert("無法取得照片"); return }
+    changePhoto(type).then(photo => {
+      socket.emit("user photo",{
+        uid:current_user_data.uid,
+        photo:photo,
+        type:'account'
+      });
+      console.log(photo);
       $('#photo').css({
-        "background-image":'url("'+user_photo_url+'")',
+        "background-image":'url("'+photo+'")',
         "background-position":'0'
       });
-      if(window.parent.changePhoto) window.parent.changePhoto(user_photo_url);
-    }
-    socket.emit("user photo",{
-      uid:current_user_data.uid,
-      photo:user_photo_url,
-      type:type
-    });
-    $('#photo_chooser').fadeOut(400);
+      $('#photo_chooser').fadeOut(400);
+    }).catch(e => $('#photo_chooser').fadeOut(400));
   });
+  function changePhoto(type){
+    return new Promise(function(resolve, reject) {
+      var photo;
+      if(type === 'account'){
+        if(!user_photo_url) {
+          alert("無法取得照片");
+          reject();
+        }
+        photo = user_photo_url;
+        if(window.parent.changePhoto) window.parent.changePhoto(photo);
+        resolve(photo);
+      } else {
+        socket.emit("Game Picture");
+        socket.on("Game Picture",(data) => {
+          $("#photo_chooser div:first").hide();
+          $("#photo_chooser div:last").show().empty();
+          for(let i in data){
+            let id = data[i].id;
+            for(let j=1;j<data[i].data.length;j++){
+              $("#photo_chooser div:last").append(`<span class="card" value="${Unit.imageURL('cat',AddZero(id,2)+"-"+j)}" style="background-image:url('${Unit.imageURL('cat',AddZero(id,2)+"-"+j)}')"></span>`);
+            }
+          }
+        });
+      }
+      $(document).on('click','#photo_chooser div:last .card',function(e){
+        e.stopPropagation();
+        resolve($(this).attr("value"));
+      });
+      $(document).on('click','#photo_chooser',function(){
+        reject();
+      })
+    });
+  }
+
   socket.on("random cat photo",function (photo) {
     $('#photo').css({
       "background-image":'url("'+photo+'")',

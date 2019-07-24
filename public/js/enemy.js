@@ -20,7 +20,7 @@ $(document).ready(function () {
     if(data.last_enemy)
       socket.emit("required data",{
         type:'enemy',
-        target:data.last_enemy,
+        target:[{id:data.last_enemy,lv:"user"}],
         record:true,
         uid:data.uid
       });
@@ -68,7 +68,7 @@ $(document).ready(function () {
     else
       socket.emit("required data",{
         type:'enemy',
-        target:$(this).attr('value')||$(this).attr("id"),
+        target:[{id:$(this).attr('value')||$(this).attr("id"),lv:"user"}],
         record:true,
         uid:CurrentUserID
       });
@@ -162,7 +162,7 @@ $(document).ready(function () {
     displayEnemyData(_data,data[0].lv,data[0].count) ;
   });
 
-  function displayEnemyData(data,lv,count) {
+  function displayEnemyData(data,lv = 1,count) {
     let html = "";
 
     $(".displayControl #out ").attr("href","http://battlecats-db.com/enemy/"+data.id+".html");

@@ -61,8 +61,8 @@ $(document).ready(function () {
       val = val ? 0 : 1 ;
       return val ;
     });
-    $(this).find("i").css("background-blend-mode",function () {
-      let type = val ? 'normal' : 'multiply';
+    $(this).find("i").css("filter",function () {
+      let type = val ? 'brightness(1)' : 'brightness(0.5)';
       return type
     })
   }
@@ -338,8 +338,8 @@ function scroll_to_class(class_name,n=0) {
     600,'easeInOutCubic');
 }
 function AddZero(n,e=1) {
-  var s = Number(n).toString();
-  if(s == "NaN") return n;
+  var s = Number(n);
+  if(Number.isNaN(s)) return n;
   if(n == 0) e--;
   for(let i = e; i >= 0; i--){
     if (n < 10**(i)) s = "0"+s;

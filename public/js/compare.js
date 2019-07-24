@@ -24,8 +24,7 @@ $(document).ready(function () {
     // console.log(data);
     CurrentUserID = data.uid;
     for(let type in data.compare){
-      var temp = [];
-      for(let j in data.compare[type]) temp.push(data.compare[type][j].id);
+      var temp = (data.compare[type]).map(x => {return {id:x.id,lv:"user"}});
       socket.emit("required data",{
         uid:data.uid,
         type:type,

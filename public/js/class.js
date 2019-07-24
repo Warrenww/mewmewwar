@@ -5,8 +5,8 @@ class Unit{
     this.jp_name = obj.jp_name;
     this.hp = obj.hp;
     this.atk = obj.atk;
-    this.freq = Number(obj.freq)?obj.freq.toFixed(2):"-";
-    this.atk_speed = Number(obj.atk_speed)?obj.atk_speed.toFixed(2):"-";
+    this.freq = Number.isNaN(Number(obj.freq))?"-":obj.freq.toFixed(2);
+    this.atk_speed = Number.isNaN(Number(obj.atk_speed))?"-":obj.atk_speed.toFixed(2);
     this.aoe = obj.aoe;
     this.range = obj.range;
     this.kb = obj.kb;
@@ -32,9 +32,7 @@ class Unit{
     for(let i in this.char){
       if(this.char[i].arr){
         nothing = false ;
-        var arr = this.char[i].arr,brr=[];
-        for(let j in arr) brr[j] = (arr[j]*this.Tovalue('atk',lv)).toFixed(0);
-        return brr
+        return this.char[i].arr.map(x => (x*this.Tovalue('atk',lv)).toFixed(0));
       }
     }
     return ""
@@ -50,7 +48,7 @@ class Unit{
     else return `css/footage/${unitType}/${unitType=='cat'?'u':'e'}${AddZero(id,2)}.png`
   }
   static propertiesName(s,reverse=false){
-    var Map = {
+    const Map = {
       'aoe':'範圍攻擊',
       'atk':'攻擊力',
       'atk_speed':'攻擊速度',
@@ -85,7 +83,7 @@ class Cat extends Unit{
     super(obj);
     this.unitType = 'cat';
     this.atk_period = Number(obj.atk_period)?obj.atk_period.toFixed(2):"-";
-    this.cd = obj.cd.toFixed(1);
+    this.cd = Number.isNaN(Number(obj.cd))?"-":obj.cd.toFixed(1);
     this.cost = obj.cost;
     this.condition = obj.condition;
     this.rarity = obj.rarity;
@@ -147,6 +145,7 @@ class Cat extends Unit{
       default:
       limit = 60 ;
     }
+    if(this.id.toString().substring(0,3) == '026'){limit = 30}
     result = (0.8+0.2*lv)*origin;
     if(lv>limit) result = result - 0.1*(lv-limit)*origin;
     if(lv>limit+20) result = result - 0.05*(lv-limit-20)*origin;
@@ -193,7 +192,9 @@ class Cat extends Unit{
         '降攻':'atkdown', '增攻':'atkup', '免疫降攻':'noatkdown', '善於攻擊':'goodat', '很耐打':'morehp', '超級耐打':'morehp_ex', '超大傷害':'bighurt', '極度傷害':'bighurt_ex', '只能攻擊':'only_atk', '會心一擊':'criticalhit',
         '擊退':'goaway', '免疫擊退':'nogoaway', '3段連續攻擊':'serialatk','2段連續攻擊':'serialatk', '不死剋星':'killdeath', '緩速':'slow', '免疫緩速':'noslow', '暫停':'stop', '免疫暫停':'nostop', '遠方攻擊':'faratk', '復活':'surive',
         '波動':'wave', '免疫波動':'nowave', '抵銷波動':'stopwave', '擊倒敵人時，獲得2倍金錢':'2money', '對敵城傷害x4':'castle', '免疫傳送':'notrans', '破盾':'breakshell', '一次攻擊':'1atk', '鋼鐵':'metal', '免疫古代詛咒':'nocurse',
-        "紅色敵人":"red_enemy","漂浮敵人":"float_enemy","黑色敵人":"black_enemy","鋼鐵敵人":"metal_enemy","天使敵人":"angle_enemy","外星敵人":"alien_enemy","不死敵人":"death_enemy","古代種":"ancient_enemy",
+        "紅色敵人":"red_enemy","漂浮敵人":"float_enemy","黑色敵人":"black_enemy","鋼鐵敵人":"metal_enemy","天使敵人":"angle_enemy","外星敵人":"alien_enemy","不死敵人":"death_enemy","古代種":"ancient_enemy",'古代詛咒無效':'nocurse',
+        "基本體力上升":"hpup","基本攻擊力上升":"atkinc","緩速抗性":"slowdefend","移動加快":"speedup",'2倍金錢':'2money',"暫停抗性":"stopdefend","生產金額減少":"discount","降攻抗性":"weakdefend","波動 抗性":"wavedefend",
+        "古代詛咒抗性":"cursedefend","擊退抗性":"pushdefend"
       }[name[i]];
       if(temp != null) html += `<img src='/css/footage/gameIcon/${temp}.png'/>`;
     }

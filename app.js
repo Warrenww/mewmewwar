@@ -156,55 +156,73 @@ io.on('connection', function(socket){
     console.log(data);
     try {
       // return if user not exist
-      if(!data.uid) return
-      var type = data.type,
+      var default_lv = {cat:30,enemy:1},
+          type = data.type,
           target = data.target,
-          uid = data.uid,
-          default_cat_lv = Users.getSetting(uid,"default_cat_lv"),
-          buffer = [];
-      // Make sure the target's type is array
-      target = typeof(target) == 'object'?target:[target];
+          buffer = [],
+          uid = null,
+          user_variable = null;
+      if(data.uid) {
+        uid = data.uid;
+        var default_cat_lv = Users.getSetting(uid,"default_cat_lv");
+        default_lv.cat = default_cat_lv;
+        uid = data.uid;
+        user_variable = Users.getVariable(uid,type);
+        if(!user_variable) user_variable = {};
+      }
 
       // Extract data and record history
-      var default_lv = {cat:default_cat_lv?default_cat_lv:30,enemy:1};
       for (let i in target) {
-        var id = target[i].substring(0,3),
-            stage = target[i].split("-")[1],
-            lv = data.lv,
-            user_variable = Users.getVariable(uid,type,id);
-        if(!user_variable) user_variable = {count:0,lv:default_lv[type]}
-
+        var id = Number.isNaN(Number(target[i].id))?target[i].id.substring(0,3):Util.AddZero(target[i].id,2),
+            stage = Number.isNaN(Number(target[i].id))?target[i].id.split("-")[1]:null,
+            lv = target[i].lv;
         // record history
-        if (data.record) SetHistory({uid:uid,type:type,target:id});
-        if(Number(stage)){ user_variable[id].stage = stage; }
+        if(uid){
+          if(!user_variable[id]) user_variable[id] = {own:false,stage:1,lv:default_lv[type],survey:{}};
+          if (data.record) SetHistory({uid:uid,type:type,target:id});
+          if(!Number.isNaN(Number(stage))){ user_variable[id].stage = stage; }
+          else{stage = user_variable[id].stage;}
+        }
+        if(lv === 'user'){
+          if(user_variable){
+            if(user_variable[id]) lv = user_variable[id].lv;
+            else lv = default_lv[type];
+          }
+          else lv = default_lv[type];
+        }
+        else if (lv === 'default' || !lv) lv = default_lv[type];
 
         //Extract data
-        var result = Unitdata.getData(type,id);
+        var result = {
+          data:Unitdata.getData(type,id),
+          lv:lv,
+          combo:type=="cat"?Combodata.FindCat(id):null,
+          currentStage:1
+        };
         if(type == 'cat'){
           var stageMap = Stagedata.stageMap();
-          for(let j in result.data){
-            if(result.data[j].condition){
-              if(result.data[j].condition.stage){
-                let stageID = result.data[j].condition.stage.id,
-                    stageName = Stagedata.GetNameArr(stageMap[stageID]).find(x=>x.id===stageID);
-                if(stageName) result.data[j].condition.stage.name = stageName.name ;
+          for(let j in result.data.data){
+            if(result.data.data[j].condition){
+              if(result.data.data[j].condition.stage){
+                let stageID = result.data.data[j].condition.stage.id,
+                    stageName = Stagedata.GetNameArr(stageMap[stageID]).find(x => x.id === stageID);
+                if(stageName) result.data.data[j].condition.stage.name = stageName.name ;
               }
             }
           }
+          if(user_variable){
+            result.currentStage = user_variable[id].stage || 1;
+            result.own = user_variable[id].own || false;
+            result.survey = user_variable[id].survey;
+          }
         }
-        buffer.push({
-          data:result,
-          count:user_variable.count?user_variable.count:0,
-          lv:data.lv?data.lv:(user_variable.lv?user_variable.lv:default_lv[type]),
-          own:type == "cat"?(user_variable.own?true:false):null,
-          currentStage:type=="cat"?(user_variable.stage?user_variable.stage:1):1,
-          combo:type=="cat"?Combodata.FindCat(id):null,
-          survey:type=="cat"?user_variable.survey:null
-        });
+        buffer.push(result);
       }
+      console.log("sending data!!");
       socket.emit("required data",{buffer,type});
     } catch (e) {
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   // Store cat level or enemy multiple
@@ -246,6 +264,7 @@ io.on('connection', function(socket){
       }
     } catch (e) {
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   }
 
@@ -269,6 +288,7 @@ io.on('connection', function(socket){
       socket.emit("search result",{result:buffer,query:data.query,query_type:data.query_type,type:'cat'});
     }catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on("normal search",function (data) {
@@ -300,6 +320,7 @@ io.on('connection', function(socket){
       socket.emit("search result",{result:buffer,query:data.query,query_type:'text',type:data.type});
     } catch(e) {
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on('text search stage',(text) => {socket.emit('text search stage',Stagedata.Search('text',text));});
@@ -450,9 +471,11 @@ io.on('connection', function(socket){
         console.log('user data send');
       }).catch((e)=>{
         if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+        else Util.__handalError(e);
       });
     }catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on('disconnect', function () {
@@ -484,18 +507,21 @@ io.on('connection', function(socket){
     console.log("searching combo......") ;
     console.log(data);
     try{
-      let buffer = [] ;
-      let arr = data.id,uid = data.uid;
+      var buffer = [] ,
+          arr = data.id,
+          uid = data.uid,
+          owned = Users.getFolder(uid,"owned");
       for(let i in combodata){
         for(let j in arr){
           if(arr[j] == (i.substring(0,4))) buffer.push(combodata[i]) ;
         }
       }
-      socket.emit("combo result",buffer) ;
+      socket.emit("combo result",{result:buffer,owned:owned}) ;
       if(uid) SetHistory({uid:uid,type:'combo',target:arr});
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   }) ;
   socket.on("more combo",function (arr) {
@@ -518,6 +544,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
 
@@ -529,6 +556,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
 
@@ -539,14 +567,13 @@ io.on('connection', function(socket){
     try{
       let folder = Users.getFolder(data.uid),
           variable = Users.getVariable(data.uid,'cat'),
-          arr =( folder.owned && folder.owned != "0" )? folder.owned : [];
+          arr = ( folder.owned && folder.owned != "" )? folder.owned : [];
       if(data.arr){
         let brr = data.arr ;
         console.log("batch add",brr.length);
         for(let i in brr){
           if (!variable[brr[i]]) variable[brr[i]] = {};
           variable[brr[i]].own = true;
-          database.ref("/user/"+data.uid+"/variable/cat/"+brr[i]).update({own:true});
           if(arr.indexOf(brr[i])==-1) arr.push(brr[i]);
         }
         Users.setFolder(data.uid,'owned',arr);
@@ -555,14 +582,14 @@ io.on('connection', function(socket){
       console.log(data.uid+" claim he/she "+
       (data.mark?"does":"doesn't")+" own "+data.cat);
       if(!variable[data.cat]) variable[data.cat]={};
-      variable[data.cat].own = data.mark ? true : false;
-      database.ref("/user/"+data.uid+"/variable/cat/"+data.cat).update({own:data.mark ? true : false});
+      variable[data.cat].own = Boolean(data.mark);
       if(data.mark&&arr.indexOf(data.cat)==-1) arr.push(data.cat);
       else if(!data.mark&&arr.indexOf(data.cat)!=-1) arr.splice(arr.indexOf(data.cat),1);
-      arr = arr.length ? arr : 0 ;
+      arr = arr.length ? arr : "" ;
       Users.setFolder(data.uid,'owned',arr);
     }catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
 
@@ -586,20 +613,37 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
-  socket.on("reset owned cat",function (uid) {
+  socket.on("cat list",(uid) => {
+    try {
+      if(!uid) return;
+      var owned = Users.getFolder(uid).owned;
+      if(owned === "") owned = [];
+      socket.emit("cat list",{map:Unitdata.getRarityMap(),owned:owned});
+    } catch (e) {
+      if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
+    }
+  });
+  socket.on("reset owned cat",(req) => {
+    var uid = req.uid, arr = req.arr;
     try{
       console.log("reset all "+uid+"'s cat owned state");
-      var data = Users.getVariable(uid,'cat');
-      for(let i in data){
-        data[i].own = false;
+      var user_variable = Users.getVariable(uid,'cat');
+      arr.map(x => {
+        if(!user_variable[x]) user_variable[x] = {};
+        user_variable[x].own = true;
+      })
+      for(let i in user_variable){
+        user_variable[i].own = (arr.indexOf(i) !== -1);
       }
-      database.ref("/user/"+uid+"/variable/cat/").update(data);
-      Users.setFolder(udi,'owned','0');
+      Users.setFolder(uid,'owned',arr);
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on("change setting",function (data) {
@@ -617,6 +661,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on("user photo",function (data) {
@@ -631,6 +676,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on("required users photo",function (arr) {
@@ -708,6 +754,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
 
@@ -735,6 +782,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
 
@@ -762,6 +810,7 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
 
@@ -797,18 +846,21 @@ io.on('connection', function(socket){
     }
     catch(e){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on('comment cat',function (data) {
-    var key = Unitdata.updateComment(data,'push');
-    socket.emit('cat comment push',{
-      key:key,
-      owner:data.owner,
-      comment:data.comment,
-      time:data.time,
-      photo:Users.getSetting(data.owner,'photo'),
-      name:Users.getAttr(data.owner,'nickname')
-    });
+    var key = Unitdata.updateComment(data,'push'),
+        obj = {
+          key:key,
+          owner:data.owner,
+          comment:data.comment,
+          time:data.time,
+          photo:Users.getSetting(data.owner,'photo'),
+          name:Users.getAttr(data.owner,'nickname')
+        };
+    if(Users.getAttr(data.owner,"Anonymous")) obj = "Anonymous";
+    socket.emit('cat comment push',obj);
   });
   socket.on('comment function',function (data) { Unitdata.updateComment(data,'change'); });
 
@@ -838,6 +890,7 @@ io.on('connection', function(socket){
         socket.emit('cat to stage',{find,stage});
       }catch(e){
         if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+        else Util.__handalError(e);
       }
     });
 
@@ -934,6 +987,7 @@ io.on('connection', function(socket){
     // console.log(socket.id);
     dashboardID = socket.id;
     if(dashboardID) io.to(dashboardID).emit("console","connect to dashboard console");
+    else Util.__handalError(e);
   });
   socket.on("fetch data",(data)=>{
     try {
@@ -943,6 +997,7 @@ io.on('connection', function(socket){
       if(data.type == "stage") Stagedata.fetch(data.chapter,data.id,data.correction);
     } catch (e) {
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
+      else Util.__handalError(e);
     }
   });
   socket.on("dashboard load",(data)=>{
@@ -983,6 +1038,7 @@ io.on('connection', function(socket){
           }
         }
         if(dashboardID) io.to(dashboardID).emit("console",`${type} data load complete`);
+        else Util.__handalError(e);
         socket.emit("dashboard load",{type,obj});
       });
     }
@@ -996,6 +1052,7 @@ io.on('connection', function(socket){
           };
         }
         if(dashboardID) io.to(dashboardID).emit("console",`${type} data load complete`);
+        else Util.__handalError(e);
         socket.emit("dashboard load",{type,obj});
       });
     }
@@ -1006,6 +1063,7 @@ io.on('connection', function(socket){
   socket.on("DashboardUpdateData",(data)=>{
     console.log('update',data);
     if(dashboardID) io.to(dashboardID).emit("console",`update : ${data.path}->${data.type} <= ${data.val}`);
+    else Util.__handalError(e);
     var path = data.path.split(",");
     var obj = {},target;
     obj[data.type] = data.val;

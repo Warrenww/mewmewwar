@@ -35,8 +35,8 @@
             </select>
           </div>
           <div class="setting_item">
-            <span>重設我擁有的貓咪</span>
-            <button id="reset_own_cat">重設</button>
+            <span>設定我擁有的貓咪</span>
+            <button id="reset_own_cat">設定</button>
           </div>
           <div class="setting_item">
             <span>登出</span>
@@ -156,7 +156,37 @@
         <h3 style="text-align:center">選擇一項動作</h3>
         <div style="flex-direction:row;padding:3px">
           <span type="account">使用登入帳戶頭貼</span>
-          <span type="cat">使用隨機貓咪圖片</span>
+          <span type="cat">挑選隨機貓咪圖片</span>
+        </div>
+      </div>
+      <div style="max-height: 90%; overflow: scroll; flex-wrap: wrap; width: 90%;display:none"></div>
+    </div>
+    <div id="own_setting">
+      <div class="wrapper">
+        <div class="control">
+          已加入
+          <span>0</span>
+          隻貓咪
+          <i class="material-icons cir_but">done</i>
+          <i class="material-icons cir_but">clear</i>
+        </div>
+        <div class="display">
+          <div target='B'></div>
+          <div target='EX'></div>
+          <div target='R'></div>
+          <div target='SR'></div>
+          <div target='SR_alt'></div>
+          <div target='SSR'></div>
+          <div target='SSSR'></div>
+        </div>
+        <div class="progress">
+          <span target='B' pos='0'number='0' active>基本</span>
+          <span target='EX' pos='1'number='0'>EX</span>
+          <span target='R' pos='2'number='0'>稀有</span>
+          <span target='SR' pos='3'number='0'>激稀有</span>
+          <span target='SR_alt' pos='4'number='0'>激稀有狂亂</span>
+          <span target='SSR' pos='5'number='0'>超激稀有</span>
+          <span target='SSSR' pos='6'number='0'>傳說稀有</span>
         </div>
       </div>
     </div>

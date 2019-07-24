@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import html2canvas from 'html2canvas';
+import uniqueId from 'lodash/uniqueId';
 
 class TreeView extends Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class TreeView extends Component {
         <div className='Root'style={{cursor:"pointer"}}>{this.props.rootName}</div>
         <div className='NodeCollection' expand={this.state.expand}>
           {this.props.nodes.map((x,key) => {
-            return <span className='Node' key={key} onClick={this.clickNode}>{x}</span>
+            return <span className='Node' key={uniqueId()} onClick={this.clickNode}>{x}</span>
           })}
         </div>
       </div>
@@ -140,53 +141,13 @@ class StateButtonGroup extends Component {
     return(
       <div className="StateButtonGroup">
         {this.props.buttons.map((x,i)=>{
-          return <div key={i} index={i} className="ButtonState" onClick={this.changeState} active={this.state.stateArray[i]}>{x}</div>;
+          return <div key={uniqueId()} index={i} className="ButtonState" onClick={this.changeState} active={this.state.stateArray[i]}>{x}</div>;
         })}
       </div>
     );
   }
 }
 
-class SnapshotHolder extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {show:0,scale:1}
-    this.hide = this.hide.bind(this);
-    this.scaleUp = this.scaleUp.bind(this);
-    this.scaleDown = this.scaleDown.bind(this);
-  }
-  hide(){
-    document.querySelector("#SnapshotHolder").setAttribute("show",0);
-  }
-  scaleUp(e){
-    e.stopPropagation();
-    if(this.state.scale === 3) return;
-    this.setState({scale:this.state.scale + .25})
-    document.querySelector("#SnapshotHolder canvas").style.transform = `scale(${this.state.scale})`
-  }
-  scaleDown(e){
-    e.stopPropagation();
-    if(this.state.scale === 0.25) return;
-    this.setState({scale:this.state.scale - .25})
-    document.querySelector("#SnapshotHolder canvas").style.transform = `scale(${this.state.scale})`
-  }
-  render(){
-    return(
-      <div id="SnapshotHolder" show={this.state.show}>
-        <div className='picture NoScrollBar'></div>
-        <div style={{position:"absolute",top:0 ,right:"30px", height:"100%"}}>
-          <FunctionButton icon='close'  onClick={this.hide}/>
-          <div style={{height:"calc(100% - 240px)"}}></div>
-          <FunctionButton text='放大' icon='zoom_in'  onClick={this.scaleUp} spanPos="left"/>
-          <FunctionButton text='縮小' icon='zoom_out' onClick={this.scaleDown} spanPos="left"/>
-          <a style={{textDecoration:"none"}} download>
-            <FunctionButton text='下載'icon='cloud_download' spanPos="left"/>
-          </a>
-        </div>
-      </div>
-    );
-  }
-}
 class SnapshotButton extends Component {
   constructor(props) {
     super(props);
@@ -204,16 +165,17 @@ class SnapshotButton extends Component {
     if(!target) return;
     const SnapshotHolder = document.querySelector('#SnapshotHolder');
     SnapshotHolder.setAttribute("show",1);
-    SnapshotHolder.getElementsByClassName("picture")[0].innerHTML = '<div class="loading"><span></span><span></span><span></span><span></span></div>';
+    SnapshotHolder.setAttribute("loading",1);
 
     html2canvas(target,{
       backgroundColor:bgc,
       allowTaint:true,
       logging:false,
     }).then((canvas) => {
-        SnapshotHolder.getElementsByClassName("picture")[0].innerHTML = "";
-        SnapshotHolder.getElementsByClassName("picture")[0].append(canvas);
+        SnapshotHolder.getElementsByClassName("canvasHolder")[0].innerHTML = "";
+        SnapshotHolder.getElementsByClassName("canvasHolder")[0].append(canvas);
         this.setState({mutex:false});
+        SnapshotHolder.setAttribute("loading",0);
         try {
           canvas.toBlob(blob => {
             SnapshotHolder.getElementsByTagName("a")[0].href = URL.createObjectURL(blob);
@@ -236,43 +198,161 @@ class Select extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: this.props.value
+      active:false,
+      selected: this.props.options.find(x => x.value === this.props.defaultValue),
+      optionStyle:{}
     }
     this.handleClick = this.handleClick.bind(this);
+    this.optionStyle = this.optionStyle.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
   handleClick(e){
-    console.log(this.select);
-    this.select.click();
+    this.setState({
+      active: !this.state.active ,
+      optionStyle: this.optionStyle()
+    });
+  }
+  optionStyle(){
+    var rect = {
+      width:0,
+      left:0,
+      maxHeight:0,
+      padding:0,
+    },
+    windowHeight = window.innerHeight;
+    if(this.select){
+      var select = this.select.getBoundingClientRect();
+      rect.width = select.width;
+      if(select.top < windowHeight/2) rect.top = select.top;
+      else rect.bottom = windowHeight - select.bottom;
+      rect.left = select.left;
+      if( !this.state.active){
+        if(select.top < windowHeight/2) rect.maxHeight = (windowHeight - select.top - 30)+"px";
+        else rect.maxHeight = (select.bottom - 30)+"px";
+      }
+      rect.padding = this.state.active?0:"10px 0px";
+    }
+    return rect;
   }
   handleChange(e){
-    this.props.handleChange(e);
-    this.setState({value: e.target.value})
+    var value = e.target.getAttribute("value");
+    this.props.onChange({target:{value:value}});
+    this.setState({
+      selected: this.props.options.find(x => x.value === value),
+      active: false,
+      optionStyle: this.optionStyle()
+    });
   }
   render(){
     return(
-      <div className="Select" disabled={this.props.disabled} onClick={this.handleClick}>
-        {this.state.value}
-        <select {...this.props} options={null} onChange={this.handleChange} ref={el => this.select = el}>
-          {this.props.options.map((x,i)=>{
-            return <option key={x} value={x}> {x} </option>
-          })}
-        </select>
+      <div className="Select">
+        <div className="display" ref={(el) => this.select = el} onClick={this.handleClick} style={this.props.disabled?{...this.props.style, backgroundColor: "gray", cursor: "not-allowed", pointerEvents:"none"}:{...this.props.style}}>
+          {this.state.selected?this.state.selected.text:"請選擇"}
+          <span style={{transformOrigin: "left", transform: "rotate(45deg) translateX(-2px)"}}></span>
+          <span style={{transformOrigin: "right", transform: "rotate(-45deg) translateX(2px)"}}></span>
+        </div>
+        <div className='options NoScrollBar' style={{...this.state.optionStyle}}>
+            {this.props.options.map((x,i)=>{
+              return  <div key={uniqueId()} value={x.value} option-selected={(x.value === this.state.selected.value).toString()} onClick={this.handleChange}>
+                        {x.text}
+                      </div>
+            })}
+        </div>
+        <div className="optionBG" style={{display:this.state.active?"block":"none"}} onClick={this.handleClick}></div>
       </div>
     );
   }
 }
 
-class Chooser extends Component {
-  constructor(props) {
-    super(props);
-  }
+class Tools {
+  constructor() {
 
-  render(){
-    return(
-      <div className="Chooser">
-      </div>
-    );
+  }
+  static AddZero(n,e=1) {
+    var s = Number(n);
+    if(Number.isNaN(s)) return n;
+    if(n == 0) e--;
+    for(let i = e; i >= 0; i--){
+      if (n < 10**(i)) s = "0"+s;
+      else return s
+    }
+    return s
+  }
+  static level_to_value(rarity, originValue, level, id = ''){
+    id = Number(id);
+    var  limit,result;
+
+    if(rarity === 'enemy') return originValue*level;
+
+    switch (rarity) {
+      case 'R':
+      limit = 70 ;
+      break;
+      case 'SR_alt':
+      limit = 20 ;
+      break;
+      default:
+      limit = 60 ;
+    }
+    if(id === 26) limit = 30;
+    
+    result = (0.8+0.2*level)*originValue;
+    if(level>limit) result = result - 0.1*(level-limit)*originValue;
+    if(level>limit+20) result = result - 0.05*(level-limit-20)*originValue;
+    return result;
+  }
+  static imageURL(type,id){
+    const SmallIconMap = {
+      '降攻':'atkdown',
+      '增攻':'atkup',
+      '免疫降攻':'noatkdown',
+      '善於攻擊':'goodat',
+      '很耐打':'morehp',
+      '超級耐打':'morehp_ex',
+      '超大傷害':'bighurt',
+      '極度傷害':'bighurt_ex',
+      '只能攻擊':'only_atk',
+      '會心一擊':'criticalhit',
+      '擊退':'goaway',
+      '免疫擊退':'nogoaway',
+      '3段連續攻擊':'serialatk',
+      '2段連續攻擊':'serialatk',
+      '不死剋星':'killdeath',
+      '緩速':'slow',
+      '免疫緩速':'noslow',
+      '暫停':'stop',
+      '免疫暫停':'nostop',
+      '遠方攻擊':'faratk',
+      '復活':'surive',
+      '波動':'wave',
+      '免疫波動':'nowave',
+      '抵銷波動':'stopwave',
+      '擊倒敵人時，獲得2倍金錢':'2money',
+      '對敵城傷害x4':'castle',
+      '免疫傳送':'notrans',
+      '破盾':'breakshell',
+      '一次攻擊':'1atk',
+      '鋼鐵':'metal',
+      '免疫古代詛咒':'nocurse',
+      "紅色敵人":"red_enemy",
+      "漂浮敵人":"float_enemy",
+      "黑色敵人":"black_enemy",
+      "鋼鐵敵人":"metal_enemy",
+      "天使敵人":"angle_enemy",
+      "外星敵人":"alien_enemy",
+      "不死敵人":"death_enemy",
+      "古代種":"ancient_enemy",
+    }
+    if(type === 'cat') return '/css/footage/cat/u'+id+'.png';
+    if(type === 'enemy') return '/css/footage/enemy/e'+id+'.png';
+    if(type === 'fruit') return `/css/footage/fruit/${id.seed?"seed":"fruit"}_icon0${id.id}.png`;
+    if(type === 'smallIcon') return `/css/footage/gameIcon/${SmallIconMap[id] || id}.png`
+    return "";
+  }
+  static is_level_Bind(prop) {
+    const List = ['hp','dps','hardness','atk',];
+    if(List.find(x => x === prop)) return true;
+    else return false;
   }
 }
 
@@ -284,7 +364,6 @@ export {
   Button,
   StateButtonGroup,
   SnapshotButton,
-  SnapshotHolder,
-  Chooser,
-  Select
+  Select,
+  Tools
 };

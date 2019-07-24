@@ -67,7 +67,12 @@ function search() {
   for(let i = 0;i<gacha.length;i++) gFilter.push(gacha.eq(i).attr('name')) ;
   if(instinct){
     for(let i in aFilter) aFilter.push(aFilter[i]+"能力解放");
-    for(let i in cFilter) cFilter.push("屬性新增"+cFilter[i].substring(1)+"敵人");
+    for(let i in cFilter){
+      if(cFilter[i].substring(1) === '古代')
+        cFilter.push("屬性新增"+cFilter[i].substring(1)+"種");
+      else
+        cFilter.push("屬性新增"+cFilter[i].substring(1)+"敵人");
+    }
   }
   // Send query require
   socket.emit(type+" search",{
@@ -149,7 +154,7 @@ function condenseCatName(data) {
                 style='background-image:url("${Unit.imageURL('cat',`${AddZero(id,2)}-${Number(j)+1}`)}")'></div>
                 <div class='name'active='${j == stage?1:0}'>${data[i].name[j]}</div>
                 <div class='optional flex_col'active='${j == stage?1:0}'>
-                  ${optional.map(x=>x.key!=""?`<div>${Unit.propertiesName(x.key)} : ${x.value[j]}</div>`:"").join("")}
+                  ${optional.map(x=>x.key!=""?`<div>${Unit.propertiesName(x.key)} : ${(typeof(x.value[j]) === 'number')?x.value[j].toFixed(0):x.value[j]}</div>`:"").join("")}
                 </div>`
     }
     html += ` <div class='function flex'>
@@ -336,7 +341,7 @@ $('.valueTable .type').click(function (e) {
   filterSlider(target.find(".slider"));
 });
 
-$(".slider").on("slide",function (e,ui) {
+$(".chooser .slider").on("slide",function (e,ui) {
   var type = $(this).attr("type");
   if(type == 2){
     $(this).parents('tr').find('.value_display').eq(0).text(ui.values[0]);
@@ -345,7 +350,7 @@ $(".slider").on("slide",function (e,ui) {
     $(this).parents('tr').find('.value_display').eq(0).text(ui.value);
   }
 });
-$(".slider").on("slidestop",function (e,ui) {
+$(".chooser .slider").on("slidestop",function (e,ui) {
   var type = $(this).attr("type");
   if(type == 2){
     $(this).attr('value',"["+ui.values[0]+","+ui.values[1]+"]");

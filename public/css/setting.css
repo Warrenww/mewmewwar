@@ -41,7 +41,7 @@ h4 {
 .setting_item .cir_but:hover{background-color: #e8e8e8}
 
 
-#reset_cat_lv,#reset_own_cat{
+#reset_cat_lv{
   background: linear-gradient(rgb(246, 154, 87),rgb(255, 74, 74))
 }
 #photo{
@@ -50,24 +50,25 @@ h4 {
   background-image: url('/public/css/footage/cat/u001-1.png');
   background-size: cover;
   border: 3px solid black;
-  background-position: -4px 6px;
   margin-right: 20px;
   display: flex;
   align-items: flex-end;
+  border-radius: 50%;
+  overflow: hidden;
 }
 #photo span{
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.5);
-  padding: 3px;
   justify-content: center;
   font-size: 14px;
   height: 0;
   overflow: hidden;
   color: white;
   display: flex;
-  transition: height .3s ease;
+  padding: 0;
+  transition: .3s ease;
 }
-#photo:hover span{height: 24px;}
+#photo:hover span{height: 24px;padding-bottom: 5px}
 #photo span:hover{color: var(--orange);font-weight: bold;}
 #photo_chooser{
   position: fixed;
@@ -138,6 +139,99 @@ h4 {
 #saveField:hover,#restoreField:hover{background-color: #acacac}
 #saveField[save='true']{ background-color: #63bd84; color: white}
 #saveField[save='true']:hover{ background-color: #438e5e; color: white}
+#own_setting{
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,.5);
+  top: 0;
+  display: none;
+}
+#own_setting .wrapper{
+  width: 90%;
+  left: 5%;
+  position: relative;
+  height: 90%;
+  display: flex;
+  background: white;
+  top: 5%;
+  border-radius: 20px;
+  flex-direction: column;
+  overflow: hidden;
+}
+.wrapper div::-webkit-scrollbar { width: 0px; }
+#own_setting .wrapper .display{
+  height: calc(100% - 60px);
+  width: 700%;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  position: relative;
+  left: 0;
+  transition: .45s ease-in-out;
+}
+#own_setting .wrapper .progress,
+#own_setting .wrapper .control{
+  display: flex;
+  background: lightgray;
+  border-radius: 0;
+  margin: 0;
+  padding: 10px;
+  height: 60px;
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow-y: scroll;
+}
+#own_setting .wrapper .control{
+  justify-content: flex-end;
+  height: 60px;
+  padding: 0;
+  align-items: center;
+}
+#own_setting .wrapper .progress span{
+  margin: 5px;
+  padding: 3px 5px;
+  border: 2px solid var(--green);
+  border-radius: 30px;
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: .3s ease-in-out;
+}
+#own_setting .wrapper .progress span[number='0']{border-color: var(--lightred);background: gray}
+#own_setting .wrapper .progress span[active]{background: white}
+#own_setting .wrapper .progress span::after{
+  content: attr(number);
+  background: var(--lightred);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  right: 0;
+  top:-10px;
+  box-shadow: 0px 0px 10px black;
+  position: absolute;
+}
+#own_setting .wrapper .display .card {
+  width: 120px;
+  height: 90px;
+  transition: .3s ease;
+}
+#own_setting .wrapper .display .card[owned='0']{
+  filter:brightness(.5);
+}
+#own_setting .wrapper .display div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+
 @media screen and (max-width : 425px) {
   #include span,#exclude span{font-size: 12;max-height: 20;width: 80}
   #include::after{font-size: 12;bottom: -20}

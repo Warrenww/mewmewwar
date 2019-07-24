@@ -13,13 +13,12 @@ $(document).ready(function () {
       id = $(this).attr('value');
       type = 'cat';
     }
-    if (page == 'history') multiple = null;
+    if (page == 'history') multiple = "user";
     socket.emit("required data",{
       type:type,
-      target:id,
+      target:[{id:id,lv:multiple}],
       record:false,
-      uid:CurrentUserID,
-      lv:multiple
+      uid:CurrentUserID
     });
   });
 

@@ -34,12 +34,12 @@ $(document).ready(function () {
     }
   });
   socket.on("current_user_data",function (data) {
+    console.log(data);
     CurrentUserID = data.uid;
-    // console.log(data);
     if(data.last_cat)
       socket.emit("required data",{
         type:'cat',
-        target:data.last_cat.substring(0,3),
+        target:[{id:data.last_cat.toString().substring(0,3),lv:'user'}],
         record:true,
         uid:data.uid
       });
@@ -95,7 +95,7 @@ $(document).ready(function () {
     if($(this).parent().parent().attr("class")=='compareTarget_holder') return;
     socket.emit("required data",{
       type:'cat',
-      target:($(this).attr('value')||$(this).attr("id")).split("-")[0],
+      target:[{id:($(this).attr('value')||$(this).attr("id")).split("-")[0],lv:'user'}],
       record:true,
       uid:CurrentUserID
     });
@@ -120,7 +120,7 @@ $(document).ready(function () {
     $('#level').slider('option','value',val);
   });
   $(document).on('click','.searchCombo',function () {
-    socket.emit("search combo",{
+    socket.emit("combo search",{
       uid:CurrentUserID,
       id:[$(this).attr('val')]
     }) ;
@@ -252,8 +252,7 @@ $(document).ready(function () {
       },500);
     }
     if(data.serial){
-      $('.dataTable').find('#char').children("span[id=serial]")
-      .text("("+data.serialATK(level)+")");
+      $(".dataTable #char #serial").text("("+data.serialATK(level)+")");
     }
   }
 
@@ -464,11 +463,15 @@ function AddInstinct(data,rarity) {
     return s;
   }
   function addPs(s) {
-    temp = s.ability;
-    if(s.ability.indexOf("增攻")!=-1) temp += `<br>(體力低於${s.range[2]}%)`
-    if(s.ability.indexOf("波動")!=-1&&s.range[2]) temp += `<br>(Lv.${s.range[2]} 波動)`
-    if(s.ability=='緩速能力解放') temp += `<br>(${s.range[2]}% 機率緩速)`
-    if(s.ability=='降攻能力解放') temp += `<br>(${s.range[2]}% 機率降攻${s.range[3]}%)`
+    let iconname = temp = s.ability;
+    if(s.ability.indexOf("增攻")!=-1) temp += `<br>(體力低於${s.range[2]}%)`;
+    if(s.ability.indexOf("波動")!=-1&&s.range[2]) temp += `<br>(Lv.${s.range[2]} 波動)`;
+    if(s.ability=='緩速能力解放') temp += `<br>(${s.range[2]}% 機率緩速)`;
+    if(s.ability=='降攻能力解放') temp += `<br>(${s.range[2]}% 機率降攻${s.range[3]}%)`;
+    iconname = iconname.split("能力解放")[0];
+    iconname = iconname.split("強化")[0];
+    if(iconname.includes("屬性新增")) iconname = iconname.split("屬性新增")[1];
+    temp = new Cat({}).smallIcon(iconname) + temp;
     return temp;
   }
 }

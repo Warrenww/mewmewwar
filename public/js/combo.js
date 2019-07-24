@@ -31,10 +31,21 @@ $(document).ready(function () {
       id:A_search
     }) ;
   });
-  socket.on("combo result",function (arr) {
-    console.log(arr);
+  socket.on("combo result",function (data) {
+    var result = data.result,
+        owned = data.owned.owned,
+        show = $("#owned").prop("checked");
+
     $(".display .dataTable").empty();
-    for(let i in arr) $(".display .dataTable").append(comboTR(arr[i]));
+    for(let i in result){
+      let flag = true;
+      for(let j in result[i].cat){
+        if(!flag) break;
+        if(result[i].cat[j] === '-') continue;
+        flag = (owned.indexOf(result[i].cat[j].substring(0,3)) !== -1);
+      }
+      if(!show || flag) $(".display .dataTable").append(comboTR(result[i]));
+    }
     scroll_to_class("display",0) ;
   }) ;
   $(document).on("click",".dataTable i[func='more']",function () {
@@ -142,7 +153,6 @@ $(document).ready(function () {
       id:target
     }) ;
   });
-
 });
 function mergeCombo(This,data=null) {
   var exist = moreComboData[5],
@@ -182,8 +192,8 @@ function mergeCombo(This,data=null) {
 }
 
 function checkList(list,id) {
-  for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1
-  return false
+  for(let i in list) if(list[i].substring(0,3) == id.substring(0,3)) return Number(i)+1;
+  return false;
 }
 function comboTR(item,more=false) {
   let html = '',

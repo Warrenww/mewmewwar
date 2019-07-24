@@ -176,8 +176,8 @@
   width: 30px;
   height: 30px;
   background-size: cover;
-  background-color: rgba(0,0,0,.6);
-  background-blend-mode: multiply;
+  filter: brightness(.5);
+  transition: .3s ease;
 }
 .ability_tip{width: 200px;text-align: center;}
 #selected{
@@ -499,6 +499,9 @@
 .displayControl .data #img,
 .displayControl .data #name
 {display: none;}
+.instinctTable tr th:first-child{text-align: left;}
+.instinctTable tr:first-of-type th{text-align: center;}
+
 @media screen and (max-width: 425px) {
   .survey{flex-direction: column;}
   #selected>div .optional{display: none;}
