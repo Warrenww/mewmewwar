@@ -12,7 +12,9 @@
 .valueTable tr td:first-of-type{width: 200px}
 .chooser .content{display: none;}
 .chooser .normalTable[active='1'] ~ .content,
-.chooser .gachaTable[active='1'] ~ .content{display: flex;}
+.chooser .gachaTable[active='1'] ~ .content,
+.chooser .valueTable[active='1'] ~ .content
+{display: flex;}
 .resultTable th{width: 100vw}
 .resultTable .title{
   display: flex;

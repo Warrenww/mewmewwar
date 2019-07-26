@@ -72,7 +72,6 @@ exports.__handalError = function (e) {
     stack:e.stack?e.stack:"undefine",
     debug:e.debug?e.debug:"undefine"
   });
-  return e.message.toString()+"\n"+e.stack.toString();
 }
 
 exports.MergeArray = function (Arr1,Arr2,type = 'or') {
