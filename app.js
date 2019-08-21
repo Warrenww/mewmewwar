@@ -65,21 +65,20 @@ function ReloadAllData(m=0) {
     console.log("VERSION : ",VERSION);
   });
   mostSearchCat = [];
-  mostSearchStage = [];
   Activity.UpdateEvent();
   Unitdata.load(mostSearchCat);
-  Stagedata.load(mostSearchStage);
+  Stagedata.load();
   Combodata.load(combodata);
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
   if(!m && app.settings.env != 'development') Users.load();
   if(firstReload){
     database.ref("/legend").once("value",(snapshot)=>{ legenddata = snapshot.val(); Stagelegend();});
   } else {
-    database.ref("/legend/stage/thisWeek").update(legenddata.stage.thisWeek);
     var today = new Date();
     // replace lastweek data with thisweek and empty thisWeek data.
     var tempD = Math.floor(today.getTime()/86400000)*86400000;
     for(let i in legenddata){
+      database.ref("/legend/"+i+"/thisWeek").update(legenddata[i].thisWeek);
       if(tempD - Number(legenddata[i].thisWeek.date) > 0){
         database.ref("/legend/"+i+"/lastWeek").set(legenddata[i].thisWeek);
         legenddata[i].thisWeek = {date:tempD + 86400000*6};
@@ -215,6 +214,8 @@ io.on('connection', function(socket){
             result.own = user_variable[id].own || false;
             result.survey = user_variable[id].survey;
           }
+          if(legenddata.cat.thisWeek[id]) legenddata.cat.thisWeek[id] ++;
+          else legenddata.cat.thisWeek[id] = 1;
         }
         buffer.push(result);
       }
