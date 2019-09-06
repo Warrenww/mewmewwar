@@ -119,7 +119,7 @@ $(document).ready(function () {
   const DefaultProbability = [0.7,0.95,1];
   var GachaProbability = [0.7,0.95,1];
   socket.on("gacha result",function (data) {
-    console.log(data);
+    // console.log(data);
     data = data.result;
     current_gacha_data = data;
     $(".monitor").attr({'id':data.id,'key':data.key});
@@ -147,10 +147,9 @@ $(document).ready(function () {
 
   });
   function gacha(n) {
-    let data=[],
-        key = $(".monitor").attr('key');
+    let data=[];
 
-    if(!key){alert("尚未選擇轉蛋");toggle_side_column(null,1,0);return}
+    if(!$(".monitor").attr('id')){alert("尚未選擇轉蛋");toggle_side_column(null,1,0);return}
     for(let i=0;i<n;i++){
       let result = Math.random();
       if(result<GachaProbability[0]) {data.push("r");r++;}

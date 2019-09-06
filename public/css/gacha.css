@@ -1,13 +1,7 @@
-.window{
-  width: 100%;
-  display: flex;
-  overflow: hidden;
-  height: 100%
-}
-.page_1{overflow-y: hidden;}
 #scoreboard th,#scoreboard td{background-color: transparent}
 .monitor{
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
   background: linear-gradient(rgb(51, 1, 82),rgb(159, 108, 195))
 }
 #foot{
@@ -171,14 +165,10 @@
 @media screen and (max-width:768px) {
   #scoreboard{width: 40%}
   .button_holder{height: 100px;right: 50px;}
-  #toggleScore{bottom: 0px}
   .iframe_holder iframe{width: 100%}
   .navigation .tag{font-size: 15px}
 }
 @media screen and (max-width:425px) {
   #scoreboard{width: 80%;left: 10%}
-  .button_holder{height: 100px;right: 30px;}
-  #toggleScore{bottom: 3px;left:30%}
-  #foot{left:0}
   .monitor .content img{ margin-top: 5%}
 }

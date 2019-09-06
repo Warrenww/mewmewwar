@@ -78,88 +78,83 @@
     <div id="nav_tag" class="left-side-active" active='0'>
       選擇轉蛋
     </div>
-    <div class="page_1">
-        <div class="window">
-
-          <div class="monitor">
-            <div class="content">
-              <img />
-              <div id="result"></div>
-            </div>
+    <div class="monitor">
+      <div class="content" style="justify-content:start">
+        <img />
+        <div id="result"></div>
+      </div>
+      <div class="iframe_holder"></div>
+      <div class="button_holder">
+        <img id="once" src="./css/footage/gacha/once.png" />
+        <img id="elevent" src="./css/footage/gacha/11times.png" />
+      </div>
+      <img id="foot" src="./css/footage/gacha/footer.png" />
+      <i class="material-icons cir_but" text='機率調整' id="toggleScore" value='1'>settings_input_component</i>
+      <div id="scoreboard">
+        <h2>轉蛋結果</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>稀有度</th>
+              <th>數量</th>
+              <th>機率</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="r">
+              <th>稀有</th>
+              <td class="number"></td>
+              <td class="probability"></td>
+            </tr>
+            <tr id="sr">
+              <th>激稀有</th>
+              <td class="number"></td>
+              <td class="probability"></td>
+            </tr>
+            <tr id="ssr">
+              <th>超激稀有</th>
+              <td class="number"></td>
+              <td class="probability"></td>
+            </tr>
+            <tr>
+              <th>總計</th>
+              <td id="total"></td>
+              <td></td>
+            </tr>
+            <tr>
+              <th>等級</th>
+              <td id="www" style="font-weight:bold;font-size:20px" colspan="2"></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 style="text-align:center">調整機率</h3>
+        <div id="probability">
+          <div>
+            <span style='flex:1'>稀有</span>
+            <span style='flex:3' class='slider'></span>
+            <span style='flex:1;text-align:center'></span>
           </div>
-
-          <div class="iframe_holder"></div>
-          <div class="button_holder">
-            <img id="once" src="./css/footage/gacha/once.png" />
-            <img id="elevent" src="./css/footage/gacha/11times.png" />
+          <div>
+            <span style='flex:1'>激稀有</span>
+            <span style='flex:3' class='slider'></span>
+            <span style='flex:1;text-align:center'></span>
           </div>
-          <img id="foot" src="./css/footage/gacha/footer.png" />
-          <i class="material-icons cir_but" text='機率調整' id="toggleScore" value='1'>settings_input_component</i>
-          <div id="scoreboard">
-            <h2>轉蛋結果</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>稀有度</th>
-                  <th>數量</th>
-                  <th>機率</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr id="r">
-                  <th>稀有</th>
-                  <td class="number"></td>
-                  <td class="probability"></td>
-                </tr>
-                <tr id="sr">
-                  <th>激稀有</th>
-                  <td class="number"></td>
-                  <td class="probability"></td>
-                </tr>
-                <tr id="ssr">
-                  <th>超激稀有</th>
-                  <td class="number"></td>
-                  <td class="probability"></td>
-                </tr>
-                <tr>
-                  <th>總計</th>
-                  <td id="total"></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <th>等級</th>
-                  <td id="www" style="font-weight:bold;font-size:20px" colspan="2"></td>
-                </tr>
-              </tbody>
-            </table>
-            <h3 style="text-align:center">調整機率</h3>
-            <div id="probability">
-              <div>
-                <span style='flex:1'>稀有</span>
-                <span style='flex:3' class='slider'></span>
-                <span style='flex:1;text-align:center'></span>
-              </div>
-              <div>
-                <span style='flex:1'>激稀有</span>
-                <span style='flex:3' class='slider'></span>
-                <span style='flex:1;text-align:center'></span>
-              </div>
-              <div>
-                <span style='flex:1'>超激稀有</span>
-                <span style='flex:3' class='slider'></span>
-                <span style='flex:1;text-align:center'></span>
-              </div>
-              <div>
-                <span style='flex:1'>傳說稀有</span>
-                <span style='flex:3' class='slider'></span>
-                <span style='flex:1;text-align:center'></span>
-              </div>
-              <button>重置機率</button>
-            </div>
+          <div>
+            <span style='flex:1'>超激稀有</span>
+            <span style='flex:3' class='slider'></span>
+            <span style='flex:1;text-align:center'></span>
           </div>
-
+          <div>
+            <span style='flex:1'>傳說稀有</span>
+            <span style='flex:3' class='slider'></span>
+            <span style='flex:1;text-align:center'></span>
+          </div>
+          <button>重置機率</button>
         </div>
+      </div>
     </div>
+
+
 
     <div class="floatDisplay_holder">
       <div class="floatDisplay">
