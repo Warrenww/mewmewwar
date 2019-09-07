@@ -131,6 +131,7 @@ $(document).ready(function () {
     console.log(data);
     displayCatData(data.buffer[0]) ;
     $(".display").css("pointer-events","auto");
+    socket.emit("required comment",{type:'cat',id:data.buffer[0].data.id});
   });
   function displayCatData(buffer) {
     // console.log(buffer);
@@ -174,7 +175,7 @@ $(document).ready(function () {
     initialSlider(data,lv);
     initial_survey();
     addSurvey(info.statistic,survey);
-    append_comment(info.comment);;
+    // append_comment(info.comment);;
 
     // scroll_to_class("content",1);
   }

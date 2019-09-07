@@ -120,10 +120,7 @@ $(document).on('click','.application i',function () {
     all : current_cat_statistic.application
   });
 });
-$(document).on("click","#comment_submit",submitComment);
-$(document).on('keypress','.comment_input textarea',function (e) {
-  if(e.keyCode == '13' && !e.shiftKey) {submitComment();return false}
-});
+
 
 function initial_survey() {
   $(".survey #nickname div").text("暫無暱稱");
@@ -325,7 +322,26 @@ function appendNickname(array) {
       `);
   }
 }
+
 var commentMap = {};
+$(document).on("click","#comment_submit",submitComment);
+$(document).on('keypress','.comment_input textarea',function (e) {
+  if(e.keyCode == '13' && !e.shiftKey) {submitComment();return false}
+});
+function submitComment() {
+  ga('send', 'event', 'comment', 'cat',CurrentCatID);
+  let comment = $(".comment_input").find('textarea').val();
+  // console.log(comment);
+  if(!comment||!comment.trim()) return;
+  socket.emit('comment cat',{
+    cat:CurrentCatID,
+    owner:CurrentUserID,
+    comment:comment,
+    time:new Date().getTime()
+  });
+  $(".comment_input").find('textarea').val('');
+  $(".Nocomment").remove();
+}
 function append_comment(comment) {
   commentMap = {};
   $(".commentTable .comment,.commentTable .Nocomment").remove();
@@ -344,20 +360,6 @@ function append_comment(comment) {
   }
   $(".commentTable tbody").append(html);
   commentPhoto(commentMap);
-}
-function submitComment() {
-  ga('send', 'event', 'comment', 'cat',CurrentCatID);
-  let comment = $(".comment_input").find('textarea').val();
-  // console.log(comment);
-  if(!comment||!comment.trim()) return;
-  socket.emit('comment cat',{
-    cat:CurrentCatID,
-    owner:CurrentUserID,
-    comment:comment,
-    time:new Date().getTime()
-  });
-  $(".comment_input").find('textarea').val('');
-  $(".Nocomment").remove();
 }
 function commentHtml(id,comment,photo=null,name=null) {
   if(comment.report)
@@ -493,5 +495,9 @@ $(document).ready(function () {
           .siblings('.name').text(`${obj[i].name?obj[i].name:("使用者_"+(unknowncount++))}`);
       }
     }
+  });
+  socket.on("required comment",(data) => {
+    console.log(data);
+    append_comment(data);
   });
 });

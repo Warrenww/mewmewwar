@@ -26,6 +26,7 @@ var Stagedata = require("./Stagedata");
 var Activity = require("./UpdateEvent");
 var Users = require("./Userdata");
 var Combodata = require("./Combodata");
+var Commentdata = require("./Commentdata");
 
 var dashboardID;
 var editingTable = {}; // for rename stage
@@ -70,6 +71,7 @@ function ReloadAllData(m=0) {
   Unitdata.load(mostSearchCat);
   Stagedata.load(mostSearchStage);
   Combodata.load(combodata);
+  Commentdata.load();
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
   if(!m && app.settings.env != 'development') Users.load();
   if(firstReload){
@@ -848,6 +850,14 @@ io.on('connection', function(socket){
       if(dashboardID) io.to(dashboardID).emit("console",Util.__handalError(e));
       else Util.__handalError(e);
     }
+  });
+  socket.on("required comment",(req) => {
+    var type = req.type,
+        id = req.id,
+        response;
+    console.log(`require ${type} ${id} comments `);
+    response = Commentdata.getComment(type,id);
+    socket.emit("required comment",response);
   });
   socket.on('comment cat',function (data) {
     var key = Unitdata.updateComment(data,'push'),

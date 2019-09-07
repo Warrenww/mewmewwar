@@ -15,7 +15,7 @@ var CatData = {};
 var EnemyData = {};
 // Get cat data,comment and enemy data from firebase.
 exports.load = function (mostSearchCat) {
-  console.log("Module start loading data and comment.");
+  console.log("Module start loading cat and enemy data.");
   __numberOfCatSearch = 0;
   __numberOfCat = 0;
   AbilityMap = {
