@@ -1,8 +1,6 @@
 var database = require("firebase").database();
 var Util = require("./Utility");
-var Parser = require("./Parser");
-var request = require("request");
-var cheerio = require("cheerio");
+var Users = require("./Userdata.js");
 var fs = require("fs");
 var CommentData = {};
 
@@ -26,9 +24,15 @@ exports.getComment = function (type,id) {
     else if(type === 'enemy') type = 'Enemy';
     else if(type === 'stage') type = 'Stage';
     else return null;
-    
+
     var temp = CommentData[type][id];
-    if(!temp || temp === '-') temp = null;
+    if(!temp || temp === '-') return null;
+
+    for(let i in temp){
+        let uid = temp[i].owner;
+        temp[i].userInfo = {photo:Users.getSetting(uid,'photo'),name:Users.getAttr(uid,'nickname')};
+    }
+
     return temp;
   } catch (e) {
     console.log(e);;

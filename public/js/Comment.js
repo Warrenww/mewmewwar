@@ -350,18 +350,14 @@ function append_comment(comment) {
     return
   }
   let html = '';
-  for(let i in comment){
-    html += commentHtml(i,comment[i]);
-    if(!commentMap[comment[i].owner]){
-      commentMap[comment[i].owner] = [i]
-    }else{
-      commentMap[comment[i].owner].push(i);
-    }
-  }
+  for(let i in comment)
+    html += commentHtml(i,comment[i],comment[i].userInfo.photo,comment[i].userInfo.name);
+
   $(".commentTable tbody").append(html);
-  commentPhoto(commentMap);
 }
-function commentHtml(id,comment,photo=null,name=null) {
+function commentHtml(id,comment,photo,name=null) {
+  photo = photo || Unit.imageURL('cat','001-1');
+  name = name || '某個離去的使用者';
   if(comment.report)
     if(comment.report.count > 3)
       return createHtml('tr',createHtml('td',createHtml('div',"<span>此留言已被多人檢舉，正在處理中</span>",{class:"comment_content"}),{colspan:6}),{class:'comment'});
@@ -408,12 +404,6 @@ function likeOrEdit(uid,like) {
     html+='<i class="material-icons" id="del">delete</i>';
   }
   return html
-}
-function commentPhoto(obj) {
-  // console.log(obj);
-  var buffer = [];
-  for(let i in obj) buffer.push(i);
-  socket.emit("required users photo",buffer);
 }
 
 var commentOrg;
@@ -481,20 +471,6 @@ $(document).ready(function () {
     console.log(data);
     if(data === 'Anonymous') alert("匿名使用者無法發布評論!");
     else $(".commentTable tbody").append(commentHtml(data.key,data,data.photo,data.name));
-  });
-  socket.on('return users photo',function (obj) {
-    // console.log(obj);
-    var default_photo = Unit.imageURL('cat','001-1'),
-        unknowncount = 0;
-    for(let i in obj){
-      if(!obj[i]) obj[i] = {photo:default_photo,name:"使用者"};
-      for(let j in commentMap[i]){
-        let id = commentMap[i][j];
-        $('.commentTable').find("#"+id).siblings('.photo')
-          .css('background-image','url("'+(obj[i].photo?obj[i].photo:default_photo)+'")')
-          .siblings('.name').text(`${obj[i].name?obj[i].name:("使用者_"+(unknowncount++))}`);
-      }
-    }
   });
   socket.on("required comment",(data) => {
     console.log(data);
