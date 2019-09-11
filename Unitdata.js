@@ -350,59 +350,6 @@ exports.updateStatistic = function (id,type,newData) {
   }
 }
 
-exports.updateComment = function (data,type) {
-  try{
-    if(type == 'push'){
-      var key = database.ref().push().key,
-      cat = data.cat;
-      console.log(data.owner,'comment on',data.cat,'with key',key);
-      if(!CatData[cat].comment||CatData[cat].comment == "-") CatData[cat].comment = {};
-      CatData[cat].comment[key] = {
-        owner:data.owner,
-        comment:data.comment,
-        time:data.time
-      };
-      database.ref("/CatData/"+cat+"/comment/"+key).set({
-        owner:data.owner,
-        comment:data.comment,
-        time:data.time
-      });
-      return key;
-    } else if(type == 'change'){
-      console.log(data.uid,data.type,'comment in',data.cat);
-      if(data.type == 'like'){
-        if(data.inverse){
-          delete CatData[data.cat].comment[data.key].like[data.uid];
-          database.ref("/CatData/"+data.cat+"/comment/"+data.key+"/like/"+data.uid).set(null);
-        } else {
-          CatData[data.cat].comment[data.key].like = CatData[data.cat].comment[data.key].like ?
-          CatData[data.cat].comment[data.key].like:{};
-          CatData[data.cat].comment[data.key].like[data.uid] = 1;
-          database.ref("/CatData/"+data.cat+"/comment/"+data.key+"/like/"+data.uid).set(1);
-        }
-      }else if(data.type == 'del'){
-        delete CatData[data.cat].comment[data.key] ;
-        database.ref("/CatData/"+data.cat+"/comment/"+data.key).set(null);
-      }else if(data.type == 'edit'){
-        CatData[data.cat].comment[data.key].comment = data.val;
-        database.ref("/CatData/"+data.cat+"/comment/"+data.key+"/comment").set(data.val);
-      } else if(data.type == 'report'){
-        CatData[data.cat].comment[data.key].report = CatData[data.cat].comment[data.key].report ?
-        CatData[data.cat].comment[data.key].report:{count:0};
-        CatData[data.cat].comment[data.key].report[data.uid] = 1;
-        CatData[data.cat].comment[data.key].report.count += 1;
-        database.ref("/CatData/"+data.cat+"/comment/"+data.key+"/report").set(CatData[data.cat].comment[data.key].report);
-        if(CatData[data.cat].comment[data.key].report.count > 3){
-          database.ref("/Report/catComment").push({cat:data.cat,key:data.key});
-        }
-      }
-    }
-  }
-  catch(e){
-    Util.__handalError(e);
-  }
-}
-
 exports.fetch = function (type,arr) {
   console.log(type,arr);
   var Generator = (function* (arr) {

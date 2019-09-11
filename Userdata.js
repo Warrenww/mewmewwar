@@ -193,7 +193,7 @@ exports.SearchHistory = function (uid,type,data) {
 }
 
 exports.StoreLevel = function(uid,id,type,lv){
-  console.log(uid+" change his/her "+type,id+"'s level to "+lv);
+  // console.log(uid+" change his/her "+type,id+"'s level to "+lv);
   try{
     userPromise(uid).then((rs,rj)=>{
       id = id.toString().substring(0,3);

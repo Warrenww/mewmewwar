@@ -101,6 +101,19 @@ exports.MaxDayInMonth = function (month,year=1) {
   }
 }
 
+exports.CapitalChar = function (string, start = null, end = null) {
+  var result = '';
+  start = start || 0;
+  end = end || string.length; 
+  if(end < start) [start,end] = [end,start];
+  for(let i = 0;i < string.length;i++){
+    let temp = string.charCodeAt(i);
+    if(i >= start && i < end) temp -= 32;
+    result += String.fromCharCode(temp);
+  }
+  return result;
+}
+
 function quickSort(list,target=null,reverse=false) {
     var length = list.length;
     if (length <= 1) return list

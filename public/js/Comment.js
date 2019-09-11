@@ -323,18 +323,25 @@ function appendNickname(array) {
   }
 }
 
-var commentMap = {};
 $(document).on("click","#comment_submit",submitComment);
 $(document).on('keypress','.comment_input textarea',function (e) {
   if(e.keyCode == '13' && !e.shiftKey) {submitComment();return false}
 });
 function submitComment() {
   ga('send', 'event', 'comment', 'cat',CurrentCatID);
-  let comment = $(".comment_input").find('textarea').val();
+  var comment = $(".comment_input").find('textarea').val();
   // console.log(comment);
   if(!comment||!comment.trim()) return;
-  socket.emit('comment cat',{
-    cat:CurrentCatID,
+
+  var targetId;
+  if(page === 'cat') targetId = CurrentCatID;
+  else if (page === 'enemy') targetId = current_enemy_data.id;
+  else if (page === 'stage') targetId = current_level_data.data.id;
+  else return;
+
+  socket.emit('submit comment',{
+    type:page,
+    id:targetId,
     owner:CurrentUserID,
     comment:comment,
     time:new Date().getTime()
@@ -343,26 +350,25 @@ function submitComment() {
   $(".Nocomment").remove();
 }
 function append_comment(comment) {
-  commentMap = {};
   $(".commentTable .comment,.commentTable .Nocomment").remove();
   if(!comment||comment == "-"){
     $(".commentTable").append("<tr class='Nocomment'><td colspan='6'>尚無評論</td></tr>");
-    return
+    return;
   }
-  let html = '';
+  var html = '';
   for(let i in comment)
     html += commentHtml(i,comment[i],comment[i].userInfo.photo,comment[i].userInfo.name);
 
   $(".commentTable tbody").append(html);
 }
-function commentHtml(id,comment,photo,name=null) {
+function commentHtml(id,comment,photo = null,name = null) {
   photo = photo || Unit.imageURL('cat','001-1');
   name = name || '某個離去的使用者';
   if(comment.report)
     if(comment.report.count > 3)
       return createHtml('tr',createHtml('td',createHtml('div',"<span>此留言已被多人檢舉，正在處理中</span>",{class:"comment_content"}),{colspan:6}),{class:'comment'});
   for(let i in comment.report)
-    if(i == CurrentUserID)
+    if(i === CurrentUserID)
       return createHtml('tr',createHtml('td',createHtml('div',"<span>你已檢舉此留言</span>",{class:"comment_content"}),{colspan:6}),{class:'comment'});
   return `
     <tr class="comment">
@@ -408,38 +414,48 @@ function likeOrEdit(uid,like) {
 
 var commentOrg;
 $(document).on('click','.function .like i',function () {
-  var type = $(this).attr('id'),
+  var func = $(this).attr('id'),
       num = Number($(this).next('span').text()),
       val = Number($(this).attr('value')),
       key = $(this).parents('div').attr("id"),
       inverse = false;
-  // console.log(type);
-  if(type == 'like'){
+  // console.log(func);
+  if(func == 'like'){
     if(!val) $(this).next('span').text(num+1);
-    else {$(this).next('span').text(num-1);inverse = true;}
+    else {
+      $(this).next('span').text(num-1);
+      inverse = true;
+    }
   }
-  else if(type == 'del'){
+  else if(func == 'del'){
     let r = confirm('確定刪除?!');
-    if(r)
-      $(this).parents(".comment").remove();
+    if(r) $(this).parents(".comment").remove();
   }
-  else if(type == 'edit'){
+  else if(func == 'edit'){
     a = $(this).parents(".function").siblings(".bubble");
     commentOrg = a.html().split("<br>").join("\n");
     a.html(`<textarea rows='1' maxlength='100' style='width:${($(".comment").innerWidth() - $(".photo").innerWidth())*0.75}'></textarea>`)
       .find("textarea").val(commentOrg).select();
-    return
-  } else if(type == 'report'){
+    return;
+  }
+  else if(func == 'report'){
     if(!confirm("確定檢舉此留言?")) return;
     $(this).parents(".comment_content").html("<span>你已檢舉此留言</span>");
   }
 
+  var targetId;
+  if(page === 'cat') targetId = CurrentCatID;
+  else if (page === 'enemy') targetId = current_enemy_data.id;
+  else if (page === 'stage') targetId = current_level_data.data.id;
+  else return;
+
   socket.emit('comment function',{
-    uid:CurrentUserID,
-    key:key,
-    cat:CurrentCatID.substring(0,3),
-    type:type,
-    inverse:inverse
+    uid: CurrentUserID,
+    key: key,
+    type: page,
+    id: targetId,
+    func: func,
+    inverse: inverse
   });
   $(this).attr('value',function () { return val?0:1 });
 });
@@ -454,22 +470,31 @@ function editComment() {
       b = val.split("\n").join("<br>");
   if(r){
      $(this).parent().html(b);
+
+     var targetId;
+     if(page === 'cat') targetId = CurrentCatID;
+     else if (page === 'enemy') targetId = current_enemy_data.id;
+     else if (page === 'stage') targetId = current_level_data.data.id;
+     else return;
+
      socket.emit('comment function',{
-       uid:CurrentUserID,
-       key:key,
-       cat:CurrentCatID.substring(0,3),
-       type:'edit',
-       val:val,
-       inverse:false
+       uid: CurrentUserID,
+       key: key,
+       id: targetId,
+       type: page,
+       func: 'edit',
+       val: val,
+       inverse: false
      });
    }
   else $(this).parent().html(commentOrg.split("\n").join("<br>"));
 }
 
 $(document).ready(function () {
-  socket.on('cat comment push',function (data) {
+  socket.on('comment push',function (data) {
     console.log(data);
-    if(data === 'Anonymous') alert("匿名使用者無法發布評論!");
+    if(!data) alert("發生未知錯誤!");
+    else if(data === 'Anonymous') alert("匿名使用者無法發布評論!");
     else $(".commentTable tbody").append(commentHtml(data.key,data,data.photo,data.name));
   });
   socket.on("required comment",(data) => {

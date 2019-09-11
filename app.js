@@ -681,14 +681,6 @@ io.on('connection', function(socket){
       else Util.__handalError(e);
     }
   });
-  socket.on("required users photo",function (arr) {
-    var obj = {};
-    for(let i in arr){
-      let uid = arr[i];
-      obj[uid] = {photo:Users.getSetting(uid,'photo'),name:Users.getAttr(uid,'nickname')};
-    }
-    socket.emit('return users photo',obj);
-  });
 
   socket.on("required stage name",chapter => {
     if(chapter === 'legendquest')
@@ -859,20 +851,14 @@ io.on('connection', function(socket){
     response = Commentdata.getComment(type,id);
     socket.emit("required comment",response);
   });
-  socket.on('comment cat',function (data) {
-    var key = Unitdata.updateComment(data,'push'),
-        obj = {
-          key:key,
-          owner:data.owner,
-          comment:data.comment,
-          time:data.time,
-          photo:Users.getSetting(data.owner,'photo'),
-          name:Users.getAttr(data.owner,'nickname')
-        };
-    if(Users.getAttr(data.owner,"Anonymous")) obj = "Anonymous";
-    socket.emit('cat comment push',obj);
+  socket.on('submit comment',function (data) {
+    var obj = Commentdata.updateComment(data,'push');
+    socket.emit('comment push',obj);
   });
-  socket.on('comment function',function (data) { Unitdata.updateComment(data,'change'); });
+  socket.on('comment function',function (data) {
+    var {func, ...rest} = data;
+    Commentdata.updateComment(rest, func);
+  });
 
   socket.on("cat to stage",function (data) {
     console.log("cat to stage");
