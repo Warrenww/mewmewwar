@@ -27,6 +27,7 @@ var Activity = require("./UpdateEvent");
 var Users = require("./Userdata");
 var Combodata = require("./Combodata");
 var Commentdata = require("./Commentdata");
+var updateMutex = true;
 
 var dashboardID;
 var editingTable = {}; // for rename stage
@@ -58,10 +59,11 @@ var mostSearchCat = [],
     mostSearchStage = [];
 var reloadTimeOut,firstReload=true;
 ReloadAllData();
-function ReloadAllData(m=0) {
+async function ReloadAllData(m=0) {
+  updateMutex = true;
   clearTimeout(reloadTimeOut);
   database.ref("/version").once("value",(snapshot)=>{
-    VERSION = snapshot.val();
+    VERSION = snapshot.val() || VERSION;
     if(dashboardID) io.to(dashboardID).emit("console",`VERSION : ${VERSION}`);
     console.log("VERSION : ",VERSION);
   });
@@ -73,7 +75,7 @@ function ReloadAllData(m=0) {
   Combodata.load(combodata);
   Commentdata.load();
   database.ref("/gachadata").once("value",(snapshot)=>{gachadata = snapshot.val();});
-  if(!m && app.settings.env != 'development') Users.load();
+  if(!m && app.settings.env != 'development') await Users.load();
   if(firstReload){
     database.ref("/legend").once("value",(snapshot)=>{ legenddata = snapshot.val(); Stagelegend();});
   } else {
@@ -122,10 +124,15 @@ function ReloadAllData(m=0) {
 
   reloadTimeOut = setTimeout(ReloadAllData,6*3600*1000);
   firstReload = false;
+  updateMutex = false;
 }
 
 var onLineUser = {};
 io.on('connection', function(socket){
+  if(updateMutex) {
+    socket.emit("cloud message","伺服器更新資料中，請稍後在試><")
+    return false;
+  }
 
   socket.on("public data",(dataArr)=>{
     var response = {};
@@ -849,6 +856,7 @@ io.on('connection', function(socket){
         response;
     console.log(`require ${type} ${id} comments `);
     response = Commentdata.getComment(type,id);
+    // console.log(response);
     socket.emit("required comment",response);
   });
   socket.on('submit comment',function (data) {

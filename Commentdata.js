@@ -24,7 +24,7 @@ exports.getComment = function (type,id) {
     if(!CommentData[type]) return false;
 
     var temp = CommentData[type][id];
-    if(!temp || temp === '-') return null;
+    if(!temp || temp === '-') return false;
 
     for(let i in temp){
         let uid = temp[i].owner;

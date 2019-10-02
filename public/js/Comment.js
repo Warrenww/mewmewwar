@@ -1,3 +1,4 @@
+// const Page = location.href.split("/").pop();
 $(document).on('click','#nickname span',function () {
   var type = $(this).attr("id"),
       queue = current_cat_statistic.nickname?current_cat_statistic.nickname:[],
@@ -328,19 +329,23 @@ $(document).on('keypress','.comment_input textarea',function (e) {
   if(e.keyCode == '13' && !e.shiftKey) {submitComment();return false}
 });
 function submitComment() {
-  ga('send', 'event', 'comment', 'cat',CurrentCatID);
   var comment = $(".comment_input").find('textarea').val();
   // console.log(comment);
   if(!comment||!comment.trim()) return;
 
+
   var targetId;
-  if(page === 'cat') targetId = CurrentCatID;
-  else if (page === 'enemy') targetId = current_enemy_data.id;
-  else if (page === 'stage') targetId = current_level_data.data.id;
+  if(Page === 'cat') targetId = CurrentCatID;
+  else if (Page === 'enemy') targetId = current_enemy_data.id;
+  else if (Page === 'stage'){
+    targetId = current_level_data.data.id;
+    targetId = targetId.split("-");
+    targetId = [targetId[1],targetId[2]].join("-");
+  }
   else return;
 
   socket.emit('submit comment',{
-    type:page,
+    type:Page,
     id:targetId,
     owner:CurrentUserID,
     comment:comment,
@@ -444,15 +449,19 @@ $(document).on('click','.function .like i',function () {
   }
 
   var targetId;
-  if(page === 'cat') targetId = CurrentCatID;
-  else if (page === 'enemy') targetId = current_enemy_data.id;
-  else if (page === 'stage') targetId = current_level_data.data.id;
+  if(Page === 'cat') targetId = CurrentCatID;
+  else if (Page === 'enemy') targetId = current_enemy_data.id;
+  else if (Page === 'stage'){
+    targetId = current_level_data.data.id;
+    targetId = targetId.split("-");
+    targetId = [targetId[1],targetId[2]].join("-");
+  }
   else return;
 
   socket.emit('comment function',{
     uid: CurrentUserID,
     key: key,
-    type: page,
+    type: Page,
     id: targetId,
     func: func,
     inverse: inverse
@@ -472,16 +481,20 @@ function editComment() {
      $(this).parent().html(b);
 
      var targetId;
-     if(page === 'cat') targetId = CurrentCatID;
-     else if (page === 'enemy') targetId = current_enemy_data.id;
-     else if (page === 'stage') targetId = current_level_data.data.id;
+     if(Page === 'cat') targetId = CurrentCatID;
+     else if (Page === 'enemy') targetId = current_enemy_data.id;
+     else if (Page === 'stage'){
+       targetId = current_level_data.data.id;
+       targetId = targetId.split("-");
+       targetId = [targetId[1],targetId[2]].join("-");
+     }
      else return;
 
      socket.emit('comment function',{
        uid: CurrentUserID,
        key: key,
        id: targetId,
-       type: page,
+       type: Page,
        func: 'edit',
        val: val,
        inverse: false
@@ -492,13 +505,13 @@ function editComment() {
 
 $(document).ready(function () {
   socket.on('comment push',function (data) {
-    console.log(data);
+    // console.log(data);
     if(!data) alert("發生未知錯誤!");
     else if(data === 'Anonymous') alert("匿名使用者無法發布評論!");
     else $(".commentTable tbody").append(commentHtml(data.key,data,data.photo,data.name));
   });
   socket.on("required comment",(data) => {
-    console.log(data);
+    // console.log(data);
     append_comment(data);
   });
 });

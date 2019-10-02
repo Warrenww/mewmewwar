@@ -7,14 +7,17 @@ const HistoryLimit = 50;
 
 exports.load = function () {
   console.log("Module start load user data.");
-
-  database.ref("/user").once("value",(snapshot)=>{
-    temp = snapshot.val();
-    // for(let i in temp) UserData[i] = temp[i];
-    console.log("Module load user data complete!");
-    // arrangeUserData(userdata);
-    arrangeUserData(temp);
+  return new Promise(function(resolve, reject) {
+    database.ref("/user").once("value",(snapshot)=>{
+      temp = snapshot.val();
+      // for(let i in temp) UserData[i] = temp[i];
+      console.log("Module load user data complete!");
+      // arrangeUserData(userdata);
+      arrangeUserData(temp);
+      resolve(true);
+    });
   });
+
 }
 
 exports.updateLastLogin = function (uid,time) {
@@ -211,7 +214,7 @@ exports.StoreLevel = function(uid,id,type,lv){
 }
 exports.StoreStage = function(uid,id,stage){
   stage = Number(stage)+1;
-  console.log(uid+" change his/her cat"+id+"'s stage to "+stage);
+  // console.log(uid+" change his/her cat"+id+"'s stage to "+stage);
   try{
     id = id.toString().substring(0,3);
     // target cat or enemy

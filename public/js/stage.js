@@ -211,7 +211,10 @@ $(document).ready(function () {
   });
   socket.on("level data",(obj) => {
     $(".legendquestTable").hide();
-    displayStageData(obj)
+    displayStageData(obj);
+    var trimId = obj.data.id.split("-");
+    trimId = [trimId[1],trimId[2]].join("-");
+    socket.emit("required comment",{type:'stage',id:trimId});
   });
   socket.on("legendquest",data => {
     console.log(data);

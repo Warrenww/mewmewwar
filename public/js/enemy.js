@@ -159,7 +159,8 @@ $(document).ready(function () {
     _data = new Enemy(data[0].data);
     current_enemy_data = _data;
     $(".dataTable").attr("id",_data.id);
-    displayEnemyData(_data,data[0].lv,data[0].count) ;
+    displayEnemyData(_data,data[0].lv,data[0].count);
+    socket.emit("required comment",{type:'enemy',id:_data.id});
   });
 
   function displayEnemyData(data,lv = 1,count) {

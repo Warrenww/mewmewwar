@@ -87,8 +87,8 @@ class EventIframe extends Component{
                 <h3>{x.title}</h3>
                 <div dangerouslySetInnerHTML={{__html:(()=>{
                     let a = document.createElement('div');
-                    a.innerHTML = x.content.split("open-").join("").split("<a").join("<a target='_blank'");
-                    return a
+                    a.innerHTML = x.content?x.content.split("open-").join("").split("<a").join("<a target='_blank'"):"";
+                    return a;
                   })().innerHTML
                 }}></div>
               </div>
@@ -112,6 +112,7 @@ class PredictionTable extends Component {
   render(){
     var data = this.props.data,
         day = [];
+        console.log(data);
     const colorSet=[ '#95CC85', '#EDDB8A', '#FF5959', '#FF9259', '#4ABABB' ];
     if(!data) return null;
     for(let i=0;i<data.duration;i++) day.push(data.start+i*86400000);
@@ -153,7 +154,6 @@ class EventPrediction extends Component {
         dayPass = 0,
         startRow = 0,
         tableSpace = [[]];
-
     subRouting(obj.gachaP,startRow);
     startRow = tableSpace.length;
     subRouting(obj.eventP,startRow);
@@ -173,6 +173,7 @@ class EventPrediction extends Component {
           tableSpace.map(x => x.length = dayPass);
         }
         date = date.map(x => (x-startDate)/86400000);
+        console.log(name,date);
         for(let j in tableSpace){
           if(find) break;
           if(j < startRow) continue;

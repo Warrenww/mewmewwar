@@ -26,6 +26,7 @@ exports.load = function (mostSearchCat) {
   var exist=null,buffer=[],localCount=0 ;
   database.ref("/CatData").once("value",(snapshot)=>{
     var temp = snapshot.val();
+    if(temp === null || temp === undefined){return;}
     for(let i in temp){
       CatData[i] = temp[i];
       AbilityMap.cat.all.push(i);

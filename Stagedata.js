@@ -9,6 +9,7 @@ exports.load = function () {
 
   database.ref("/stagedata").once("value",(snapshot)=>{
     temp = snapshot.val();
+    if(temp === null || temp === undefined){return;}
     var buffer = [];
     for(let i in temp){
       StageData[i] = temp[i];

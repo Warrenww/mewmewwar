@@ -323,7 +323,7 @@
             </tr>
             <tr>
               <th>初回</th>
-              <td style="color:var(--orange)">20%</td> 
+              <td style="color:var(--orange)">20%</td>
               <td style='color:var(--red)'>23%</td>
               <td>12%</td>
               <td>9%</td>
@@ -374,7 +374,7 @@
               <td>10%</td>
               <td style='color:var(--red)'>35%</td>
               <td style="color:var(--orange)">30%</td>
-              <td style="color:var(--orange)">25%</td> 
+              <td style="color:var(--orange)">25%</td>
               <td style='color:lightgray'>0%</td>
             </tr>
             <tr>
@@ -408,6 +408,18 @@
             </tr>
           </thead>
           <tbody> </tbody>
+        </table>
+        <div id="comment_head" class="tableTitle" active='0'>評論</div>
+        <table class="commentTable">
+          <tbody> </tbody>
+          <tfoot>
+            <tr><th>
+              <div class="comment_input">
+                <textarea rows='1' maxlength='100' placeholder="想說什麼呢..."></textarea>
+                <i class="material-icons" id="comment_submit">&#xe163;</i>
+              </div>
+            </th></tr>
+          </tfoot>
         </table>
       </div>
     </div>
@@ -473,6 +485,7 @@
     <script src="./js/class.js"></script>
     <script src="./js/overall.js"></script>
     <script src="./js/stage.js"></script>
+    <script src="./js/comment.js"></script>
     <script src="./js/FloatDisplay.js"></script>
     <script src="./js/jquery.easing.1.3.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>

@@ -169,7 +169,7 @@ function condenseCatName(data) {
   return html ;
 }
 function condenseEnemyName(data) {
-  console.log(data);
+  // console.log(data);
   let html = '' ;
   for(let i in data){
     if(!data[i].id) continue
