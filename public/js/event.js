@@ -85,7 +85,7 @@ function createPredictionQueue(data) {
     updateMap(map,0,d[0],day,n,maxDay,month);
   }
   // console.log(start,end);
-  month = AddZero(start,3).substring(0,2);
+  month = AddZero(start,3).toString().substring(0,2);
   maxDay = TotalDay(Number(month),data.start.substring(0,4));
   for(let i=start;i<=end;i++) {
     if(i>Number(month+maxDay)&&i<(Number(month)+1)*100+1) continue

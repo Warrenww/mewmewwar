@@ -8,14 +8,14 @@ const HistoryLimit = 50;
 exports.load = function () {
   console.log("Module start load user data.");
   return new Promise(function(resolve, reject) {
-    database.ref("/user").once("value",(snapshot)=>{
-      temp = snapshot.val();
-      // for(let i in temp) UserData[i] = temp[i];
-      console.log("Module load user data complete!");
-      // arrangeUserData(userdata);
-      arrangeUserData(temp);
-      resolve(true);
-    });
+    resolve(true);
+    // database.ref("/user").once("value",(snapshot)=>{
+    //   temp = snapshot.val();
+    //   // for(let i in temp) UserData[i] = temp[i];
+    //   console.log("Module load user data complete!");
+    //   // arrangeUserData(userdata);
+    //   // arrangeUserData(temp);
+    // });
   });
 
 }
