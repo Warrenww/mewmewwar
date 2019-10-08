@@ -14,12 +14,12 @@ var config = {
   messagingSenderId: "268279710428"
 };
 firebase.initializeApp(config);
-var admin = require("firebase-admin");
-var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://BattleCat-Smart.firebaseio.com"
-});
+// var admin = require("firebase-admin");
+// var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: "https://BattleCat-Smart.firebaseio.com"
+// });
 var Util = require("./Utility");
 var Unitdata = require("./Unitdata");
 var Stagedata = require("./Stagedata");
