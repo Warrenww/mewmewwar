@@ -207,7 +207,7 @@ database.ref("/CatData").once("value",(snapshot)=>{
 //   });
 
 // var gen = (function* () {
-//   for(let i=0;i<450;i++){
+//   for(let i=300;i<450;i++){
 //     var url = `https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/tw/R${AddZero(i)}.html`
 //     showgachaName(url,i);
 //     yield;

@@ -290,6 +290,7 @@ function parseAbility(s) {
     "撃破時お金x2": "2倍金錢",
     "魔女キラー": "魔女殺手",
     "使徒キラー": "使徒殺手",
+    "渾身の一撃": "渾身一擊"
   }[s];
   s = temp?temp:s;
   return s

@@ -2,3 +2,6 @@
 /backup
 /.vs
 logs.txt
+*.log
+badUser.txt
+*.psd
