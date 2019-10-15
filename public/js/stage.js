@@ -234,7 +234,8 @@ $(document).ready(function () {
           }
         },
         res = data.response,
-        table = "<tr>";
+        table = "<tr>",
+        searchQueue = [];
     if([15,25,35,40,45,48].indexOf(level+1) !== -1){
       obj.data.reward.push({chance:"100%",limit:1,prize:{amount:(level+1 === 48?3:1)+"個",name:"貓眼石【傳說稀有】"}});
     }
@@ -257,24 +258,50 @@ $(document).ready(function () {
       let stage = res[i].name.id, stageName = res[i].name.name;
       table += `<th colspan='3'>${stageName}</th></tr><tr>`;
       for(let j in res[i].stage){
-        let temp = res[i].stage[j], exist = [];
+        let temp = res[i].stage[j], exist = [],enemyHtml="";
         table += `<th style="padding:0"><span class='card' id='${['story',stage,temp.id].join("-")}' style="background-image:url('/css/footage/stage/${temp.bg}.png')">${temp.name}</span></th>`;
-        table += "<td><div>";
         for(let k in temp.enemy){
           let enemyID = temp.enemy[k].id;
           if(exist.indexOf(enemyID) !== -1 || enemyID == '023') continue;
           exist.push(enemyID);
-          table += "<img src='"+Unit.imageURL("enemy",enemyID)+"'/>";
+          enemyHtml += "<img src='"+Unit.imageURL("enemy",enemyID)+"'/>";
         }
-        table += "</div></td><td style='width:50px'>"+exist.length+"</td></tr><tr>"
+        table += "<td><div data='"+JSON.stringify(exist)+"'>"+enemyHtml+"</div></td><td style='width:50px'>"+exist.length+"</td></tr><tr>";
+        searchQueue = searchQueue.concat(exist.map(x => {if(searchQueue.indexOf(x) === -1) return x;else return null}));
       }
     }
     table += "</tr>";
+
     $(".legendquestTable").eq(0).find(".starReq td").each(function (index) {
       $(this).html(index+(level<40?1:2)+"★");
     });
-    $(".legendquestTable").eq(1).empty().append(table);
+    $(".legendquestTable:last thead tr td").empty().append("<div>"+searchQueue.map(x=>{
+      return x?"<img active=0 data='"+x+"' src='"+Unit.imageURL("enemy",x)+"'/>":"";
+    }).join("")+"</div>");
+    $(".legendquestTable:last tbody").empty().append(table);
+
     displayStageData(obj);
+  });
+  var legendEnemyChoosed = [];
+  $(document).on('click',"#enemyChooser img",function(){
+    var filter = $(this).attr('data'),
+        active = Number($(this).attr('active'));
+        active = Number(!active);
+
+    if(active) legendEnemyChoosed.push(filter);
+    else legendEnemyChoosed.splice(legendEnemyChoosed.indexOf(filter),1);
+
+    $(this).attr("active",active);
+
+    $(".legendquestTable:last tbody tr").each(function () {
+      let temp = JSON.parse($(this).find('div').attr('data') || "[]");
+      for(i of legendEnemyChoosed){
+        if(temp.indexOf(i) !== -1) continue;
+        $(this).hide();
+        return;
+      }
+      $(this).show();
+    });
   });
 
   // Change level star

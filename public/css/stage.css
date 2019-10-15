@@ -337,6 +337,14 @@ display: flex;
 flex-wrap: wrap;
 }
 .legendquestTable td img{margin: 5px}
+#enemyChooser{
+  justify-content: center;
+}
+#enemyChooser img{
+  cursor: pointer;
+  border: 3px solid transparent;
+}
+#enemyChooser img[active="1"]{border-color: var(--orange);}
 
 @media screen and (max-width:1024px) {
   .enemy_head th>span{display: none;}
