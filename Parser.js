@@ -75,7 +75,7 @@ exports.parseChar = function(c,obj,type) {
           type:"不死剋星",
         });
       }
-      else if(c[i].indexOf("無効")!=-1){
+      else if(c[i].indexOf("無効")!=-1 && c[i].indexOf("の確率で")==-1){
         let aa = c[i].split("（")[1].split("）")[0].split(" ");
         console.log(aa);
         for(let i in aa){
@@ -83,7 +83,7 @@ exports.parseChar = function(c,obj,type) {
           obj.char.push({type:"免疫"+parseAbility(aa[i])});
         }
       }
-      else if(c[i].indexOf("メタル")!=-1){
+      else if(c[i].indexOf("メタル")!=-1 && c[i].indexOf("の確率で")==-1){
         obj.tag.push("鋼鐵");
         obj.char.push({type:"鋼鐵 (受到會心一擊以外傷害值為1)"});
       }
@@ -208,11 +208,13 @@ exports.parseChar = function(c,obj,type) {
       else if (c[i].indexOf("の確率で")!=-1) {
         c[i] = c[i].split(" ※")[0];
         let aa = c[i].split("％の確率で")[0].split(" "),
-        ene = aa[1]?(aa.length<4||aa.indexOf("除く）")!=-1 ?[parseEnemy(aa[1])]:[parseEnemy(aa[1]),parseEnemy(aa[2])]):"",
-        cha = Number(aa[aa.length-1]),
-        bb = c[i].split("の確率で")[1].indexOf("F")!=-1?c[i].split("の確率で")[1].split("F"):c[i].split("の確率で"),
-        tim = Number(bb[0].split("～")[0])/30,abi = parseAbility(bb[1]);
+            ene = aa[1]?(aa.length<4||aa.indexOf("除く）")!=-1 ?[parseEnemy(aa[1])]:aa.map((x,i)=>{return ((i==0||i==aa.length-1)?null:parseEnemy(x))})):"",
+            cha = Number(aa[aa.length-1]),
+            bb = c[i].split("の確率で")[1].indexOf("F")!=-1?c[i].split("の確率で")[1].split("F"):c[i].split("の確率で"),
+            tim = Number(bb[0].split("～")[0])/30,
+            abi = parseAbility(bb[1]);
         for(let j in ene){
+          if(!ene[j]) continue;
           if(obj.tag.indexOf("對"+ene[j].substring(0,2))==-1&&ene!="")
           obj.tag.push("對"+ene[j].substring(0,2));
           if(aa.indexOf("除く）")!=-1&&aa.indexOf(" 全ての敵（白")==-1) obj.tag.push("對白色")
@@ -262,7 +264,7 @@ function parseAbility(s) {
     ww = s.split("波動")[0].split("Lv")[1]
     return "波動 "+(ww?ww:"")
   }
-  s = s.trim();
+  s = s.trim().split("（")[0];
   temp = {
     "のみに攻撃": "只能攻擊",
     "1度だけ生き残る": "復活",
@@ -290,7 +292,8 @@ function parseAbility(s) {
     "撃破時お金x2": "2倍金錢",
     "魔女キラー": "魔女殺手",
     "使徒キラー": "使徒殺手",
-    "渾身の一撃": "渾身一擊"
+    "渾身の一撃": "渾身一擊",
+    "攻撃無効": "攻擊無效"
   }[s];
   s = temp?temp:s;
   return s

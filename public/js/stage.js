@@ -2,6 +2,7 @@ var CurrentUserID;
 var current_level_data = {},
     current_enemy_data = {},
     current_user_setting = {};
+
 $(document).ready(function () {
   var timer = new Date().getTime();
 
@@ -210,14 +211,13 @@ $(document).ready(function () {
     scroll_to_class('display',0);
   });
   socket.on("level data",(obj) => {
-    $(".legendquestTable").hide();
     displayStageData(obj);
     var trimId = obj.data.id.split("-");
     trimId = [trimId[1],trimId[2]].join("-");
+    $(".legendquestTable").hide();
     socket.emit("required comment",{type:'stage',id:trimId});
   });
   socket.on("legendquest",data => {
-    console.log(data);
     $(".legendquestTable").show();
     var level = Number(data.level),
         obj = {
@@ -227,10 +227,11 @@ $(document).ready(function () {
             continue:false,
             energy:(Math.floor(level/20)+1)*50,
             exp:(Math.floor(level/20)+1)*950,
-            id: "legendquest-s16000",
+            id: "legendquest-s16000-"+level,
             integral:false,
             name: "Level "+(level+1),
             reward:[],
+            enemy: data.response
           }
         },
         res = data.response,
@@ -254,11 +255,11 @@ $(document).ready(function () {
       });
     }
 
-    for(let i in res){
-      let stage = res[i].name.id, stageName = res[i].name.name;
+    res.map((x,i)=>{
+      let stage = x.name.id, stageName = x.name.name;
       table += `<th colspan='3'>${stageName}</th></tr><tr>`;
-      for(let j in res[i].stage){
-        let temp = res[i].stage[j], exist = [],enemyHtml="";
+      x.stage.map((temp,j)=>{
+        let exist = [],enemyHtml="";
         table += `<th style="padding:0"><span class='card' id='${['story',stage,temp.id].join("-")}' style="background-image:url('/css/footage/stage/${temp.bg}.png')">${temp.name}</span></th>`;
         for(let k in temp.enemy){
           let enemyID = temp.enemy[k].id;
@@ -266,10 +267,11 @@ $(document).ready(function () {
           exist.push(enemyID);
           enemyHtml += "<img src='"+Unit.imageURL("enemy",enemyID)+"'/>";
         }
-        table += "<td><div data='"+JSON.stringify(exist)+"'>"+enemyHtml+"</div></td><td style='width:50px'>"+exist.length+"</td></tr><tr>";
+        table +=  "<td><div data='"+JSON.stringify(exist)+"'>"+enemyHtml+
+                  `</div></td><td style='width:50px'><i class='material-icons cir_but' data='${''+i+j}' text='載入敵人資訊'>get_app</i></td></tr><tr>`;
         searchQueue = searchQueue.concat(exist.map(x => {if(searchQueue.indexOf(x) === -1) return x;else return null}));
-      }
-    }
+      });
+    });
     table += "</tr>";
 
     $(".legendquestTable").eq(0).find(".starReq td").each(function (index) {
@@ -302,6 +304,13 @@ $(document).ready(function () {
       }
       $(this).show();
     });
+  });
+
+  $(document).on('click','.legendquestTable .cir_but',function () {
+    var ref = $(this).attr("data");
+    data = current_level_data.data.enemy[ref.substring(0,1)].stage[ref.substring(1)];
+    scroll_to_class('enemyTable',0);
+    $(".enemyTable tbody").empty().append(Addenemy(data.enemy));
   });
 
   // Change level star
@@ -465,13 +474,15 @@ $(document).ready(function () {
         data = obj.data,
         prev_stage = (obj.prev&&obj.prev!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.prev}:{},
         next_stage = (obj.next&&obj.next!='name')?{chapter:obj.chapter,stage:obj.stage,level:obj.next}:{};
+
     // Initialization
-    $(".display .dataTable td,.display .enemyTable tbody,.display .rewardTable tbody").empty();
     $(".moredata").remove();
-    $(".display .dataTable img").remove();
     $(".display #star").hide();
     $("*[class='orgdata']").show();
     $(".enemyTable thead th").attr("reverse","");
+    $(".display .dataTable td,.display .enemyTable tbody,.display .rewardTable tbody").empty();
+    $(".display .dataTable img").remove();
+
     // Initialize more option
     $(".display .dataTable #chapter").html(chapterName(obj.chapter)).attr('value',obj.chapter);
     $(".display .dataTable #stage").html(`${(obj.parent?obj.parent:"")}<i class='material-icons'>create</i>`).attr('value',obj.stage);
@@ -503,12 +514,14 @@ $(document).ready(function () {
       else $(".display .dataTable").find("#"+i).text(data[i]?data[i]:'-');
     }
     $(".rewardTable tbody").append(Addreward(data.reward,data.integral));
-    $(".enemyTable tbody").append(Addenemy(data.enemy));
+    if(obj.chapter !== 'legendquest') $(".enemyTable tbody").append(Addenemy(data.enemy));
     // $(Addlist(data.list)).insertAfter($("#list_toggle"));
     setTimeout(function () {
       scrollSelectArea('stage',obj.stage);
       scrollSelectArea('level',data.id.split("-")[2]);
     },300);
+
+    socket.emit("required comment",{type:'stage',id:data.id});
   }
   function Addreward(arr,b) {
     // console.log(arr);

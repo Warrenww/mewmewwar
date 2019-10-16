@@ -90,7 +90,7 @@ function appendHistory(type) {
   for(let i in data){
     $(".main_board").prepend("<div id='"+data[i].id+"' class='"+type+"'>"+
       historyPicture(type,data[i].id,data[i].stage)+
-      historyName(type,data[i].name,data[i].lv,data[i].stage)+
+      historyName(type,data[i].id,data[i].name,data[i].lv,data[i].stage)+
       "<span class='time'>"+parseTime(data[i].time)+"</span>"+
       "</div>");
     count ++;
@@ -103,10 +103,17 @@ function historyPicture(type,id,stage=null) {
   else if(type == 'stage') return "<button class='stageBG' bg='"+stage+"' value='0'></button>";
   else if(type == 'gacha') return "<img src='"+image_url_gacha+id+".png'>";
 }
-function historyName(type,regular,bold,stage=null) {
+function historyName(type,id,regular,bold,stage=null) {
   if(type == 'cat') return "<span class='name'><b>Lv."+bold+"</b>"+regular[stage-1]+"</span>";
   else if(type == 'enemy') return "<span class='name'><b>"+bold*100+"%</b>"+regular+"</span>";
-  else if(type == 'stage') return "<span class='name'><b>"+regular[1]+"\t</b>"+regular[0]+"</span>";
+  else if(type == 'stage'){
+    id = id.split("-");
+    if(id[0] === 'legendquest'){
+        regular[1] = "傳奇尋寶記";
+        regular[0] = "Level "+id[2]
+    }
+    return "<span class='name'><b>"+regular[1]+"\t</b>"+regular[0]+"</span>";
+  }
   else if(type == 'gacha'){
     var temp =  "<ww style='display:flex;flex-direction:column;flex:2;align-items:center'>"+
                 "<span class='name'><b>"+regular+"</b></span>"+"<ww style='font-size:14px;font-weight:bold'>"+

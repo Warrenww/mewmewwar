@@ -64,15 +64,15 @@ console.log('start');
 // // console.log("finish");
 // // process.exit();
 // });
-database.ref("/CatData").once("value",(snapshot)=>{
-  var data = snapshot.val();
-  for(let i in data){
-  let count = 0;
-  for(let j in data[i].comment) count ++;
-    console.log(i,count);
-    database.ref("/Comment/Cat/"+i).set(data[i].comment);
-  }
-})
+// database.ref("/CatData").once("value",(snapshot)=>{
+//   var data = snapshot.val();
+//   for(let i in data){
+//   let count = 0;
+//   for(let j in data[i].comment) count ++;
+//     console.log(i,count);
+//     database.ref("/Comment/Cat/"+i).set(data[i].comment);
+//   }
+// })
 // var mutex = new Promise(function(resolve, reject) {
 //     database.ref("/catComment").once("value",(snapshot)=>{
 //           resolve(snapshot.val())

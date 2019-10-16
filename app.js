@@ -189,8 +189,6 @@ io.on('connection', function(socket){
         if(uid){
           if(!user_variable[id]) user_variable[id] = {own:false,stage:1,lv:default_lv[type],survey:{}};
           if (data.record) SetHistory({uid:uid,type:type,target:id});
-          if(!Number.isNaN(Number(stage))){ user_variable[id].stage = stage; }
-          else{stage = user_variable[id].stage;}
         }
         if(lv === 'user'){
           if(user_variable){
@@ -722,6 +720,9 @@ io.on('connection', function(socket){
         response.push({name:storyName[level],stage:Stagedata.GetNameArr('story','s000'+Util.AddZero(level),true)});
         response.push({name:storyName[level+1],stage:Stagedata.GetNameArr('story','s000'+Util.AddZero(level+1),true)});
         socket.emit("legendquest",{response,level});
+        if(uid){
+          SetHistory({uid:uid,type:'stage',target:id});
+        }
         return;
       }
       for(let i in parent){

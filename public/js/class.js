@@ -194,7 +194,7 @@ class Cat extends Unit{
         '波動':'wave', '免疫波動':'nowave', '抵銷波動':'stopwave', '擊倒敵人時，獲得2倍金錢':'2money', '對敵城傷害x4':'castle', '免疫傳送':'notrans', '破盾':'breakshell', '一次攻擊':'1atk', '鋼鐵':'metal', '免疫古代詛咒':'nocurse',
         "紅色敵人":"red_enemy","漂浮敵人":"float_enemy","黑色敵人":"black_enemy","鋼鐵敵人":"metal_enemy","天使敵人":"angle_enemy","外星敵人":"alien_enemy","不死敵人":"death_enemy","古代種":"ancient_enemy",'古代詛咒無效':'nocurse',
         "基本體力上升":"hpup","基本攻擊力上升":"atkinc","緩速抗性":"slowdefend","移動加快":"speedup",'2倍金錢':'2money',"暫停抗性":"stopdefend","生產金額減少":"discount","降攻抗性":"weakdefend","波動 抗性":"wavedefend",
-        "古代詛咒抗性":"cursedefend","擊退抗性":"pushdefend"
+        "古代詛咒抗性":"cursedefend","擊退抗性":"pushdefend","渾身一擊":"hitalot","攻擊無效":"no_damage"
       }[name[i]];
       if(temp != null) html += `<img src='/css/footage/gameIcon/${temp}.png'/>`;
     }

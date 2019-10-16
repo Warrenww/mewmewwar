@@ -24,7 +24,7 @@ exports.GetNameArr = function (chapter,level=null,enemy = false) {
   try {
     var target = StageData[chapter],
     response = [];
-    if(level) target = target[level];
+    if(level && chapter!=='legendquest') target = target[level];
     for(let i in target) {
       if (i == 'name') continue;
       var temp = {id:i,name:target[i].name};
@@ -32,7 +32,7 @@ exports.GetNameArr = function (chapter,level=null,enemy = false) {
       if(enemy) temp.enemy = target[i].enemy;
       response.push(temp);
     }
-    return response
+    return response;
   } catch (e) {
     Util.__handalError(e);
     return [];

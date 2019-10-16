@@ -21,6 +21,10 @@ exports.load = function () {
 exports.getComment = function (type,id) {
   try {
     type = Util.CapitalChar(type,0,1);
+    if(type === 'Stage'){
+      id = id.split("-");
+      id = [id[1],id[2]].join("-");
+    }
     if(!CommentData[type]) return false;
 
     var temp = CommentData[type][id];
