@@ -232,7 +232,9 @@ table input {
 }
 table input:focus{outline: 0}
 #char img,
-.instinctTable img
+.instinctTable img,
+.floatDisplay #color img,
+.enemy_row .enemy div img
 { width: 20; margin: 0 5;}
 .card{
   align-items: flex-end;

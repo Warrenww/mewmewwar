@@ -411,16 +411,6 @@ $(document).ready(function () {
     if(current_enemy_data){
       $('.moredata').toggle().siblings("*[class='orgdata']").toggle();
       if(!current_level_data.data.enemy[0].point) $(" .enemyTable thead #point").hide();
-    } else {
-      var enemy = current_level_data.data.enemy,
-          arr = enemy.map(x => { return {id:x.id,lv:"default"}});
-      FloatDisplayMutex = false;
-      socket.emit("required data",{
-        type : 'enemy',
-        target : arr,
-        record : false,
-        uid : CurrentUserID
-      });
     }
   });
   socket.on("required data",(data)=>{
@@ -468,7 +458,11 @@ $(document).ready(function () {
 
   function displayStageData(obj) {
     current_level_data = obj;
-    current_enemy_data = null;
+    current_enemy_data = obj.data.enemydata;
+    for(let i in current_enemy_data){
+      current_enemy_data[i] = new Enemy(current_enemy_data[i])
+    }
+
 
     var html = "",
         data = obj.data,
@@ -515,6 +509,7 @@ $(document).ready(function () {
     }
     $(".rewardTable tbody").append(Addreward(data.reward,data.integral));
     if(obj.chapter !== 'legendquest') $(".enemyTable tbody").append(Addenemy(data.enemy));
+    $(".moredata").hide();
     // $(Addlist(data.list)).insertAfter($("#list_toggle"));
     setTimeout(function () {
       scrollSelectArea('stage',obj.stage);
@@ -540,6 +535,10 @@ $(document).ready(function () {
   }
   function Addenemy(arr) {
     if(!arr) return;
+
+    var showlist = ['hp','atk','range','tag'];
+    if(current_user_setting.MoreDataField) showlist = current_user_setting.MoreDataField;
+
     var html = "",
         range = {
           multiple:[],
@@ -548,23 +547,52 @@ $(document).ready(function () {
           first_show:[],
           next_time:[]
         };
+
     if(arr[0].point) $(".enemyTable thead tr #point").show();
     else $(".enemyTable thead tr #point").hide();
+
     for(let i in arr){
       if(!arr[i]) continue
+      let icon = [];
+      if(current_enemy_data){
+        if(current_enemy_data[arr[i].id].tag) icon = icon.concat(current_enemy_data[arr[i].id].tag.map(x=>{return x}));
+        if(current_enemy_data[arr[i].id].color)  icon = icon.concat(current_enemy_data[arr[i].id].color.map(x=>{return x}));
+      }
       html += "<tr class='enemy_row' id='"+i+"'>"+
-      "<th class='enemy' id='"+arr[i].id+"' style='padding:0;"+
-      (arr[i].Boss?'border:5px solid var(--red)':'')+
-      "'  colspan='1'><img src='"+Unit.imageURL('enemy',arr[i].id)+
-      "' style='width:100%'/></th>" ;
-      html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
-      "<td id='amount'class='orgdata'>"+arr[i].amount+"</td>"+
-      "<td id='castle'class='orgdata'>"+arr[i].castle+"</td>"+
-      "<td id='first_show'class='orgdata'>"+arr[i].first_show+"</td>"+
-      "<td id='next_time'class='orgdata'>"+arr[i].next_time+"</td>"+
-      (arr[0].point?"<td id='point'class='orgdata'>"+arr[i].point+"</td>":"")+
-      "</tr>";
+              "<th class='enemy' id='"+arr[i].id+"' style='padding:0;"+
+              (arr[i].Boss?'border:5px solid var(--red)':'')+
+              "'  colspan='1'><img src='"+Unit.imageURL('enemy',arr[i].id)+
+              "' style='width:100%'/><div>"+icon.map(x => {return Unit.smallIcon(x)}).join("")+"</div></th>" ;
+              html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
+              "<td id='amount'class='orgdata'>"+arr[i].amount+"</td>"+
+              "<td id='castle'class='orgdata'>"+arr[i].castle+"</td>"+
+              "<td id='first_show'class='orgdata'>"+arr[i].first_show+"</td>"+
+              "<td id='next_time'class='orgdata'>"+arr[i].next_time+"</td>"+
+              (arr[0].point?"<td id='point'class='orgdata'>"+arr[i].point+"</td>":"");
+
       for(let j in range) if(range[j].indexOf(arr[i][j]) == -1) range[j].push(arr[i][j]);
+      for(let k in showlist){
+        if(!current_enemy_data) break;
+        var appendText,
+            lv = Number(arr[i].multiple.split("％")[0]);
+        if(showlist[k] == 'tag'){
+          if(current_enemy_data[arr[i].id].tag) appendText = current_enemy_data[arr[i].id].tag;
+          else appendText = "-";
+        }
+        else if(showlist[k] == 'aoe'){ appendText = current_enemy_data[arr[i].id].Aoe; }
+        else if (showlist[k] == 'char') { appendText = current_enemy_data[arr[i].id].CharHtml(lv); }
+        else if(showlist[k] == 'color'){ appendText = current_enemy_data[arr[i].id].Color; }
+        else if (showlist[k] == 'name') { appendText = current_enemy_data[arr[i].id].Name; }
+        else appendText = current_enemy_data[arr[i].id].Tovalue(showlist[k],lv);
+
+        html += ("<td id='"+showlist[k]+"'class='moredata'>"+appendText+"</td>");
+      }
+
+      html += "</tr>";
+    }
+    for(let k in showlist){
+      if(!current_enemy_data) break;
+      $(".enemyTable thead tr").append(createHtml("th",Unit.propertiesName(showlist[k]),{id:showlist[k],class:'moredata'}));
     }
     for(let j in range){
       for(let k in range[j])
@@ -579,7 +607,7 @@ $(document).ready(function () {
             .append("<span>"+range[j][k]+"</span>");
     }
     // console.log(range);
-    return html
+    return html;
   }
   function Addlist(list) {
     let html = '';

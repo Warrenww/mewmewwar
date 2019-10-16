@@ -204,7 +204,7 @@ io.on('connection', function(socket){
           data:Unitdata.getData(type,id),
           lv:lv,
           combo:type=="cat"?Combodata.FindCat(id):null,
-          currentStage:1
+          currentStage:stage || 1
         };
         if(type == 'cat'){
           var stageMap = Stagedata.stageMap();
@@ -218,7 +218,7 @@ io.on('connection', function(socket){
             }
           }
           if(user_variable){
-            result.currentStage = user_variable[id].stage || 1;
+            result.currentStage = stage || (user_variable[id].stage || 1);
             result.own = user_variable[id].own || false;
             result.survey = user_variable[id].survey;
           }
@@ -741,6 +741,11 @@ io.on('connection', function(socket){
             x.prize.amount = twName?twName:x.prize.amount;
           }
         })
+      }
+      levelData.enemydata = {};
+      for(let ene of levelData.enemy){
+        if(levelData.enemydata[ene.id]) continue;
+        levelData.enemydata[ene.id] = Unitdata.getData('enemy',ene.id);
       }
       socket.emit("level data",{
         data: levelData,

@@ -76,6 +76,23 @@ class Unit{
       return Map[s];
     }
   }
+
+  static smallIcon(name){
+    var html = "";
+    if(typeof(name) == "string") name = [name.split(" ")[0]];
+    for(let i in name){
+      let temp = {
+        '降攻':'atkdown', '增攻':'atkup', '免疫降攻':'noatkdown', '善於攻擊':'goodat', '很耐打':'morehp', '超級耐打':'morehp_ex', '超大傷害':'bighurt', '極度傷害':'bighurt_ex', '只能攻擊':'only_atk', '會心一擊':'criticalhit',
+        '擊退':'goaway', '免疫擊退':'nogoaway', '3段連續攻擊':'serialatk','2段連續攻擊':'serialatk', '不死剋星':'killdeath', '緩速':'slow', '免疫緩速':'noslow', '暫停':'stop', '免疫暫停':'nostop', '遠方攻擊':'faratk', '復活':'surive',
+        '波動':'wave', '免疫波動':'nowave', '抵銷波動':'stopwave', '擊倒敵人時，獲得2倍金錢':'2money', '對敵城傷害x4':'castle', '免疫傳送':'notrans', '破盾':'breakshell', '一次攻擊':'1atk', '鋼鐵':'metal', '免疫古代詛咒':'nocurse',
+        "紅色敵人":"red_enemy","漂浮敵人":"float_enemy","黑色敵人":"black_enemy","鋼鐵敵人":"metal_enemy","天使敵人":"angle_enemy","外星敵人":"alien_enemy","不死敵人":"death_enemy","古代種":"ancient_enemy",'古代詛咒無效':'nocurse',
+        "基本體力上升":"hpup","基本攻擊力上升":"atkinc","緩速抗性":"slowdefend","移動加快":"speedup",'2倍金錢':'2money',"暫停抗性":"stopdefend","生產金額減少":"discount","降攻抗性":"weakdefend","波動 抗性":"wavedefend",
+        "古代詛咒抗性":"cursedefend","擊退抗性":"pushdefend","渾身一擊":"hitalot","攻擊無效":"no_damage"
+      }[name[i]];
+      if(temp != null) html += `<img src='/css/footage/gameIcon/${temp}.png'/>`;
+    }
+    return html;
+  }
 }
 
 class Cat extends Unit{
@@ -114,10 +131,10 @@ class Cat extends Unit{
           (132.5+200*char[k].percent)+")</br>"
         }else{
           html +=
-          (char[k].against?`對<span id='color'>${char[k].against}${this.smallIcon(char[k].against)}</span>`:"")+
+          (char[k].against?`對<span id='color'>${char[k].against}${Unit.smallIcon(char[k].against)}</span>`:"")+
           (char[k].chance?char[k].chance+"%的機率":"")+
           (char[k].lower?"體力小於"+char[k].lower+"%時":"")+
-          `<span id='type'>${char[k].type}${this.smallIcon(char[k].type)}</span>`+
+          `<span id='type'>${char[k].type}${Unit.smallIcon(char[k].type)}</span>`+
           (char[k].percent?char[k].percent+"%":"")+
           (char[k].range?" "+char[k].range.join("~"):"")+
           (char[k].period?"持續"+char[k].period.toFixed(1)+"秒":"");
@@ -184,22 +201,6 @@ class Cat extends Unit{
     }
     return html
   }
-  smallIcon(name){
-    var html = "";
-    if(typeof(name) == "string") name = [name.split(" ")[0]];
-    for(let i in name){
-      let temp = {
-        '降攻':'atkdown', '增攻':'atkup', '免疫降攻':'noatkdown', '善於攻擊':'goodat', '很耐打':'morehp', '超級耐打':'morehp_ex', '超大傷害':'bighurt', '極度傷害':'bighurt_ex', '只能攻擊':'only_atk', '會心一擊':'criticalhit',
-        '擊退':'goaway', '免疫擊退':'nogoaway', '3段連續攻擊':'serialatk','2段連續攻擊':'serialatk', '不死剋星':'killdeath', '緩速':'slow', '免疫緩速':'noslow', '暫停':'stop', '免疫暫停':'nostop', '遠方攻擊':'faratk', '復活':'surive',
-        '波動':'wave', '免疫波動':'nowave', '抵銷波動':'stopwave', '擊倒敵人時，獲得2倍金錢':'2money', '對敵城傷害x4':'castle', '免疫傳送':'notrans', '破盾':'breakshell', '一次攻擊':'1atk', '鋼鐵':'metal', '免疫古代詛咒':'nocurse',
-        "紅色敵人":"red_enemy","漂浮敵人":"float_enemy","黑色敵人":"black_enemy","鋼鐵敵人":"metal_enemy","天使敵人":"angle_enemy","外星敵人":"alien_enemy","不死敵人":"death_enemy","古代種":"ancient_enemy",'古代詛咒無效':'nocurse',
-        "基本體力上升":"hpup","基本攻擊力上升":"atkinc","緩速抗性":"slowdefend","移動加快":"speedup",'2倍金錢':'2money',"暫停抗性":"stopdefend","生產金額減少":"discount","降攻抗性":"weakdefend","波動 抗性":"wavedefend",
-        "古代詛咒抗性":"cursedefend","擊退抗性":"pushdefend","渾身一擊":"hitalot","攻擊無效":"no_damage"
-      }[name[i]];
-      if(temp != null) html += `<img src='/css/footage/gameIcon/${temp}.png'/>`;
-    }
-    return html;
-  }
 
   static parseRarity(s) {
     var Map = {
@@ -242,7 +243,7 @@ class Enemy extends Unit{
   }
   get Color(){
     let html = '';
-    for(let i in this.color) html+=this.color[i]+"</br>"
+    for(let i in this.color) html+=this.color[i]+Unit.smallIcon(this.color[i])+"</br>"
     return html
   }
   CharHtml(lv){
@@ -262,7 +263,7 @@ class Enemy extends Unit{
           (char[k].lower?"體力小於"+char[k].lower+"%時":"")+
           (char[k].hp?"擊倒後以"+char[k].hp+"%體力":"")+
           (char[k].delay?char[k].delay.toFixed(1)+"秒"+(char[k].hp?"後":"的"):"")+
-          "<span id='type'>"+char[k].type+"</span>"+
+          "<span id='type'>"+char[k].type+Unit.smallIcon(char[k].type)+"</span>"+
           (char[k].percent?char[k].percent+"%":"")+
           (char[k].times?char[k].times+"次":"")+
           (char[k].dist?"至"+(Number(char[k].dist)>0?("後方"+char[k].dist):("前方"+(-1)*char[k].dist))+"處 ":"")+

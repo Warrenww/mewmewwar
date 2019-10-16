@@ -346,6 +346,24 @@ flex-wrap: wrap;
 }
 #enemyChooser img[active="1"]{border-color: var(--orange);}
 
+.enemy_row .enemy:hover div{
+  opacity: 1;
+}
+.enemy_row .enemy div{
+  background: rgba(0,0,0,.5);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: .3s ease-in-out;
+  opacity: 0;
+}
+
 @media screen and (max-width:1024px) {
   .enemy_head th>span{display: none;}
 }
