@@ -697,7 +697,7 @@ io.on('connection', function(socket){
     if(ref.chapter === 'legendquest'){
       let response = [];
       for(let i=1;i<48;i++) response.push({id:i,name:"Level "+i,bg:"bg"+Util.AddZero(Math.ceil(Math.random()*108),2)});
-      response.push({id:i,name:"Level Final",bg:"bg"+Util.AddZero(Math.ceil(Math.random()*108),2)});
+      response.push({id:48,name:"Level Final",bg:"bg"+Util.AddZero(Math.ceil(Math.random()*108),2)});
       socket.emit("level name",response);
     }
     else

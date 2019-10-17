@@ -218,7 +218,8 @@ $(document).ready(function () {
     socket.emit("required comment",{type:'stage',id:trimId});
   });
   socket.on("legendquest",data => {
-    $(".legendquestTable").show();
+    $(".legendquestTable").css("display",()=>{return screen.width>425?"table":"block"});
+    legendEnemyChoosed = [];
     var level = Number(data.level),
         obj = {
           chapter:"legendquest",
@@ -226,32 +227,34 @@ $(document).ready(function () {
           data:{
             continue:false,
             energy:(Math.floor(level/20)+1)*50,
-            exp:(Math.floor(level/20)+1)*950,
+            exp:(Math.floor(level++/20)+1)*950,
             id: "legendquest-s16000-"+level,
             integral:false,
-            name: "Level "+(level+1),
+            name: "Level "+level,
             reward:[],
             enemy: data.response
-          }
+          },
+          prev: (level - 1) || 1,
+          next: (level + 1) > 47 ? null : (level + 1)
         },
         res = data.response,
         table = "<tr>",
         searchQueue = [];
-    if([15,25,35,40,45,48].indexOf(level+1) !== -1){
-      obj.data.reward.push({chance:"100%",limit:1,prize:{amount:(level+1 === 48?3:1)+"個",name:"貓眼石【傳說稀有】"}});
+    if([15,25,35,40,45,48].indexOf(level) !== -1){
+      obj.data.reward.push({chance:"100%",limit:1,prize:{amount:(level === 48?3:1)+"個",name:"貓眼石【傳說稀有】"}});
     }
-    else if([11,21,31,41,47].indexOf(level+1) !== -1){
+    else if([11,21,31,41,47].indexOf(level) !== -1){
       obj.data.reward = ["ＥＸ","稀有","激稀有","超激稀有","傳說稀有"].map(x=>{return {chance:"20%",limit:1,prize:{amount:"3個",name:`貓眼石【${x}】`}}});
     }
-    else if([13,17,19,23,26,28,33,36,38,43].indexOf(level+1) !== -1){
+    else if([13,17,19,23,26,28,33,36,38,43].indexOf(level) !== -1){
       obj.data.reward.push({chance:"100%",limit:1,prize:{amount:"1個",name:"貓咪卷"}});
     }
-    else if([20,30].indexOf(level+1) !== -1){
+    else if([20,30].indexOf(level) !== -1){
       obj.data.reward.push({chance:"100%",limit:1,prize:{amount:"1個",name:"稀有卷"}});
     }
     else{
       obj.data.reward = ["加速","寶物雷達","土豪貓","貓型電腦","洞悉先機","狙擊手"].map(x=>{
-        return {chance:"16%",limit:1,prize:{amount:(level+1 < 28?1:(level+1<43?2:3))+"個",name:x}}
+        return {chance:"16%",limit:1,prize:{amount:(level < 28?1:(level<43?2:3))+"個",name:x}}
       });
     }
 
@@ -275,7 +278,7 @@ $(document).ready(function () {
     table += "</tr>";
 
     $(".legendquestTable").eq(0).find(".starReq td").each(function (index) {
-      $(this).html(index+(level<40?1:2)+"★");
+      $(this).html(index+(level>40?2:1)+"★");
     });
     $(".legendquestTable:last thead tr td").empty().append("<div>"+searchQueue.map(x=>{
       return x?"<img active=0 data='"+x+"' src='"+Unit.imageURL("enemy",x)+"'/>":"";
