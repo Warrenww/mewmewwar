@@ -10,8 +10,9 @@
     "crypto": "^1.0.1",
     "express": "^4.16.2",
     "firebase": "^4.7.0",
-    "firebase-admin": "^5.12.1",
+    "firebase-admin": "^5.13.1",
     "google-spreadsheet-to-json": "^1.0.0",
+    "puppeteer": "^5.1.0",
     "request": "^2.88.0",
     "socket.io": "^2.1.1"
   },
@@ -20,7 +21,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "temp0" : "node temp0.js",
-    "temp" : "node temp.js"
+    "temp0": "node temp0.js",
+    "temp": "node temp.js"
   }
 }

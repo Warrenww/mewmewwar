@@ -10,21 +10,21 @@ var config = {
     storageBucket: "battlecat-smart.appspot.com",
     messagingSenderId: "268279710428"
   };
-var admin = require("firebase-admin");
+// var admin = require("firebase-admin");
+//
+// var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
+//
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: "https://BattleCat-Smart.firebaseio.com"
+// });
 
-var serviceAccount = require("battlecat-smart-firebase-adminsdk-nqwty-40041e7014.json");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://BattleCat-Smart.firebaseio.com"
-});
-
-
-var userdata;
-var catdata;
-firebase.initializeApp(config);
-var database = firebase.database();
-var db = admin.firestore();
+// var userdata;
+// var catdata;
+// firebase.initializeApp(config);
+// var database = firebase.database();
+// var db = admin.firestore();
 console.log('start');
 
 // var list = fs.readFileSync("./public/text.txt",'utf-8').split("\n");
@@ -273,3 +273,30 @@ function listAllUsers(nextPageToken) {
 // Start listing users from the beginning, 1000 at a time.
 // listAllUsers();
 //
+
+// request("https://battlecats-db.com/unit/188.html",(e,r,b) => {
+//   let $ = cheerio.load(b);
+//   var Bgc12 = 0; // cat stage
+//   $(".maincontents table").find("tr[class='bgc12']").each(function(){
+//     if(!Bgc12){Bgc12 ++;return;}  // ignore first bgc 12
+//     let data = {};
+//     data.id = 188 + '-' + Bgc12;
+//     data.jp_name = $(this).children().eq(1).text();
+//     var row_1 = $(this).next().next();
+//     let imgURL = row_1.children().eq(1).children().attr("src");
+//     console.log(imgURL);
+//   })
+// })
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch({headless:false,slowMo : 100});
+  const page = await browser.newPage();
+  // await page.goto('https://battlecats-db.com/unit/188.html');
+  // const imgElement = await page.$('img.char');
+  // await imgElement.screenshot({path: 'example.png'});
+  await page.goto('https://battlecats-db.imgs-server.com/u188-1.png');
+  // await page.screenshot({path: 'example.png'});
+
+  // await browser.close();
+})();

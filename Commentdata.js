@@ -55,6 +55,7 @@ exports.updateComment = function (data,action) {
       console.log(`${owner} comment on ${type} ${id} with key ${key}`);
       if(Users.getAttr(data.owner,"Anonymous")) return "Anonymous";
 
+      if(!CommentData[type]) CommentData[type] = {};
       if(!CommentData[type][id]||CommentData[type][id] === "-") CommentData[type][id] = {};
       obj = {
         owner:owner,

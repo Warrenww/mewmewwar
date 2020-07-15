@@ -215,7 +215,6 @@ $(document).ready(function () {
     var trimId = obj.data.id.split("-");
     trimId = [trimId[1],trimId[2]].join("-");
     $(".legendquestTable").hide();
-    socket.emit("required comment",{type:'stage',id:trimId});
   });
   socket.on("legendquest",data => {
     $(".legendquestTable").show();

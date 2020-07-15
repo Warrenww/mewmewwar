@@ -300,19 +300,23 @@ exports.randomCat = function (cc = null) {
 }
 
 exports.catName = function (id = null) {
-  if(id){
-    id = id.toString().substring(0,3);
-    return catNameMap[id]
-  }
-  else {
-    var CatCount=0,
-        Random = Math.floor((Math.random()*__numberOfCat));
-    for(let i in catNameMap){
-      if (CatCount == Random){
-        return catNameMap[i][1]
-      }
-      CatCount++;
+  try {
+    if(id){
+      id = id.toString().substring(0,3);
+      return catNameMap[id]
     }
+    else {
+      var CatCount=0,
+      Random = Math.floor((Math.random()*__numberOfCat));
+      for(let i in catNameMap){
+        if (CatCount == Random){
+          return catNameMap[i][1]
+        }
+        CatCount++;
+      }
+    }
+  } catch (e) {
+    return "";
   }
 }
 exports.enemyName = function (id) {
@@ -390,10 +394,9 @@ exports.fetch = function (type,arr) {
             var data = type == 'cat'?(obj.data[Bgc12]={tag:[],char:[]}):obj; // point to data to write
             data.id = id+(type == 'cat'?("-"+Bgc12):"");
             data.jp_name = $(this).children().eq(1).text();
-            if(type == 'cat')
-            data.name = catNameMap[id]?(catNameMap[id][Number(Bgc12)-1]?catNameMap[id][Number(Bgc12)-1]:""):"";
-            else
-            data.name = enemyNameMap[id]?enemyNameMap[id]:"";
+            if(type == 'cat') data.name = catNameMap[id]?(catNameMap[id][Number(Bgc12)-1]?catNameMap[id][Number(Bgc12)-1]:""):"";
+            else data.name = enemyNameMap[id]?enemyNameMap[id]:"";
+
             var row_1 = $(this).next().next(),
             row_2 = row_1.next(),
             row_3 = row_2.next(),

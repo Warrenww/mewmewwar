@@ -262,7 +262,7 @@ function parseAbility(s) {
   }
   if(s.indexOf("波動")!=-1){
     ww = s.split("波動")[0].split("Lv")[1]
-    return "波動 "+(ww?ww:"")
+    return (s.includes("無効")?"免疫":"")+"波動"+" "+(ww?ww:"")
   }
   s = s.trim().split("（")[0];
   temp = {
@@ -270,6 +270,7 @@ function parseAbility(s) {
     "1度だけ生き残る": "復活",
     "生き残る": "復活",
     "ワープ": "傳送",
+    "ワープ無効": "免疫傳送",
     "ゾンビキラー": "不死剋星",
     "ふっとばす": "擊退",
     "ふっとばし": "擊退",
@@ -617,6 +618,7 @@ exports.parseInstinct = function (c,obj) {
           d = c[i].split("）")[1].split("％")[0].split("～");
 
       d = d.map(x => x.indexOf("F")==-1?x:x.split("F")[0]);
+      if(d.length < 2) d.length = 0;
       obj.instinct.push({
         ability: a,
         maxlv  : b,
