@@ -295,7 +295,7 @@ class Tools {
       limit = 60 ;
     }
     if(id === 26) limit = 30;
-    
+
     result = (0.8+0.2*level)*originValue;
     if(level>limit) result = result - 0.1*(level-limit)*originValue;
     if(level>limit+20) result = result - 0.05*(level-limit-20)*originValue;

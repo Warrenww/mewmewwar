@@ -136,7 +136,7 @@ function parsePrediction(obj,eventdate) {
           if(cc&&arr[1]){
             gachaObj.push({
               date:brr,name:arr[1],
-              sure:arr[2]?arr[2].indexOf('必中')!=-1:false
+              sure:arr[arr.length-1].includes('必中')
             });
           }
         }

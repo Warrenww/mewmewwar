@@ -118,7 +118,7 @@ class PredictionTable extends Component {
     for(let i=0;i<data.duration;i++) day.push(data.start+i*86400000);
     return(
       <div className="PredictionTable flex_col" style={{width:60*data.duration+"px",display:this.props.hidden?"none":null}}>
-        <div className='head'>{day.map((x,i)=>{return <div className="cell" key={i}><div>{new Date(x).toLocaleDateString().split("/").slice(1).join("/")}</div></div>})}</div>
+        <div className='head'>{day.map((x,i)=>{return <div className="cell" key={i}><div>{new Date(x).toLocaleDateString().split("/").slice(0,2).join("/")}</div></div>})}</div>
         <div className='head'>{day.map((x,i)=>{return <div className="cell" key={i}><div>{WeekArr[new Date(x).getDay()]}</div></div>})}</div>
         {data.table.map((row,i)=>{
           var temp = [];
@@ -136,6 +136,7 @@ class PredictionTable extends Component {
     );
   }
 }
+
 class EventPrediction extends Component {
   constructor(props) {
     super(props);
@@ -173,7 +174,7 @@ class EventPrediction extends Component {
           tableSpace.map(x => x.length = dayPass);
         }
         date = date.map(x => (x-startDate)/86400000);
-        console.log(name,date);
+        // console.log(name,date);
         for(let j in tableSpace){
           if(find) break;
           if(j < startRow) continue;
@@ -441,7 +442,7 @@ class Home extends Component {
         <Block name='貓咪資料庫' Child={[<LegendBoard data={this.state.catLegend}  key={uniqueId()}/>, this.article_cat()]}  />
         <Block name='關卡資料庫' style={{backgroundImage:`url(./css/footage/stage/bg009.png)`,backgroundPosition:"bottom"}}
           Child={[this.article_stage(), <LegendBoard data={this.state.stageLegend}  key={uniqueId()}/>]}/>
-        <Block name='最新消息' Child={[<EventIframe event={this.state.event} text={this.state.text_event} key={uniqueId()}/>]}/>
+        <Block />
         <Block name='未來活動預測' Child={[<EventPrediction tw={this.state.eventPredict} jp={this.state.eventPredict_jp} key={uniqueId()}/>]}/>
         <Block name='其他網站連結' Child={[this.table_link_1(), this.table_link_2()]}/>
         <Block name='聯絡我們' Child={this.contact()}/>

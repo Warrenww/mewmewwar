@@ -334,6 +334,7 @@ io.on('connection', function(socket){
   socket.on("search stage",(list) => {socket.emit("search stage",Stagedata.Search('reward',list));});
 
   socket.on("user login",function (user) {
+    if(!user) return;
      console.log(user.uid+" user login");
      Users.Login(user).then((data)=>{
        socket.emit("login complete",{user:data.user,name:data.nickname,photo:data.photo});

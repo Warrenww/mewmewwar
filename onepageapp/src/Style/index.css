@@ -301,6 +301,7 @@ button, input[type='submit']{
   position: absolute;
   background-color: rgba(0,0,0,.8);
   z-index: 10;
+  backdrop-filter: blur(5px);
 }
 #SnapshotHolder[show='1']{ display: flex; }
 #SnapshotHolder .picture{
@@ -320,6 +321,7 @@ button, input[type='submit']{
   display: none;
 }
 #SnapshotHolder[loading='1'] .Loading{display: block}
+#SnapshotHolder[loading='0'] .Loading{display: none}
 .Loading span{
   width: 30px;
   height: 30px;
