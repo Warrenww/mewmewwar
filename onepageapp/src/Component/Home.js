@@ -332,7 +332,7 @@ class Home extends Component {
         左側為貓咪查詢排行榜，點擊"more"來看看這些貓為甚麼大受好評吧!
         <div>
           <Link style={{color: "var(--bluegreen)",fontWeight: "bold",cursor: "pointer",fontSize: 20}}
-          to='/cat'>前往貓咪資料庫</Link>
+          to='/cat/list'>前往貓咪資料庫</Link>
         </div>
       </div>
     );

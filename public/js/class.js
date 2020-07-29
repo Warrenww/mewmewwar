@@ -19,7 +19,10 @@ class Unit{
 
   get Name(){ return this.name?this.name:this.jp_name; }
   get Aoe(){ return this.aoe?"範圍":"單體"; }
-  get image(){ return `css/footage/${this.unitType}/${this.unitType=='cat'?'u':'e'}${this.AddZero(this.id)}.png`}
+  get image(){
+    // return `css/footage/${this.unitType}/${this.unitType=='cat'?'u':'e'}${this.AddZero(this.id)}.png`
+    return `image/${this.unitType == 'cat'?'unit%20udi':'enemy%20icon'}/${this.unitType=='cat'? (`udi${this.AddZero(Number(this.id.split("-")[0]) - 1)}_${['f','c','s'][this.id.split("-")[1] - 1]}`) :`enemy_icon_${this.AddZero(Number(this.id) - 2)}`}.png`
+  }
   get serial(){
     for(let i in this.char){
       if(this.char[i].arr) return true
@@ -39,13 +42,14 @@ class Unit{
   }
   AddZero(s){
     var temp = Number(s);
-    if(!temp) return s
+    if(Number.isNaN(temp)) return s
     else return temp>99?temp:(temp>9?'0'+temp:'00'+temp)
   }
 
   static imageURL(unitType,id){
     if(!unitType || !id) return "";
-    else return `css/footage/${unitType}/${unitType=='cat'?'u':'e'}${AddZero(id,2)}.png`
+    return `image/${unitType == 'cat'?'unit%20uni':'enemy%20icon'}/${unitType=='cat'? (`uni${AddZero(Number(id.split("-")[0]) - 1,2)}_${['f','c','s'][id.split("-")[1] - 1]}00`) :`enemy_icon_${AddZero(Number(id) - 2,2)}`}.png`;
+    // return `css/footage/${unitType}/${unitType=='cat'?'u':'e'}${AddZero(id,2)}.png`
   }
   static propertiesName(s,reverse=false){
     const Map = {

@@ -354,6 +354,24 @@ class Tools {
     if(List.find(x => x === prop)) return true;
     else return false;
   }
+  static ParseProperties(s){
+    return {
+      'hp' : '體力',
+      'kb' : 'KB',
+      'hardness' : '硬度',
+      'atk' : '攻擊力',
+      'dps' : 'DPS',
+      'range' : '射程',
+      'freq' : '攻頻',
+      'speed' : '跑速',
+      'aoe' : '範圍攻擊',
+      'atk_speed' : '攻發時間',
+      'cost' : '花費',
+      'cd' : '再生産',
+      'reward' : '獲得金錢',
+      'color' : '屬性',
+    }[s] || s;
+  }
 }
 
 export {
