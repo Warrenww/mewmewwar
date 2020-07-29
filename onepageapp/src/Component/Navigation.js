@@ -52,7 +52,7 @@ const AuthArea = props => {
 const NavigationSideColumn = props => {
   var
   arr_1 = [
-    <Link  to="/cat">貓咪資料</Link>,
+    <Link  to="/cat/list">貓咪資料</Link>,
     <Link  to="/enemy/">敵人資料</Link>,
     <Link  to="/combo/">查詢聯組</Link>,
     <Link  to="/stage/">關卡資訊</Link>,

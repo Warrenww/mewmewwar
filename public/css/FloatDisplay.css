@@ -30,16 +30,25 @@
   height: 120px;
 }
 .floatDisplay #title .img{
-      padding: 0px;
-      background-size: cover;
-      width: 180;
-      height: 100;
-      margin: 10;
-      border-radius: 10px;
-      box-shadow: 1px 1px 10px 0px;
-      border: 3px solid white;
-      cursor: pointer;
-      transition: .3s ease
+  padding: 0px;
+  background-size: cover;
+  width: 180;
+  height: 100;
+  margin: 10;
+  border-radius: 10px;
+  box-shadow: 1px 1px 10px 0px;
+  border: 3px solid white;
+  cursor: pointer;
+  transition: .3s ease;
+  background-position: -11px -2px;
+  background-size: 250%;
+  background-repeat: no-repeat;
+  background-color: black;
+}
+.floatDisplay[data-type='enemy'] #title .img{
+  background-size: 50%;
+  background-position: center;
+  background-color: transparent;
 }
 .floatDisplay #title .name{
   flex:1;

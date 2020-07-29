@@ -112,7 +112,7 @@ const App = () => {
       <Switch>
         <Route path="/" exact render={() => <Home socket={socket} /> } />
         <Route path="/cat/list" exact component={Cat} />
-        <Route path="/enemy" exact component={Enemy} />
+        <Route path="/enemy/list" exact component={Enemy} />
         <Route path="/cat/:id" render={(props) => <Display {...props} user={user} socket={socket} displayType="cat"/>} />
         <Route path="/enemy/:id" render={(props) => <Display {...props} user={user} socket={socket} displayType="enemy"/>} />
         <Route path="/setting" component={Setting} />

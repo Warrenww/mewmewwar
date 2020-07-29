@@ -29,6 +29,8 @@ $(document).ready(function () {
         buffer = data.buffer[0],
         data = type == 'cat'?new Cat(buffer.data.data[buffer.currentStage]):new Enemy(buffer.data),
         lv = buffer.lv/(type == "enemy"?100:1);
+        
+    $(".floatDisplay").attr("data-type", type);
     $(".floatDisplay_holder").fadeIn();
     $(".floatDisplay .dataTable #lv").text(lv);
     $(".floatDisplay .dataTable .img").css('background-image','url("'+data.imgURL+'")');

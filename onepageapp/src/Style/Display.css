@@ -2,7 +2,7 @@
   display: block;
 }
 .Display .content{
-  padding-top: 40px;
+  padding-top: 50px;
   align-items: center;
 }
 .Display .DisplayControl{
@@ -45,10 +45,14 @@
   background-size: cover;
   cursor: pointer;
   transition: .45s ease-in-out;
+  background-position: -11px -2px;
+  background-color: black;
+  background-size: 460%;
 }
 .DisplayTable .Title .img[active='true']{
   width: 180px;
   border-radius: 10px;
+  background-size: 250%;
 }
 .DisplayTable table{
   width: 100%;
@@ -71,7 +75,8 @@
 .DisplayTable .characteristic span
 {display: inline-flex;justify-content: center;align-items: center;}
 .DisplayTable .condition .fruit img,
-.DisplayTable .characteristic img
+.DisplayTable .characteristic img,
+.InstinctTable img
 {
   width: 30px;height: 30px;margin: 3px;
 }
@@ -79,7 +84,7 @@
   background: lightgray; border-radius: 5px;
 
 }
-.ComboTable{
+.ComboTable, .InstinctTable{
   width: 100%
 }
 .TableHead{
@@ -91,6 +96,7 @@
   position: relative;
   cursor: pointer;
   border-radius: 5px;
+  margin: 2px 0;
 }
 .ComboTable .TableHolder{
   width: calc(100% - 6px);
@@ -125,6 +131,8 @@
   background-color: lightgray;
   background-size: cover;
   margin: 5px;
+  background-position: center;
+  background-size: 125%;
 }
 
 @media screen and (max-width: 768px) {

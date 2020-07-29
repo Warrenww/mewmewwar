@@ -301,7 +301,7 @@ class Tools {
     if(level>limit+20) result = result - 0.05*(level-limit-20)*originValue;
     return result;
   }
-  static imageURL(type,id){
+  static imageURL(type,id, mode = 0){
     const SmallIconMap = {
       '降攻':'atkdown',
       '增攻':'atkup',
@@ -342,8 +342,33 @@ class Tools {
       "外星敵人":"alien_enemy",
       "不死敵人":"death_enemy",
       "古代種":"ancient_enemy",
+      '古代詛咒無效':'nocurse',
+      "基本體力上升":"hpup",
+      "基本攻擊力上升":"atkinc",
+      "緩速抗性":"slowdefend",
+      "移動加快":"speedup",
+      '2倍金錢':'2money',
+      "暫停抗性":"stopdefend",
+      "生產金額減少":"discount",
+      "降攻抗性":"weakdefend",
+      "波動 抗性":"wavedefend",
+      "古代詛咒抗性":"cursedefend",
+      "擊退抗性":"pushdefend",
+      "渾身一擊":"hitalot",
+      "攻擊無效":"no_damage",
     }
-    if(type === 'cat') return '/css/footage/cat/u'+id+'.png';
+    if(type === 'cat') {
+      if(mode){
+        // return '/image/unit /cat/u'+id+'.png';
+        return `/image/unit%20uni/uni${Tools.AddZero(Number(id.split("-")[0]) - 1,2)}_${['f','c','s'][id.split("-")[1] - 1]}00.png`;
+
+      }
+      else {
+        // return '/css/footage/cat/u'+id+'.png';
+        return `/image/unit%20udi/udi${Tools.AddZero(Number(id.split("-")[0]) - 1,2)}_${['f','c','s'][id.split("-")[1] - 1]}.png`;
+
+      }
+    }
     if(type === 'enemy') return '/css/footage/enemy/e'+id+'.png';
     if(type === 'fruit') return `/css/footage/fruit/${id.seed?"seed":"fruit"}_icon0${id.id}.png`;
     if(type === 'smallIcon') return `/css/footage/gameIcon/${SmallIconMap[id] || id}.png`

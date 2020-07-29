@@ -203,9 +203,9 @@ class Cat extends Component {
           return(
             <div className="flex" key={i}>
               <Link to={"/cat/"+x}><span className="card" style={{}}>{Tools.AddZero(x,2)}</span></Link>
-              <span className="card" style={{backgroundImage:`url("${Tools.imageURL('cat',Tools.AddZero(x,2)+"-1")}")`}}></span>
-              <span className="card" style={{backgroundImage:`url("${Tools.imageURL('cat',Tools.AddZero(x,2)+"-2")}")`}}></span>
-              <span className="card" style={{backgroundImage:`url("${Tools.imageURL('cat',Tools.AddZero(x,2)+"-3")}")`}}></span>
+              <span className="card" style={{backgroundImage:`url("${Tools.imageURL('cat',Tools.AddZero(x,2)+"-1", 1)}")`}}></span>
+              <span className="card" style={{backgroundImage:`url("${Tools.imageURL('cat',Tools.AddZero(x,2)+"-2", 1)}")`}}></span>
+              <span className="card" style={{backgroundImage:`url("${Tools.imageURL('cat',Tools.AddZero(x,2)+"-3", 1)}")`}}></span>
             </div>
           )
         })}

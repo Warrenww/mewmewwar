@@ -555,7 +555,7 @@ $(document).ready(function () {
       "<th class='enemy' id='"+arr[i].id+"' style='padding:0;"+
       (arr[i].Boss?'border:5px solid var(--red)':'')+
       "'  colspan='1'><img src='"+Unit.imageURL('enemy',arr[i].id)+
-      "' style='width:100%'/></th>" ;
+      "' style='width:50px'/></th>" ;
       html += "<td id='multiple'>"+arr[i].multiple+"</td>"+
       "<td id='amount'class='orgdata'>"+arr[i].amount+"</td>"+
       "<td id='castle'class='orgdata'>"+arr[i].castle+"</td>"+
