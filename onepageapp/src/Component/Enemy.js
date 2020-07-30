@@ -41,7 +41,6 @@ class Enemy extends Component {
   render(){
     return(
       <div className="Cat subApp NoScrollBar">
-        <h1>敵人列表第{this.state.currentPage+1}頁</h1>
         {this.CatList()}
         <span><i className="material-icons ctrl" onClick={this.nextpage} args={-1}>chevron_left</i></span>
         <span><i className="material-icons ctrl" onClick={this.nextpage} args={1} style={{right:0}}>chevron_right</i></span>

@@ -359,17 +359,13 @@ class Tools {
     }
     if(type === 'cat') {
       if(mode){
-        // return '/image/unit /cat/u'+id+'.png';
         return `/image/unit%20uni/uni${Tools.AddZero(Number(id.split("-")[0]) - 1,2)}_${['f','c','s'][id.split("-")[1] - 1]}00.png`;
-
       }
       else {
-        // return '/css/footage/cat/u'+id+'.png';
         return `/image/unit%20udi/udi${Tools.AddZero(Number(id.split("-")[0]) - 1,2)}_${['f','c','s'][id.split("-")[1] - 1]}.png`;
-
       }
     }
-    if(type === 'enemy') return '/css/footage/enemy/e'+id+'.png';
+    if(type === 'enemy') return `/image/enemy%20icon/enemy_icon_${Tools.AddZero(Number(id)-2,2)}.png`;
     if(type === 'fruit') return `/css/footage/fruit/${id.seed?"seed":"fruit"}_icon0${id.id}.png`;
     if(type === 'smallIcon') return `/css/footage/gameIcon/${SmallIconMap[id] || id}.png`
     return "";

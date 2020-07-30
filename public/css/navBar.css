@@ -117,9 +117,9 @@ nav .panel{background: black;border-radius: 0;box-shadow: none}
   display: block;
   width: 36;
   height: 36;
-  background-image:url('/css/footage/cat/u001-1.png');
-  background-size: cover;
-  background-position: left;
+  background-image:url('/image/unit uni/uni000_c00.png');
+  background-size: 150%;
+  background-position: center;
   border-radius: 50%;
   cursor: pointer;
 }

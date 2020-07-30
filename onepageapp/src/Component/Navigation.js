@@ -2,10 +2,12 @@ import React, {Component, useState, useEffect} from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
-import {TreeView} from "./Utility.js";
+import {TreeView, Tools} from "./Utility.js";
 import logo from '../logo_text.png';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Zoom from '@material-ui/core/Zoom';
+import Avatar from '@material-ui/core/Avatar';
 
 const AuthArea = props => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -38,10 +40,10 @@ const AuthArea = props => {
       >
         {
           props.user?
-          <div>
-            <MenuItem onClick={handleClose}><Link to='/settings'>設定<SettingsIcon /></Link></MenuItem>
+          [
+            <MenuItem onClick={handleClose}><Link to='/settings'>設定<SettingsIcon /></Link></MenuItem>,
             <MenuItem onClick={handleClose}><Link to='/' onClick={props.logout}>登出<ExitToAppIcon /></Link></MenuItem>
-          </div>
+          ]
           :
           <MenuItem onClick={handleClose}><Link to='/login'>登入<ExitToAppIcon /></Link></MenuItem>
         }
@@ -50,35 +52,23 @@ const AuthArea = props => {
   );
 }
 const NavigationSideColumn = props => {
-  var
-  arr_1 = [
-    <Link  to="/cat/list">貓咪資料</Link>,
-    <Link  to="/enemy/">敵人資料</Link>,
-    <Link  to="/combo/">查詢聯組</Link>,
-    <Link  to="/stage/">關卡資訊</Link>,
-    <Link  to="/rank/">等級排行</Link>,
-    <Link  to="/treasure/">寶物圖鑑</Link>
-  ],
-  arr_2 = [
-    <Link  to="/compare/">比較器</Link>,
-    <Link  to="/expCalculator/">經驗計算機</Link>,
-    <Link  to="/book/">我的貓咪圖鑑</Link>
-  ],
-  arr_3 = [
-    <Link  to="/gacha/">轉蛋模擬器</Link>,
-    <Link  to="/game/">釣魚小遊戲</Link>
-  ];
+  const links = [
+    {link: '/cat/list', name: '貓咪列表', icon: Tools.imageURL('cat','001-1',1), style:{}},
+    {link: '/enemy/list', name: '敵人列表', icon: Tools.imageURL('enemy','002'), style:{}},
+  ]
   return(
     <div className="NavigationSideColumn NoScrollBar">
       <div className="navLinkBox">
-        <TreeView rootName='資料庫' nodes={arr_1} clickNodeEvent={props.clickNodeEvent} />
-        <TreeView rootName='更多功能' nodes={arr_2} clickNodeEvent={props.clickNodeEvent} />
-        <TreeView rootName='打發時間' nodes={arr_3} clickNodeEvent={props.clickNodeEvent} />
-        <div style={{display:"flex",flexDirection:"column",paddingLeft:"10px"}}>
-          <Link onClick={props.clickNodeEvent} to="/calendar/">活動日程</Link>
-          <Link onClick={props.clickNodeEvent} to="/document/"><i className="material-icons">help</i> <span>使用教學</span> </Link>
-          <Link onClick={props.clickNodeEvent} to="/history/"><i className="material-icons">history</i> <span>歷程記錄</span> </Link>
-        </div>
+        {
+          links.map((link, i) => (
+            <Zoom key={i} in={props.active} timeout={(i+2) * 300}>
+              <Link to={link.link} onClick={props.clickNodeEvent} style={link.style}>
+                <Avatar src={link.icon} />
+                <span>{link.name}</span>
+              </Link>
+            </Zoom>
+          ))
+        }
       </div>
     </div>
   );
@@ -94,12 +84,11 @@ const Navigation = (props) => {
   const [active, setActive] = useState(false);
 
   return(
-    <nav>
+    <nav style={{maxHeight: active ? '40vh' : '50px'}}>
       <HamburgerMenu active={active} clickEvent={() => setActive(!active)}/>
-      <NavigationSideColumn clickNodeEvent={() => setActive(!active)} />
       <Link to="/"><img src={logo} alt='Logo'/></Link>
       <AuthArea user={props.user} logout={props.logout}/>
-      <div className='NavBG' onClick={() => setActive(!active)}></div>
+      <NavigationSideColumn active={active} clickNodeEvent={() => setActive(!active)} />
     </nav>
   );
 }

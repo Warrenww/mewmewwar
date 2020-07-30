@@ -269,11 +269,12 @@ const InstinctTable = props => {
     else s = "%";
     return s;
   }
+  console.log(props.arr)
   props.arr.map((x,i) => {
     let iconname = x.ability,
         temp = "";
 
-    if(x.ability.includes("增攻")) temp = `(體力低於${x.range[2]}%)`;
+    if(x.ability.includes("增攻")) temp = x.range ? `(體力低於${x.range[2]}%)` : "";
     if(x.ability.includes("波動") && x.range[2]) temp = `(Lv.${x.range[2]} 波動)`;
     if(x.ability=='緩速能力解放') temp = `(${x.range[2]}% 機率緩速)`;
     if(x.ability=='降攻能力解放') temp = `(${x.range[2]}% 機率降攻${x.range[3]}%)`;
@@ -281,7 +282,7 @@ const InstinctTable = props => {
     if(iconname.includes("屬性新增")) iconname = iconname.split("屬性新增")[1];
     iconname = iconname.split("能力解放")[0];
     iconname = iconname.split("強化")[0];
-    console.log(iconname);
+    // console.log(iconname);
     contents.push(
       <tr key={2*i}>
         <th rowSpan='2'>
@@ -292,16 +293,16 @@ const InstinctTable = props => {
           <small>{temp}</small>
         </th>
         <td rowSpan='2'>{x.maxlv}</td>
-        <td>{x.range[0]?(x.range[0]+" "+unit(x.ability)):"-"}</td>
+        <td>{x.range?(x.range[0]+" "+unit(x.ability)):"-"}</td>
         {
           x.maxlv === 1 ?
           <td>-</td> :
-          <td>{((x.range[1]-x.range[0])/(x.maxlv-1)).toFixed(0)+" "+unit(x.ability)}</td>
+          <td>{x.range ? ((x.range[1]-x.range[0])/(x.maxlv-1)).toFixed(0)+" "+unit(x.ability) : '-'}</td>
         }
         {
           x.maxlv === 1 ?
           <td>-</td> :
-          <td>{((x.range[1]-x.range[0])/(x.maxlv-1)).toFixed(0)+" "+unit(x.ability)}</td>
+          <td>{x.range ? ((x.range[1]-x.range[0])/(x.maxlv-1)).toFixed(0)+" "+unit(x.ability) : '-'}</td>
         }
       </tr>
     );

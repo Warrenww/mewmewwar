@@ -48,13 +48,14 @@ h4 {
   width: 100px;
   height: 100px;
   background-image: url('/public/css/footage/cat/u001-1.png');
-  background-size: cover;
   border: 3px solid black;
   margin-right: 20px;
   display: flex;
   align-items: flex-end;
   border-radius: 50%;
   overflow: hidden;
+  background-size: 175%;
+  background-position: center;
 }
 #photo span{
   cursor: pointer;
@@ -95,9 +96,12 @@ h4 {
   background-color: #ffc33e;
   cursor: pointer;
   font-weight: bold;
-  border:2PX solid transparent;
+  border: 3px solid black;
+  background-size: 130%;
+  background-position: center;
 }
 #photo_chooser span:hover{border-color: gray}
+#photo_chooser span:after{display: none}
 #photo_chooser div span[type=account]{ background-color: #e46353; }
 #history:hover{color: rgb(117, 19, 133);}
 .showNext{

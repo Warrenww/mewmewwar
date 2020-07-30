@@ -200,8 +200,7 @@ $(document).ready(function () {
       });
       console.log(photo);
       $('#photo').css({
-        "background-image":'url("'+photo+'")',
-        "background-position":'0'
+        "background-image":'url("'+photo+'")'
       });
       $('#photo_chooser').fadeOut(400);
     }).catch(e => $('#photo_chooser').fadeOut(400));
@@ -242,8 +241,7 @@ $(document).ready(function () {
 
   socket.on("random cat photo",function (photo) {
     $('#photo').css({
-      "background-image":'url("'+photo+'")',
-      "background-position":'-4px 6px'
+      "background-image":'url("'+photo+'")'
     });
     if(window.parent.changePhoto) window.parent.changePhoto(photo);
   });

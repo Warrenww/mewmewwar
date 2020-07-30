@@ -429,15 +429,15 @@ function AddInstinct(data,rarity) {
   for(let i in arr){
     let temp = createHtml("th",addPs(arr[i]),{rowspan:2});
     temp += createHtml("td",arr[i].maxlv,{rowspan:2});
-    temp += createHtml("td",arr[i].range[0]?(arr[i].range[0]+" "+unit(arr[i].ability)):"-");
+    temp += createHtml("td",arr[i].range?(arr[i].range[0]+" "+unit(arr[i].ability)):"-");
     if(arr[i].maxlv!=1)
       temp += createHtml("td",
-            ((arr[i].range[1]-arr[i].range[0])/(arr[i].maxlv-1)).toFixed(0)+" "+unit(arr[i].ability));
+            arr[i].range ? ((arr[i].range[1]-arr[i].range[0])/(arr[i].maxlv-1)).toFixed(0)+" "+unit(arr[i].ability) : '-') ;
     else
       temp += createHtml("td","-");
     if(arr[i].maxlv!=1)
       temp += createHtml("td",
-            ((arr[i].range[1]-arr[i].range[0])/(arr[i].maxlv-1)).toFixed(0)+" "+unit(arr[i].ability));
+            arr[i].range ? ((arr[i].range[1]-arr[i].range[0])/(arr[i].maxlv-1)).toFixed(0)+" "+unit(arr[i].ability) : '-') ;
     else
       temp += createHtml("td","-");
     tbody += createHtml("tr",temp);
@@ -465,8 +465,8 @@ function AddInstinct(data,rarity) {
   }
   function addPs(s) {
     let iconname = temp = s.ability;
-    if(s.ability.indexOf("增攻")!=-1) temp += `<br>(體力低於${s.range[2]}%)`;
-    if(s.ability.indexOf("波動")!=-1&&s.range[2]) temp += `<br>(Lv.${s.range[2]} 波動)`;
+    if(s.ability.includes("增攻")) temp += s.range ? `<br>(體力低於${s.range[2]}%)` : "";
+    if(s.ability.includes("波動") && s.range[2]) temp += `<br>(Lv.${s.range[2]} 波動)`;
     if(s.ability=='緩速能力解放') temp += `<br>(${s.range[2]}% 機率緩速)`;
     if(s.ability=='降攻能力解放') temp += `<br>(${s.range[2]}% 機率降攻${s.range[3]}%)`;
     iconname = iconname.split("能力解放")[0];

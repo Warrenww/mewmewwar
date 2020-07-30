@@ -32,18 +32,20 @@ h1,h2,h3,h4{cursor: default;}
 a[disabled]{pointer-events: none;}
 
 nav{
-  display: flex; height: 40px ;
-  background-color: black; width: 100vw;
+  display: flex;flex-wrap: wrap;
+  background-color: rgba(0,0,0,.7); width: 100vw;
   position: fixed; top: 0;z-index: 100;
-  padding: 5px;
+  padding: 5px;backdrop-filter:blur(5px);
+  transition: .4s ease-in-out;
+  overflow: hidden; box-shadow: 0 0 10px;
 }
-nav img{height: 40px;margin: 0px 50px}
+nav img[alt='Logo']{height: 40px;margin: 5px 60px}
 .menu{
   min-width: 40px; height: 40px;
   position: absolute; padding: 0;
   top: 0; z-index: 3;
   left: 0 ; opacity: 1 ; cursor: pointer;
-  margin: 5px;
+  margin: 10px;
 }
 .menu span{
   width: 80%; height: 3px; margin: 0 10%;
@@ -57,21 +59,33 @@ nav img{height: 40px;margin: 0px 50px}
 .menu[active='1'] span:nth-of-type(2){opacity: 1;transform: rotate(45deg);}
 .menu[active='1'] span:last-of-type{opacity: 1;transform: rotate(-45deg);}
 .NavigationSideColumn{
-  position: absolute; top: 0px; height: 100vh; width: 200px;
-  left: -200px; overflow-y: scroll; background-color: black ;
-  font-size: 20px; color:white; transition: .4s ease-in-out;
-  z-index: 2; padding-top: 40px;
+  width: calc(100vw - 10px);
+  background-color: transparent;
+  font-size: 20px;
+  color: white;
+  margin-top: 10px;
 }
-.NavBG{position: absolute;top:0;left:0;width: 100vw;height: 100vh;background-color: black;opacity: .7;cursor: pointer;display: none;z-index: 1}
-.menu[active='1'] + .NavigationSideColumn{left:0}
+.NavigationSideColumn .navLinkBox{
+  display: flex;
+  flex-wrap: wrap;
+}
+.NavigationSideColumn .navLinkBox a{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 5px;
+}
+.NavigationSideColumn .navLinkBox a img{
+  width: 150%;
+}
+
+.menu[active='1'] + .NavigationSideColumn{max-height: 40vh;}
 .menu[active='1'] ~ .NavBG{display: block;}
 .NavigationSideColumn a,.NavigationSideColumn a:active{color:white;padding:5px;text-decoration: none;}
 .NavigationSideColumn a:hover{color:var(--bluegreen)}
-.NavigationSideColumn .TreeView {margin: 0px 10px}
-.NavigationSideColumn .TreeView .Root:hover {background-color: gray}
 .AuthArea{
   color: white;align-items: center;flex:1;justify-content: flex-end;
-  padding-right: 10px;position: relative;
+  padding-right: 20px;position: relative;
   transition: .3s ease-in-out
 }
 .AuthArea>div{
@@ -93,15 +107,17 @@ nav img{height: 40px;margin: 0px 50px}
 .AuthArea .userPhoto img{margin: 0;height: 32px}
 .AuthArea .UserName{max-width: 100px}
 #AuthAreaMenu .MuiMenu-paper{
-  top: 40px !important;
+  top: 50px !important;
   left: calc(100% - 100px) !important;
   width: 100px;
+  border-radius: 0 0 5px 5px;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(5px);
 }
-#AuthAreaMenu .MuiMenu-paper li{ padding: 0; }
 #AuthAreaMenu .MuiMenu-paper a{
   text-decoration: none;
   width: 100%;
-  color: black;
+  color: white;
   font-family: Microsoft JhengHei;
   display: flex;
   justify-content: center;
