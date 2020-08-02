@@ -25,7 +25,7 @@ exports.UpdateEvent = function () {
     console.log("get event day ",y+AddZero(m)+AddZero(d));
 
     //update new event
-    CheckNewEvent(y,m,d);
+    // CheckNewEvent(y,m,d);
     //update prediction
     request({
       url: predic_url,
