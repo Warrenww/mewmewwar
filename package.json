@@ -10,7 +10,7 @@
     "crypto": "^1.0.1",
     "express": "^4.16.2",
     "firebase": "^4.7.0",
-    "firebase-admin": "^5.13.1",
+    "firebase-admin": "^11.4.1",
     "google-spreadsheet-to-json": "^1.0.0",
     "puppeteer": "^5.1.0",
     "request": "^2.88.0",
